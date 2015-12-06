@@ -1,3 +1,9 @@
+#Generated stuff
+Makefile
+*.log
+config.status
+
+
 # Compiled Object files
 *.slo
 *.lo

@@ -1,3 +1,3 @@
-bin_PROGRAMS=a.out
+bin_PROGRAMS=openEVario
 a_out_SOURCES=openEVario.cpp
 
