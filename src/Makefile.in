@@ -89,7 +89,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-bin_PROGRAMS = a.out$(EXEEXT)
+bin_PROGRAMS = openEVario$(EXEEXT)
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -101,9 +101,9 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_a_out_OBJECTS = openEVario.$(OBJEXT)
-a_out_OBJECTS = $(am_a_out_OBJECTS)
-a_out_LDADD = $(LDADD)
+am_openEVario_OBJECTS = openEVario.$(OBJEXT)
+openEVario_OBJECTS = $(am_openEVario_OBJECTS)
+openEVario_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -133,8 +133,8 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(a_out_SOURCES)
-DIST_SOURCES = $(a_out_SOURCES)
+SOURCES = $(openEVario_SOURCES)
+DIST_SOURCES = $(openEVario_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -257,7 +257,7 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-a_out_SOURCES = openEVario.cpp
+openEVario_SOURCES = openEVario.cpp
 all: all-am
 
 .SUFFIXES:
@@ -334,9 +334,9 @@ uninstall-binPROGRAMS:
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 
-a.out$(EXEEXT): $(a_out_OBJECTS) $(a_out_DEPENDENCIES) $(EXTRA_a_out_DEPENDENCIES) 
-	@rm -f a.out$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(a_out_OBJECTS) $(a_out_LDADD) $(LIBS)
+openEVario$(EXEEXT): $(openEVario_OBJECTS) $(openEVario_DEPENDENCIES) $(EXTRA_openEVario_DEPENDENCIES) 
+	@rm -f openEVario$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(openEVario_OBJECTS) $(openEVario_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
