@@ -3,6 +3,7 @@ Makefile
 *.log
 config.status
 autom4te.cache
+doc/
 
 
 # Compiled Object files
