@@ -1,3 +1,2 @@
 SUBDIRS=src
 
-@DX_RULES@

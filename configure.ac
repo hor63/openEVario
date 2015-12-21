@@ -15,6 +15,8 @@ DX_DOT_FEATURE(ON)
 DX_HTML_FEATURE(ON)
 DX_INIT_DOXYGEN(openEvario, Doxyfile, doc/doxygen)
 
+
+
 AC_CONFIG_FILES(Makefile src/Makefile)
 AC_OUTPUT
 

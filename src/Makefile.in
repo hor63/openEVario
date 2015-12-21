@@ -101,7 +101,8 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_openEVario_OBJECTS = openEVario.$(OBJEXT)
+am_openEVario_OBJECTS = openEVario.$(OBJEXT) \
+	GliderVarioStatus.$(OBJEXT) GliderVarioModel.$(OBJEXT)
 openEVario_OBJECTS = $(am_openEVario_OBJECTS)
 openEVario_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -282,7 +283,8 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-openEVario_SOURCES = openEVario.cpp
+openEVario_SOURCES = openEVario.cpp GliderVarioStatus.cpp GliderVarioModel.cpp 
+AM_CXXFLAGS = "-I$(top_srcdir)/extern/eigen3.2.7/Eigen"
 all: all-am
 
 .SUFFIXES:
@@ -369,6 +371,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GliderVarioModel.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GliderVarioStatus.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/openEVario.Po@am__quote@
 
 .cpp.o:

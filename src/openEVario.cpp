@@ -11,6 +11,8 @@
 #include <random>
 #include <iostream>
 
+#include "GliderVarioStatus.h"
+
 using namespace std;
 
 mt19937 randomGenerator;
@@ -55,6 +57,7 @@ int i;
 	cout << "the sample variance of " << i*2 << " samples is " << sqrSum / double(i*2-1) << endl;
 	cout << "the sample standard deviation is " << sqrt (sqrSum / double(i*2-1)) << endl;
 
+	cout << "Size of status vector = " << static_cast<int>(GliderVarioStatus::NUM_ROWS)<<endl;
 
 	return 0;
 }
