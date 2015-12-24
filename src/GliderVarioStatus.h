@@ -1,4 +1,10 @@
-/** \file GliderVarioStatus.h
+/**
+ *  \file GliderVarioStatus.h
+ * File GliderVarioStatus.h
+ *
+ *  Created on: Dec 8, 2015
+ *      Author: hor
+ *
  * Defines the class GliderVarioStatus
  *
  */
@@ -9,21 +15,21 @@
 
 #include <Dense>
 
-/** \class GliderVarioStatus
+namespace openEV
+{
+
+// The global float type. Change this one to double, and the entire system will run in double.
+typedef float FloatType;
+typedef Eigen::Matrix<FloatType, 3, 1> Vector3DType;
+
+/**
+ *  \class GliderVarioStatus
  *
- * Definition of class
- *
- * File GliderVarioStatus.h
- *
- *  Created on: Dec 8, 2015
- *      Author: hor
- *
- * \class GliderVarioStatus
- * GliderVarioStatus manages the Kalman filter state x.
+ * \brief GliderVarioStatus manages the Kalman filter state x.
  *
  * The class defines the Kalman filter status x as a vector of floats or doubles. Each component of the
  * status vector is clearly identified by the index in the vector.
- * The indexes are enumerated in the @see StatusComponentIndex.
+ * The indexes are enumerated in the *StatusComponentIndex* enum.
  * The components and index enumerators of the status vector are as follows:
  *
  * Worldwide Position:
@@ -74,53 +80,109 @@
 class GliderVarioStatus
 {
 public:
-  GliderVarioStatus ();
-  virtual
-  ~GliderVarioStatus ();
 
-  typedef float StatusFloatType;
   /** \brief Index, i.e. positions of the status components in the status vector
    *
    * Enumeration of the components of the Kalman status vector x
    */
   enum StatusComponentIndex {
     /// Position and attitude
+
     STATUS_IND_LONGITUDE	,  ///< Longitude in deg. East
     STATUS_IND_LATITUDE  	,  ///< Latitude in deg North
     STATUS_IND_ALT_MSL   	,  ///< Altitude in m over Mean Sea Level
     STATUS_IND_YAW 		,  ///< Yaw angle in deg. right turn from true North
     STATUS_IND_PITCH		,  ///< Pitch angle in deg. nose up. Pitch is applied after yaw.
     STATUS_IND_ROLL		,  ///< Roll angle in deg. right. Roll is applied after yaw and pitch.
+
     /// Speeds and directions
+
     STATUS_IND_SPEED_GROUND	,  ///< Ground speed in m/s
     STATUS_IND_DIR_GROUND	,  ///< Direction over ground in deg. right turn from true North
     STATUS_IND_TAS		,  ///< True air speed in m/s relative to surrounding air.
     STATUS_IND_HEADING		,  ///< Heading of the plane in deg. right turn from true north. This is the flight direction relative to the surrounding air.
     STATUS_IND_RATE_OF_CLIMB	, ///< Rate of climb in m/s relative to the surrounding air
     STATUS_IND_VERTICAL_SPEED	, ///< Absolute vertical speed in m/s
+
     /// Accelerations in reference to the body coordinate system. Accelerations are on the axis of the *plane*.
     /// If the plane is pitched up an acceleation on the X axis would speed the plane upward, not forward.
+
     STATUS_IND_ACC_X		, ///< Acceleration in m/s^2 on the X axis of the plane
     STATUS_IND_ACC_Y		, ///< Acceleration in m/s^2 on the Y axis of the plane
     STATUS_IND_ACC_Z		, ///< Acceleration in m/s^2 on the Z axis of the plane
+
     /// Turn rates in reference to the body coordinate system
+
     STATUS_IND_ROTATION_X	, ///< Roll rate in deg/s to the right around the X axis
     STATUS_IND_ROTATION_Y	, ///< Pitch rate in deg/s nose up around the Y axis
     STATUS_IND_ROTATION_Z	, ///< Yaw (turn) rate in deg/s around the Z axis
+
     /// Derived values which improve the responsiveness of the Kalman filter. Some are also the true goals of the filter
-    STATUS_IND_GYRO_BIAS_X	, ///< Bias (0-offset) of the X axis gyro
-    STATUS_IND_GYRO_BIAS_Y	, ///< Bias (0-offset) of the Y axis gyro
-    STATUS_IND_GYRO_BIAS_Z	, ///< Bias (0-offset) of the Z axis gyro
+
+    STATUS_IND_GYRO_BIAS_X	, ///< Bias (0-offset) of the X axis gyro in eg/s
+    STATUS_IND_GYRO_BIAS_Y	, ///< Bias (0-offset) of the Y axis gyro in deg/s
+    STATUS_IND_GYRO_BIAS_Z	, ///< Bias (0-offset) of the Z axis gyro in deg/s
     STATUS_IND_WIND_SPEED	, ///< Wind speed in m/s
     STATUS_IND_WIND_DIR		, ///< Wind direction in deg. right turn from North.
 				      ///< The direction is the direction *from where* the wind blows.
     STATUS_IND_THERMAL_SPEED	, ///< The true reason for the whole exercise! :)
-    NUM_ROWS				///< The number of rows in the
+    NUM_ROWS				///< The number of rows in the vector
   };
 
+  typedef Eigen::Matrix<FloatType,NUM_ROWS,1> StatusVectorType; ///< Saves typing of the complex template type
+
+  GliderVarioStatus ();
+  virtual
+  ~GliderVarioStatus ();
+
+  StatusVectorType& getStatusVector() {
+    return statusVector;
+  }
+
+  // Here come all state vector elements as single references into the vector for easier access
+
+  // Position and attitude
+  FloatType& longitude = statusVector[ STATUS_IND_LONGITUDE	];  ///< Longitude in deg. East
+  FloatType& latitude = statusVector[ STATUS_IND_LATITUDE  	];  ///< Latitude in deg North
+  FloatType& altMSL = statusVector[ STATUS_IND_ALT_MSL   	];  ///< Altitude in m over Mean Sea Level
+  FloatType& yawAngle = statusVector[ STATUS_IND_YAW 		];  ///< Yaw angle in deg. right turn from true North
+  FloatType& pitchAngle = statusVector[ STATUS_IND_PITCH		];  ///< Pitch angle in deg. nose up. Pitch is applied after yaw.
+  FloatType& rollAngle = statusVector[ STATUS_IND_ROLL		];  ///< Roll angle in deg. right. Roll is applied after yaw and pitch.
+
+  // Speeds and directions
+  FloatType& groundSpeed = statusVector[ STATUS_IND_SPEED_GROUND	];  ///< Ground speed in m/s
+  FloatType& groundDirection = statusVector[ STATUS_IND_DIR_GROUND	];  ///< Direction over ground in deg. right turn from true North
+  FloatType& trueAirSpeed = statusVector[ STATUS_IND_TAS		];  ///< True air speed in m/s relative to surrounding air.
+  FloatType& heading = statusVector[ STATUS_IND_HEADING		];  ///< Heading of the plane in deg. right turn from true north. This is the flight direction relative to the surrounding air.
+  FloatType& rateOfClimb = statusVector[ STATUS_IND_RATE_OF_CLIMB	]; ///< Rate of climb in m/s relative to the surrounding air
+  FloatType& verticalSpeed = statusVector[ STATUS_IND_VERTICAL_SPEED	]; ///< Absolute vertical speed in m/s
+
+  // Accelerations in reference to the body coordinate system. Accelerations are on the axis of the *plane*.
+  // If the plane is pitched up an acceleation on the X axis would speed the plane upward, not forward.
+  FloatType& accelX = statusVector[ STATUS_IND_ACC_X		]; ///< Acceleration in m/s^2 on the X axis of the plane
+  FloatType& accelY = statusVector[ STATUS_IND_ACC_Y		]; ///< Acceleration in m/s^2 on the Y axis of the plane
+  FloatType& accelZ = statusVector[ STATUS_IND_ACC_Z		]; ///< Acceleration in m/s^2 on the Z axis of the plane
+
+  // Turn rates in reference to the body coordinate system
+  FloatType& rollRateX = statusVector[ STATUS_IND_ROTATION_X	]; ///< Roll rate in deg/s to the right around the X axis
+  FloatType& pitchRateY = statusVector[ STATUS_IND_ROTATION_Y	]; ///< Pitch rate in deg/s nose up around the Y axis
+  FloatType& yawRateZ = statusVector[ STATUS_IND_ROTATION_Z	]; ///< Yaw (turn) rate in deg/s around the Z axis
+
+  // Derived values which improve the responsiveness of the Kalman filter. Some are also the true goals of the filter
+  FloatType& gyroBiasX = statusVector[ STATUS_IND_GYRO_BIAS_X	]; ///< Bias (0-offset) of the X axis gyro in eg/s
+  FloatType& gyroBiasY = statusVector[ STATUS_IND_GYRO_BIAS_Y	]; ///< Bias (0-offset) of the Y axis gyro in deg/s
+  FloatType& gyroBiasZ = statusVector[ STATUS_IND_GYRO_BIAS_Z	]; ///< Bias (0-offset) of the Z axis gyro in deg/s
+  FloatType& windSpeed = statusVector[ STATUS_IND_WIND_SPEED	]; ///< Wind speed in m/s
+  FloatType& windDirection = statusVector[ STATUS_IND_WIND_DIR		]; ///< Wind direction in deg. right turn from North.
+				      ///< The direction is the direction *from where* the wind blows.
+  FloatType& thermalSpeed = statusVector[ STATUS_IND_THERMAL_SPEED	]; ///< The true reason for the whole exercise! :)
+
 protected:
-  Eigen::Matrix<StatusFloatType,NUM_ROWS,1> statusVector;
+  StatusVectorType statusVector;
+
 
 };
+
+} // namespace openEV
 
 #endif /* GLIDERVARIOSTATUS_H_ */

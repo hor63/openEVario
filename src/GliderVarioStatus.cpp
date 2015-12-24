@@ -8,6 +8,9 @@
 
 #include "GliderVarioStatus.h"
 
+namespace openEV
+{
+
 GliderVarioStatus::GliderVarioStatus ()
 {
   // TODO Auto-generated constructor stub
@@ -19,3 +22,4 @@ GliderVarioStatus::~GliderVarioStatus ()
   // TODO Auto-generated destructor stub
 }
 
+} // namespace openEV
