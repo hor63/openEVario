@@ -1,5 +1,5 @@
-/**
- *  \file GliderVarioStatus.h
+/*
+ * GliderVarioStatus.h
  * File GliderVarioStatus.h
  *
  *  Created on: Dec 8, 2015
@@ -18,8 +18,15 @@
 namespace openEV
 {
 
-// The global float type. Change this one to double, and the entire system will run in double.
+/**
+ * The global float type. Change this one to double, and the entire system will run in double.
+ * For optimal performance this should be *float*. Eigen can use the NEON unit for vectorized arithmetic.
+ */
 typedef float FloatType;
+
+/**
+ * This vector type is used for all 3-dimensional representations of values in Kartesian coodinates
+ */
 typedef Eigen::Matrix<FloatType, 3, 1> Vector3DType;
 
 /**
@@ -119,7 +126,7 @@ public:
 
     /// Derived values which improve the responsiveness of the Kalman filter. Some are also the true goals of the filter
 
-    STATUS_IND_GYRO_BIAS_X	, ///< Bias (0-offset) of the X axis gyro in eg/s
+    STATUS_IND_GYRO_BIAS_X	, ///< Bias (0-offset) of the X axis gyro in deg/s
     STATUS_IND_GYRO_BIAS_Y	, ///< Bias (0-offset) of the Y axis gyro in deg/s
     STATUS_IND_GYRO_BIAS_Z	, ///< Bias (0-offset) of the Z axis gyro in deg/s
     STATUS_IND_WIND_SPEED	, ///< Wind speed in m/s

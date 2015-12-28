@@ -1,5 +1,5 @@
-/**
- *  \file GliderVarioTransitionMatrix.h
+/*
+ *  GliderVarioTransitionMatrix.h
  *
  *  Created on: Dec 8, 2015
  *      Author: openvario
@@ -14,9 +14,9 @@ namespace openEV
 {
 
 /**
- *  \class GliderVarioTransitionMatrix
  * This is the transition matrix implementation of the Kalman filter.
- * The transition matrix is re-calculated before every update step because it depends on the elapsed interval.
+ * The transition matrix is re-calculated before every update step because it depends on the elapsed interval,
+ * and on the current attitude (i.e. heading pitch and roll affect the TAS vs speed and course over ground).
  */
 class GliderVarioTransitionMatrix
 {
@@ -32,7 +32,7 @@ public:
   ~GliderVarioTransitionMatrix ();
 
   TransitionMatrixType&
-  getTtransitionMatrix () {
+  getTransitionMatrix () {
     return transitionMatrix;
   }
 
@@ -41,7 +41,9 @@ public:
    * @param timeDiff Time since last update in seconds.
    */
   void
-  calcTransitionMatrix (FloatType timeDiff);
+  calcTransitionMatrix (
+      FloatType timeDiff,
+      GliderVarioStatus& lastStatus);
 
 protected:
   TransitionMatrixType transitionMatrix;

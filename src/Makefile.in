@@ -89,7 +89,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-bin_PROGRAMS = openEVario$(EXEEXT)
+bin_PROGRAMS = openEVario$(EXEEXT) genSineTables$(EXEEXT)
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -101,10 +101,14 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
+am_genSineTables_OBJECTS = genSineTables.$(OBJEXT)
+genSineTables_OBJECTS = $(am_genSineTables_OBJECTS)
+genSineTables_LDADD = $(LDADD)
 am_openEVario_OBJECTS = openEVario.$(OBJEXT) \
 	GliderVarioStatus.$(OBJEXT) \
 	GliderVarioTransitionMatrix.$(OBJEXT) RotationMatrix.$(OBJEXT) \
-	FastMath.$(OBJEXT) MeasureMatrix.$(OBJEXT)
+	FastMath.$(OBJEXT) FastMathSineTable.$(OBJEXT) \
+	MeasureMatrix.$(OBJEXT)
 openEVario_OBJECTS = $(am_openEVario_OBJECTS)
 openEVario_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -136,8 +140,8 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(openEVario_SOURCES)
-DIST_SOURCES = $(openEVario_SOURCES)
+SOURCES = $(genSineTables_SOURCES) $(openEVario_SOURCES)
+DIST_SOURCES = $(genSineTables_SOURCES) $(openEVario_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -285,7 +289,8 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-openEVario_SOURCES = openEVario.cpp GliderVarioStatus.cpp GliderVarioTransitionMatrix.cpp RotationMatrix.cpp FastMath.cpp MeasureMatrix.cpp
+openEVario_SOURCES = openEVario.cpp GliderVarioStatus.cpp GliderVarioTransitionMatrix.cpp RotationMatrix.cpp FastMath.cpp FastMathSineTable.cpp MeasureMatrix.cpp
+genSineTables_SOURCES = genSineTables.cpp
 AM_CXXFLAGS = "-I$(top_srcdir)/extern/eigen3.2.7/Eigen"
 all: all-am
 
@@ -363,6 +368,10 @@ uninstall-binPROGRAMS:
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 
+genSineTables$(EXEEXT): $(genSineTables_OBJECTS) $(genSineTables_DEPENDENCIES) $(EXTRA_genSineTables_DEPENDENCIES) 
+	@rm -f genSineTables$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(genSineTables_OBJECTS) $(genSineTables_LDADD) $(LIBS)
+
 openEVario$(EXEEXT): $(openEVario_OBJECTS) $(openEVario_DEPENDENCIES) $(EXTRA_openEVario_DEPENDENCIES) 
 	@rm -f openEVario$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(openEVario_OBJECTS) $(openEVario_LDADD) $(LIBS)
@@ -374,10 +383,12 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FastMath.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FastMathSineTable.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GliderVarioStatus.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GliderVarioTransitionMatrix.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MeasureMatrix.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RotationMatrix.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/genSineTables.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/openEVario.Po@am__quote@
 
 .cpp.o:
@@ -600,6 +611,9 @@ uninstall-am: uninstall-binPROGRAMS
 
 .PRECIOUS: Makefile
 
+
+FastMathSineTable.cpp: genSineTables
+	./genSineTables FastMathSineTable.cpp
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

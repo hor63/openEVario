@@ -10,12 +10,19 @@
 
 #include <random>
 #include <iostream>
+#include <math.h>
+#include <sys/time.h>
 
 #include "GliderVarioStatus.h"
+#include "RotationMatrix.h"
+#include "FastMath.h"
 
 using namespace std;
+using namespace openEV;
 
 mt19937 randomGenerator;
+
+FloatType x = 0;
 
 int main(void) {
   double U1,U2,V1,V2,S,polarFactor,X,Y	;
@@ -23,6 +30,47 @@ int main(void) {
   double range;
   double sqrSum = 0.0,sum = 0.0,absSum =0.0;
 int i;
+
+  // Test of fastMath.
+  FloatType j;
+  struct timeval tv1,tv2,tv3,tv4;
+
+  cout << "Start test sin" << endl;
+
+  gettimeofday(&tv1,NULL);
+  for (i=0;i<100000;i++) {
+      for (j=0.0;j<=360;j+=1.0){
+	  x = sin(j);
+      }
+  }
+  gettimeofday(&tv2,NULL);
+  cout << "End test sin" << endl;
+  cout << "36000000 sin calls took " << double(tv2.tv_sec-tv1.tv_sec)+double(tv2.tv_usec-tv1.tv_usec)/1000000000 << endl;
+  gettimeofday(&tv3,NULL);
+  for (i=0;i<100000;i++) {
+      for (j=0.0;j<=360;j+=1.0){
+	  x = FastMath::fastSin(j);
+      }
+  }
+  gettimeofday(&tv4,NULL);
+  cout << "End test fastSin" << endl;
+  cout << "36000000 fastSin calls took " << double(tv4.tv_sec-tv3.tv_sec)+double(tv4.tv_usec-tv3.tv_usec)/1000000000 << endl;
+  cout << endl;
+
+  // Test of rotation matrix
+  RotationMatrix rotMat (20.0f,0.0f,-30.0f);
+  Vector3DType worldRot (0.0f,0.0f,-18.0f);
+  Vector3DType planeRot;
+  rotMat.calcWorldVectorToPlaneVector(worldRot,planeRot);
+  cout << "-----------" << endl;
+  cout << "rotMatWorldToPlane = " << endl;
+  cout << rotMat.getMatrixGloToPlane() << endl;
+  cout << "-----------" << endl;
+  cout << "worldRot = " << endl;
+  cout << worldRot << endl;
+  cout << "-----------" << endl;
+  cout << "planeRot = " << endl;
+  cout << planeRot << endl;
 
 	min = randomGenerator.min();
 	range = double(randomGenerator.max()-randomGenerator.min());

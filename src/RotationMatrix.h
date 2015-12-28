@@ -52,8 +52,8 @@ public:
 		  FloatType pitch,
 		  FloatType roll) :
       yaw 	{ yaw },
-      roll	{ pitch },
-      pitch	{ roll },
+      roll	{ roll },
+      pitch	{ pitch },
       // lazy calculations
       matrixGloToPlaneIsValid { false },
       matrixPlaneToGloIsValid { false }
@@ -91,12 +91,47 @@ public:
     matrixPlaneToGloIsValid = false;
   }
 
+  /**
+   * Convert the plane vector into the world vector
+   *
+   * @param planeVector[in] The vector in plane coordinates
+   * @param worldVector[out] The vector in world coordinates
+   */
+  void calcPlaneVectorToWorldVector (const Vector3DType& planeVector,Vector3DType& worldVector){
+    calculateRotationMatrixPlaneToGlo ();
+    worldVector = matrixPlaneToGloIsValid * planeVector;
+  }
+
+  /**
+   * Convert the world vector into the plane vector
+   *
+   * @param worldVector[in] The vector in world coordinates
+   * @param planeVector[out] The vector in plane coordinates
+   */
+  void calcWorldVectorToPlaneVector (const Vector3DType& worldVector,Vector3DType& planeVector){
+    calculateRotationMatrixGloToPlane ();
+    planeVector = matrixGloToPlane * worldVector;
+  }
+
+  /// The rotation matrix from the global(world) coordinate system to the plane coordinate system.
+  inline RotationMatrixType& getMatrixGloToPlane() {
+    calculateRotationMatrixGloToPlane();
+    return matrixGloToPlane;
+  }
+  /// The rotation matrix from the global(world) coordinate system to the plane coordinate system.
+  inline RotationMatrixType& getMatrixPlaneToGlo() {
+    calculateRotationMatrixPlaneToGlo();
+    return matrixPlaneToGlo;
+  }
+
+
 protected:
   /// The rotation matrix from the global(world) coordinate system to the plane coordinate system.
   RotationMatrixType matrixGloToPlane;
-  bool matrixGloToPlaneIsValid;
   /// The rotation matrix from the global(world) coordinate system to the plane coordinate system.
   RotationMatrixType matrixPlaneToGlo;
+
+  bool matrixGloToPlaneIsValid;
   bool matrixPlaneToGloIsValid;
 
   // The angles.

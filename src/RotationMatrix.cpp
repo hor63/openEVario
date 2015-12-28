@@ -43,25 +43,25 @@ RotationMatrix::calculateRotationMatrixGloToPlane ()
   }
 
   // Calculate the sin and cos values from the angles beforehand because they occur multiple times in the matrix.
-  FloatType sinPsi	= FastMath::fastSin(yaw);
-  FloatType cosPsi	= FastMath::fastCos(yaw);
-  FloatType sinTheta	= FastMath::fastSin(pitch);
-  FloatType cosTheta	= FastMath::fastCos(pitch);
-  FloatType sinPhi	= FastMath::fastSin(roll);
-  FloatType cosPhi	= FastMath::fastCos(roll);
+  FloatType sinYaw	= FastMath::fastSin(yaw);
+  FloatType cosYaw	= FastMath::fastCos(yaw);
+  FloatType sinPitch	= FastMath::fastSin(pitch);
+  FloatType cosPitch	= FastMath::fastCos(pitch);
+  FloatType sinRoll	= FastMath::fastSin(roll);
+  FloatType cosRoll	= FastMath::fastCos(roll);
 
 
-  matrixGloToPlane(0,0) = cosTheta * cosPsi;
-  matrixGloToPlane(0,1) = cosTheta * sinPsi;
-  matrixGloToPlane(0,2) = -sinTheta;
+  matrixGloToPlane(0,0) = cosPitch * cosYaw;
+  matrixGloToPlane(0,1) = cosPitch * sinYaw;
+  matrixGloToPlane(0,2) = -sinPitch;
 
-  matrixGloToPlane(1,0) = sinPhi * sinTheta * cosPsi - cosPhi * sinPsi;
-  matrixGloToPlane(1,1) = sinPhi * sinTheta * sinPsi + cosPhi * cosPsi;
-  matrixGloToPlane(1,2) = sinPhi * cosTheta;
+  matrixGloToPlane(1,0) = sinRoll * sinPitch * cosYaw - cosRoll * sinYaw;
+  matrixGloToPlane(1,1) = sinRoll * sinPitch * sinYaw + cosRoll * cosYaw;
+  matrixGloToPlane(1,2) = sinRoll * cosPitch;
 
-  matrixGloToPlane(2,0) = cosPhi * sinTheta * cosPsi + sinPhi * sinPsi;
-  matrixGloToPlane(2,1) = cosPhi * sinTheta * sinPsi - sinPhi * cosPsi;
-  matrixGloToPlane(2,2) = cosPhi * cosTheta;
+  matrixGloToPlane(2,0) = cosRoll * sinPitch * cosYaw + sinRoll * sinYaw;
+  matrixGloToPlane(2,1) = cosRoll * sinPitch * sinYaw - sinRoll * cosYaw;
+  matrixGloToPlane(2,2) = cosRoll * cosPitch;
 
   matrixGloToPlaneIsValid = true;
   matrixPlaneToGloIsValid = false;
