@@ -13,7 +13,7 @@ namespace openEV
 
 GliderVarioStatus::GliderVarioStatus ()
 {
-  // TODO Auto-generated constructor stub
+  statusVector.setZero();
 
 }
 

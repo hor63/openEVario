@@ -26,7 +26,7 @@ public:
 
   GliderVarioTransitionMatrix () {
     // Set the matrix to 0. There will be a lot of 0s in the matrix.
-    transitionMatrix.Zero();
+    transitionMatrix.setZero();
   }
   virtual
   ~GliderVarioTransitionMatrix ();

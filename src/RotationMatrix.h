@@ -65,7 +65,7 @@ public:
   ~RotationMatrix ();
 
   /// set yaw angle \Psi. Invalidates the matrix.
-  void
+  inline void
   setYaw (FloatType yaw)
   {
     this->yaw = yaw;
@@ -73,8 +73,10 @@ public:
     matrixPlaneToGloIsValid = false;
   }
 
+  inline FloatType getYaw() {return yaw;}
+
   /// set pitch angle \Theta. Invalidates the matrix.
-  void
+  inline void
   setPitch (FloatType pitch)
   {
     this->pitch = pitch;
@@ -82,8 +84,10 @@ public:
     matrixPlaneToGloIsValid = false;
   }
 
+  inline FloatType getPitch() {return pitch;}
+
   /// set roll angle \Phi. Invalidates the matrix.
-  void
+  inline void
   setRoll (FloatType roll)
   {
     this->roll = roll;
@@ -91,7 +95,9 @@ public:
     matrixPlaneToGloIsValid = false;
   }
 
-  /**
+  inline FloatType getRoll() {return roll;}
+
+/**
    * Convert the plane vector into the world vector
    *
    * @param planeVector[in] The vector in plane coordinates

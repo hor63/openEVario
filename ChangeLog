@@ -1,5 +1,22 @@
 2016-01-06  Kai Horstmann  <horstmannkai@hotmail.com>
 
+	* src/GliderVarioStatus.cpp (GliderVarioStatus::GliderVarioStatus):
+		Constructor must set the matrix statusVector to 0.
+	* src/GliderVarioTransitionMatrix.cpp 	(GliderVarioTransitionMatrix::calcTransitionMatrix): 
+		Cleanup.
+		Latitude and Longitude length is not in meters. Length in meters is considered.
+		Gyro bias must be subtracted.
+		Thermal speed is difference between absolute vertical speed and sink rate relative to the air.
+	* src/GliderVarioTransitionMatrix.h (GliderVarioTransitionMatrix):
+		Constructor must use setZero(), not zero() to set the matrix itself to zero. 
+	* src/openEVario.cpp (main):
+		First tests added for transition matrix. 
+	* src/RotationMatrix.h 
+		Added getters for the Yaw, Pitch and Roll members.
+		Setters are explicitly inline. 
+		 
+2016-01-06  Kai Horstmann  <horstmannkai@hotmail.com>
+
 	* src/GliderVarioStatus.h (GliderVarioStatus):
 		Refactored ground speed and wind to cartesian North and East components instead of speed and direction.
 		Way easier to handle in the transition matrix :)     
