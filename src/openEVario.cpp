@@ -38,27 +38,27 @@ int i;
   cout << "Start test sin" << endl;
 
   gettimeofday(&tv1,NULL);
-  for (i=0;i<100000;i++) {
+  for (i=0;i<1000000;i++) {
       for (j=0.0;j<=360;j+=1.0){
 	  x = sin(j);
       }
   }
   gettimeofday(&tv2,NULL);
-  cout << "End test sin" << endl;
-  cout << "36000000 sin calls took " << double(tv2.tv_sec-tv1.tv_sec)+double(tv2.tv_usec-tv1.tv_usec)/1000000000 << endl;
+  cout << 1000000*360 << "End test sin" << endl;
+  cout << " sin calls took " << double(tv2.tv_sec-tv1.tv_sec)+double(tv2.tv_usec-tv1.tv_usec)/1000000000 << endl;
   gettimeofday(&tv3,NULL);
-  for (i=0;i<100000;i++) {
+  for (i=0;i<1000000;i++) {
       for (j=0.0;j<=360;j+=1.0){
 	  x = FastMath::fastSin(j);
       }
   }
   gettimeofday(&tv4,NULL);
   cout << "End test fastSin" << endl;
-  cout << "36000000 fastSin calls took " << double(tv4.tv_sec-tv3.tv_sec)+double(tv4.tv_usec-tv3.tv_usec)/1000000000 << endl;
+  cout << 1000000*360 << " fastSin calls took " << double(tv4.tv_sec-tv3.tv_sec)+double(tv4.tv_usec-tv3.tv_usec)/1000000000 << endl;
   cout << endl;
 
   // Test of rotation matrix
-  RotationMatrix rotMat (20.0f,0.0f,-30.0f);
+  RotationMatrix rotMat (30.0f,0.0f,-20.0f);
   Vector3DType worldRot (0.0f,0.0f,-18.0f);
   Vector3DType planeRot;
   rotMat.calcWorldVectorToPlaneVector(worldRot,planeRot);

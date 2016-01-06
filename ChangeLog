@@ -1,0 +1,10 @@
+2016-01-06  Kai Horstmann  <horstmannkai@hotmail.com>
+
+	* src/GliderVarioStatus.h (GliderVarioStatus):
+		Refactored ground speed and wind to cartesian North and East components instead of speed and direction.
+		Way easier to handle in the transition matrix :)     
+	* src/GliderVarioTransitionMatrix.cpp (GliderVarioTransitionMatrix::calcTransitionMatrix): 
+		Completed the transition matrix. TODO: Careful code review, and tests. 
+	* src/openEVario.cpp (main): 
+		10 fold number of FastMath::FastSin() runs for performance test.
+		Changed angles in rotation matrix test. 

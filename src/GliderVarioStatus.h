@@ -104,15 +104,15 @@ public:
 
     /// Speeds and directions
 
-    STATUS_IND_SPEED_GROUND	,  ///< Ground speed in m/s
-    STATUS_IND_DIR_GROUND	,  ///< Direction over ground in deg. right turn from true North
+    STATUS_IND_SPEED_GROUND_N	,  ///< Ground speed component North in m/s
+    STATUS_IND_SPEED_GROUND_E	,  ///< Ground speed component East in m/s
     STATUS_IND_TAS		,  ///< True air speed in m/s relative to surrounding air.
     STATUS_IND_HEADING		,  ///< Heading of the plane in deg. right turn from true north. This is the flight direction relative to the surrounding air.
-    STATUS_IND_RATE_OF_CLIMB	, ///< Rate of climb in m/s relative to the surrounding air
-    STATUS_IND_VERTICAL_SPEED	, ///< Absolute vertical speed in m/s
+    STATUS_IND_RATE_OF_SINK	, ///< Rate of sink in m/s relative to the surrounding air. Sink because the y axis points downward
+    STATUS_IND_VERTICAL_SPEED	, ///< Absolute vertical speed in m/s downward. Z axis is direction down.
 
     /// Accelerations in reference to the body coordinate system. Accelerations are on the axis of the *plane*.
-    /// If the plane is pitched up an acceleation on the X axis would speed the plane upward, not forward.
+    /// If the plane is pitched up an acceleration on the X axis would speed the plane upward, not forward.
 
     STATUS_IND_ACC_X		, ///< Acceleration in m/s^2 on the X axis of the plane
     STATUS_IND_ACC_Y		, ///< Acceleration in m/s^2 on the Y axis of the plane
@@ -129,8 +129,8 @@ public:
     STATUS_IND_GYRO_BIAS_X	, ///< Bias (0-offset) of the X axis gyro in deg/s
     STATUS_IND_GYRO_BIAS_Y	, ///< Bias (0-offset) of the Y axis gyro in deg/s
     STATUS_IND_GYRO_BIAS_Z	, ///< Bias (0-offset) of the Z axis gyro in deg/s
-    STATUS_IND_WIND_SPEED	, ///< Wind speed in m/s
-    STATUS_IND_WIND_DIR		, ///< Wind direction in deg. right turn from North.
+    STATUS_IND_WIND_SPEED_N	, ///< Wind speed North component in m/s
+    STATUS_IND_WIND_SPEED_E	, ///< Wind speed East component in m/s
 				      ///< The direction is the direction *from where* the wind blows.
     STATUS_IND_THERMAL_SPEED	, ///< The true reason for the whole exercise! :)
     NUM_ROWS				///< The number of rows in the vector
@@ -157,12 +157,12 @@ public:
   FloatType& rollAngle = statusVector[ STATUS_IND_ROLL		];  ///< Roll angle in deg. right. Roll is applied after yaw and pitch.
 
   // Speeds and directions
-  FloatType& groundSpeed = statusVector[ STATUS_IND_SPEED_GROUND	];  ///< Ground speed in m/s
-  FloatType& groundDirection = statusVector[ STATUS_IND_DIR_GROUND	];  ///< Direction over ground in deg. right turn from true North
+  FloatType& groundSpeedNorth = statusVector[ STATUS_IND_SPEED_GROUND_N	];  ///< Ground speed component North in m/s
+  FloatType& groundSpeedEast = statusVector[ STATUS_IND_SPEED_GROUND_E	];  ///< Ground speed component East in m/s
   FloatType& trueAirSpeed = statusVector[ STATUS_IND_TAS		];  ///< True air speed in m/s relative to surrounding air.
   FloatType& heading = statusVector[ STATUS_IND_HEADING		];  ///< Heading of the plane in deg. right turn from true north. This is the flight direction relative to the surrounding air.
-  FloatType& rateOfClimb = statusVector[ STATUS_IND_RATE_OF_CLIMB	]; ///< Rate of climb in m/s relative to the surrounding air
-  FloatType& verticalSpeed = statusVector[ STATUS_IND_VERTICAL_SPEED	]; ///< Absolute vertical speed in m/s
+  FloatType& rateOfSink = statusVector[ STATUS_IND_RATE_OF_SINK	]; ///< Rate of sink in m/s relative to the surrounding air. Sink because the Z axis points downward.
+  FloatType& verticalSpeed = statusVector[ STATUS_IND_VERTICAL_SPEED	]; ///< Absolute vertical speed in m/s downward. Z axis is downward.
 
   // Accelerations in reference to the body coordinate system. Accelerations are on the axis of the *plane*.
   // If the plane is pitched up an acceleation on the X axis would speed the plane upward, not forward.
@@ -176,11 +176,11 @@ public:
   FloatType& yawRateZ = statusVector[ STATUS_IND_ROTATION_Z	]; ///< Yaw (turn) rate in deg/s around the Z axis
 
   // Derived values which improve the responsiveness of the Kalman filter. Some are also the true goals of the filter
-  FloatType& gyroBiasX = statusVector[ STATUS_IND_GYRO_BIAS_X	]; ///< Bias (0-offset) of the X axis gyro in eg/s
+  FloatType& gyroBiasX = statusVector[ STATUS_IND_GYRO_BIAS_X	]; ///< Bias (0-offset) of the X axis gyro in deg/s
   FloatType& gyroBiasY = statusVector[ STATUS_IND_GYRO_BIAS_Y	]; ///< Bias (0-offset) of the Y axis gyro in deg/s
   FloatType& gyroBiasZ = statusVector[ STATUS_IND_GYRO_BIAS_Z	]; ///< Bias (0-offset) of the Z axis gyro in deg/s
-  FloatType& windSpeed = statusVector[ STATUS_IND_WIND_SPEED	]; ///< Wind speed in m/s
-  FloatType& windDirection = statusVector[ STATUS_IND_WIND_DIR		]; ///< Wind direction in deg. right turn from North.
+  FloatType& windSpeedNorth = statusVector[ STATUS_IND_WIND_SPEED_N	]; ///< Wind speed North component in m/s
+  FloatType& windSpeedEast = statusVector[ STATUS_IND_WIND_SPEED_E		]; ///< Wind speed East component in m/s
 				      ///< The direction is the direction *from where* the wind blows.
   FloatType& thermalSpeed = statusVector[ STATUS_IND_THERMAL_SPEED	]; ///< The true reason for the whole exercise! :)
 
