@@ -164,6 +164,19 @@ public:
     return statusVector;
   }
 
+  StatusVectorType const &getStatusVector() const {
+    return statusVector;
+  }
+
+  /**
+   * Updating the status may lead to wrap-around of angles. Here are the limits:
+   * -Pitch: 90 <= pitch <= 90; If you fly a looping and turn past perpendicular you essentially roll 180 deg, and reverse direction 180 deg
+   * -Roll: -180 <= roll < 180; 180 deg counts as -180
+   * -Yaw: 0<= yaw < 360; 360 deg counts as 0.
+   * Note that pitch must be normalized fist. It may flip roll and yaw around. Yaw and roll are independent from the other angles.
+   */
+  void normalizeAngles();
+
   // Here come all state vector elements as single references into the vector for easier access
 
   // Position and attitude

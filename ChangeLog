@@ -1,10 +1,23 @@
 2016-01-17  Kai Horstmann  <horstmannkai@hotmail.com>
 
+	* src/GliderVarioStatus.h, src/GliderVarioStatus.cpp :
+		Added method GliderVarioStatus::normalizeAngles
+	* src/GliderVarioTransitionMatrix.cpp (GliderVarioTransitionMatrix::calcTransitionMatrix):
+		lastStatus is constant.
+		Kick the GRAVITY correction out of the matrix factors. That was plain wrong
+	* src/GliderVarioTransitionMatrix.h 
+		Move constant GRAVITY here from src/GliderVarioTransitionMatrix.cpp. 
+	(GliderVarioTransitionMatrix::updateStatus): 
+		Added method. Calculate a newStatus from the oldStatus extrapolating for a timeDiff.
+		Here the GRAVITY correction is applied. Gravity always pulls down in direction of Z axis in steady state.  
+	* src/openEVario.cpp (main): 
+		Refined tests for GliderVarioTransitionMatrix
+		Added tests for GliderVarioStatus::normalizeAngles.
+	
 	* All
 	Added copying license.
 	The entire program is licensed under GNU GPL v2 
-
-
+	
 2016-01-17  Kai Horstmann  <horstmannkai@hotmail.com>
 
 	* src/GliderVarioStatus.h, 

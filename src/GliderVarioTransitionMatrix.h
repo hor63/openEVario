@@ -32,6 +32,17 @@ namespace openEV
 {
 
 /**
+ * Constant of gravity acceleration.
+ * exact values for Germany can be obtained from the German gravity base mesh
+ * Deutsches Schweregrundnetz 1994 (DSGN 94)
+ * \ref http://www.bkg.bund.de/nn_175464/SharedDocs/Download/DE-Dok/DSGN94-Punktbeschreibung-PDF-de,templateId=raw,property=publicationFile.pdf/DSGN94-Punktbeschreibung-PDF-de.pdf
+ * The constant here is a rough average between Hamburg and Munich (I live in Norther Germany).
+ * Since a Kalman filter is not exact numeric science any inaccuracy should be covered by the process variance.
+ */
+static FloatType constexpr GRAVITY = 9.81;
+
+
+/**
  * This is the transition matrix implementation of the Kalman filter.
  * The transition matrix is re-calculated before every update step because it depends on the elapsed interval,
  * and on the current attitude (i.e. heading pitch and roll affect the TAS vs speed and course over ground).
@@ -56,12 +67,36 @@ public:
 
   /**
    * Recalculates the transition matrix. Only active coefficients are recalculated. All other coefficients are supposed to be 0 as they were set at construction time.
-   * @param timeDiff Time since last update in seconds.
+   * @param[in] timeDiff Time since last update in seconds.
    */
   void
   calcTransitionMatrix (
       FloatType timeDiff,
-      GliderVarioStatus& lastStatus);
+      GliderVarioStatus const &lastStatus);
+
+
+  /**
+   * Extrapolates the newStatus from the oldStatus after timeDiff seconds.
+   * internally recalculates the transition matrix.
+   *
+   * @param[in] oldStatus Last known status
+   * @param[out] newStatus New status by extrapolation after timeDiff seconds
+   * @param[in] timeDiff The time difference in seconds
+   */
+  inline void
+  updateStatus (
+		  GliderVarioStatus const &oldStatus ,
+		  GliderVarioStatus &newStatus,
+		  FloatType timeDiff
+		  ){
+	  calcTransitionMatrix(timeDiff,oldStatus);
+	  newStatus.getStatusVector() = transitionMatrix * oldStatus.getStatusVector();
+	  // correct for the gravity
+	  newStatus.verticalSpeed += openEV::GRAVITY*0.1;
+	  newStatus.altMSL -= openEV::GRAVITY * 0.1*0.1 / 2.0;
+
+  }
+
 
 protected:
   TransitionMatrixType transitionMatrix;

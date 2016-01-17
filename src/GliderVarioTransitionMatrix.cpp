@@ -32,16 +32,6 @@ namespace openEV
 {
 
   /**
-   * Constant of gravity acceleration.
-   * exact values for Germany can be obtained from the German gravity base mesh
-   * Deutsches Schweregrundnetz 1994 (DSGN 94)
-   * \ref http://www.bkg.bund.de/nn_175464/SharedDocs/Download/DE-Dok/DSGN94-Punktbeschreibung-PDF-de,templateId=raw,property=publicationFile.pdf/DSGN94-Punktbeschreibung-PDF-de.pdf
-   * The constant here is a rough average between Hamburg and Munich (I live in Norther Germany).
-   * Since a Kalman filter is not exact numeric science any inaccuracy should be covered by the process variance.
-   */
-  FloatType constexpr GRAVITY = 9.81;
-
-  /**
    * The rough length of a degree latitude in meter at 45deg North.
    * \ref https://en.wikipedia.org/wiki/Longitude#Noting_and_calculating_longitude
    */
@@ -55,7 +45,7 @@ GliderVarioTransitionMatrix::~GliderVarioTransitionMatrix ()
 void
 GliderVarioTransitionMatrix::calcTransitionMatrix (
     FloatType timeDiff,
-    GliderVarioStatus& lastStatus)
+    GliderVarioStatus const &lastStatus)
 {
   // I need the square of the time multiple times when calculating distance from acceleration
   FloatType timeDiffSquare = timeDiff * timeDiff;
@@ -95,9 +85,9 @@ GliderVarioTransitionMatrix::calcTransitionMatrix (
   transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ALT_MSL) = 1;
   transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_VERTICAL_SPEED) = -timeDiff;
 
-  transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ACC_X) = -timeSquareHalf* (rotMatrixPlaneToWorld(2,0) + GRAVITY*rotMatrixWorldToPlane(2,0));
-  transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ACC_Y) = -timeSquareHalf* (rotMatrixPlaneToWorld(2,1) + GRAVITY*rotMatrixWorldToPlane(2,1));
-  transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ACC_Z) = -timeSquareHalf* (rotMatrixPlaneToWorld(2,2) + GRAVITY*rotMatrixWorldToPlane(2,2));
+  transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ACC_X) = -timeSquareHalf* (rotMatrixPlaneToWorld(2,0));
+  transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ACC_Y) = -timeSquareHalf* (rotMatrixPlaneToWorld(2,1));
+  transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ACC_Z) = -timeSquareHalf* (rotMatrixPlaneToWorld(2,2));
 
 
   //--STATUS_IND_YAW------------------------------------------------------------------------------------
@@ -185,9 +175,9 @@ GliderVarioTransitionMatrix::calcTransitionMatrix (
   //--STATUS_IND_VERTICAL_SPEED------------------------------------------------------------------------------------
   transitionMatrix(GliderVarioStatus::STATUS_IND_VERTICAL_SPEED,GliderVarioStatus::STATUS_IND_VERTICAL_SPEED) = 1;
 
-  transitionMatrix(GliderVarioStatus::STATUS_IND_VERTICAL_SPEED,GliderVarioStatus::STATUS_IND_ACC_X) = timeDiff * (rotMatrixPlaneToWorld(2,0) + GRAVITY*rotMatrixWorldToPlane(2,0));
-  transitionMatrix(GliderVarioStatus::STATUS_IND_VERTICAL_SPEED,GliderVarioStatus::STATUS_IND_ACC_Y) = timeDiff * (rotMatrixPlaneToWorld(2,1) + GRAVITY*rotMatrixWorldToPlane(2,1));
-  transitionMatrix(GliderVarioStatus::STATUS_IND_VERTICAL_SPEED,GliderVarioStatus::STATUS_IND_ACC_Z) = timeDiff * (rotMatrixPlaneToWorld(2,2) + GRAVITY*rotMatrixWorldToPlane(2,2));
+  transitionMatrix(GliderVarioStatus::STATUS_IND_VERTICAL_SPEED,GliderVarioStatus::STATUS_IND_ACC_X) = timeDiff * rotMatrixPlaneToWorld(2,0);
+  transitionMatrix(GliderVarioStatus::STATUS_IND_VERTICAL_SPEED,GliderVarioStatus::STATUS_IND_ACC_Y) = timeDiff * rotMatrixPlaneToWorld(2,1);
+  transitionMatrix(GliderVarioStatus::STATUS_IND_VERTICAL_SPEED,GliderVarioStatus::STATUS_IND_ACC_Z) = timeDiff * rotMatrixPlaneToWorld(2,2);
 
 
   // Now some measured values which will not propagate time based changes, but which are only defined by the measurements

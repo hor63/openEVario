@@ -41,6 +41,100 @@ GliderVarioStatus::~GliderVarioStatus ()
   // TODO Auto-generated destructor stub
 }
 
+void GliderVarioStatus::normalizeAngles() {
+
+	  if (pitchAngle < -90.0f) {
+		  if (pitchAngle < -360.0f) {
+			  do {
+				  pitchAngle += 360.0f;
+			  } while (pitchAngle < -360.0f);
+			  // pitch angle can now be anywhere between 0 and -360
+			  // Therefore do it again recursively.
+			  return normalizeAngles();
+		  } // if (pitchAngle < -360.0f)
+		  if (pitchAngle <= -180.0f) {
+			  // I am at an upward pointing angle
+			  pitchAngle += 360.0f;
+		  } else { // if (pitchAngle <= -180.0f)
+			  /* I am between -90 and -180 deg, i.e. positive looping beyond perpendicular
+			   * i.e. I am flipping direction and roll, and bring pitch back into the 1st quadrant
+			   */
+			  pitchAngle = -180.0f - pitchAngle;
+			  rollAngle += 180.0f;
+			  yawAngle += 180.0f;
+		  } // if (pitchAngle <= -180.0f)
+
+	  } // if (pitchAngle < -90.0f)
+
+	  if (pitchAngle > 90.0f) {
+		  if (pitchAngle >= 360.0f) {
+			  do {
+				  pitchAngle -= 360.0f;
+			  } while (pitchAngle >= 360.0f);
+			  // pitch angle can now be anywhere between 0 and +360
+			  // Therefore do it again recursively.
+			  return normalizeAngles();
+		  } // if (pitchAngle > 360.0f)
+		  if (pitchAngle > 180.0f) {
+			  pitchAngle -= 360.0f;
+			  /* Pitch angle is negative now, and between -0 and -180. I deal with that above. Ugh.
+			   * So I call myself recursively
+			   */
+			  return normalizeAngles();
+		  } else { // if (pitchAngle > 180.0f)
+			  /* I am between 90 and 180 deg, i.e. looping beyond perpendicular
+			   * i.e. I am flipping direction and roll, and bring pitch back into the 1st quadrant
+			   */
+			  pitchAngle = 180.0f - pitchAngle;
+			  rollAngle += 180.0f;
+			  yawAngle += 180.0f;
+		  } // if (pitchAngle > 180.0f)
+	  } // if (pitchAngle > 90.0f)
+
+	  // roll and yaw are easier: They are independent from the others :)
+	  if (rollAngle < -180.0f) {
+
+		  if (rollAngle >= -360.0f) {
+			  // This is the normal case
+			  rollAngle += 360.0f;
+		  } else { // if (rollAngle >= -360.0f)
+			  // This should actually happen very rarely if at all...
+			  do {
+			  rollAngle += 360.0f;
+			  } while (rollAngle < -360.0f);
+
+			  if (rollAngle < -180.0f) {
+				  rollAngle += 360.0f;
+			  }
+		  } // if (rollAngle >= -360.0f)
+	  } // if (rollAngle < -180.0f)
+	  if (rollAngle >= 180.0f) {
+
+		  if (rollAngle <= 360.0f) {
+			  // This is the normal case
+			  rollAngle -= 360.0f;
+		  } else { // if (rollAngle >= -360.0f)
+			  // This should actually happen very rarely if at all...
+			  do {
+			  rollAngle -= 360.0f;
+			  } while (rollAngle > 360.0f);
+
+			  if (rollAngle >= 180.0f) {
+				  rollAngle -= 360.0f;
+			  }
+		  } // if (rollAngle >= -360.0f)
+	  } // if (rollAngle < -180.0f)
+
+	  while (yawAngle < 0.0f) {
+		  yawAngle += 360.0f;
+	  }
+	  while (yawAngle >= 360.0f) {
+		  yawAngle -= 360.0f;
+	  }
+
+}
+
+
 } // namespace openEV
 
 std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
