@@ -1,3 +1,16 @@
+2016-01-17  Kai Horstmann  <horstmannkai@hotmail.com>
+
+	* src/GliderVarioStatus.h, 
+	* src/GliderVarioStatus.cpp (operator <<):
+	Operator << for class GliderVarioStatus:
+    Output of the vector in one header line with names of fields, and one line
+    with fixed length values aligned with the header line 
+	* src/GliderVarioTransitionMatrix.cpp (GliderVarioTransitionMatrix::calcTransitionMatrix):
+	Added gravity correction: -1g in Z direction (one g UP) means steady state for vertical speed, and position. 
+	* src/openEVario.cpp (main): 
+	Test data is a steady circle whithout acceleration along the X axis. Using the new output operator
+	for class GliderVarioStatus
+	 
 2016-01-06  Kai Horstmann  <horstmannkai@hotmail.com>
 
 	* src/GliderVarioStatus.cpp (GliderVarioStatus::GliderVarioStatus):
