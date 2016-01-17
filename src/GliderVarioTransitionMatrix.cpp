@@ -45,6 +45,7 @@ GliderVarioTransitionMatrix::calcTransitionMatrix (
   // I need a conversion from the plane coordinates into the world coordinates
   RotationMatrix rotMatrix (lastStatus.yawAngle,lastStatus.pitchAngle,lastStatus.rollAngle);
   RotationMatrix::RotationMatrixType &rotMatrixPlaneToWorld = rotMatrix.getMatrixPlaneToGlo();
+  RotationMatrix::RotationMatrixType &rotMatrixWorldToPlane = rotMatrix.getMatrixGloToPlane();
   FloatType lenDegLongitude = 1852.0 * FastMath::fastCos(lastStatus.latitude);
   // I need half of time square for distance calculations based on acceleration here and there :)
   FloatType timeSquareHalf  = timeDiff*timeDiff / 2.0f;
@@ -76,9 +77,9 @@ GliderVarioTransitionMatrix::calcTransitionMatrix (
   transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ALT_MSL) = 1;
   transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_VERTICAL_SPEED) = -timeDiff;
 
-  transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ACC_X) = -timeSquareHalf*rotMatrixPlaneToWorld(2,0);
-  transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ACC_Y) = -timeSquareHalf*rotMatrixPlaneToWorld(2,1);
-  transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ACC_Z) = -timeSquareHalf*rotMatrixPlaneToWorld(2,2);
+  transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ACC_X) = -timeSquareHalf* (rotMatrixPlaneToWorld(2,0) + GRAVITY*rotMatrixWorldToPlane(2,0));
+  transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ACC_Y) = -timeSquareHalf* (rotMatrixPlaneToWorld(2,1) + GRAVITY*rotMatrixWorldToPlane(2,1));
+  transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ACC_Z) = -timeSquareHalf* (rotMatrixPlaneToWorld(2,2) + GRAVITY*rotMatrixWorldToPlane(2,2));
 
 
   //--STATUS_IND_YAW------------------------------------------------------------------------------------
@@ -166,9 +167,9 @@ GliderVarioTransitionMatrix::calcTransitionMatrix (
   //--STATUS_IND_VERTICAL_SPEED------------------------------------------------------------------------------------
   transitionMatrix(GliderVarioStatus::STATUS_IND_VERTICAL_SPEED,GliderVarioStatus::STATUS_IND_VERTICAL_SPEED) = 1;
 
-  transitionMatrix(GliderVarioStatus::STATUS_IND_VERTICAL_SPEED,GliderVarioStatus::STATUS_IND_ACC_X) = timeDiff * rotMatrixPlaneToWorld(2,0);
-  transitionMatrix(GliderVarioStatus::STATUS_IND_VERTICAL_SPEED,GliderVarioStatus::STATUS_IND_ACC_Y) = timeDiff * rotMatrixPlaneToWorld(2,1);
-  transitionMatrix(GliderVarioStatus::STATUS_IND_VERTICAL_SPEED,GliderVarioStatus::STATUS_IND_ACC_Z) = timeDiff * rotMatrixPlaneToWorld(2,2);
+  transitionMatrix(GliderVarioStatus::STATUS_IND_VERTICAL_SPEED,GliderVarioStatus::STATUS_IND_ACC_X) = timeDiff * (rotMatrixPlaneToWorld(2,0) + GRAVITY*rotMatrixWorldToPlane(2,0));
+  transitionMatrix(GliderVarioStatus::STATUS_IND_VERTICAL_SPEED,GliderVarioStatus::STATUS_IND_ACC_Y) = timeDiff * (rotMatrixPlaneToWorld(2,1) + GRAVITY*rotMatrixWorldToPlane(2,1));
+  transitionMatrix(GliderVarioStatus::STATUS_IND_VERTICAL_SPEED,GliderVarioStatus::STATUS_IND_ACC_Z) = timeDiff * (rotMatrixPlaneToWorld(2,2) + GRAVITY*rotMatrixWorldToPlane(2,2));
 
 
   // Now some measured values which will not propagate time based changes, but which are only defined by the measurements
