@@ -40,9 +40,6 @@ int i;
 
   cout << "Start test sin" << endl;
 
-  cout << std::fixed;
-  cout.precision(5);
-  cout.width(12);
 
   gettimeofday(&tv1,NULL);
   for (i=0;i<100000;i++) {
@@ -100,9 +97,9 @@ int i;
 
   // Accelerations in reference to the body coordinate system. Accelerations are on the axis of the *plane*.
   // If the plane is pitched up an acceleration on the X axis would speed the plane upward, not forward.
-  ovStatus.accelX = -0.5f;
+  ovStatus.accelX = 0.0f;
   ovStatus.accelY = 0.0f;
-  ovStatus.accelZ = 9.81/cos(ovStatus.rollAngle);
+  ovStatus.accelZ = -9.81/FastMath::fastCos(ovStatus.rollAngle);
 
   // Turn rates in reference to the body coordinate system
   ovStatus.rollRateX = 0.0f;
@@ -145,16 +142,16 @@ int i;
   ovStatus.windSpeedEast = 0.0f;
   ovStatus.thermalSpeed = 0.0f;
 
-  cout << "-- ovStatus T = " << endl << ovStatus.getStatusVector().transpose(); cout << endl;
+  cout << "-- ovStatus T = " << endl << ovStatus;
 
   ovTransition.calcTransitionMatrix(0.1,ovStatus);
   cout << "-- ovTransition = " << endl << ovTransition.getTransitionMatrix() << endl;
   ovStatus.getStatusVector() = ovTransition.getTransitionMatrix() * ovStatus.getStatusVector();
-  cout << "-- ovStatus after 0.25 sec = " << endl << ovStatus.getStatusVector().transpose(); cout << endl;
+  cout << "-- ovStatus after 0.1 sec = " << endl << ovStatus;
   for (i = 0; i< 20; i++) {
 	  ovTransition.calcTransitionMatrix(0.1,ovStatus);
 	  ovStatus.getStatusVector() = ovTransition.getTransitionMatrix() * ovStatus.getStatusVector();
-	  cout << "-- ovStatus after 0.1 sec = " << endl << ovStatus.getStatusVector().transpose(); cout << endl;
+	  cout << ovStatus;
 
   }
 
