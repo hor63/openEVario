@@ -1,5 +1,12 @@
 2016-01-17  Kai Horstmann  <horstmannkai@hotmail.com>
 
+	* All
+	Added copying license.
+	The entire program is licensed under GNU GPL v2 
+
+
+2016-01-17  Kai Horstmann  <horstmannkai@hotmail.com>
+
 	* src/GliderVarioStatus.h, 
 	* src/GliderVarioStatus.cpp (operator <<):
 	Operator << for class GliderVarioStatus:

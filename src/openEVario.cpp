@@ -1,11 +1,28 @@
 /*
- ============================================================================
- Name        : openEVario.cpp
- Author      : 
- Version     :
- Copyright   : Your copyright notice
- Description : Hello World in C++,
- ============================================================================
+ *  openEVario.cpp
+ *
+ *  start module. Contains the main() function. Startup, initialization, and start of the main loop.
+ *
+ *  Created on: Dec 08, 2015
+ *      Author: hor
+ *
+ *   This file is part of openEVario, an electronic variometer for glider planes
+ *   Copyright (C) 2016  Kai Horstmann
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License along
+ *   with this program; if not, write to the Free Software Foundation, Inc.,
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
  */
 
 #include <random>
@@ -25,7 +42,16 @@ mt19937 randomGenerator;
 
 FloatType x = 0;
 
-int main(void) {
+/**
+ * \brief The one and only main() function
+ * Startup and intialization. Demonization if required. Entry into the main processing loop.
+ * @param argc
+ * @param argv
+ * @return
+ *
+ * TODO remove all the test code, and replace it by real application code.
+ */
+int main (int argc, char *argv[]) {
   double U1,U2,V1,V2,S,polarFactor,X,Y	;
   mt19937::result_type min;
   double range;
