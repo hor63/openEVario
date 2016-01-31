@@ -151,10 +151,10 @@ public:
     STATUS_IND_WIND_SPEED_E	, ///< Wind speed East component in m/s
 				      ///< The direction is the direction *from where* the wind blows.
     STATUS_IND_THERMAL_SPEED	, ///< The true reason for the whole exercise! :)
-    NUM_ROWS				///< The number of rows in the vector
+    STATUS_NUM_ROWS				///< The number of rows in the vector
   };
 
-  typedef Eigen::Matrix<FloatType,NUM_ROWS,1> StatusVectorType; ///< Saves typing of the complex template type
+  typedef Eigen::Matrix<FloatType,STATUS_NUM_ROWS,1> StatusVectorType; ///< Saves typing of the complex template type
 
   GliderVarioStatus ();
   virtual

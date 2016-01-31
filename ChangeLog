@@ -1,3 +1,19 @@
+2016-01-31  Kai Horstmann  <horstmannkai@hotmail.com>
+
+	* src/GliderVarioMeasurementVector.cpp: New file.
+	* src/GliderVarioMeasurementVector.h: New file.
+	* src/GliderVarioMeasurementVector_test.cpp: New file.
+		New class GliderVarioMeasurementVector. This vector represents measurement values from the various sensors.
+	* .autotools: 
+	* .cproject: 
+		Set debug flag for invoking autotools configure.
+	* src/GliderVarioStatus.h (GliderVarioStatus): 
+	* src/GliderVarioTransitionMatrix.h (GliderVarioTransitionMatrix):
+		Refactor NUM_ROWS to STATUS_NUM_ROWS 
+	* src/Makefile.am: 
+	* src/Makefile.in:
+		Add GliderVarioMeasurementVector.cpp  
+	
 2016-01-17  Kai Horstmann  <horstmannkai@hotmail.com>
 
 	* src/GliderVarioStatus.h, src/GliderVarioStatus.cpp :

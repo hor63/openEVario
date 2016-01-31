@@ -34,6 +34,7 @@
 #include "GliderVarioTransitionMatrix.h"
 #include "RotationMatrix.h"
 #include "FastMath.h"
+#include "GliderVarioMeasurementVector.h"
 
 using namespace std;
 using namespace openEV;
@@ -299,7 +300,7 @@ int i;
 	cout << "the sample variance of " << i*2 << " samples is " << sqrSum / double(i*2-1) << endl;
 	cout << "the sample standard deviation is " << sqrt (sqrSum / double(i*2-1)) << endl;
 
-	cout << "Size of status vector = " << static_cast<int>(openEV::GliderVarioStatus::NUM_ROWS)<<endl;
+	cout << "Size of status vector = " << static_cast<int>(openEV::GliderVarioStatus::STATUS_NUM_ROWS)<<endl;
 
 	return 0;
 }

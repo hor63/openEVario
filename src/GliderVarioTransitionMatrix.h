@@ -50,7 +50,7 @@ static FloatType constexpr GRAVITY = 9.81;
 class GliderVarioTransitionMatrix
 {
 public:
-  typedef Eigen::Matrix<FloatType,GliderVarioStatus::NUM_ROWS,GliderVarioStatus::NUM_ROWS> TransitionMatrixType;
+  typedef Eigen::Matrix<FloatType,GliderVarioStatus::STATUS_NUM_ROWS,GliderVarioStatus::STATUS_NUM_ROWS> TransitionMatrixType;
 
 
   GliderVarioTransitionMatrix () {
