@@ -1,3 +1,7 @@
+
+#Local Eclipse stuff
+.settings
+
 #Generated stuff
 Makefile
 *.log
