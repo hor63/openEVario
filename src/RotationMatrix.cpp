@@ -32,7 +32,7 @@ namespace openEV
 
 RotationMatrix::~RotationMatrix ()
 {
-  // TODO Auto-generated destructor stub
+
 }
 
 /**

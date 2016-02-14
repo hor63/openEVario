@@ -38,7 +38,7 @@ GliderVarioStatus::GliderVarioStatus ()
 
 GliderVarioStatus::~GliderVarioStatus ()
 {
-  // TODO Auto-generated destructor stub
+
 }
 
 void GliderVarioStatus::normalizeAngles() {

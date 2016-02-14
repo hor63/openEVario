@@ -39,7 +39,7 @@ namespace openEV
 
 GliderVarioTransitionMatrix::~GliderVarioTransitionMatrix ()
 {
-  // TODO Auto-generated destructor stub
+
 }
 
 void

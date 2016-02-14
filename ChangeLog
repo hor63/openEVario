@@ -1,3 +1,30 @@
+2016-02-14  Kai Horstmann  <horstmannkai@hotmail.com>
+
+	* src/GliderVarioMeasurementMatrix.cpp: New file.
+	* src/GliderVarioMeasurementMatrix.h: New file.
+	* src/GliderVarioMeasurementMatrix_test.cpp: New file.
+		Calculation of measurement values from current status
+	* src/GliderVarioMeasurementVector.h (GliderVarioMeasurementVector):
+		Access to constant vector member 
+	* src/GliderVarioTransitionMatrix.h (GliderVarioTransitionMatrix): 
+		All parameters in Doxy comment
+	* src/openEVario.cpp (main):
+		Initial test for multiplication of status vector with measurement matrix to the measure ment vector 
+	* src/Makefile.am: 
+	* src/Makefile.in:
+		Added new source. 
+
+	(GliderVarioTransitionMatrix::~GliderVarioTransitionMatrix): 
+	(FastMath::FastMath): 
+	(FastMath::~FastMath): 
+	(MeasureMatrix::MeasureMatrix): 
+	(MeasureMatrix::~MeasureMatrix): 
+	(GliderVarioMeasurementVector::~GliderVarioMeasurementVector): 
+	(GliderVarioStatus::~GliderVarioStatus): 
+	(~MeasureMatrix): 
+	(RotationMatrix::~RotationMatrix):
+		Removed TODO from otherwise empty constructor and destructor stubs.
+		 
 2016-01-31  Kai Horstmann  <horstmannkai@hotmail.com>
 
 	* src/GliderVarioMeasurementVector.cpp: New file.
