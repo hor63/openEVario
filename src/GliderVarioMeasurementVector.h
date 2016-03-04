@@ -52,7 +52,7 @@ public:
 		MEASURE_IND_GPS_LON, ///< Longitude in Deg
 		MEASURE_IND_GPS_ALTMSL, ///< Altitude MSL in m
 		MEASURE_IND_GPS_HEADING, ///< Heading in Deg
-		MEASURE_IND_GPS_SPEED, ///< Speed in m/s
+		MEASURE_IND_GPS_SPEED, ///< Speed in knots
 
 		// Accelerometer
 		MEASURE_IND_ACC_X, ///< Acceleration along the X axis in m/s^2
@@ -83,7 +83,7 @@ public:
 	FloatType &gpsLongitude = measureVector [MEASURE_IND_GPS_LON]; ///< Longitude in Deg
 	FloatType &gpsMSL = measureVector [MEASURE_IND_GPS_ALTMSL]; ///< Altitude MSL in m
 	FloatType &gpsHeading = measureVector [MEASURE_IND_GPS_HEADING]; ///< Heading in Deg
-	FloatType &gpsSpeed = measureVector [MEASURE_IND_GPS_SPEED]; ///< Speed in m/s
+	FloatType &gpsSpeed = measureVector [MEASURE_IND_GPS_SPEED]; ///< Speed in knots
 
 	// Accelerometer
 	FloatType &accelX = measureVector [MEASURE_IND_ACC_X]; ///< Acceleration along the X axis in m/s^2
@@ -103,6 +103,10 @@ public:
 	// Air pressure values (converted because raw values are highly non-linear to speed and altitude
 	FloatType &pressAlt = measureVector [MEASURE_IND_PRESS_ALT]; ///< pressure altitude in MSL
 	FloatType &trueAirSpeed = measureVector [MEASURE_IND_TAS];       ///< True air speed (based on difference pressure and air density based on absolute pressure) in m/s
+
+	MeasureVectorType const getMeasureVector() const {
+		return measureVector;
+	}
 
 protected:
 	MeasureVectorType measureVector; ///< holder of the vector

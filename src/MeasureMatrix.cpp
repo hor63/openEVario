@@ -30,13 +30,13 @@ namespace openEV
 
   MeasureMatrix::MeasureMatrix ()
   {
-    // TODO Auto-generated constructor stub
+
 
   }
 
   MeasureMatrix::~MeasureMatrix ()
   {
-    // TODO Auto-generated destructor stub
+
   }
 
 } /* namespace openEV */

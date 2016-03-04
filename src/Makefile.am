@@ -19,7 +19,7 @@
 bin_PROGRAMS=openEVario$(EXEEXT)
 noinst_PROGRAMS=genSineTables$(EXEEXT)
 openEVario_SOURCES=openEVario.cpp GliderVarioStatus.cpp GliderVarioTransitionMatrix.cpp RotationMatrix.cpp FastMath.cpp FastMathSineTable.cpp MeasureMatrix.cpp \
- GliderVarioMeasurementVector.cpp
+ GliderVarioMeasurementVector.cpp GliderVarioMeasurementMatrix.cpp
 
 genSineTables_SOURCES=genSineTables.cpp
 

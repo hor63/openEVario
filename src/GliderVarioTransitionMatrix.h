@@ -68,6 +68,7 @@ public:
   /**
    * Recalculates the transition matrix. Only active coefficients are recalculated. All other coefficients are supposed to be 0 as they were set at construction time.
    * @param[in] timeDiff Time since last update in seconds.
+   * @param[in] lastStatus Most recent status vector. Used to convert world into local coordinates.
    */
   void
   calcTransitionMatrix (

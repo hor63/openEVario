@@ -30,13 +30,12 @@ namespace openEV
 
 FastMath::FastMath ()
 {
-  // TODO Auto-generated constructor stub
 
 }
 
 FastMath::~FastMath ()
 {
-  // TODO Auto-generated destructor stub
+
 }
 
 } // namespace openEV

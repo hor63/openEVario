@@ -124,7 +124,8 @@ am_openEVario_OBJECTS = openEVario.$(OBJEXT) \
 	GliderVarioStatus.$(OBJEXT) \
 	GliderVarioTransitionMatrix.$(OBJEXT) RotationMatrix.$(OBJEXT) \
 	FastMath.$(OBJEXT) FastMathSineTable.$(OBJEXT) \
-	MeasureMatrix.$(OBJEXT) GliderVarioMeasurementVector.$(OBJEXT)
+	MeasureMatrix.$(OBJEXT) GliderVarioMeasurementVector.$(OBJEXT) \
+	GliderVarioMeasurementMatrix.$(OBJEXT)
 openEVario_OBJECTS = $(am_openEVario_OBJECTS)
 openEVario_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -327,7 +328,7 @@ top_srcdir = @top_srcdir@
 bin_PROGRAMS = openEVario$(EXEEXT)
 noinst_PROGRAMS = genSineTables$(EXEEXT)
 openEVario_SOURCES = openEVario.cpp GliderVarioStatus.cpp GliderVarioTransitionMatrix.cpp RotationMatrix.cpp FastMath.cpp FastMathSineTable.cpp MeasureMatrix.cpp \
- GliderVarioMeasurementVector.cpp
+ GliderVarioMeasurementVector.cpp GliderVarioMeasurementMatrix.cpp
 
 genSineTables_SOURCES = genSineTables.cpp
 AM_CXXFLAGS = "-I$(top_srcdir)/extern/eigen3.2.7/Eigen"
@@ -423,6 +424,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FastMath.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FastMathSineTable.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GliderVarioMeasurementMatrix.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GliderVarioMeasurementVector.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GliderVarioStatus.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GliderVarioTransitionMatrix.Po@am__quote@

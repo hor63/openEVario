@@ -29,7 +29,7 @@
 namespace openEV {
 
 GliderVarioMeasurementVector::~GliderVarioMeasurementVector() {
-	// TODO Auto-generated destructor stub
+
 }
 
 } /* namespace openEV */
