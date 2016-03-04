@@ -185,6 +185,243 @@ AC_DEFUN([AX_CXX_COMPILE_STDCXX_11], [dnl
 ])
 
 # ===========================================================================
+#   http://www.gnu.org/software/autoconf-archive/ax_prog_cc_for_build.html
+# ===========================================================================
+#
+# SYNOPSIS
+#
+#   AX_PROG_CC_FOR_BUILD
+#
+# DESCRIPTION
+#
+#   This macro searches for a C compiler that generates native executables,
+#   that is a C compiler that surely is not a cross-compiler. This can be
+#   useful if you have to generate source code at compile-time like for
+#   example GCC does.
+#
+#   The macro sets the CC_FOR_BUILD and CPP_FOR_BUILD macros to anything
+#   needed to compile or link (CC_FOR_BUILD) and preprocess (CPP_FOR_BUILD).
+#   The value of these variables can be overridden by the user by specifying
+#   a compiler with an environment variable (like you do for standard CC).
+#
+#   It also sets BUILD_EXEEXT and BUILD_OBJEXT to the executable and object
+#   file extensions for the build platform, and GCC_FOR_BUILD to `yes' if
+#   the compiler we found is GCC. All these variables but GCC_FOR_BUILD are
+#   substituted in the Makefile.
+#
+# LICENSE
+#
+#   Copyright (c) 2008 Paolo Bonzini <bonzini@gnu.org>
+#
+#   Copying and distribution of this file, with or without modification, are
+#   permitted in any medium without royalty provided the copyright notice
+#   and this notice are preserved. This file is offered as-is, without any
+#   warranty.
+
+#serial 8
+
+AU_ALIAS([AC_PROG_CC_FOR_BUILD], [AX_PROG_CC_FOR_BUILD])
+AC_DEFUN([AX_PROG_CC_FOR_BUILD], [dnl
+AC_REQUIRE([AC_PROG_CC])dnl
+AC_REQUIRE([AC_PROG_CPP])dnl
+AC_REQUIRE([AC_EXEEXT])dnl
+AC_REQUIRE([AC_CANONICAL_HOST])dnl
+
+dnl Use the standard macros, but make them use other variable names
+dnl
+pushdef([ac_cv_prog_CPP], ac_cv_build_prog_CPP)dnl
+pushdef([ac_cv_prog_gcc], ac_cv_build_prog_gcc)dnl
+pushdef([ac_cv_prog_cc_works], ac_cv_build_prog_cc_works)dnl
+pushdef([ac_cv_prog_cc_cross], ac_cv_build_prog_cc_cross)dnl
+pushdef([ac_cv_prog_cc_g], ac_cv_build_prog_cc_g)dnl
+pushdef([ac_cv_exeext], ac_cv_build_exeext)dnl
+pushdef([ac_cv_objext], ac_cv_build_objext)dnl
+pushdef([ac_exeext], ac_build_exeext)dnl
+pushdef([ac_objext], ac_build_objext)dnl
+pushdef([CC], CC_FOR_BUILD)dnl
+pushdef([CPP], CPP_FOR_BUILD)dnl
+pushdef([CFLAGS], CFLAGS_FOR_BUILD)dnl
+pushdef([CPPFLAGS], CPPFLAGS_FOR_BUILD)dnl
+pushdef([LDFLAGS], LDFLAGS_FOR_BUILD)dnl
+pushdef([host], build)dnl
+pushdef([host_alias], build_alias)dnl
+pushdef([host_cpu], build_cpu)dnl
+pushdef([host_vendor], build_vendor)dnl
+pushdef([host_os], build_os)dnl
+pushdef([ac_cv_host], ac_cv_build)dnl
+pushdef([ac_cv_host_alias], ac_cv_build_alias)dnl
+pushdef([ac_cv_host_cpu], ac_cv_build_cpu)dnl
+pushdef([ac_cv_host_vendor], ac_cv_build_vendor)dnl
+pushdef([ac_cv_host_os], ac_cv_build_os)dnl
+pushdef([ac_cpp], ac_build_cpp)dnl
+pushdef([ac_compile], ac_build_compile)dnl
+pushdef([ac_link], ac_build_link)dnl
+
+save_cross_compiling=$cross_compiling
+save_ac_tool_prefix=$ac_tool_prefix
+cross_compiling=no
+ac_tool_prefix=
+
+AC_PROG_CC
+AC_PROG_CPP
+AC_EXEEXT
+
+ac_tool_prefix=$save_ac_tool_prefix
+cross_compiling=$save_cross_compiling
+
+dnl Restore the old definitions
+dnl
+popdef([ac_link])dnl
+popdef([ac_compile])dnl
+popdef([ac_cpp])dnl
+popdef([ac_cv_host_os])dnl
+popdef([ac_cv_host_vendor])dnl
+popdef([ac_cv_host_cpu])dnl
+popdef([ac_cv_host_alias])dnl
+popdef([ac_cv_host])dnl
+popdef([host_os])dnl
+popdef([host_vendor])dnl
+popdef([host_cpu])dnl
+popdef([host_alias])dnl
+popdef([host])dnl
+popdef([LDFLAGS])dnl
+popdef([CPPFLAGS])dnl
+popdef([CFLAGS])dnl
+popdef([CPP])dnl
+popdef([CC])dnl
+popdef([ac_objext])dnl
+popdef([ac_exeext])dnl
+popdef([ac_cv_objext])dnl
+popdef([ac_cv_exeext])dnl
+popdef([ac_cv_prog_cc_g])dnl
+popdef([ac_cv_prog_cc_cross])dnl
+popdef([ac_cv_prog_cc_works])dnl
+popdef([ac_cv_prog_gcc])dnl
+popdef([ac_cv_prog_CPP])dnl
+
+dnl Finally, set Makefile variables
+dnl
+BUILD_EXEEXT=$ac_build_exeext
+BUILD_OBJEXT=$ac_build_objext
+AC_SUBST(BUILD_EXEEXT)dnl
+AC_SUBST(BUILD_OBJEXT)dnl
+AC_SUBST([CFLAGS_FOR_BUILD])dnl
+AC_SUBST([CPPFLAGS_FOR_BUILD])dnl
+AC_SUBST([LDFLAGS_FOR_BUILD])dnl
+])
+
+# ===========================================================================
+#   http://www.gnu.org/software/autoconf-archive/ax_prog_cxx_for_build.html
+# ===========================================================================
+#
+# SYNOPSIS
+#
+#   AX_PROG_CXX_FOR_BUILD
+#
+# DESCRIPTION
+#
+#   This macro searches for a C++ compiler that generates native
+#   executables, that is a C++ compiler that surely is not a cross-compiler.
+#   This can be useful if you have to generate source code at compile-time
+#   like for example GCC does.
+#
+#   The macro sets the CXX_FOR_BUILD and CXXCPP_FOR_BUILD macros to anything
+#   needed to compile or link (CXX_FOR_BUILD) and preprocess
+#   (CXXCPP_FOR_BUILD). The value of these variables can be overridden by
+#   the user by specifying a compiler with an environment variable (like you
+#   do for standard CXX).
+#
+# LICENSE
+#
+#   Copyright (c) 2008 Paolo Bonzini <bonzini@gnu.org>
+#   Copyright (c) 2012 Avionic Design GmbH
+#
+#   Based on the AX_PROG_CC_FOR_BUILD macro by Paolo Bonzini.
+#
+#   Copying and distribution of this file, with or without modification, are
+#   permitted in any medium without royalty provided the copyright notice
+#   and this notice are preserved. This file is offered as-is, without any
+#   warranty.
+
+#serial 2
+
+AU_ALIAS([AC_PROG_CXX_FOR_BUILD], [AX_PROG_CXX_FOR_BUILD])
+AC_DEFUN([AX_PROG_CXX_FOR_BUILD], [dnl
+AC_REQUIRE([AX_PROG_CC_FOR_BUILD])dnl
+AC_REQUIRE([AC_PROG_CXX])dnl
+AC_REQUIRE([AC_PROG_CXXCPP])dnl
+AC_REQUIRE([AC_CANONICAL_HOST])dnl
+
+dnl Use the standard macros, but make them use other variable names
+dnl
+pushdef([ac_cv_prog_CXXCPP], ac_cv_build_prog_CXXCPP)dnl
+pushdef([ac_cv_prog_gxx], ac_cv_build_prog_gxx)dnl
+pushdef([ac_cv_prog_cxx_works], ac_cv_build_prog_cxx_works)dnl
+pushdef([ac_cv_prog_cxx_cross], ac_cv_build_prog_cxx_cross)dnl
+pushdef([ac_cv_prog_cxx_g], ac_cv_build_prog_cxx_g)dnl
+pushdef([CXX], CXX_FOR_BUILD)dnl
+pushdef([CXXCPP], CXXCPP_FOR_BUILD)dnl
+pushdef([CXXFLAGS], CXXFLAGS_FOR_BUILD)dnl
+pushdef([CPPFLAGS], CPPFLAGS_FOR_BUILD)dnl
+pushdef([CXXCPPFLAGS], CXXCPPFLAGS_FOR_BUILD)dnl
+pushdef([host], build)dnl
+pushdef([host_alias], build_alias)dnl
+pushdef([host_cpu], build_cpu)dnl
+pushdef([host_vendor], build_vendor)dnl
+pushdef([host_os], build_os)dnl
+pushdef([ac_cv_host], ac_cv_build)dnl
+pushdef([ac_cv_host_alias], ac_cv_build_alias)dnl
+pushdef([ac_cv_host_cpu], ac_cv_build_cpu)dnl
+pushdef([ac_cv_host_vendor], ac_cv_build_vendor)dnl
+pushdef([ac_cv_host_os], ac_cv_build_os)dnl
+pushdef([ac_cxxcpp], ac_build_cxxcpp)dnl
+pushdef([ac_compile], ac_build_compile)dnl
+pushdef([ac_link], ac_build_link)dnl
+
+save_cross_compiling=$cross_compiling
+save_ac_tool_prefix=$ac_tool_prefix
+cross_compiling=no
+ac_tool_prefix=
+
+AC_PROG_CXX
+AC_PROG_CXXCPP
+
+ac_tool_prefix=$save_ac_tool_prefix
+cross_compiling=$save_cross_compiling
+
+dnl Restore the old definitions
+dnl
+popdef([ac_link])dnl
+popdef([ac_compile])dnl
+popdef([ac_cxxcpp])dnl
+popdef([ac_cv_host_os])dnl
+popdef([ac_cv_host_vendor])dnl
+popdef([ac_cv_host_cpu])dnl
+popdef([ac_cv_host_alias])dnl
+popdef([ac_cv_host])dnl
+popdef([host_os])dnl
+popdef([host_vendor])dnl
+popdef([host_cpu])dnl
+popdef([host_alias])dnl
+popdef([host])dnl
+popdef([CXXCPPFLAGS])dnl
+popdef([CPPFLAGS])dnl
+popdef([CXXFLAGS])dnl
+popdef([CXXCPP])dnl
+popdef([CXX])dnl
+popdef([ac_cv_prog_cxx_g])dnl
+popdef([ac_cv_prog_cxx_cross])dnl
+popdef([ac_cv_prog_cxx_works])dnl
+popdef([ac_cv_prog_gxx])dnl
+popdef([ac_cv_prog_CXXCPP])dnl
+
+dnl Finally, set Makefile variables
+dnl
+AC_SUBST([CXXFLAGS_FOR_BUILD])dnl
+AC_SUBST([CXXCPPFLAGS_FOR_BUILD])dnl
+])
+
+# ===========================================================================
 #      http://www.gnu.org/software/autoconf-archive/ax_prog_doxygen.html
 # ===========================================================================
 #
@@ -1453,6 +1690,70 @@ AC_DEFUN([_AM_SET_OPTIONS],
 # Execute IF-SET if OPTION is set, IF-NOT-SET otherwise.
 AC_DEFUN([_AM_IF_OPTION],
 [m4_ifset(_AM_MANGLE_OPTION([$1]), [$2], [$3])])
+
+# Copyright (C) 1999-2014 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# _AM_PROG_CC_C_O
+# ---------------
+# Like AC_PROG_CC_C_O, but changed for automake.  We rewrite AC_PROG_CC
+# to automatically call this.
+AC_DEFUN([_AM_PROG_CC_C_O],
+[AC_REQUIRE([AM_AUX_DIR_EXPAND])dnl
+AC_REQUIRE_AUX_FILE([compile])dnl
+AC_LANG_PUSH([C])dnl
+AC_CACHE_CHECK(
+  [whether $CC understands -c and -o together],
+  [am_cv_prog_cc_c_o],
+  [AC_LANG_CONFTEST([AC_LANG_PROGRAM([])])
+  # Make sure it works both with $CC and with simple cc.
+  # Following AC_PROG_CC_C_O, we do the test twice because some
+  # compilers refuse to overwrite an existing .o file with -o,
+  # though they will create one.
+  am_cv_prog_cc_c_o=yes
+  for am_i in 1 2; do
+    if AM_RUN_LOG([$CC -c conftest.$ac_ext -o conftest2.$ac_objext]) \
+         && test -f conftest2.$ac_objext; then
+      : OK
+    else
+      am_cv_prog_cc_c_o=no
+      break
+    fi
+  done
+  rm -f core conftest*
+  unset am_i])
+if test "$am_cv_prog_cc_c_o" != yes; then
+   # Losing compiler, so override with the script.
+   # FIXME: It is wrong to rewrite CC.
+   # But if we don't then we get into trouble of one sort or another.
+   # A longer-term fix would be to have automake use am__CC in this case,
+   # and then we could set am__CC="\$(top_srcdir)/compile \$(CC)"
+   CC="$am_aux_dir/compile $CC"
+fi
+AC_LANG_POP([C])])
+
+# For backward compatibility.
+AC_DEFUN_ONCE([AM_PROG_CC_C_O], [AC_REQUIRE([AC_PROG_CC])])
+
+# Copyright (C) 2001-2014 Free Software Foundation, Inc.
+#
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# AM_RUN_LOG(COMMAND)
+# -------------------
+# Run COMMAND, save the exit status in ac_status, and log it.
+# (This has been adapted from Autoconf's _AC_RUN_LOG macro.)
+AC_DEFUN([AM_RUN_LOG],
+[{ echo "$as_me:$LINENO: $1" >&AS_MESSAGE_LOG_FD
+   ($1) >&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD
+   ac_status=$?
+   echo "$as_me:$LINENO: \$? = $ac_status" >&AS_MESSAGE_LOG_FD
+   (exit $ac_status); }])
 
 # Check to make sure that the build environment is sane.    -*- Autoconf -*-
 
