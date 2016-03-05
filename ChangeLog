@@ -1,3 +1,19 @@
+2016-03-05  Kai Horstmann  <horstmannkai@hotmail.com>
+
+	* m4/ax_cxx_compile_build_stdcxx_11.m4:
+	* .cproject: 
+	* .project: 
+	* aclocal.m4: 
+	* configure.ac: 
+	* Makefile.in: 
+	* src/Makefile.am: 
+	* src/Makefile.in:
+	  Added full capability to cross compile.
+	  genSineTables is built by the build system compiler, and run on the build system.
+	  Autoconf/automake are not particularly well equipped for mixing native and cross compiling.
+	  I also had to implement an own macro AX_CXX_COMPILE_BUILD_STDCXX_11 to evaluate the necessary options for the
+	  native build system compiler to support c++11.
+	  
 2016-02-14  Kai Horstmann  <horstmannkai@hotmail.com>
 
 	* src/GliderVarioMeasurementMatrix.cpp: New file.

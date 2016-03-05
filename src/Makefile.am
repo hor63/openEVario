@@ -17,22 +17,19 @@
 
 
 bin_PROGRAMS=openEVario$(EXEEXT)
-noinst_PROGRAMS=genSineTables$(EXEEXT)
 openEVario_SOURCES=openEVario.cpp GliderVarioStatus.cpp GliderVarioTransitionMatrix.cpp RotationMatrix.cpp FastMath.cpp FastMathSineTable.cpp MeasureMatrix.cpp \
  GliderVarioMeasurementVector.cpp GliderVarioMeasurementMatrix.cpp
 
-genSineTables_SOURCES=genSineTables.cpp
+genSineTables_sources=genSineTables.cpp
 
 AM_CXXFLAGS="-I$(top_srcdir)/extern/eigen3.2.7/Eigen"
 
-LINK_FOR_BUILD.cpp = $(CXX_FOR_BUILD) $(CXXFLAGS_FOR_BUILD) $(CPPFLAGS_FOR_BUILD) $(LDFLAGS_FOR_BUILD) $(TARGET_ARCH_FOR_BUILD)
+AM_CXXFLAGS_FOR_BUILD="-I$(top_srcdir)/extern/eigen3.2.7/Eigen"
 
-genSineTables$(EXEEXT) : $(genSineTables_OBJECTS)
+LINK_FOR_BUILD.cpp = $(CXX_FOR_BUILD) $(CXXFLAGS_FOR_BUILD) $(CPPFLAGS_FOR_BUILD) $(AM_CXXFLAGS_FOR_BUILD) $(LDFLAGS_FOR_BUILD) $(TARGET_ARCH_FOR_BUILD)
+
+genSineTables$(EXEEXT) : $(genSineTables_sources)
 	$(LINK_FOR_BUILD.cpp) $^ $(LOADLIBES_FOR_BUILD) $(LDLIBS_FOR_BUILD) -o $@
-
-$(genSineTables_OBJECTS) : CC=$(CC_FOR_BUILD)
-$(genSineTables_OBJECTS) : CXXFLAGS=$(CXXFLAGS_FOR_BUILD)
-$(genSineTables_OBJECTS) : CPPFLAGS=$(CPPFLAGS_FOR_BUILD)
 
 
 FastMathSineTable.cpp: genSineTables$(EXEEXT)
