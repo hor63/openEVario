@@ -18,3 +18,7 @@
 
 SUBDIRS=src
 
+doxygen: 
+	$(DX_DOXYGEN)
+	make -C doc/doxygen/latex
+
