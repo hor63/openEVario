@@ -1,5 +1,10 @@
 2016-03-05  Kai Horstmann  <horstmannkai@hotmail.com>
 
+	* doc/doxygen/html
+	  Add the current generated doxygen html documentation
+
+2016-03-05  Kai Horstmann  <horstmannkai@hotmail.com>
+
 	* m4/ax_cxx_compile_build_stdcxx_11.m4:
 	* .cproject: 
 	* .project: 
