@@ -5,6 +5,7 @@ var searchData=
   ['setyaw',['setYaw',['../df/d11/classopen_e_v_1_1_rotation_matrix.html#a4afa92d2ba93bd59900f4abd9ba82cee',1,'openEV::RotationMatrix']]],
   ['sinesamplesperdegree',['sineSamplesPerDegree',['../d2/d00/classopen_e_v_1_1_fast_math.html#a415ee43435a59982d688e4129d0693e4',1,'openEV::FastMath']]],
   ['sinustable',['sinusTable',['../d2/d00/classopen_e_v_1_1_fast_math.html#a0b18a2e5259f407dc048587ed257054e',1,'openEV::FastMath']]],
+  ['sizeatantable',['sizeATanTable',['../d2/d00/classopen_e_v_1_1_fast_math.html#a6bc651a515b0eaa6682ac8ede68980a8',1,'openEV::FastMath']]],
   ['sizesinetable',['sizeSineTable',['../d2/d00/classopen_e_v_1_1_fast_math.html#a033611f1b7c57a340d87572e5229ac5d',1,'openEV::FastMath']]],
   ['status_5find_5facc_5fx',['STATUS_IND_ACC_X',['../df/d54/classopen_e_v_1_1_glider_vario_status.html#a81e03b05b35bd3820fe652027aaeca05a78866a8c813d092f9b297107f2d1b529',1,'openEV::GliderVarioStatus']]],
   ['status_5find_5facc_5fy',['STATUS_IND_ACC_Y',['../df/d54/classopen_e_v_1_1_glider_vario_status.html#a81e03b05b35bd3820fe652027aaeca05ab55b592580d9cb06251701a462b31495',1,'openEV::GliderVarioStatus']]],

@@ -56,6 +56,7 @@ FloatType x = 0;
 int main (int argc, char *argv[]) {
   double U1,U2,V1,V2,S,polarFactor,X,Y	;
   mt19937::result_type min;
+  double x,y, tanRes,fastTanRes,maxDev = 0.0;
   double range;
   double sqrSum = 0.0,sum = 0.0,absSum =0.0;
   GliderVarioStatus ovStatus;
@@ -94,6 +95,25 @@ int i;
   cout << "End test fastSin" << endl;
   cout << 100000*360 << " fastSin calls took " << double(tv4.tv_sec-tv3.tv_sec)+double(tv4.tv_usec-tv3.tv_usec)/1000000000 << endl;
   cout << endl;
+
+  cout << "-------------------" << endl
+	   << "Test of fast arc tangent " << endl;
+  for (x = -1 ; x<=1 ; x+=0.2) {
+	  for (y = -1 ; y<=1 ; y+=0.2) {
+		  tanRes = atan2(y,x) * FastMath::radToDeg;
+		  fastTanRes = FastMath::fastATan2(y,x);
+		  if (fastTanRes > 180.0) {
+			  fastTanRes = -360 + fastTanRes;
+		  }
+		  if (fabs(tanRes-fastTanRes) > fabs(maxDev) && fabs(tanRes-fastTanRes) < 359.0) {
+			  maxDev = tanRes-fastTanRes;
+		  }
+	  }
+	  cout << "x = " << x << ", y = " << y << ", tanRes = " << tanRes << ", fastTanRes = " << fastTanRes << endl;
+	  cout << "maxDev = " << maxDev << endl;
+
+  }
+
 
   cout << "-----------------------" << endl;
   cout << "Test of rotation matrix" << endl;

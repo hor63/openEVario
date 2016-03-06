@@ -1,7 +1,18 @@
+2016-03-06  Kai Horstmann  <horstmannkai@hotmail.com>
+
+	* src/FastMath.h (FastMath): 
+	* src/genSineTables.cpp (printSineTable): 
+	* src/openEVario.cpp (main): 
+	(FastMath.fastATan2): 
+	(FastMath.fastATan2Pos): 
+	(FastMath.fastATanRaw):
+	  New FastMath function fastATan2 to calculate the angle from x and y components and test in main ()
+	   
 2016-03-05  Kai Horstmann  <horstmannkai@hotmail.com>
 
 	* doc/doxygen/html
-	  Add the current generated doxygen html documentation
+	* doc/doxygen/latex/refman.pdf
+	  Add the current generated doxygen html and PDF documentation
 
 2016-03-05  Kai Horstmann  <horstmannkai@hotmail.com>
 

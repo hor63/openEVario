@@ -57,6 +57,7 @@ public:
 
   static constexpr unsigned sineSamplesPerDegree = 8;   ///< the sinus table is calculated in 1/8 degree steps
   static constexpr unsigned sizeSineTable = 360*sineSamplesPerDegree;   ///< the sinus table is calculated in 1/8 degree steps
+  static constexpr unsigned sizeATanTable = 256; ///< the arc tan table is defined for the 1st 45 degrees in 256 steps.
   static constexpr double   radToDeg = 180.0 / M_PI;
   static constexpr double   degToRad = M_PI / 180.0;
 
@@ -89,11 +90,45 @@ public:
     return fastSin(angle + 90.0);
   }
 
+  /**
+   *
+   * Calculates the arc tan angle for the x and y component in Cartesian coordinates.
+   * Based on the signs of x and y the function returns angles from the entire circle
+   * The returned angle is in degrees from 0 to 360 degrees.
+   * @param[in] x component
+   * @param[in] y component
+   * @return Angle in degrees 0-360 deg.
+   */
+  static inline FloatType fastATan2 (FloatType y, FloatType x) {
+
+	  if (y >= 0) {
+		  if (x >= 0) {
+			  // first quadrant
+			  return (fastATan2Pos(y,x));
+		  } else {
+			  // I am in the second quadrant
+			  return (180-fastATan2Pos(y,-x));
+		  }
+	  } else {
+		  if (x >= 0) {
+			  // I am in the fourth quadrant
+			  return (360-fastATan2Pos(-y,x));
+		  } else {
+			  // I am in the third quadrant
+			  return (180+fastATan2Pos(-y,-x));
+		  }
+	  }
+  }
+
 
 protected:
 
-  /// The table of per-computed sinus values. The table is one item longer than sizeSineTable because I need the interpolation to +360 degrees!
+  /// The table of pre-computed sine values. The table is one item longer than sizeSineTable because I need the interpolation to +360 degrees!
   static const double sinusTable [sizeSineTable+1];
+
+  /// The table of pre-computed arc sine values from 0 to 45 deg. Anything else is derived from this range.
+  /// Here 2 larger than the number of increments: including 0, all 256 steps in between, and 1
+  static const double atanTable [sizeATanTable+1];
 
   /**
    *
@@ -111,6 +146,53 @@ protected:
     // return the interpolated value
     return (sinusTable[index] + (sinusTable[index+1]-sinusTable[index])*(scaledAngle-indexD));
 
+  }
+
+  /**
+   * Calculates the arc tangent from the x and y component of Cartesian coordinates within the first quadrant, i.e. x and y must >= 0
+   * @param[in] x x-component of a point in Cartesian coordinates
+   * @param[in] y x-component of a point in Cartesian coordinates
+   * @return the arc tangent of the ratio of x and y
+   */
+  static inline FloatType fastATan2Pos (FloatType y, FloatType x) {
+
+	  assert (y>=0 && x >= 0);
+
+	  if (y < x) {
+		  // the angle is between 0 and 45 deg.
+		  return (fastATanRaw(y/x));
+	  } else {
+		  if (y > x) {
+			  // I am between 45 and 90 deg. Return from the second half of the quadrant
+			  return (90-fastATanRaw(x/y));
+		  } else {
+			  if (y == 0) {
+				  // x and y are 0! This is actually nonsense. Before I enter a division by 0 I just return 0 :)
+				  return 0.0;
+			  } else {
+				  // x and y are identical. Therefore the angle is 45 deg.
+				  return 45.0;
+			  }
+		  }
+	  }
+  }
+
+  /**
+   *
+   * Calculate the arc tangent value of a value between 0 and < 1. This function interpolates the pre-calculated values from the table atanTable.
+   * Due to the range of the input values only the first octant can be calculated. Everything must be mirrored from this partial range.
+   * @param[in] tanVal: tan value, i.e. the ratio of x and y. tan value *must* be >= 0 and < 1. This function is only defined in the 1st 45 degrees.
+   * @return the arc tan value in degrees.
+   */
+  static inline FloatType fastATanRaw (FloatType tanVal) {
+	 double scaledTanVal = tanVal * static_cast<double>(sizeATanTable);
+	 double indexD = trunc(scaledTanVal);
+	 unsigned index = static_cast<unsigned>(indexD);
+
+	 assert (tanVal >= 0.0 && tanVal < 1.0);
+
+	 // return the interpolated value.
+	 return (atanTable[index] + (atanTable[index+1]-atanTable[index])*(scaledTanVal-indexD));
   }
 
 

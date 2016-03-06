@@ -38,9 +38,7 @@
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1461490169" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp.610920211" name="GCC C++ Compiler" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp">
-								<option id="gnu.cpp.compiler.option.include.paths.481533816" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/openEVario/extern/eigen3.2.7/Eigen}&quot;"/>
-								</option>
+								<option id="gnu.cpp.compiler.option.include.paths.481533816" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1746784870" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 						</toolChain>

@@ -7,7 +7,8 @@ Makefile
 *.log
 config.status
 autom4te.cache
-doc/
+doc/doxygen/latex
+doc/doxygen/man
 
 
 # Compiled Object files

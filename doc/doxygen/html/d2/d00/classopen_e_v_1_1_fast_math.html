@@ -134,6 +134,8 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:a951bace263f94cf255946b8487e9b326"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acf3f6eb74af27153061a6564ac58b997"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="../../d1/d34/namespaceopen_e_v.html#a95d34ce25c2da545e7f334267bcc6333">FloatType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d00/classopen_e_v_1_1_fast_math.html#acf3f6eb74af27153061a6564ac58b997">fastCos</a> (<a class="el" href="../../d1/d34/namespaceopen_e_v.html#a95d34ce25c2da545e7f334267bcc6333">FloatType</a> angle)</td></tr>
 <tr class="separator:acf3f6eb74af27153061a6564ac58b997"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af856a3f878720ea3c4e572fec8e9830a"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="../../d1/d34/namespaceopen_e_v.html#a95d34ce25c2da545e7f334267bcc6333">FloatType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d00/classopen_e_v_1_1_fast_math.html#af856a3f878720ea3c4e572fec8e9830a">fastATan2</a> (<a class="el" href="../../d1/d34/namespaceopen_e_v.html#a95d34ce25c2da545e7f334267bcc6333">FloatType</a> y, <a class="el" href="../../d1/d34/namespaceopen_e_v.html#a95d34ce25c2da545e7f334267bcc6333">FloatType</a> <a class="el" href="../../d1/d16/open_e_vario_8cpp.html#acdd0e97506981b8cf3914a9e3a1979ea">x</a>)</td></tr>
+<tr class="separator:af856a3f878720ea3c4e572fec8e9830a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -143,6 +145,9 @@ Static Public Attributes</h2></td></tr>
 <tr class="memitem:a033611f1b7c57a340d87572e5229ac5d"><td class="memItemLeft" align="right" valign="top">static constexpr unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d00/classopen_e_v_1_1_fast_math.html#a033611f1b7c57a340d87572e5229ac5d">sizeSineTable</a> = 360*<a class="el" href="../../d2/d00/classopen_e_v_1_1_fast_math.html#a415ee43435a59982d688e4129d0693e4">sineSamplesPerDegree</a></td></tr>
 <tr class="memdesc:a033611f1b7c57a340d87572e5229ac5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">the sinus table is calculated in 1/8 degree steps  <a href="#a033611f1b7c57a340d87572e5229ac5d">More...</a><br /></td></tr>
 <tr class="separator:a033611f1b7c57a340d87572e5229ac5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6bc651a515b0eaa6682ac8ede68980a8"><td class="memItemLeft" align="right" valign="top">static constexpr unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d00/classopen_e_v_1_1_fast_math.html#a6bc651a515b0eaa6682ac8ede68980a8">sizeATanTable</a> = 256</td></tr>
+<tr class="memdesc:a6bc651a515b0eaa6682ac8ede68980a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">the arc tan table is defined for the 1st 45 degrees in 256 steps.  <a href="#a6bc651a515b0eaa6682ac8ede68980a8">More...</a><br /></td></tr>
+<tr class="separator:a6bc651a515b0eaa6682ac8ede68980a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adfb710d21e342d5df8fafe21bce669b6"><td class="memItemLeft" align="right" valign="top">static constexpr double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d00/classopen_e_v_1_1_fast_math.html#adfb710d21e342d5df8fafe21bce669b6">radToDeg</a> = 180.0 / <a class="el" href="../../dc/d01/_fast_math_8h.html#ae71449b1cc6e6250b91f539153a7a0d3">M_PI</a></td></tr>
 <tr class="separator:adfb710d21e342d5df8fafe21bce669b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a58182733245e9ad456ff7f6a20b3fca4"><td class="memItemLeft" align="right" valign="top">static constexpr double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d00/classopen_e_v_1_1_fast_math.html#a58182733245e9ad456ff7f6a20b3fca4">degToRad</a> = <a class="el" href="../../dc/d01/_fast_math_8h.html#ae71449b1cc6e6250b91f539153a7a0d3">M_PI</a> / 180.0</td></tr>
@@ -152,14 +157,20 @@ Static Public Attributes</h2></td></tr>
 Static Protected Member Functions</h2></td></tr>
 <tr class="memitem:aedd40907f5c13535e2fe65c759d4020b"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="../../d1/d34/namespaceopen_e_v.html#a95d34ce25c2da545e7f334267bcc6333">FloatType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d00/classopen_e_v_1_1_fast_math.html#aedd40907f5c13535e2fe65c759d4020b">fastSinRaw</a> (<a class="el" href="../../d1/d34/namespaceopen_e_v.html#a95d34ce25c2da545e7f334267bcc6333">FloatType</a> angle)</td></tr>
 <tr class="separator:aedd40907f5c13535e2fe65c759d4020b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3567565de77211ca0ba9faa376bd308d"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="../../d1/d34/namespaceopen_e_v.html#a95d34ce25c2da545e7f334267bcc6333">FloatType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d00/classopen_e_v_1_1_fast_math.html#a3567565de77211ca0ba9faa376bd308d">fastATan2Pos</a> (<a class="el" href="../../d1/d34/namespaceopen_e_v.html#a95d34ce25c2da545e7f334267bcc6333">FloatType</a> y, <a class="el" href="../../d1/d34/namespaceopen_e_v.html#a95d34ce25c2da545e7f334267bcc6333">FloatType</a> <a class="el" href="../../d1/d16/open_e_vario_8cpp.html#acdd0e97506981b8cf3914a9e3a1979ea">x</a>)</td></tr>
+<tr class="separator:a3567565de77211ca0ba9faa376bd308d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e6aa087e5dc2dffbf7f1bc4ed1de886"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="../../d1/d34/namespaceopen_e_v.html#a95d34ce25c2da545e7f334267bcc6333">FloatType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d00/classopen_e_v_1_1_fast_math.html#a2e6aa087e5dc2dffbf7f1bc4ed1de886">fastATanRaw</a> (<a class="el" href="../../d1/d34/namespaceopen_e_v.html#a95d34ce25c2da545e7f334267bcc6333">FloatType</a> tanVal)</td></tr>
+<tr class="separator:a2e6aa087e5dc2dffbf7f1bc4ed1de886"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1d7042284259fc570c366ee520e0b4b0"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="../../d1/d34/namespaceopen_e_v.html#a95d34ce25c2da545e7f334267bcc6333">FloatType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d00/classopen_e_v_1_1_fast_math.html#a1d7042284259fc570c366ee520e0b4b0">fastSinPositive</a> (<a class="el" href="../../d1/d34/namespaceopen_e_v.html#a95d34ce25c2da545e7f334267bcc6333">FloatType</a> angle)</td></tr>
 <tr class="separator:a1d7042284259fc570c366ee520e0b4b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-static-attribs"></a>
 Static Protected Attributes</h2></td></tr>
 <tr class="memitem:a0b18a2e5259f407dc048587ed257054e"><td class="memItemLeft" align="right" valign="top">static const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d00/classopen_e_v_1_1_fast_math.html#a0b18a2e5259f407dc048587ed257054e">sinusTable</a> [<a class="el" href="../../d2/d00/classopen_e_v_1_1_fast_math.html#a033611f1b7c57a340d87572e5229ac5d">sizeSineTable</a>+1]</td></tr>
-<tr class="memdesc:a0b18a2e5259f407dc048587ed257054e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The table of per-computed sinus values. The table is one item longer than sizeSineTable because I need the interpolation to +360 degrees!  <a href="#a0b18a2e5259f407dc048587ed257054e">More...</a><br /></td></tr>
+<tr class="memdesc:a0b18a2e5259f407dc048587ed257054e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The table of pre-computed sine values. The table is one item longer than sizeSineTable because I need the interpolation to +360 degrees!  <a href="#a0b18a2e5259f407dc048587ed257054e">More...</a><br /></td></tr>
 <tr class="separator:a0b18a2e5259f407dc048587ed257054e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac194ade0508c94f2e770fb9c60e0c409"><td class="memItemLeft" align="right" valign="top">static const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d00/classopen_e_v_1_1_fast_math.html#ac194ade0508c94f2e770fb9c60e0c409">atanTable</a> [<a class="el" href="../../d2/d00/classopen_e_v_1_1_fast_math.html#a6bc651a515b0eaa6682ac8ede68980a8">sizeATanTable</a>+1]</td></tr>
+<tr class="separator:ac194ade0508c94f2e770fb9c60e0c409"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="../../d2/d00/classopen_e_v_1_1_fast_math.html">FastMath</a></p>
@@ -211,6 +222,127 @@ Static Protected Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="af856a3f878720ea3c4e572fec8e9830a"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="../../d1/d34/namespaceopen_e_v.html#a95d34ce25c2da545e7f334267bcc6333">FloatType</a> openEV::FastMath::fastATan2 </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d1/d34/namespaceopen_e_v.html#a95d34ce25c2da545e7f334267bcc6333">FloatType</a>&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d1/d34/namespaceopen_e_v.html#a95d34ce25c2da545e7f334267bcc6333">FloatType</a>&#160;</td>
+          <td class="paramname"><em>x</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Calculates the arc tan angle for the x and y component in Cartesian coordinates. Based on the signs of x and y the function returns angles from the entire circle The returned angle is in degrees from 0 to 360 degrees. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">x</td><td>component </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">y</td><td>component </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Angle in degrees 0-360 deg. </dd></dl>
+
+<p>Definition at line <a class="el" href="../../dc/d01/_fast_math_8h_source.html#l00102">102</a> of file <a class="el" href="../../dc/d01/_fast_math_8h_source.html">FastMath.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a3567565de77211ca0ba9faa376bd308d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="../../d1/d34/namespaceopen_e_v.html#a95d34ce25c2da545e7f334267bcc6333">FloatType</a> openEV::FastMath::fastATan2Pos </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d1/d34/namespaceopen_e_v.html#a95d34ce25c2da545e7f334267bcc6333">FloatType</a>&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d1/d34/namespaceopen_e_v.html#a95d34ce25c2da545e7f334267bcc6333">FloatType</a>&#160;</td>
+          <td class="paramname"><em>x</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Calculates the arc tangent from the x and y component of Cartesian coordinates within the first quadrant, i.e. x and y must &gt;= 0 </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">x</td><td>x-component of a point in Cartesian coordinates </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">y</td><td>x-component of a point in Cartesian coordinates </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the arc tangent of the ratio of x and y </dd></dl>
+
+<p>Definition at line <a class="el" href="../../dc/d01/_fast_math_8h_source.html#l00157">157</a> of file <a class="el" href="../../dc/d01/_fast_math_8h_source.html">FastMath.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a2e6aa087e5dc2dffbf7f1bc4ed1de886"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="../../d1/d34/namespaceopen_e_v.html#a95d34ce25c2da545e7f334267bcc6333">FloatType</a> openEV::FastMath::fastATanRaw </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d1/d34/namespaceopen_e_v.html#a95d34ce25c2da545e7f334267bcc6333">FloatType</a>&#160;</td>
+          <td class="paramname"><em>tanVal</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Calculate the arc tangent value of a value between 0 and &lt; 1. This function interpolates the pre-calculated values from the table atanTable. Due to the range of the input values only the first octant can be calculated. Everything must be mirrored from this partial range. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">tanVal</td><td>tan value, i.e. the ratio of x and y. tan value <em>must</em> be &gt;= 0 and &lt; 1. This function is only defined in the 1st 45 degrees. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the arc tan value in degrees. </dd></dl>
+
+<p>Definition at line <a class="el" href="../../dc/d01/_fast_math_8h_source.html#l00187">187</a> of file <a class="el" href="../../dc/d01/_fast_math_8h_source.html">FastMath.h</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="acf3f6eb74af27153061a6564ac58b997"></a>
 <div class="memitem">
 <div class="memproto">
@@ -240,7 +372,7 @@ Static Protected Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The cosine value of the angle </dd></dl>
 
-<p>Definition at line <a class="el" href="../../dc/d01/_fast_math_8h_source.html#l00088">88</a> of file <a class="el" href="../../dc/d01/_fast_math_8h_source.html">FastMath.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/d01/_fast_math_8h_source.html#l00089">89</a> of file <a class="el" href="../../dc/d01/_fast_math_8h_source.html">FastMath.h</a>.</p>
 
 </div>
 </div>
@@ -273,7 +405,7 @@ Static Protected Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The sine value of the angle </dd></dl>
 
-<p>Definition at line <a class="el" href="../../dc/d01/_fast_math_8h_source.html#l00073">73</a> of file <a class="el" href="../../dc/d01/_fast_math_8h_source.html">FastMath.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/d01/_fast_math_8h_source.html#l00074">74</a> of file <a class="el" href="../../dc/d01/_fast_math_8h_source.html">FastMath.h</a>.</p>
 
 </div>
 </div>
@@ -306,7 +438,7 @@ Static Protected Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The sine value of the angle </dd></dl>
 
-<p>Definition at line <a class="el" href="../../dc/d01/_fast_math_8h_source.html#l00122">122</a> of file <a class="el" href="../../dc/d01/_fast_math_8h_source.html">FastMath.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/d01/_fast_math_8h_source.html#l00204">204</a> of file <a class="el" href="../../dc/d01/_fast_math_8h_source.html">FastMath.h</a>.</p>
 
 </div>
 </div>
@@ -339,11 +471,34 @@ Static Protected Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The sine value of the angle </dd></dl>
 
-<p>Definition at line <a class="el" href="../../dc/d01/_fast_math_8h_source.html#l00103">103</a> of file <a class="el" href="../../dc/d01/_fast_math_8h_source.html">FastMath.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/d01/_fast_math_8h_source.html#l00138">138</a> of file <a class="el" href="../../dc/d01/_fast_math_8h_source.html">FastMath.h</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="ac194ade0508c94f2e770fb9c60e0c409"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const double openEV::FastMath::atanTable</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>The table of pre-computed arc sine values from 0 to 45 deg. Anything else is derived from this range. Here 2 larger than the number of increments: including 0, all 256 steps in between, and 1 </p>
+
+<p>Definition at line <a class="el" href="../../dc/d01/_fast_math_8h_source.html#l00131">131</a> of file <a class="el" href="../../dc/d01/_fast_math_8h_source.html">FastMath.h</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a58182733245e9ad456ff7f6a20b3fca4"></a>
 <div class="memitem">
 <div class="memproto">
@@ -362,7 +517,7 @@ Static Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="../../dc/d01/_fast_math_8h_source.html#l00061">61</a> of file <a class="el" href="../../dc/d01/_fast_math_8h_source.html">FastMath.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/d01/_fast_math_8h_source.html#l00062">62</a> of file <a class="el" href="../../dc/d01/_fast_math_8h_source.html">FastMath.h</a>.</p>
 
 </div>
 </div>
@@ -384,7 +539,7 @@ Static Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="../../dc/d01/_fast_math_8h_source.html#l00060">60</a> of file <a class="el" href="../../dc/d01/_fast_math_8h_source.html">FastMath.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/d01/_fast_math_8h_source.html#l00061">61</a> of file <a class="el" href="../../dc/d01/_fast_math_8h_source.html">FastMath.h</a>.</p>
 
 </div>
 </div>
@@ -430,10 +585,34 @@ Static Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>The table of per-computed sinus values. The table is one item longer than sizeSineTable because I need the interpolation to +360 degrees! </p>
+<p>The table of pre-computed sine values. The table is one item longer than sizeSineTable because I need the interpolation to +360 degrees! </p>
 <p>Generated by <a class="el" href="../../d7/dfb/gen_sine_tables_8cpp.html">genSineTables.cpp</a>. </p>
 
-<p>Definition at line <a class="el" href="../../dc/d01/_fast_math_8h_source.html#l00096">96</a> of file <a class="el" href="../../dc/d01/_fast_math_8h_source.html">FastMath.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/d01/_fast_math_8h_source.html#l00127">127</a> of file <a class="el" href="../../dc/d01/_fast_math_8h_source.html">FastMath.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a6bc651a515b0eaa6682ac8ede68980a8"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr unsigned openEV::FastMath::sizeATanTable = 256</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>the arc tan table is defined for the 1st 45 degrees in 256 steps. </p>
+
+<p>Definition at line <a class="el" href="../../dc/d01/_fast_math_8h_source.html#l00060">60</a> of file <a class="el" href="../../dc/d01/_fast_math_8h_source.html">FastMath.h</a>.</p>
 
 </div>
 </div>
