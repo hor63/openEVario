@@ -5,7 +5,6 @@ var classopen_e_v_1_1_glider_vario_status =
       [ "STATUS_IND_LONGITUDE", "df/d54/classopen_e_v_1_1_glider_vario_status.html#a81e03b05b35bd3820fe652027aaeca05adb8fe841b1a07446fd7c4055f0de6f20", null ],
       [ "STATUS_IND_LATITUDE", "df/d54/classopen_e_v_1_1_glider_vario_status.html#a81e03b05b35bd3820fe652027aaeca05ae65d1e84d0a076286b9d860100bdf9c2", null ],
       [ "STATUS_IND_ALT_MSL", "df/d54/classopen_e_v_1_1_glider_vario_status.html#a81e03b05b35bd3820fe652027aaeca05abbc5d778db0a1d307d7298fe4088e57c", null ],
-      [ "STATUS_IND_YAW", "df/d54/classopen_e_v_1_1_glider_vario_status.html#a81e03b05b35bd3820fe652027aaeca05a1cef50a67b62aed3810339723bb51eaa", null ],
       [ "STATUS_IND_PITCH", "df/d54/classopen_e_v_1_1_glider_vario_status.html#a81e03b05b35bd3820fe652027aaeca05a6a05d436750b4b02c8dd8867ddbcdda4", null ],
       [ "STATUS_IND_ROLL", "df/d54/classopen_e_v_1_1_glider_vario_status.html#a81e03b05b35bd3820fe652027aaeca05afebfabb92233a69ca67cc8cc1d3619d2", null ],
       [ "STATUS_IND_SPEED_GROUND_N", "df/d54/classopen_e_v_1_1_glider_vario_status.html#a81e03b05b35bd3820fe652027aaeca05a4c66391b6b9b09906fcf78f3611a6fc6", null ],
@@ -56,6 +55,5 @@ var classopen_e_v_1_1_glider_vario_status =
     [ "verticalSpeed", "df/d54/classopen_e_v_1_1_glider_vario_status.html#ac27af5205edbe3db3e5d073766698cb4", null ],
     [ "windSpeedEast", "df/d54/classopen_e_v_1_1_glider_vario_status.html#aa96556a385fbca970c57f10764e3317e", null ],
     [ "windSpeedNorth", "df/d54/classopen_e_v_1_1_glider_vario_status.html#a6b22f34308323ab647364e17c1e36e1b", null ],
-    [ "yawAngle", "df/d54/classopen_e_v_1_1_glider_vario_status.html#a0618dd101eab537ced8178a3ec038cd2", null ],
     [ "yawRateZ", "df/d54/classopen_e_v_1_1_glider_vario_status.html#a15c9d0ed8e16c60adfdf090bd55c41fd", null ]
 ];

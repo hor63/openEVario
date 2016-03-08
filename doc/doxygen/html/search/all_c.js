@@ -30,7 +30,6 @@ var searchData=
   ['status_5find_5fvertical_5fspeed',['STATUS_IND_VERTICAL_SPEED',['../df/d54/classopen_e_v_1_1_glider_vario_status.html#a81e03b05b35bd3820fe652027aaeca05afee5ab1df526b0e731d63184e6ea67e2',1,'openEV::GliderVarioStatus']]],
   ['status_5find_5fwind_5fspeed_5fe',['STATUS_IND_WIND_SPEED_E',['../df/d54/classopen_e_v_1_1_glider_vario_status.html#a81e03b05b35bd3820fe652027aaeca05aabc4dab684bd60738453208e7ba3781b',1,'openEV::GliderVarioStatus']]],
   ['status_5find_5fwind_5fspeed_5fn',['STATUS_IND_WIND_SPEED_N',['../df/d54/classopen_e_v_1_1_glider_vario_status.html#a81e03b05b35bd3820fe652027aaeca05a7f84cb5dcf79880d579ae1e86045ba82',1,'openEV::GliderVarioStatus']]],
-  ['status_5find_5fyaw',['STATUS_IND_YAW',['../df/d54/classopen_e_v_1_1_glider_vario_status.html#a81e03b05b35bd3820fe652027aaeca05a1cef50a67b62aed3810339723bb51eaa',1,'openEV::GliderVarioStatus']]],
   ['status_5fnum_5frows',['STATUS_NUM_ROWS',['../df/d54/classopen_e_v_1_1_glider_vario_status.html#a81e03b05b35bd3820fe652027aaeca05a8037626128dde83baa8dc71543e44329',1,'openEV::GliderVarioStatus']]],
   ['statuscomponentindex',['StatusComponentIndex',['../df/d54/classopen_e_v_1_1_glider_vario_status.html#a81e03b05b35bd3820fe652027aaeca05',1,'openEV::GliderVarioStatus']]],
   ['statusvector',['statusVector',['../df/d54/classopen_e_v_1_1_glider_vario_status.html#a6f72fe88e8ea05d3ad8eb5a933960462',1,'openEV::GliderVarioStatus']]],

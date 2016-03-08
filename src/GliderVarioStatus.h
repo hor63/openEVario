@@ -116,7 +116,7 @@ public:
     STATUS_IND_LONGITUDE	,  ///< Longitude in deg. East
     STATUS_IND_LATITUDE  	,  ///< Latitude in deg North
     STATUS_IND_ALT_MSL   	,  ///< Altitude in m over Mean Sea Level
-    STATUS_IND_YAW 		,  ///< Yaw angle in deg. right turn from true North
+    //STATUS_IND_YAW Redundant to Heading.
     STATUS_IND_PITCH		,  ///< Pitch angle in deg. nose up. Pitch is applied after yaw.
     STATUS_IND_ROLL		,  ///< Roll angle in deg. right. Roll is applied after yaw and pitch.
 
@@ -126,7 +126,7 @@ public:
     STATUS_IND_SPEED_GROUND_E	,  ///< Ground speed component East in m/s
     STATUS_IND_TAS		,  ///< True air speed in m/s relative to surrounding air.
     STATUS_IND_HEADING		,  ///< Heading of the plane in deg. right turn from true north. This is the flight direction relative to the surrounding air.
-    STATUS_IND_RATE_OF_SINK	, ///< Rate of sink in m/s relative to the surrounding air. Sink because the y axis points downward
+    STATUS_IND_RATE_OF_SINK	, ///< Rate of sink in m/s relative to the surrounding air. Sink because the z axis points downward
     STATUS_IND_VERTICAL_SPEED	, ///< Absolute vertical speed in m/s downward. Z axis is direction down.
 
     /// Accelerations in reference to the body coordinate system. Accelerations are on the axis of the *plane*.
@@ -183,7 +183,7 @@ public:
   FloatType& longitude = statusVector[ STATUS_IND_LONGITUDE	];  ///< Longitude in deg. East
   FloatType& latitude = statusVector[ STATUS_IND_LATITUDE  	];  ///< Latitude in deg North
   FloatType& altMSL = statusVector[ STATUS_IND_ALT_MSL   	];  ///< Altitude in m over Mean Sea Level
-  FloatType& yawAngle = statusVector[ STATUS_IND_YAW 		];  ///< Yaw angle in deg. right turn from true North
+  //FloatType& yawAngle Redundant to heading
   FloatType& pitchAngle = statusVector[ STATUS_IND_PITCH		];  ///< Pitch angle in deg. nose up. Pitch is applied after yaw.
   FloatType& rollAngle = statusVector[ STATUS_IND_ROLL		];  ///< Roll angle in deg. right. Roll is applied after yaw and pitch.
 

@@ -51,7 +51,7 @@ GliderVarioTransitionMatrix::calcTransitionMatrix (
   FloatType timeDiffSquare = timeDiff * timeDiff;
 
   // I need a conversion from the plane coordinates into the world coordinates
-  RotationMatrix rotMatrix (lastStatus.yawAngle,lastStatus.pitchAngle,lastStatus.rollAngle);
+  RotationMatrix rotMatrix (lastStatus.heading,lastStatus.pitchAngle,lastStatus.rollAngle);
   RotationMatrix::RotationMatrixType &rotMatrixPlaneToWorld = rotMatrix.getMatrixPlaneToGlo();
   RotationMatrix::RotationMatrixType &rotMatrixWorldToPlane = rotMatrix.getMatrixGloToPlane();
   FloatType lenDegLongitude = 1852.0 * FastMath::fastCos(lastStatus.latitude);
@@ -89,17 +89,6 @@ GliderVarioTransitionMatrix::calcTransitionMatrix (
   transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ACC_Y) = -timeSquareHalf* (rotMatrixPlaneToWorld(2,1));
   transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ACC_Z) = -timeSquareHalf* (rotMatrixPlaneToWorld(2,2));
 
-
-  //--STATUS_IND_YAW------------------------------------------------------------------------------------
-  transitionMatrix(GliderVarioStatus::STATUS_IND_YAW,GliderVarioStatus::STATUS_IND_YAW) = 1;
-
-  transitionMatrix(GliderVarioStatus::STATUS_IND_YAW,GliderVarioStatus::STATUS_IND_ROTATION_X) = timeDiff*rotMatrixPlaneToWorld(2,0);
-  transitionMatrix(GliderVarioStatus::STATUS_IND_YAW,GliderVarioStatus::STATUS_IND_ROTATION_Y) = timeDiff*rotMatrixPlaneToWorld(2,1);
-  transitionMatrix(GliderVarioStatus::STATUS_IND_YAW,GliderVarioStatus::STATUS_IND_ROTATION_Z) = timeDiff*rotMatrixPlaneToWorld(2,2);
-
-  transitionMatrix(GliderVarioStatus::STATUS_IND_YAW,GliderVarioStatus::STATUS_IND_GYRO_BIAS_X) = -timeDiff*rotMatrixPlaneToWorld(2,0);
-  transitionMatrix(GliderVarioStatus::STATUS_IND_YAW,GliderVarioStatus::STATUS_IND_GYRO_BIAS_Y) = -timeDiff*rotMatrixPlaneToWorld(2,1);
-  transitionMatrix(GliderVarioStatus::STATUS_IND_YAW,GliderVarioStatus::STATUS_IND_GYRO_BIAS_Z) = -timeDiff*rotMatrixPlaneToWorld(2,2);
 
 
   //--STATUS_IND_PITCH------------------------------------------------------------------------------------
@@ -150,7 +139,6 @@ GliderVarioTransitionMatrix::calcTransitionMatrix (
   transitionMatrix(GliderVarioStatus::STATUS_IND_TAS,GliderVarioStatus::STATUS_IND_TAS) = 1;
 
   transitionMatrix(GliderVarioStatus::STATUS_IND_TAS,GliderVarioStatus::STATUS_IND_ACC_X) = timeDiff;
-
 
   //--STATUS_IND_HEADING------------------------------------------------------------------------------------
   transitionMatrix(GliderVarioStatus::STATUS_IND_HEADING,GliderVarioStatus::STATUS_IND_HEADING) = 1;
