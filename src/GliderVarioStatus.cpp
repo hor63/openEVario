@@ -61,7 +61,7 @@ void GliderVarioStatus::normalizeAngles() {
 			   */
 			  pitchAngle = -180.0f - pitchAngle;
 			  rollAngle += 180.0f;
-			  yawAngle += 180.0f;
+			  heading += 180.0f;
 		  } // if (pitchAngle <= -180.0f)
 
 	  } // if (pitchAngle < -90.0f)
@@ -87,7 +87,7 @@ void GliderVarioStatus::normalizeAngles() {
 			   */
 			  pitchAngle = 180.0f - pitchAngle;
 			  rollAngle += 180.0f;
-			  yawAngle += 180.0f;
+			  heading += 180.0f;
 		  } // if (pitchAngle > 180.0f)
 	  } // if (pitchAngle > 90.0f)
 
@@ -125,11 +125,11 @@ void GliderVarioStatus::normalizeAngles() {
 		  } // if (rollAngle >= -360.0f)
 	  } // if (rollAngle < -180.0f)
 
-	  while (yawAngle < 0.0f) {
-		  yawAngle += 360.0f;
+	  while (heading < 0.0f) {
+		  heading += 360.0f;
 	  }
-	  while (yawAngle >= 360.0f) {
-		  yawAngle -= 360.0f;
+	  while (heading >= 360.0f) {
+		  heading -= 360.0f;
 	  }
 
 }
@@ -142,7 +142,6 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 	o <<    " longitude   "
 			" latitude    "
 			" altMSL      "
-			" yawAngle    "
 			" pitchAngle  "
 			" rollAngle   "
 			" groundSpeedN"
@@ -177,9 +176,6 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 	o.precision(7);
 	o.width(13);
 	o << s.altMSL;
-	o.precision(7);
-	o.width(13);
-	o << s.yawAngle;
 	o.precision(7);
 	o.width(13);
 	o << s.pitchAngle;

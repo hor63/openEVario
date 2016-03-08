@@ -141,7 +141,7 @@ int i;
   ovStatus.longitude = 55.0f;
   ovStatus.latitude = 10.0f;
   ovStatus.altMSL = 500.0f;
-  ovStatus.yawAngle = 30.0f;
+  // ovStatus.yawAngle = 30.0f;
   ovStatus.pitchAngle = 0.0f;
   ovStatus.rollAngle = 20.0f;
 
@@ -149,7 +149,7 @@ int i;
   ovStatus.groundSpeedNorth = 15.0f;
   ovStatus.groundSpeedEast = 25.0f;
   ovStatus.trueAirSpeed = 30.0f;
-  ovStatus.heading = 50.0f;
+  ovStatus.heading = 30.0f;
   ovStatus.rateOfSink = 0.5f;
   ovStatus.verticalSpeed = -2.0;
 
@@ -170,7 +170,7 @@ int i;
 	  // the circumfence of the circle is 2PI*r, with the speed the time for a full 360 deg circle is therefore
 	  // t = 2PIr/TAS
 	  FloatType timeFullCircle = 2*M_PI*radius/ovStatus.trueAirSpeed;
-	  RotationMatrix rotMat1 (ovStatus.yawAngle,ovStatus.pitchAngle,ovStatus.rollAngle);
+	  RotationMatrix rotMat1 (ovStatus.heading,ovStatus.pitchAngle,ovStatus.rollAngle);
 
 	  ovStatus.yawRateZ = 360/timeFullCircle;
 
@@ -218,72 +218,72 @@ int i;
   for (i = -720; i <= 720; i+=360) {
 	  ovStatus.pitchAngle = 5;
 	  ovStatus.rollAngle = -20;
-	  ovStatus.yawAngle = static_cast<FloatType>(i) - 1.0f;
-	  cout << "Before: Yaw,Pitch,Roll = " << ovStatus.yawAngle << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl;
+	  ovStatus.heading = static_cast<FloatType>(i) - 1.0f;
+	  cout << "Before: Yaw,Pitch,Roll = " << ovStatus.heading << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl;
 	  ovStatus.normalizeAngles();
-	  cout << "After:  Yaw,Pitch,Roll = " << ovStatus.yawAngle << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl << endl;
+	  cout << "After:  Yaw,Pitch,Roll = " << ovStatus.heading << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl << endl;
 
 	  ovStatus.pitchAngle = 5;
 	  ovStatus.rollAngle = -20;
-	  ovStatus.yawAngle = static_cast<FloatType>(i);
-	  cout << "Before: Yaw,Pitch,Roll = " << ovStatus.yawAngle << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl;
+	  ovStatus.heading = static_cast<FloatType>(i);
+	  cout << "Before: Yaw,Pitch,Roll = " << ovStatus.heading << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl;
 	  ovStatus.normalizeAngles();
-	  cout << "After:  Yaw,Pitch,Roll = " << ovStatus.yawAngle << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl << endl;
+	  cout << "After:  Yaw,Pitch,Roll = " << ovStatus.heading << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl << endl;
 
 	  ovStatus.pitchAngle = 5;
 	  ovStatus.rollAngle = -20;
-	  ovStatus.yawAngle = static_cast<FloatType>(i) + 1.0f;
-	  cout << "Before: Yaw,Pitch,Roll = " << ovStatus.yawAngle << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl;
+	  ovStatus.heading = static_cast<FloatType>(i) + 1.0f;
+	  cout << "Before: Yaw,Pitch,Roll = " << ovStatus.heading << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl;
 	  ovStatus.normalizeAngles();
-	  cout << "After:  Yaw,Pitch,Roll = " << ovStatus.yawAngle << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl << endl;
+	  cout << "After:  Yaw,Pitch,Roll = " << ovStatus.heading << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl << endl;
   }
 
   cout << "normalizing roll" << endl;
   for (i = -360-180; i <= 360+180; i+=180) {
 	  ovStatus.pitchAngle = 5;
-	  ovStatus.yawAngle = 30;
+	  ovStatus.heading = 30;
 	  ovStatus.rollAngle = static_cast<FloatType>(i) - 1.0f;
-	  cout << "Before: Yaw,Pitch,Roll = " << ovStatus.yawAngle << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl;
+	  cout << "Before: Yaw,Pitch,Roll = " << ovStatus.heading << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl;
 	  ovStatus.normalizeAngles();
-	  cout << "After:  Yaw,Pitch,Roll = " << ovStatus.yawAngle << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl << endl;
+	  cout << "After:  Yaw,Pitch,Roll = " << ovStatus.heading << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl << endl;
 
 	  ovStatus.pitchAngle = 5;
-	  ovStatus.yawAngle = 30;
+	  ovStatus.heading = 30;
 	  ovStatus.rollAngle = static_cast<FloatType>(i);
-	  cout << "Before: Yaw,Pitch,Roll = " << ovStatus.yawAngle << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl;
+	  cout << "Before: Yaw,Pitch,Roll = " << ovStatus.heading << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl;
 	  ovStatus.normalizeAngles();
-	  cout << "After:  Yaw,Pitch,Roll = " << ovStatus.yawAngle << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl << endl;
+	  cout << "After:  Yaw,Pitch,Roll = " << ovStatus.heading << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl << endl;
 
 	  ovStatus.pitchAngle = 5;
-	  ovStatus.yawAngle = 30;
+	  ovStatus.heading = 30;
 	  ovStatus.rollAngle = static_cast<FloatType>(i) + 1.0f;
-	  cout << "Before: Yaw,Pitch,Roll = " << ovStatus.yawAngle << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl;
+	  cout << "Before: Yaw,Pitch,Roll = " << ovStatus.heading << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl;
 	  ovStatus.normalizeAngles();
-	  cout << "After:  Yaw,Pitch,Roll = " << ovStatus.yawAngle << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl << endl;
+	  cout << "After:  Yaw,Pitch,Roll = " << ovStatus.heading << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl << endl;
   }
 
   cout << "normalizing Pitch" << endl;
   for (i = -360-180; i <= 360+180; i+=90) {
 	  ovStatus.rollAngle = 20;
-	  ovStatus.yawAngle = 30;
+	  ovStatus.heading = 30;
 	  ovStatus.pitchAngle = static_cast<FloatType>(i) - 1.0f;
-	  cout << "Before: Yaw,Pitch,Roll = " << ovStatus.yawAngle << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl;
+	  cout << "Before: Yaw,Pitch,Roll = " << ovStatus.heading << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl;
 	  ovStatus.normalizeAngles();
-	  cout << "After:  Yaw,Pitch,Roll = " << ovStatus.yawAngle << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl << endl;
+	  cout << "After:  Yaw,Pitch,Roll = " << ovStatus.heading << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl << endl;
 
 	  ovStatus.rollAngle = 20;
-	  ovStatus.yawAngle = 30;
+	  ovStatus.heading = 30;
 	  ovStatus.pitchAngle = static_cast<FloatType>(i);
-	  cout << "Before: Yaw,Pitch,Roll = " << ovStatus.yawAngle << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl;
+	  cout << "Before: Yaw,Pitch,Roll = " << ovStatus.heading << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl;
 	  ovStatus.normalizeAngles();
-	  cout << "After:  Yaw,Pitch,Roll = " << ovStatus.yawAngle << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl << endl;
+	  cout << "After:  Yaw,Pitch,Roll = " << ovStatus.heading << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl << endl;
 
 	  ovStatus.rollAngle = 20;
-	  ovStatus.yawAngle = 30;
+	  ovStatus.heading = 30;
 	  ovStatus.pitchAngle = static_cast<FloatType>(i) + 1.0f;
-	  cout << "Before: Yaw,Pitch,Roll = " << ovStatus.yawAngle << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl;
+	  cout << "Before: Yaw,Pitch,Roll = " << ovStatus.heading << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl;
 	  ovStatus.normalizeAngles();
-	  cout << "After:  Yaw,Pitch,Roll = " << ovStatus.yawAngle << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl << endl;
+	  cout << "After:  Yaw,Pitch,Roll = " << ovStatus.heading << ", " << ovStatus.pitchAngle << ", " << ovStatus.rollAngle << endl << endl;
   }
 
   cout << "calculating measurement vector from status" << endl;

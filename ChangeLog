@@ -1,3 +1,19 @@
+2016-03-08  Kai Horstmann  <horstmannkai@hotmail.com>
+
+	* .cproject: 
+	* src/GliderVarioMeasurementMatrix.cpp (GliderVarioMeasurementMatrix): 
+	* src/GliderVarioStatus.cpp (normalizeAngles): 
+	* src/GliderVarioStatus.h (GliderVarioStatus): 
+	* src/GliderVarioTransitionMatrix.cpp (calcTransitionMatrix): 
+	* src/openEVario.cpp (main): 
+	(GliderVarioTransitionMatrix::calcTransitionMatrix): 
+	(GliderVarioStatus::normalizeAngles): 
+	(operator <<): 
+	(GliderVarioMeasurementMatrix::calcMeasurementMatrix):
+	  remove the status component yawAngle. This was redundant with the heading component.  
+	(GliderVarioMeasurementMatrix::GliderVarioMeasurementMatrix): 
+	  conversion from m/s (status) to knots (measurement) was totally messed up.
+	    
 2016-03-06  Kai Horstmann  <horstmannkai@hotmail.com>
 
 	* src/FastMath.h (FastMath): 
