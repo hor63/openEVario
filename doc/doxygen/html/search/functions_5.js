@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['operator_3c_3c',['operator&lt;&lt;',['../d4/d9f/_glider_vario_status_8cpp.html#af6cf23beb80c778e19ef8fa5ea1c1f30',1,'operator&lt;&lt;(std::ostream &amp;o, openEV::GliderVarioStatus &amp;s):&#160;GliderVarioStatus.cpp'],['../d1/d48/_glider_vario_status_8h.html#af6cf23beb80c778e19ef8fa5ea1c1f30',1,'operator&lt;&lt;(std::ostream &amp;o, openEV::GliderVarioStatus &amp;s):&#160;GliderVarioStatus.cpp']]]
+  ['normalizeangles',['normalizeAngles',['../df/d54/classopen_e_v_1_1_glider_vario_status.html#a6efaec3d40866f1a2cabe88e7a6e6526',1,'openEV::GliderVarioStatus']]]
 ];

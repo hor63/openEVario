@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['rotationmatrixtype',['RotationMatrixType',['../df/d11/classopen_e_v_1_1_rotation_matrix.html#a9f3829477e6dc68c40d5b70b173bed90',1,'openEV::RotationMatrix']]]
+  ['rotationmatrix3dtype',['RotationMatrix3DType',['../d1/d34/namespaceopen_e_v.html#a5213bb612692836d6623abe4487e03eb',1,'openEV']]]
 ];

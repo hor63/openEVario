@@ -1,8 +1,8 @@
 var searchData=
 [
   ['gensinetables_2ecpp',['genSineTables.cpp',['../d7/dfb/gen_sine_tables_8cpp.html',1,'']]],
-  ['getmatrixglotoplane',['getMatrixGloToPlane',['../df/d11/classopen_e_v_1_1_rotation_matrix.html#adef134996cd7e8e6d17bc8d6b23a146a',1,'openEV::RotationMatrix']]],
-  ['getmatrixplanetoglo',['getMatrixPlaneToGlo',['../df/d11/classopen_e_v_1_1_rotation_matrix.html#a97a2025388de27b6c016365b6a37acf2',1,'openEV::RotationMatrix']]],
+  ['getmatrixglotoplane',['getMatrixGloToPlane',['../df/d11/classopen_e_v_1_1_rotation_matrix.html#a499753b0555f22ff3b4334859a9eee5c',1,'openEV::RotationMatrix']]],
+  ['getmatrixplanetoglo',['getMatrixPlaneToGlo',['../df/d11/classopen_e_v_1_1_rotation_matrix.html#afedc0aa84ee23414f7c1a370fe1c6349',1,'openEV::RotationMatrix']]],
   ['getmeasurematrix',['getMeasureMatrix',['../db/d5d/classopen_e_v_1_1_glider_vario_measurement_matrix.html#a36bd4761d052fc03c26ba23e5d475617',1,'openEV::GliderVarioMeasurementMatrix']]],
   ['getmeasurevector',['getMeasureVector',['../d2/dd1/classopen_e_v_1_1_glider_vario_measurement_vector.html#a490b7285ed92b91c1c4c93cebef8482b',1,'openEV::GliderVarioMeasurementVector']]],
   ['getpitch',['getPitch',['../df/d11/classopen_e_v_1_1_rotation_matrix.html#ae3bec1bee3f6beffce2a83a95336ecb7',1,'openEV::RotationMatrix']]],

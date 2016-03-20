@@ -52,8 +52,8 @@ GliderVarioTransitionMatrix::calcTransitionMatrix (
 
   // I need a conversion from the plane coordinates into the world coordinates
   RotationMatrix rotMatrix (lastStatus.heading,lastStatus.pitchAngle,lastStatus.rollAngle);
-  RotationMatrix::RotationMatrixType &rotMatrixPlaneToWorld = rotMatrix.getMatrixPlaneToGlo();
-  RotationMatrix::RotationMatrixType &rotMatrixWorldToPlane = rotMatrix.getMatrixGloToPlane();
+  RotationMatrix3DType &rotMatrixPlaneToWorld = rotMatrix.getMatrixPlaneToGlo();
+  RotationMatrix3DType &rotMatrixWorldToPlane = rotMatrix.getMatrixGloToPlane();
   FloatType lenDegLongitude = 1852.0 * FastMath::fastCos(lastStatus.latitude);
   // I need half of time square for distance calculations based on acceleration here and there :)
   FloatType timeSquareHalf  = timeDiff*timeDiff / 2.0f;

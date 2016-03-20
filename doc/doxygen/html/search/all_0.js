@@ -4,5 +4,7 @@ var searchData=
   ['accely',['accelY',['../d2/dd1/classopen_e_v_1_1_glider_vario_measurement_vector.html#ab577c739ca195eb3fa3d2cfb8974a4da',1,'openEV::GliderVarioMeasurementVector::accelY()'],['../df/d54/classopen_e_v_1_1_glider_vario_status.html#aa3d22ef4f486aaa582665f76503dbc94',1,'openEV::GliderVarioStatus::accelY()']]],
   ['accelz',['accelZ',['../d2/dd1/classopen_e_v_1_1_glider_vario_measurement_vector.html#aa292dfbf22fd9aa205bec785c4218c1c',1,'openEV::GliderVarioMeasurementVector::accelZ()'],['../df/d54/classopen_e_v_1_1_glider_vario_status.html#a0372936d7d52f1d34eeb687258e77d65',1,'openEV::GliderVarioStatus::accelZ()']]],
   ['altmsl',['altMSL',['../df/d54/classopen_e_v_1_1_glider_vario_status.html#a6fc45d52c54a82585ab0e5a70913b088',1,'openEV::GliderVarioStatus']]],
-  ['atantable',['atanTable',['../d2/d00/classopen_e_v_1_1_fast_math.html#ac194ade0508c94f2e770fb9c60e0c409',1,'openEV::FastMath']]]
+  ['atantable',['atanTable',['../d2/d00/classopen_e_v_1_1_fast_math.html#ac194ade0508c94f2e770fb9c60e0c409',1,'openEV::FastMath']]],
+  ['axisanglenormalizedtomat3ex',['axisAngleNormalizedToMat3Ex',['../d4/d50/classopen_e_v_1_1_rot_matrix_conversion.html#a6c6772ba959cfbe6e4406d22f7c876db',1,'openEV::RotMatrixConversion']]],
+  ['axisdominantv3single',['axisDominantV3Single',['../d4/d50/classopen_e_v_1_1_rot_matrix_conversion.html#af43617ede3d1e79ba5b0e3fa503990eb',1,'openEV::RotMatrixConversion']]]
 ];

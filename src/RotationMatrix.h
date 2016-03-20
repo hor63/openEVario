@@ -47,7 +47,6 @@ namespace openEV
 class RotationMatrix
 {
 public:
-  typedef Eigen::Matrix<FloatType, 3, 3> RotationMatrixType;
 
   /// Default constructor. Initialized all angles to 0. The rotation matrix is the Identity matrix.
   inline
@@ -138,12 +137,12 @@ public:
   }
 
   /// The rotation matrix from the global(world) coordinate system to the plane coordinate system.
-  inline RotationMatrixType& getMatrixGloToPlane() {
+  inline RotationMatrix3DType& getMatrixGloToPlane() {
     calculateRotationMatrixGloToPlane();
     return matrixGloToPlane;
   }
   /// The rotation matrix from the global(world) coordinate system to the plane coordinate system.
-  inline RotationMatrixType& getMatrixPlaneToGlo() {
+  inline RotationMatrix3DType& getMatrixPlaneToGlo() {
     calculateRotationMatrixPlaneToGlo();
     return matrixPlaneToGlo;
   }
@@ -151,9 +150,9 @@ public:
 
 protected:
   /// The rotation matrix from the global(world) coordinate system to the plane coordinate system.
-  RotationMatrixType matrixGloToPlane;
+  RotationMatrix3DType matrixGloToPlane;
   /// The rotation matrix from the global(world) coordinate system to the plane coordinate system.
-  RotationMatrixType matrixPlaneToGlo;
+  RotationMatrix3DType matrixPlaneToGlo;
 
   bool matrixGloToPlaneIsValid;
   bool matrixPlaneToGloIsValid;

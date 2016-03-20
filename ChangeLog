@@ -1,3 +1,16 @@
+2016-03-21  Kai Horstmann  <horstmannkai@hotmail.com>
+
+	* src/RotMatrixConversion.cpp: New file.
+	* src/RotMatrixConversion.h: New file.
+	* src/RotMatrixConversion_test.cpp: New file.
+		Started class RotMatricConversion. Will serve as helper to determine attitude from the magnetic vector.
+		First determination of rotation matrix from two vectors.
+		Calculation of Euler angles from the rotation matrix follows next.
+		
+	* src/GliderVarioStatus.h: 
+	* src/RotationMatrix.h (RotationMatrix):
+		Moved type definition RotationMatrix3DType from class RotationMatrix globally into the namespace openEV.
+		 
 2016-03-08  Kai Horstmann  <horstmannkai@hotmail.com>
 
 	* .cproject: 

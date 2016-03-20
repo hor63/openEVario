@@ -124,7 +124,8 @@ am_openEVario_OBJECTS = openEVario.$(OBJEXT) \
 	GliderVarioTransitionMatrix.$(OBJEXT) RotationMatrix.$(OBJEXT) \
 	FastMath.$(OBJEXT) FastMathSineTable.$(OBJEXT) \
 	MeasureMatrix.$(OBJEXT) GliderVarioMeasurementVector.$(OBJEXT) \
-	GliderVarioMeasurementMatrix.$(OBJEXT)
+	GliderVarioMeasurementMatrix.$(OBJEXT) \
+	RotMatrixConversion.$(OBJEXT)
 openEVario_OBJECTS = $(am_openEVario_OBJECTS)
 openEVario_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -327,8 +328,10 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 bin_PROGRAMS = openEVario$(EXEEXT)
 openEVario_SOURCES = openEVario.cpp GliderVarioStatus.cpp GliderVarioTransitionMatrix.cpp RotationMatrix.cpp FastMath.cpp FastMathSineTable.cpp MeasureMatrix.cpp \
- GliderVarioMeasurementVector.cpp GliderVarioMeasurementMatrix.cpp
+ GliderVarioMeasurementVector.cpp GliderVarioMeasurementMatrix.cpp RotMatrixConversion.cpp
 
+
+# Build compiler sources are not well supported by autotools. Back to manual
 genSineTables_sources = genSineTables.cpp
 AM_CXXFLAGS = "-I$(top_srcdir)/extern/eigen3.2.7/Eigen"
 AM_CXXFLAGS_FOR_BUILD = "-I$(top_srcdir)/extern/eigen3.2.7/Eigen"
@@ -426,6 +429,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GliderVarioStatus.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GliderVarioTransitionMatrix.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MeasureMatrix.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RotMatrixConversion.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RotationMatrix.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/openEVario.Po@am__quote@
 
@@ -650,9 +654,11 @@ uninstall-am: uninstall-binPROGRAMS
 .PRECIOUS: Makefile
 
 
+# compile and link in one step. Saves me at least mainaining object and source file lists.
 genSineTables$(EXEEXT) : $(genSineTables_sources)
 	$(LINK_FOR_BUILD.cpp) $^ $(LOADLIBES_FOR_BUILD) $(LDLIBS_FOR_BUILD) -o $@
 
+# Generate the sinus and atan2 lookup tables fot the FastMath class.
 FastMathSineTable.cpp: genSineTables$(EXEEXT)
 	./genSineTables$(EXEEXT) FastMathSineTable.cpp
 

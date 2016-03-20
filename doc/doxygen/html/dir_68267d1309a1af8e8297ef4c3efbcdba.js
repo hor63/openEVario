@@ -30,5 +30,10 @@ var dir_68267d1309a1af8e8297ef4c3efbcdba =
     [ "RotationMatrix.cpp", "d4/d8f/_rotation_matrix_8cpp.html", null ],
     [ "RotationMatrix.h", "d1/d03/_rotation_matrix_8h.html", [
       [ "RotationMatrix", "df/d11/classopen_e_v_1_1_rotation_matrix.html", "df/d11/classopen_e_v_1_1_rotation_matrix" ]
-    ] ]
+    ] ],
+    [ "RotMatrixConversion.cpp", "d4/d8c/_rot_matrix_conversion_8cpp.html", null ],
+    [ "RotMatrixConversion.h", "db/d03/_rot_matrix_conversion_8h.html", [
+      [ "RotMatrixConversion", "d4/d50/classopen_e_v_1_1_rot_matrix_conversion.html", "d4/d50/classopen_e_v_1_1_rot_matrix_conversion" ]
+    ] ],
+    [ "RotMatrixConversion_test.cpp", "da/d54/_rot_matrix_conversion__test_8cpp.html", null ]
 ];

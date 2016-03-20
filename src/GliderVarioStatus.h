@@ -1,6 +1,5 @@
 /*
  * GliderVarioStatus.h
- * File GliderVarioStatus.h
  *
  *  Created on: Dec 8, 2015
  *      Author: hor
@@ -46,7 +45,7 @@ typedef float FloatType;
  * This vector type is used for all 3-dimensional representations of values in Kartesian coodinates
  */
 typedef Eigen::Matrix<FloatType, 3, 1> Vector3DType;
-
+typedef Eigen::Matrix<FloatType, 3, 3> RotationMatrix3DType;
 /**
  *  \class GliderVarioStatus
  *
