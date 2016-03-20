@@ -52,9 +52,9 @@ public:
  * Calculate a rotation matrix from 2 normalized vectors.
  * v1 and v2 must be unit length.
  *
- * @param rotMatrix[out] The rotation matrix to map v1 to v2
- * @param v1[in]: the original vector
- * @param v2[in]: the resulting vector after being multiplied with rotMatrix.
+ * @param[out] rotMatrix The rotation matrix to map v1 to v2
+ * @param[in] v1: the original vector
+ * @param[in] v2: the resulting vector after being multiplied with rotMatrix.
  */
 static void vectors2RotMatrix(RotationMatrix3DType &rotMatrix, Vector3DType const &v1, Vector3DType const &v2);
 
@@ -70,16 +70,16 @@ static int axisDominantV3Single(Vector3DType const &vec);
 /**
  * Calculate the orthogonal
  * @param[out] p: The orthogonal vector to v
- * @param v[in]: Input.
+ * @param[in] v: Input.
  */
 static void orthoV3V3(Vector3DType &p, Vector3DType const &v);
 
 /**
  * Does the basic calculation of the rotation matrix.
- * @param mat[out] Due to a gcc 5.3 bug I cannot pass mat as a reference but I have to pass the pointer.
- * @param axis [in]
- * @param angle_sin[in]
- * @param angle_cos[in]
+ * @param[out] mat Due to a gcc 5.3 bug I cannot pass mat as a reference but I have to pass the pointer.
+ * @param[in] axis
+ * @param[in] angle_sin
+ * @param[in] angle_cos
  */
 static void axisAngleNormalizedToMat3Ex(
         RotationMatrix3DType  *mat, Vector3DType const &axis,

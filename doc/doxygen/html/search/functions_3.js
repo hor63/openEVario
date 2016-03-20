@@ -2,8 +2,8 @@ var searchData=
 [
   ['getmatrixglotoplane',['getMatrixGloToPlane',['../df/d11/classopen_e_v_1_1_rotation_matrix.html#a499753b0555f22ff3b4334859a9eee5c',1,'openEV::RotationMatrix']]],
   ['getmatrixplanetoglo',['getMatrixPlaneToGlo',['../df/d11/classopen_e_v_1_1_rotation_matrix.html#afedc0aa84ee23414f7c1a370fe1c6349',1,'openEV::RotationMatrix']]],
-  ['getmeasurematrix',['getMeasureMatrix',['../db/d5d/classopen_e_v_1_1_glider_vario_measurement_matrix.html#a36bd4761d052fc03c26ba23e5d475617',1,'openEV::GliderVarioMeasurementMatrix']]],
-  ['getmeasurevector',['getMeasureVector',['../d2/dd1/classopen_e_v_1_1_glider_vario_measurement_vector.html#a490b7285ed92b91c1c4c93cebef8482b',1,'openEV::GliderVarioMeasurementVector']]],
+  ['getmeasurematrix',['getMeasureMatrix',['../db/d5d/classopen_e_v_1_1_glider_vario_measurement_matrix.html#a0ffdafd53234d7c96d8e49c94cfc45ec',1,'openEV::GliderVarioMeasurementMatrix']]],
+  ['getmeasurevector',['getMeasureVector',['../d2/dd1/classopen_e_v_1_1_glider_vario_measurement_vector.html#a3592b71f096176e019263cb89df83739',1,'openEV::GliderVarioMeasurementVector']]],
   ['getpitch',['getPitch',['../df/d11/classopen_e_v_1_1_rotation_matrix.html#ae3bec1bee3f6beffce2a83a95336ecb7',1,'openEV::RotationMatrix']]],
   ['getroll',['getRoll',['../df/d11/classopen_e_v_1_1_rotation_matrix.html#a88b82056aa7cc731f88ed55e19f53f53',1,'openEV::RotationMatrix']]],
   ['getstatusvector',['getStatusVector',['../df/d54/classopen_e_v_1_1_glider_vario_status.html#a73473dc5bd66372d060c3a531b2aa5fc',1,'openEV::GliderVarioStatus::getStatusVector()'],['../df/d54/classopen_e_v_1_1_glider_vario_status.html#a8539abb6ecfface69095908237a08f47',1,'openEV::GliderVarioStatus::getStatusVector() const ']]],

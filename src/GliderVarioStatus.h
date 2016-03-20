@@ -159,10 +159,18 @@ public:
   virtual
   ~GliderVarioStatus ();
 
+  /**
+   *
+   * @return reference to the internal vector for direct matrix manipulation or matrix arithmetics
+   */
   StatusVectorType& getStatusVector() {
     return statusVector;
   }
 
+  /**
+   *
+   * @return reference to the internal vector for direct matrix arithmetics
+   */
   StatusVectorType const &getStatusVector() const {
     return statusVector;
   }

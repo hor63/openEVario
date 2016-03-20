@@ -24,15 +24,19 @@ public:
 	/// Multiplication matrix. Dimensions come directly from the status and measurement vector sizes.
 	typedef Eigen::Matrix<FloatType,GliderVarioMeasurementVector::MEASURE_NUM_ROWS,GliderVarioStatus::STATUS_NUM_ROWS> MeasureMatrixType;
 
-	MeasureMatrixType const getMeasureMatrix() const {
+	/**
+	 *
+	 * @return reference to the internal matrix for direct matrix manipulation, or arithmetic operations.
+	 */
+	MeasureMatrixType const &getMeasureMatrix() const {
 		return measurementMatrix;
 	}
 
 	/***
 	 * \todo Calculation of normalized magnetic values from Euler angles of current attitude
 	 * Calculates the current calculation matrix from the time difference since the last update, and the latest status (for coordinate conversion).
-	 * @param timeDiff
-	 * @param lastStatus
+	 * @param[in] timeDiff
+	 * @param[in] lastStatus
 	 */
     void
     calcMeasurementMatrix (

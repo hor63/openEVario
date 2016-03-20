@@ -117,8 +117,8 @@ public:
 /**
    * Convert the plane vector into the world vector
    *
-   * @param planeVector[in] The vector in plane coordinates
-   * @param worldVector[out] The vector in world coordinates
+   * @param[in] planeVector The vector in plane coordinates
+   * @param[out] worldVector The vector in world coordinates
    */
   void calcPlaneVectorToWorldVector (const Vector3DType& planeVector,Vector3DType& worldVector){
     calculateRotationMatrixPlaneToGlo ();
@@ -128,8 +128,8 @@ public:
   /**
    * Convert the world vector into the plane vector
    *
-   * @param worldVector[in] The vector in world coordinates
-   * @param planeVector[out] The vector in plane coordinates
+   * @param[in] worldVector The vector in world coordinates
+   * @param[out] planeVector The vector in plane coordinates
    */
   void calcWorldVectorToPlaneVector (const Vector3DType& worldVector,Vector3DType& planeVector){
     calculateRotationMatrixGloToPlane ();

@@ -68,7 +68,7 @@ public:
 
   /**
    *
-   * @param angle[in] in degrees.
+   * @param[in] angle in degrees.
    * @return The sine value of the angle
    */
   static inline FloatType fastSin(FloatType angle) {
@@ -83,7 +83,7 @@ public:
 
   /**
    *
-   * @param angle[in] in degrees
+   * @param[in] angle in degrees
    * @return The cosine value of the angle
    */
   static inline FloatType fastCos(FloatType angle) {
@@ -132,7 +132,7 @@ protected:
 
   /**
    *
-   * @param angle[in] in degrees. The angle *must* >= 0.0 and < 360.0
+   * @param[in] angle in degrees. The angle *must* >= 0.0 and < 360.0
    * @return The sine value of the angle
    */
   static inline FloatType fastSinRaw(FloatType angle) {
@@ -198,7 +198,7 @@ protected:
 
   /**
    *
-   * @param angle[in] in degrees. The angle MUST be >= 0.
+   * @param[in] angle in degrees. The angle MUST be >= 0.
    * @return The sine value of the angle
    */
   static inline FloatType fastSinPositive(FloatType angle) {

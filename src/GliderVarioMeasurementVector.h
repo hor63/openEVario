@@ -104,7 +104,11 @@ public:
 	FloatType &pressAlt = measureVector [MEASURE_IND_PRESS_ALT]; ///< pressure altitude in MSL
 	FloatType &trueAirSpeed = measureVector [MEASURE_IND_TAS];       ///< True air speed (based on difference pressure and air density based on absolute pressure) in m/s
 
-	MeasureVectorType const getMeasureVector() const {
+	/**
+	 *
+	 * @return reference to the internal vector for direct matrix manipulation.
+	 */
+	MeasureVectorType const &getMeasureVector() const {
 		return measureVector;
 	}
 

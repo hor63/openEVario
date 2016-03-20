@@ -22,7 +22,7 @@ var classopen_e_v_1_1_glider_vario_measurement_vector =
     ] ],
     [ "GliderVarioMeasurementVector", "d2/dd1/classopen_e_v_1_1_glider_vario_measurement_vector.html#a135950a08b206305a35b1027fcb6863a", null ],
     [ "~GliderVarioMeasurementVector", "d2/dd1/classopen_e_v_1_1_glider_vario_measurement_vector.html#a29e78f922fc62bc0cd25ab388aed60ab", null ],
-    [ "getMeasureVector", "d2/dd1/classopen_e_v_1_1_glider_vario_measurement_vector.html#a490b7285ed92b91c1c4c93cebef8482b", null ],
+    [ "getMeasureVector", "d2/dd1/classopen_e_v_1_1_glider_vario_measurement_vector.html#a3592b71f096176e019263cb89df83739", null ],
     [ "accelX", "d2/dd1/classopen_e_v_1_1_glider_vario_measurement_vector.html#a6cb497b55763bd7cb5e9aaeeaba29b75", null ],
     [ "accelY", "d2/dd1/classopen_e_v_1_1_glider_vario_measurement_vector.html#ab577c739ca195eb3fa3d2cfb8974a4da", null ],
     [ "accelZ", "d2/dd1/classopen_e_v_1_1_glider_vario_measurement_vector.html#aa292dfbf22fd9aa205bec785c4218c1c", null ],

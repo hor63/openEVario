@@ -242,10 +242,10 @@ Static Private Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Does the basic calculation of the rotation matrix. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">mat[out]</td><td>Due to a gcc 5.3 bug I cannot pass mat as a reference but I have to pass the pointer. </td></tr>
-    <tr><td class="paramname">axis</td><td>[in] </td></tr>
-    <tr><td class="paramname">angle_sin[in]</td><td></td></tr>
-    <tr><td class="paramname">angle_cos[in]</td><td></td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">mat</td><td>Due to a gcc 5.3 bug I cannot pass mat as a reference but I have to pass the pointer. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">axis</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">angle_sin</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">angle_cos</td><td></td></tr>
   </table>
   </dd>
 </dl>
@@ -321,7 +321,7 @@ Static Private Member Functions</h2></td></tr>
 <p>Calculate the orthogonal </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">p</td><td>The orthogonal vector to v </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">v[in]</td><td>Input. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">v</td><td>Input. </td></tr>
   </table>
   </dd>
 </dl>
@@ -370,9 +370,9 @@ Static Private Member Functions</h2></td></tr>
 <p>Calculate a rotation matrix from 2 normalized vectors. v1 and v2 must be unit length.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">rotMatrix[out]</td><td>The rotation matrix to map v1 to v2 </td></tr>
-    <tr><td class="paramname">v1[in]</td><td>the original vector </td></tr>
-    <tr><td class="paramname">v2[in]</td><td>the resulting vector after being multiplied with rotMatrix. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">rotMatrix</td><td>The rotation matrix to map v1 to v2 </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">v1</td><td>the original vector </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">v2</td><td>the resulting vector after being multiplied with rotMatrix. </td></tr>
   </table>
   </dd>
 </dl>
