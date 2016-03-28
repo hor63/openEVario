@@ -1,7 +1,7 @@
 var NAVTREE =
 [
   [ "openEVario", "index.html", [
-    [ "Todo List", "dd/da0/todo.html", null ],
+    [ "Todo List", "todo.html", null ],
     [ "Namespaces", null, [
       [ "Namespace List", "namespaces.html", "namespaces" ],
       [ "Namespace Members", "namespacemembers.html", [
@@ -36,7 +36,7 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"annotated.html"
+"_fast_math_8cpp.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -18,7 +18,11 @@
 
 SUBDIRS=src
 
-doxygen: 
-	$(DX_DOXYGEN)
-	make -C doc/doxygen/latex
+MOSTLYCLEANFILES= $(DX_CLEANFILES)
+
+#doxygen: 
+#	$(DX_DOXYGEN)
+#	make -C doc/doxygen/latex
+
+@DX_RULES@
 

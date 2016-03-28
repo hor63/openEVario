@@ -109,7 +109,7 @@ subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps =  \
 	$(top_srcdir)/m4/ax_cxx_compile_build_stdcxx_11.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/ax_prog_doxygen.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
@@ -362,6 +362,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = src
+MOSTLYCLEANFILES = $(DX_CLEANFILES)
 all: all-recursive
 
 .SUFFIXES:
@@ -718,6 +719,7 @@ install-strip:
 	    "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'" install; \
 	fi
 mostlyclean-generic:
+	-test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
 
 clean-generic:
 
@@ -817,9 +819,11 @@ uninstall-am:
 .PRECIOUS: Makefile
 
 
-doxygen: 
-	$(DX_DOXYGEN)
-	make -C doc/doxygen/latex
+#doxygen: 
+#	$(DX_DOXYGEN)
+#	make -C doc/doxygen/latex
+
+@DX_RULES@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

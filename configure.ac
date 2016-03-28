@@ -33,8 +33,9 @@ AX_CXX_COMPILE_BUILD_STDCXX_11(noext, mandatory)
 DX_DOXYGEN_FEATURE(ON)
 DX_DOT_FEATURE(ON)
 DX_HTML_FEATURE(ON)
-DX_INIT_DOXYGEN(openEvario, Doxyfile, doc/doxygen)
-
+DX_PDF_FEATURE(ON)
+DX_PS_FEATURE(OFF)
+DX_INIT_DOXYGEN(openEVario, $(srcdir)/doxygen.cfg, doc/doxygen)
 
 
 AC_CONFIG_FILES(Makefile src/Makefile)
