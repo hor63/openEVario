@@ -30,6 +30,10 @@ AX_PROG_CXX_FOR_BUILD
 AX_CXX_COMPILE_STDCXX_11(noext, mandatory)
 AX_CXX_COMPILE_BUILD_STDCXX_11(noext, mandatory)
 
+# get a suitable command like mkdir -p on LINUX systems use install if mkdir -p does not work.
+AC_PROG_INSTALL
+AC_PROG_MKDIR_P
+
 DX_DOXYGEN_FEATURE(ON)
 DX_DOT_FEATURE(ON)
 DX_HTML_FEATURE(ON)
@@ -37,7 +41,11 @@ DX_PDF_FEATURE(ON)
 DX_PS_FEATURE(OFF)
 DX_INIT_DOXYGEN(openEVario, $(srcdir)/doxygen.cfg, doc/doxygen)
 
-
 AC_CONFIG_FILES(Makefile src/Makefile)
+
 AC_OUTPUT
+
+# create the doc/doxygen directory right away. If it does not exist the doxygen rules will not work :(
+echo "configure: creating directory doc/doxygen" 
+$MKDIR_P doc/doxygen
 

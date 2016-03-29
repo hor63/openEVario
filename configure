@@ -6200,6 +6200,10 @@ $as_echo "#define HAVE_BUILD_CXX11 1" >>confdefs.h
 
 
 
+# get a suitable command like mkdir -p on LINUX systems use install if mkdir -p does not work.
+
+
+
 
 
 
@@ -8164,8 +8168,8 @@ DX_RULES="${DX_SNIPPET_doc}"
 #echo DX_ENV=$DX_ENV
 
 
-
 ac_config_files="$ac_config_files Makefile src/Makefile"
+
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -9483,4 +9487,8 @@ if test -n "$ac_unrecognized_opts" && test "$enable_option_checking" != no; then
 $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
 
+
+# create the doc/doxygen directory right away. If it does not exist the doxygen rules will not work :(
+echo "configure: creating directory doc/doxygen"
+$MKDIR_P doc/doxygen
 
