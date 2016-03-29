@@ -23,7 +23,10 @@
  *
  */
 
+#include <math.h>
+
 #include "RotMatrixConversion.h"
+#include "FastMath.h"
 
 namespace openEV {
 
@@ -40,7 +43,10 @@ RotMatrixConversion::~RotMatrixConversion() {
 /*
  */
 
-void RotMatrixConversion::vectors2RotMatrix(RotationMatrix3DType &rotMatrix, Vector3DType const &v1, Vector3DType const &v2)
+/**
+ * @todo: This stuff is not yet working! The resulting rotation matrix does not even closely resemble the original rotation matrix.
+ */
+void RotMatrixConversion::vectors2RotMatrix(Vector3DType const &v1, Vector3DType const &v2, RotationMatrix3DType &rotMatrix)
 {
     Vector3DType axis;
     /* avoid calculating the angle */
@@ -71,6 +77,12 @@ void RotMatrixConversion::vectors2RotMatrix(RotationMatrix3DType &rotMatrix, Vec
     		axisAngleNormalizedToMat3Ex(&rotMatrix,axis,angle_sin,angle_cos);
         }
     }
+}
+
+void RotMatrixConversion::rotMatrix2RotVector (RotationMatrix3DType const &rotMatrix, FloatType &yaw, FloatType &pitch, FloatType &roll) {
+	yaw   = FastMath::fastATan2(rotMatrix(1,0),rotMatrix(0,0));
+	pitch = FastMath::fastATan2(-rotMatrix(2,0),sqrtf(rotMatrix(2,1)*rotMatrix(2,1) + rotMatrix(2,2)*rotMatrix(2,2)));
+	roll  = FastMath::fastATan2(rotMatrix(2,1),rotMatrix(2,2));
 }
 
 

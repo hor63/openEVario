@@ -5,5 +5,7 @@ var classopen_e_v_1_1_rot_matrix_conversion =
     [ "axisAngleNormalizedToMat3Ex", "classopen_e_v_1_1_rot_matrix_conversion.html#a6c6772ba959cfbe6e4406d22f7c876db", null ],
     [ "axisDominantV3Single", "classopen_e_v_1_1_rot_matrix_conversion.html#af43617ede3d1e79ba5b0e3fa503990eb", null ],
     [ "orthoV3V3", "classopen_e_v_1_1_rot_matrix_conversion.html#ab9172c97481c0a73196844ebc7124e38", null ],
-    [ "vectors2RotMatrix", "classopen_e_v_1_1_rot_matrix_conversion.html#ac19d64cce08e5fc69d762427b7aec555", null ]
+    [ "rotMatrix2RotVector", "classopen_e_v_1_1_rot_matrix_conversion.html#a0079cf9a6682c16ecc67b19d20bc315a", null ],
+    [ "rotMatrix2RotVector", "classopen_e_v_1_1_rot_matrix_conversion.html#afb32c89752993cb12c051d63d3d4da6f", null ],
+    [ "vectors2RotMatrix", "classopen_e_v_1_1_rot_matrix_conversion.html#a357e6f83fd51793177f4ec8207562311", null ]
 ];

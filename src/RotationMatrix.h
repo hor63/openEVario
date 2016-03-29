@@ -122,7 +122,7 @@ public:
    */
   void calcPlaneVectorToWorldVector (const Vector3DType& planeVector,Vector3DType& worldVector){
     calculateRotationMatrixPlaneToGlo ();
-    worldVector = matrixPlaneToGloIsValid * planeVector;
+    worldVector = matrixPlaneToGlo * planeVector;
   }
 
   /**
@@ -184,7 +184,7 @@ protected:
     calculateRotationMatrixGloToPlane();
 
     matrixPlaneToGlo = matrixGloToPlane.transpose();
-
+    matrixPlaneToGloIsValid = true;
   }
 
 };
