@@ -11,6 +11,7 @@ var searchData=
   ['rotationmatrix_2ecpp',['RotationMatrix.cpp',['../_rotation_matrix_8cpp.html',1,'']]],
   ['rotationmatrix_2eh',['RotationMatrix.h',['../_rotation_matrix_8h.html',1,'']]],
   ['rotationmatrix3dtype',['RotationMatrix3DType',['../namespaceopen_e_v.html#a5213bb612692836d6623abe4487e03eb',1,'openEV']]],
+  ['rotmatrix2rotvector',['rotMatrix2RotVector',['../classopen_e_v_1_1_rot_matrix_conversion.html#a0079cf9a6682c16ecc67b19d20bc315a',1,'openEV::RotMatrixConversion::rotMatrix2RotVector(RotationMatrix3DType const &amp;rotMatrix, Vector3DType &amp;rotVector)'],['../classopen_e_v_1_1_rot_matrix_conversion.html#afb32c89752993cb12c051d63d3d4da6f',1,'openEV::RotMatrixConversion::rotMatrix2RotVector(RotationMatrix3DType const &amp;rotMatrix, FloatType &amp;yaw, FloatType &amp;pitch, FloatType &amp;roll)']]],
   ['rotmatrixconversion',['RotMatrixConversion',['../classopen_e_v_1_1_rot_matrix_conversion.html#a0b412f4322bb5090f04655773af58cd8',1,'openEV::RotMatrixConversion']]],
   ['rotmatrixconversion',['RotMatrixConversion',['../classopen_e_v_1_1_rot_matrix_conversion.html',1,'openEV']]],
   ['rotmatrixconversion_2ecpp',['RotMatrixConversion.cpp',['../_rot_matrix_conversion_8cpp.html',1,'']]],

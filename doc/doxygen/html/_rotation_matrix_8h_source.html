@@ -223,7 +223,7 @@ $(document).ready(function(){initNavTree('_rotation_matrix_8h_source.html','');}
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;</div>
 <div class="line"><a name="l00123"></a><span class="lineno"><a class="line" href="classopen_e_v_1_1_rotation_matrix.html#ac807871c5690edced689827563238a7f">  123</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classopen_e_v_1_1_rotation_matrix.html#ac807871c5690edced689827563238a7f">calcPlaneVectorToWorldVector</a> (<span class="keyword">const</span> <a class="code" href="namespaceopen_e_v.html#a5535e12782069aa52dfd2a36c5d6c657">Vector3DType</a>&amp; planeVector,<a class="code" href="namespaceopen_e_v.html#a5535e12782069aa52dfd2a36c5d6c657">Vector3DType</a>&amp; worldVector){</div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    <a class="code" href="classopen_e_v_1_1_rotation_matrix.html#a3bdce1570226b5576d5c2da6edfd2e1f">calculateRotationMatrixPlaneToGlo</a> ();</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    worldVector = <a class="code" href="classopen_e_v_1_1_rotation_matrix.html#ab4b4e9d75afcc87a9d486a643245f5ad">matrixPlaneToGloIsValid</a> * planeVector;</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    worldVector = <a class="code" href="classopen_e_v_1_1_rotation_matrix.html#afd6f636f33a796d142daccc0c89fec40">matrixPlaneToGlo</a> * planeVector;</div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  }</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;</div>
 <div class="line"><a name="l00134"></a><span class="lineno"><a class="line" href="classopen_e_v_1_1_rotation_matrix.html#ac4bdafc1edca890c0d769be8c9533ae6">  134</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classopen_e_v_1_1_rotation_matrix.html#ac4bdafc1edca890c0d769be8c9533ae6">calcWorldVectorToPlaneVector</a> (<span class="keyword">const</span> <a class="code" href="namespaceopen_e_v.html#a5535e12782069aa52dfd2a36c5d6c657">Vector3DType</a>&amp; worldVector,<a class="code" href="namespaceopen_e_v.html#a5535e12782069aa52dfd2a36c5d6c657">Vector3DType</a>&amp; planeVector){</div>
@@ -266,7 +266,7 @@ $(document).ready(function(){initNavTree('_rotation_matrix_8h_source.html','');}
 <div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;    <a class="code" href="classopen_e_v_1_1_rotation_matrix.html#a2e5948cedd5f118dfbd6873de87b920d">calculateRotationMatrixGloToPlane</a>();</div>
 <div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;</div>
 <div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;    matrixPlaneToGlo = matrixGloToPlane.transpose();</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;    matrixPlaneToGloIsValid = <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;  }</div>
 <div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;</div>
 <div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;};</div>

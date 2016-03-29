@@ -128,8 +128,12 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:ac19d64cce08e5fc69d762427b7aec555"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopen_e_v_1_1_rot_matrix_conversion.html#ac19d64cce08e5fc69d762427b7aec555">vectors2RotMatrix</a> (<a class="el" href="namespaceopen_e_v.html#a5213bb612692836d6623abe4487e03eb">RotationMatrix3DType</a> &amp;rotMatrix, <a class="el" href="namespaceopen_e_v.html#a5535e12782069aa52dfd2a36c5d6c657">Vector3DType</a> const &amp;v1, <a class="el" href="namespaceopen_e_v.html#a5535e12782069aa52dfd2a36c5d6c657">Vector3DType</a> const &amp;v2)</td></tr>
-<tr class="separator:ac19d64cce08e5fc69d762427b7aec555"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a357e6f83fd51793177f4ec8207562311"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopen_e_v_1_1_rot_matrix_conversion.html#a357e6f83fd51793177f4ec8207562311">vectors2RotMatrix</a> (<a class="el" href="namespaceopen_e_v.html#a5535e12782069aa52dfd2a36c5d6c657">Vector3DType</a> const &amp;v1, <a class="el" href="namespaceopen_e_v.html#a5535e12782069aa52dfd2a36c5d6c657">Vector3DType</a> const &amp;v2, <a class="el" href="namespaceopen_e_v.html#a5213bb612692836d6623abe4487e03eb">RotationMatrix3DType</a> &amp;rotMatrix)</td></tr>
+<tr class="separator:a357e6f83fd51793177f4ec8207562311"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0079cf9a6682c16ecc67b19d20bc315a"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopen_e_v_1_1_rot_matrix_conversion.html#a0079cf9a6682c16ecc67b19d20bc315a">rotMatrix2RotVector</a> (<a class="el" href="namespaceopen_e_v.html#a5213bb612692836d6623abe4487e03eb">RotationMatrix3DType</a> const &amp;rotMatrix, <a class="el" href="namespaceopen_e_v.html#a5535e12782069aa52dfd2a36c5d6c657">Vector3DType</a> &amp;rotVector)</td></tr>
+<tr class="separator:a0079cf9a6682c16ecc67b19d20bc315a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb32c89752993cb12c051d63d3d4da6f"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopen_e_v_1_1_rot_matrix_conversion.html#afb32c89752993cb12c051d63d3d4da6f">rotMatrix2RotVector</a> (<a class="el" href="namespaceopen_e_v.html#a5213bb612692836d6623abe4487e03eb">RotationMatrix3DType</a> const &amp;rotMatrix, <a class="el" href="namespaceopen_e_v.html#a95d34ce25c2da545e7f334267bcc6333">FloatType</a> &amp;yaw, <a class="el" href="namespaceopen_e_v.html#a95d34ce25c2da545e7f334267bcc6333">FloatType</a> &amp;pitch, <a class="el" href="namespaceopen_e_v.html#a95d34ce25c2da545e7f334267bcc6333">FloatType</a> &amp;roll)</td></tr>
+<tr class="separator:afb32c89752993cb12c051d63d3d4da6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-static-methods"></a>
 Static Private Member Functions</h2></td></tr>
@@ -141,10 +145,9 @@ Static Private Member Functions</h2></td></tr>
 <tr class="separator:a6c6772ba959cfbe6e4406d22f7c876db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>The algorithm to construct a rotation matrix from two vectors comes from: <a href="http://stackoverflow.com/questions/23166898/efficient-way-to-calculate-a-3x3-rotation-matrix-from-the-rotation-defined-by-tw">http://stackoverflow.com/questions/23166898/efficient-way-to-calculate-a-3x3-rotation-matrix-from-the-rotation-defined-by-tw</a></p>
-<p>The algorithm to decompose a rotation matrix into the Euler angles comes from <a href="http://nghiaho.com/?page_id=846">http://nghiaho.com/?page_id=846</a> </p>
+<div class="textblock"><p>Backward conversions from measurement vectors (e.g magnetometer) to the rotation matrix, and the Euler angles. </p>
 
-<p>Definition at line <a class="el" href="_rot_matrix_conversion_8h_source.html#l00043">43</a> of file <a class="el" href="_rot_matrix_conversion_8h_source.html">RotMatrixConversion.h</a>.</p>
+<p>Definition at line <a class="el" href="_rot_matrix_conversion_8h_source.html#l00039">39</a> of file <a class="el" href="_rot_matrix_conversion_8h_source.html">RotMatrixConversion.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a0b412f4322bb5090f04655773af58cd8"></a>
 <div class="memitem">
@@ -167,7 +170,7 @@ Static Private Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_rot_matrix_conversion_8h_source.html#l00045">45</a> of file <a class="el" href="_rot_matrix_conversion_8h_source.html">RotMatrixConversion.h</a>.</p>
+<p>Definition at line <a class="el" href="_rot_matrix_conversion_8h_source.html#l00041">41</a> of file <a class="el" href="_rot_matrix_conversion_8h_source.html">RotMatrixConversion.h</a>.</p>
 
 </div>
 </div>
@@ -192,7 +195,7 @@ Static Private Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_rot_matrix_conversion_8cpp_source.html#l00030">30</a> of file <a class="el" href="_rot_matrix_conversion_8cpp_source.html">RotMatrixConversion.cpp</a>.</p>
+<p>Definition at line <a class="el" href="_rot_matrix_conversion_8cpp_source.html#l00033">33</a> of file <a class="el" href="_rot_matrix_conversion_8cpp_source.html">RotMatrixConversion.cpp</a>.</p>
 
 </div>
 </div>
@@ -250,7 +253,7 @@ Static Private Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="_rot_matrix_conversion_8cpp_source.html#l00115">115</a> of file <a class="el" href="_rot_matrix_conversion_8cpp_source.html">RotMatrixConversion.cpp</a>.</p>
+<p>Definition at line <a class="el" href="_rot_matrix_conversion_8cpp_source.html#l00127">127</a> of file <a class="el" href="_rot_matrix_conversion_8cpp_source.html">RotMatrixConversion.cpp</a>.</p>
 
 </div>
 </div>
@@ -283,7 +286,7 @@ Static Private Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0: x-axis, 1: y-axis, 2: y-axis </dd></dl>
 
-<p>Definition at line <a class="el" href="_rot_matrix_conversion_8cpp_source.html#l00081">81</a> of file <a class="el" href="_rot_matrix_conversion_8cpp_source.html">RotMatrixConversion.cpp</a>.</p>
+<p>Definition at line <a class="el" href="_rot_matrix_conversion_8cpp_source.html#l00093">93</a> of file <a class="el" href="_rot_matrix_conversion_8cpp_source.html">RotMatrixConversion.cpp</a>.</p>
 
 </div>
 </div>
@@ -326,11 +329,11 @@ Static Private Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="_rot_matrix_conversion_8cpp_source.html#l00091">91</a> of file <a class="el" href="_rot_matrix_conversion_8cpp_source.html">RotMatrixConversion.cpp</a>.</p>
+<p>Definition at line <a class="el" href="_rot_matrix_conversion_8cpp_source.html#l00103">103</a> of file <a class="el" href="_rot_matrix_conversion_8cpp_source.html">RotMatrixConversion.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="ac19d64cce08e5fc69d762427b7aec555"></a>
+<a class="anchor" id="a0079cf9a6682c16ecc67b19d20bc315a"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -338,22 +341,72 @@ Static Private Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void openEV::RotMatrixConversion::vectors2RotMatrix </td>
+          <td class="memname">static void openEV::RotMatrixConversion::rotMatrix2RotVector </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespaceopen_e_v.html#a5213bb612692836d6623abe4487e03eb">RotationMatrix3DType</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="namespaceopen_e_v.html#a5213bb612692836d6623abe4487e03eb">RotationMatrix3DType</a> const &amp;&#160;</td>
           <td class="paramname"><em>rotMatrix</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespaceopen_e_v.html#a5535e12782069aa52dfd2a36c5d6c657">Vector3DType</a> const &amp;&#160;</td>
-          <td class="paramname"><em>v1</em>, </td>
+          <td class="paramtype"><a class="el" href="namespaceopen_e_v.html#a5535e12782069aa52dfd2a36c5d6c657">Vector3DType</a> &amp;&#160;</td>
+          <td class="paramname"><em>rotVector</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Calculate the Euler angles yaw, pitch roll in a 3D vector from the given rotation matrix in Cartesian coordinates. The angles are normalized. The algorithm to decompose a rotation matrix into the Euler angles comes from <a href="http://nghiaho.com/?page_id=846">http://nghiaho.com/?page_id=846</a></p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">rotMatrix</td><td>The rotation matrix with the factors to calculate the rotation of a Cartesian vector. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">rotVector</td><td>The rotation vector with the components yaw, pitch, roll in degrees </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="_rot_matrix_conversion_8h_source.html#l00068">68</a> of file <a class="el" href="_rot_matrix_conversion_8h_source.html">RotMatrixConversion.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="afb32c89752993cb12c051d63d3d4da6f"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void openEV::RotMatrixConversion::rotMatrix2RotVector </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceopen_e_v.html#a5213bb612692836d6623abe4487e03eb">RotationMatrix3DType</a> const &amp;&#160;</td>
+          <td class="paramname"><em>rotMatrix</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespaceopen_e_v.html#a5535e12782069aa52dfd2a36c5d6c657">Vector3DType</a> const &amp;&#160;</td>
-          <td class="paramname"><em>v2</em>&#160;</td>
+          <td class="paramtype"><a class="el" href="namespaceopen_e_v.html#a95d34ce25c2da545e7f334267bcc6333">FloatType</a> &amp;&#160;</td>
+          <td class="paramname"><em>yaw</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceopen_e_v.html#a95d34ce25c2da545e7f334267bcc6333">FloatType</a> &amp;&#160;</td>
+          <td class="paramname"><em>pitch</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceopen_e_v.html#a95d34ce25c2da545e7f334267bcc6333">FloatType</a> &amp;&#160;</td>
+          <td class="paramname"><em>roll</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -367,17 +420,70 @@ Static Private Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Calculate a rotation matrix from 2 normalized vectors. v1 and v2 must be unit length.</p>
+<p>Calculates Euler angles yaw, pitch and roll from a given rotation matrix in Cartesian coordinates. The angles are normalized. The algorithm to decompose a rotation matrix into the Euler angles comes from <a href="http://nghiaho.com/?page_id=846">http://nghiaho.com/?page_id=846</a> and <a href="http://planning.cs.uiuc.edu/node103.html">http://planning.cs.uiuc.edu/node103.html</a></p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[out]</td><td class="paramname">rotMatrix</td><td>The rotation matrix to map v1 to v2 </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">v1</td><td>the original vector </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">v2</td><td>the resulting vector after being multiplied with rotMatrix. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rotMatrix</td><td>The rotation matrix with the factors to calculate the rotation of a Cartesian vector. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">yaw</td><td>in degrees </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">pitch</td><td>in degrees </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">roll</td><td>in degrees </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="_rot_matrix_conversion_8cpp_source.html#l00043">43</a> of file <a class="el" href="_rot_matrix_conversion_8cpp_source.html">RotMatrixConversion.cpp</a>.</p>
+<p>Definition at line <a class="el" href="_rot_matrix_conversion_8cpp_source.html#l00082">82</a> of file <a class="el" href="_rot_matrix_conversion_8cpp_source.html">RotMatrixConversion.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a357e6f83fd51793177f4ec8207562311"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void openEV::RotMatrixConversion::vectors2RotMatrix </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceopen_e_v.html#a5535e12782069aa52dfd2a36c5d6c657">Vector3DType</a> const &amp;&#160;</td>
+          <td class="paramname"><em>v1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceopen_e_v.html#a5535e12782069aa52dfd2a36c5d6c657">Vector3DType</a> const &amp;&#160;</td>
+          <td class="paramname"><em>v2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceopen_e_v.html#a5213bb612692836d6623abe4487e03eb">RotationMatrix3DType</a> &amp;&#160;</td>
+          <td class="paramname"><em>rotMatrix</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Calculate a rotation matrix from 2 normalized vectors. v1 and v2 must be unit length. The algorithm to construct a rotation matrix from two vectors comes from: <a href="http://stackoverflow.com/questions/23166898/efficient-way-to-calculate-a-3x3-rotation-matrix-from-the-rotation-defined-by-tw">http://stackoverflow.com/questions/23166898/efficient-way-to-calculate-a-3x3-rotation-matrix-from-the-rotation-defined-by-tw</a></p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">v1</td><td>the original vector </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">v2</td><td>the resulting vector after being multiplied with rotMatrix. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">rotMatrix</td><td>The rotation matrix to map v1 to v2</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>: This stuff is not yet working! The resulting rotation matrix does not even closely resemble the original rotation matrix. </dd></dl>
+
+<p>Definition at line <a class="el" href="_rot_matrix_conversion_8cpp_source.html#l00049">49</a> of file <a class="el" href="_rot_matrix_conversion_8cpp_source.html">RotMatrixConversion.cpp</a>.</p>
 
 </div>
 </div>

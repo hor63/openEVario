@@ -33,12 +33,8 @@
 namespace openEV {
 
 /**
+ * Backward conversions from measurement vectors (e.g magnetometer) to the rotation matrix, and the Euler angles.
  *
- * The algorithm to construct a rotation matrix from two vectors comes from:
- * http://stackoverflow.com/questions/23166898/efficient-way-to-calculate-a-3x3-rotation-matrix-from-the-rotation-defined-by-tw
- *
- * The algorithm to decompose a rotation matrix into the Euler angles comes from
- * http://nghiaho.com/?page_id=846
  */
 class RotMatrixConversion {
 public:
@@ -51,12 +47,42 @@ public:
 /**
  * Calculate a rotation matrix from 2 normalized vectors.
  * v1 and v2 must be unit length.
+ * The algorithm to construct a rotation matrix from two vectors comes from:
+ * http://stackoverflow.com/questions/23166898/efficient-way-to-calculate-a-3x3-rotation-matrix-from-the-rotation-defined-by-tw
  *
- * @param[out] rotMatrix The rotation matrix to map v1 to v2
  * @param[in] v1: the original vector
  * @param[in] v2: the resulting vector after being multiplied with rotMatrix.
+ * @param[out] rotMatrix The rotation matrix to map v1 to v2
  */
-static void vectors2RotMatrix(RotationMatrix3DType &rotMatrix, Vector3DType const &v1, Vector3DType const &v2);
+static void vectors2RotMatrix(Vector3DType const &v1, Vector3DType const &v2, RotationMatrix3DType &rotMatrix);
+
+/**
+ * Calculate the Euler angles yaw, pitch roll in a 3D vector from the given rotation matrix in Cartesian coordinates.
+ * The angles are normalized.
+ * The algorithm to decompose a rotation matrix into the Euler angles comes from
+ * http://nghiaho.com/?page_id=846
+ *
+ * @param[in]  rotMatrix The rotation matrix with the factors to calculate the rotation of a Cartesian vector.
+ * @param[out] rotVector The rotation vector with the components yaw, pitch, roll in degrees
+ */
+static void rotMatrix2RotVector (RotationMatrix3DType const &rotMatrix, Vector3DType & rotVector) {
+	rotMatrix2RotVector(rotMatrix, rotVector(0),rotVector(1),rotVector(2));
+}
+
+/**
+ * Calculates Euler angles yaw, pitch and roll from a given rotation matrix in Cartesian coordinates.
+ * The angles are normalized.
+ * The algorithm to decompose a rotation matrix into the Euler angles comes from
+ * http://nghiaho.com/?page_id=846 and
+ * http://planning.cs.uiuc.edu/node103.html
+ *
+ * @param[in]  rotMatrix The rotation matrix with the factors to calculate the rotation of a Cartesian vector.
+ * @param[out] yaw   in degrees
+ * @param[out] pitch in degrees
+ * @param[out] roll  in degrees
+ */
+static void rotMatrix2RotVector (RotationMatrix3DType const &rotMatrix, FloatType &yaw, FloatType &pitch, FloatType &roll);
+
 
 private:
 

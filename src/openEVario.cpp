@@ -25,8 +25,8 @@
  *
  */
 
-#include <random>
 #include <iostream>
+#include <random>
 #include <math.h>
 #include <sys/time.h>
 
@@ -36,6 +36,7 @@
 #include "FastMath.h"
 #include "GliderVarioMeasurementVector.h"
 #include "GliderVarioMeasurementMatrix.h"
+#include "RotMatrixConversion.h"
 
 using namespace std;
 using namespace openEV;
@@ -46,7 +47,7 @@ FloatType x = 0;
 
 /**
  * \brief The one and only main() function
- * Startup and intialization. Demonization if required. Entry into the main processing loop.
+ * Startup and initialization. Demonization if required. Entry into the main processing loop.
  * @param argc
  * @param argv
  * @return
@@ -135,7 +136,38 @@ int i;
 
   cout << endl <<
 		  "-----------------------" << endl;
+  cout << "Test conversion of 3d vectors into rotation matrixes, and into rotation vectors" << endl;
+  cout << "Crucial to convert magnetic vector measurements into rotation vectors for attitude and direction" << endl;
+
+  RotationMatrix rotMag (-5,-70,0); // magnetic field 5 deg West, 70deg inclination (realistic in N-Germany)
+  Vector3DType uniVector (1,0,0), magField (0,0,0);
+  rotMag.calcPlaneVectorToWorldVector(uniVector,magField);
+  cout << "Magnetic field vector at 5Deg W, 70Deg incl. = " << endl << magField << endl;
+  cout << "The rotation matrix of the vector is " << endl << rotMag.getMatrixPlaneToGlo() << endl;
+
+  cout << "calculate the rotation matrix from the vectors" << endl;
+  RotationMatrix3DType magRotMatrix;
+  magRotMatrix.setZero();
+  RotMatrixConversion::vectors2RotMatrix(uniVector,magField,magRotMatrix);
+  Vector3DType rotMag1 (0,0,0);
+  RotMatrixConversion::rotMatrix2RotVector(magRotMatrix,rotMag1);
+  cout << "The reverse calculated rotation matrix is" << endl << magRotMatrix << endl;
+  cout << "The calculated Euler angles are " << endl << rotMag1 << endl;
+
+  cout << endl << "transpose the rotation matrix, and calc the Euler angles from that" << endl;
+  magRotMatrix.transposeInPlace();
+  rotMag1.setZero();
+  RotMatrixConversion::rotMatrix2RotVector(magRotMatrix,rotMag1);
+  cout << "The transposed rotation matrix is" << endl << magRotMatrix << endl;
+  cout << "The calculated Euler angles are " << endl << rotMag1 << endl;
+
+  return (0);
+
+  cout << endl <<
+		  "-----------------------" << endl;
   cout << "test the transition matrix" << endl;
+
+
 
   // Initialize the status vector
   ovStatus.longitude = 55.0f;
