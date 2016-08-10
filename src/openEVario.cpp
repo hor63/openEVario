@@ -36,7 +36,6 @@
 #include "FastMath.h"
 #include "GliderVarioMeasurementVector.h"
 #include "GliderVarioMeasurementMatrix.h"
-#include "RotMatrixConversion.h"
 
 using namespace std;
 using namespace openEV;
@@ -143,23 +142,12 @@ int i;
   Vector3DType uniVector (1,0,0), magField (0,0,0);
   rotMag.calcPlaneVectorToWorldVector(uniVector,magField);
   cout << "Magnetic field vector at 5Deg W, 70Deg incl. = " << endl << magField << endl;
-  cout << "The rotation matrix of the vector is " << endl << rotMag.getMatrixPlaneToGlo() << endl;
+  cout << "length of magnetic field vector is " << sqrtf(magField(0)*magField(0) + magField(1)*magField(1) + magField(2)*magField(2)) << endl;
+  cout << "The rotation matrix of the vector is " << endl << rotMag.getMatrixGloToPlane() << endl;
 
-  cout << "calculate the rotation matrix from the vectors" << endl;
-  RotationMatrix3DType magRotMatrix;
-  magRotMatrix.setZero();
-  RotMatrixConversion::vectors2RotMatrix(uniVector,magField,magRotMatrix);
-  Vector3DType rotMag1 (0,0,0);
-  RotMatrixConversion::rotMatrix2RotVector(magRotMatrix,rotMag1);
-  cout << "The reverse calculated rotation matrix is" << endl << magRotMatrix << endl;
-  cout << "The calculated Euler angles are " << endl << rotMag1 << endl;
+  RotationMatrix rotPlane (60,0,0);
 
-  cout << endl << "transpose the rotation matrix, and calc the Euler angles from that" << endl;
-  magRotMatrix.transposeInPlace();
-  rotMag1.setZero();
-  RotMatrixConversion::rotMatrix2RotVector(magRotMatrix,rotMag1);
-  cout << "The transposed rotation matrix is" << endl << magRotMatrix << endl;
-  cout << "The calculated Euler angles are " << endl << rotMag1 << endl;
+
 
   return (0);
 
