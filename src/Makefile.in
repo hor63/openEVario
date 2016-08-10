@@ -124,8 +124,7 @@ am_openEVario_OBJECTS = openEVario.$(OBJEXT) \
 	GliderVarioTransitionMatrix.$(OBJEXT) RotationMatrix.$(OBJEXT) \
 	FastMath.$(OBJEXT) FastMathSineTable.$(OBJEXT) \
 	MeasureMatrix.$(OBJEXT) GliderVarioMeasurementVector.$(OBJEXT) \
-	GliderVarioMeasurementMatrix.$(OBJEXT) \
-	RotMatrixConversion.$(OBJEXT)
+	GliderVarioMeasurementMatrix.$(OBJEXT)
 openEVario_OBJECTS = $(am_openEVario_OBJECTS)
 openEVario_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -329,7 +328,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 bin_PROGRAMS = openEVario$(EXEEXT)
 openEVario_SOURCES = openEVario.cpp GliderVarioStatus.cpp GliderVarioTransitionMatrix.cpp RotationMatrix.cpp FastMath.cpp FastMathSineTable.cpp MeasureMatrix.cpp \
- GliderVarioMeasurementVector.cpp GliderVarioMeasurementMatrix.cpp RotMatrixConversion.cpp
+ GliderVarioMeasurementVector.cpp GliderVarioMeasurementMatrix.cpp
 
 
 # Build compiler sources are not well supported by autotools. Back to manual
@@ -430,7 +429,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GliderVarioStatus.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GliderVarioTransitionMatrix.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MeasureMatrix.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RotMatrixConversion.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RotationMatrix.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/openEVario.Po@am__quote@
 
