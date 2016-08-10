@@ -23,9 +23,9 @@ openEVario_SOURCES=openEVario.cpp GliderVarioStatus.cpp GliderVarioTransitionMat
 # Build compiler sources are not well supported by autotools. Back to manual
 genSineTables_sources=genSineTables.cpp
 
-AM_CXXFLAGS="-I$(top_srcdir)/extern/eigen3.2.7/Eigen"
+AM_CXXFLAGS="-I$(top_srcdir)/3rdParty/eigen/Eigen"
 
-AM_CXXFLAGS_FOR_BUILD="-I$(top_srcdir)/extern/eigen3.2.7/Eigen"
+AM_CXXFLAGS_FOR_BUILD="-I$(top_srcdir)/3rdParty/eigen/Eigen"
 
 LINK_FOR_BUILD.cpp = $(CXX_FOR_BUILD) $(CXXFLAGS_FOR_BUILD) $(CPPFLAGS_FOR_BUILD) $(AM_CXXFLAGS_FOR_BUILD) $(LDFLAGS_FOR_BUILD) $(TARGET_ARCH_FOR_BUILD)
 
@@ -33,7 +33,7 @@ LINK_FOR_BUILD.cpp = $(CXX_FOR_BUILD) $(CXXFLAGS_FOR_BUILD) $(CPPFLAGS_FOR_BUILD
 genSineTables$(EXEEXT) : $(genSineTables_sources)
 	$(LINK_FOR_BUILD.cpp) $^ $(LOADLIBES_FOR_BUILD) $(LDLIBS_FOR_BUILD) -o $@
 
-# Generate the sinus and atan2 lookup tables fot the FastMath class.
+# Generate the sinus and atan2 lookup tables for the FastMath class.
 FastMathSineTable.cpp: genSineTables$(EXEEXT)
 	./genSineTables$(EXEEXT) FastMathSineTable.cpp
 	
