@@ -97,7 +97,7 @@ typedef Eigen::Matrix<FloatType, 3, 3> RotationMatrix3DType;
  * - Gyro Y bias STATUS_IND_GYRO_BIAS_Y		<b>Gyro Y axis bias</b>
  * - Gyro Z bias STATUS_IND_GYRO_BIAS_Z		<b>Gyro Z axis bias</b>
  * - Wind speed STATUS_IND_WIND_SPEED		<b>Wind Speed</b> in m/s
- * - Wind direction STATUS_IND_WIND_DIR		<b>Wind Direction</b> in Degrees, STATUS_IND_DIR_GROUND
+ * - Wind direction STATUS_IND_WIND_DIR		<b>Wind Direction</b> in Degrees
  * - Thermal speed STATUS_IND_THERMAL_SPEED	The real thermal updraft in m/s
  *
  */
