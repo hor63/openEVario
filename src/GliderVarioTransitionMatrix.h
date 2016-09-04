@@ -31,16 +31,6 @@
 namespace openEV
 {
 
-/**
- * Constant of gravity acceleration.
- * exact values for Germany can be obtained from the German gravity base mesh
- * Deutsches Schweregrundnetz 1994 (DSGN 94)
- * \ref http://www.bkg.bund.de/nn_175464/SharedDocs/Download/DE-Dok/DSGN94-Punktbeschreibung-PDF-de,templateId=raw,property=publicationFile.pdf/DSGN94-Punktbeschreibung-PDF-de.pdf
- * The constant here is a rough average between Hamburg and Munich (I live in Norther Germany).
- * Since a Kalman filter is not exact numeric science any inaccuracy should be covered by the process variance.
- */
-static FloatType constexpr GRAVITY = 9.81;
-
 
 /**
  * This is the transition matrix implementation of the Kalman filter.
@@ -56,6 +46,65 @@ public:
   GliderVarioTransitionMatrix () {
     // Set the matrix to 0. There will be a lot of 0s in the matrix.
     transitionMatrix.setZero();
+
+    // Some measured values are not propagated as time based changes, but which are only defined by the measurements or are just constants.
+    // The values which depend on attitude and time difference are re-calculated at every cycle in GliderVarioTransitionMatrix::calcTransitionMatrix()
+
+    transitionMatrix(GliderVarioStatus::STATUS_IND_LONGITUDE,GliderVarioStatus::STATUS_IND_LONGITUDE) = 1;
+    transitionMatrix(GliderVarioStatus::STATUS_IND_LATITUDE,GliderVarioStatus::STATUS_IND_LATITUDE) = 1;
+    transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ALT_MSL) = 1;
+    transitionMatrix(GliderVarioStatus::STATUS_IND_PITCH,GliderVarioStatus::STATUS_IND_PITCH) = 1;
+    transitionMatrix(GliderVarioStatus::STATUS_IND_ROLL,GliderVarioStatus::STATUS_IND_ROLL) = 1;
+    transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_WIND_SPEED_N) = 1;
+    transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_WIND_SPEED_E) = 1;
+    transitionMatrix(GliderVarioStatus::STATUS_IND_TAS,GliderVarioStatus::STATUS_IND_TAS) = 1;
+    transitionMatrix(GliderVarioStatus::STATUS_IND_HEADING,GliderVarioStatus::STATUS_IND_HEADING) = 1;
+    transitionMatrix(GliderVarioStatus::STATUS_IND_RATE_OF_SINK,GliderVarioStatus::STATUS_IND_RATE_OF_SINK) = 1;
+    transitionMatrix(GliderVarioStatus::STATUS_IND_VERTICAL_SPEED,GliderVarioStatus::STATUS_IND_VERTICAL_SPEED) = 1;
+
+
+    //--STATUS_IND_ACC_X------------------------------------------------------------------------------------
+    transitionMatrix(GliderVarioStatus::STATUS_IND_ACC_X,GliderVarioStatus::STATUS_IND_ACC_X) = 1;
+
+    //--STATUS_IND_ACC_Y------------------------------------------------------------------------------------
+    transitionMatrix(GliderVarioStatus::STATUS_IND_ACC_Y,GliderVarioStatus::STATUS_IND_ACC_Y) = 1;
+
+    //--STATUS_IND_ACC_Z------------------------------------------------------------------------------------
+    transitionMatrix(GliderVarioStatus::STATUS_IND_ACC_Z,GliderVarioStatus::STATUS_IND_ACC_Z) = 1;
+
+    //--STATUS_IND_ROTATION_X------------------------------------------------------------------------------------
+    transitionMatrix(GliderVarioStatus::STATUS_IND_ROTATION_X,GliderVarioStatus::STATUS_IND_ROTATION_X) = 1;
+
+    //--STATUS_IND_ROTATION_Y------------------------------------------------------------------------------------
+    transitionMatrix(GliderVarioStatus::STATUS_IND_ROTATION_Y,GliderVarioStatus::STATUS_IND_ROTATION_Y) = 1;
+
+    //--STATUS_IND_ROTATION_Z------------------------------------------------------------------------------------
+    transitionMatrix(GliderVarioStatus::STATUS_IND_ROTATION_Z,GliderVarioStatus::STATUS_IND_ROTATION_Z) = 1;
+
+    //--STATUS_IND_GYRO_BIAS_X------------------------------------------------------------------------------------
+    transitionMatrix(GliderVarioStatus::STATUS_IND_GYRO_BIAS_X,GliderVarioStatus::STATUS_IND_GYRO_BIAS_X) = 1;
+
+    //--STATUS_IND_GYRO_BIAS_Y------------------------------------------------------------------------------------
+    transitionMatrix(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Y,GliderVarioStatus::STATUS_IND_GYRO_BIAS_Y) = 1;
+
+    //--STATUS_IND_GYRO_BIAS_Z------------------------------------------------------------------------------------
+    transitionMatrix(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Z,GliderVarioStatus::STATUS_IND_GYRO_BIAS_Z) = 1;
+
+    //--STATUS_IND_WIND_SPEED_N------------------------------------------------------------------------------------
+    transitionMatrix(GliderVarioStatus::STATUS_IND_WIND_SPEED_N,GliderVarioStatus::STATUS_IND_WIND_SPEED_N) = 1;
+
+    //--STATUS_IND_WIND_SPEED_E------------------------------------------------------------------------------------
+    transitionMatrix(GliderVarioStatus::STATUS_IND_WIND_SPEED_E,GliderVarioStatus::STATUS_IND_WIND_SPEED_E) = 1;
+
+    //--STATUS_IND_ACC_X------------------------------------------------------------------------------------
+    transitionMatrix(GliderVarioStatus::STATUS_IND_THERMAL_SPEED,GliderVarioStatus::STATUS_IND_RATE_OF_SINK) = -1;
+    transitionMatrix(GliderVarioStatus::STATUS_IND_THERMAL_SPEED,GliderVarioStatus::STATUS_IND_VERTICAL_SPEED) = 1;
+
+    //--STATUS_IND_STATUS_IND_GRAVITY------------------------------------------------------------------------------------
+    transitionMatrix(GliderVarioStatus::STATUS_IND_GRAVITY,GliderVarioStatus::STATUS_IND_GRAVITY) = 1;
+
+
+
   }
   virtual
   ~GliderVarioTransitionMatrix ();
@@ -92,9 +141,6 @@ public:
 		  ){
 	  calcTransitionMatrix(timeDiff,oldStatus);
 	  newStatus.getStatusVector() = transitionMatrix * oldStatus.getStatusVector();
-	  // correct for the gravity
-	  newStatus.verticalSpeed += openEV::GRAVITY*0.1;
-	  newStatus.altMSL -= openEV::GRAVITY * 0.1*0.1 / 2.0;
 
   }
 

@@ -1,23 +1,29 @@
+2016-09-04  Kai Horstmann  <horstmannkai@hotmail.com>
+
+	* src/GliderVarioStatus.cpp (~GliderVarioStatus): 
+	* src/GliderVarioStatus.h (GliderVarioStatus): 
+	(GliderVarioStatus::GliderVarioStatus): 
+	(operator <<):
+	  Add gravity and STATUS_IND_GRAVITY to the status vector. 
+	
+	* src/GliderVarioTransitionMatrix.cpp (calcTransitionMatrix): 
+	* src/GliderVarioTransitionMatrix.h (GliderVarioTransitionMatrix.GliderVarioTransitionMatrix):
+	(GliderVarioTransitionMatrix.updateStatus): 
+	(GliderVarioTransitionMatrix::calcTransitionMatrix): 
+	  Use gravity from the status vector for vertical speed and altitude calculation.
+	  Remove the hand-crafted correction from updateStatus. Gravity is now properly part of the status and transition matrix.
+	 
+	* src/openEVario.cpp (main): 
+	  Remove early exit from main function.
+	   
 2016-03-29  Kai Horstmann  <horstmannkai@hotmail.com>
 
 	* src/openEVario.cpp (main): 
 	* src/RotationMatrix.h (calcPlaneVectorToWorldVector):
 	  Corrected rotation matrix calculation.
-	   
-	* src/RotMatrixConversion.h (RotMatrixConversion): 
-	* src/RotMatrixConversion.cpp
-	  Added rotMatrix2RotVector
-	  TODO: vectors2RotMatrix is not working yet! 
 	 
 2016-03-21  Kai Horstmann  <horstmannkai@hotmail.com>
 
-	* src/RotMatrixConversion.cpp: New file.
-	* src/RotMatrixConversion.h: New file.
-	* src/RotMatrixConversion_test.cpp: New file.
-		Started class RotMatrixConversion. Will serve as helper to determine attitude from the magnetic vector.
-		First determination of rotation matrix from two vectors.
-		Calculation of Euler angles from the rotation matrix follows next.
-		
 	* src/GliderVarioStatus.h: 
 	* src/RotationMatrix.h (RotationMatrix):
 		Moved type definition RotationMatrix3DType from class RotationMatrix globally into the namespace openEV.

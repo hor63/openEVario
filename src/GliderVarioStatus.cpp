@@ -34,6 +34,8 @@ GliderVarioStatus::GliderVarioStatus ()
 {
   statusVector.setZero();
 
+  statusVector(STATUS_IND_GRAVITY)= GRAVITY;
+
 }
 
 GliderVarioStatus::~GliderVarioStatus ()
@@ -161,7 +163,8 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 			" gyroBiasZ   "
 			" windSpeedNor"
 			" windSpeedEas"
-			" thermalSpeed" << std::endl;
+			" thermalSpeed"
+			" gravity     " << std::endl;
 
 	o << std::fixed;
 	o.precision(7);
@@ -236,6 +239,9 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 	o.precision(7);
 	o.width(13);
 	o << s.thermalSpeed;
+	o.precision(7);
+	o.width(13);
+	o << s.gravity;
 	o << std::endl;
 
 	return o;

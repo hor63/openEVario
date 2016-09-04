@@ -148,9 +148,6 @@ int i;
   RotationMatrix rotPlane (60,0,0);
 
 
-
-  return (0);
-
   cout << endl <<
 		  "-----------------------" << endl;
   cout << "test the transition matrix" << endl;

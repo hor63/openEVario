@@ -41,6 +41,18 @@ namespace openEV
  */
 typedef float FloatType;
 
+
+/**
+ * Constant of gravity acceleration.
+ * exact values for Germany can be obtained from the German gravity base mesh
+ * Deutsches Schweregrundnetz 1994 (DSGN 94)
+ * \ref http://www.bkg.bund.de/nn_175464/SharedDocs/Download/DE-Dok/DSGN94-Punktbeschreibung-PDF-de,templateId=raw,property=publicationFile.pdf/DSGN94-Punktbeschreibung-PDF-de.pdf
+ * The constant here is a rough average between Hamburg and Munich (I live in Norther Germany).
+ * Since a Kalman filter is not exact numeric science any inaccuracy should be covered by the process variance.
+ */
+static FloatType constexpr GRAVITY = 9.81;
+
+
 /**
  * This vector type is used for all 3-dimensional representations of values in Kartesian coodinates
  */
@@ -55,6 +67,9 @@ typedef Eigen::Matrix<FloatType, 3, 3> RotationMatrix3DType;
  * status vector is clearly identified by the index in the vector.
  * The indexes are enumerated in the *StatusComponentIndex* enum.
  * The components and index enumerators of the status vector are as follows:
+ *
+ * Constants
+ * - Gravity STATUS_IND_GRAVITY: \b Gravity in m/s^2 in world z axis.
  *
  * Worldwide Position:
  * - Longitude STATUS_IND_LONGITUDE:		\b Longitude in decimal degrees. Eastern hemisphere is positive,
@@ -110,7 +125,12 @@ public:
    * Enumeration of the components of the Kalman status vector x
    */
   enum StatusComponentIndex {
-    /// Position and attitude
+	/// Constants
+
+	STATUS_IND_GRAVITY      ,  ///< Gravity as constant value of GRAVITY=9.81 m/s^2
+
+
+	/// Position and attitude
 
     STATUS_IND_LONGITUDE	,  ///< Longitude in deg. East
     STATUS_IND_LATITUDE  	,  ///< Latitude in deg North
@@ -186,6 +206,10 @@ public:
 
   // Here come all state vector elements as single references into the vector for easier access
 
+  // Constants
+  FloatType& gravity  = statusVector [ STATUS_IND_GRAVITY ];  ///< Gravity as constant value of GRAVITY=9.81 m/s^2
+
+
   // Position and attitude
   FloatType& longitude = statusVector[ STATUS_IND_LONGITUDE	];  ///< Longitude in deg. East
   FloatType& latitude = statusVector[ STATUS_IND_LATITUDE  	];  ///< Latitude in deg North
@@ -203,7 +227,7 @@ public:
   FloatType& verticalSpeed = statusVector[ STATUS_IND_VERTICAL_SPEED	]; ///< Absolute vertical speed in m/s downward. Z axis is downward.
 
   // Accelerations in reference to the body coordinate system. Accelerations are on the axis of the *plane*.
-  // If the plane is pitched up an acceleation on the X axis would speed the plane upward, not forward.
+  // If the plane is pitched up an acceleration on the X axis would speed the plane upward, not forward.
   FloatType& accelX = statusVector[ STATUS_IND_ACC_X		]; ///< Acceleration in m/s^2 on the X axis of the plane
   FloatType& accelY = statusVector[ STATUS_IND_ACC_Y		]; ///< Acceleration in m/s^2 on the Y axis of the plane
   FloatType& accelZ = statusVector[ STATUS_IND_ACC_Z		]; ///< Acceleration in m/s^2 on the Z axis of the plane
