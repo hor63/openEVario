@@ -59,7 +59,6 @@ public:
     transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_WIND_SPEED_E) = 1;
     transitionMatrix(GliderVarioStatus::STATUS_IND_TAS,GliderVarioStatus::STATUS_IND_TAS) = 1;
     transitionMatrix(GliderVarioStatus::STATUS_IND_HEADING,GliderVarioStatus::STATUS_IND_HEADING) = 1;
-    transitionMatrix(GliderVarioStatus::STATUS_IND_RATE_OF_SINK,GliderVarioStatus::STATUS_IND_RATE_OF_SINK) = 1;
     transitionMatrix(GliderVarioStatus::STATUS_IND_VERTICAL_SPEED,GliderVarioStatus::STATUS_IND_VERTICAL_SPEED) = 1;
 
 
@@ -96,7 +95,7 @@ public:
     //--STATUS_IND_WIND_SPEED_E------------------------------------------------------------------------------------
     transitionMatrix(GliderVarioStatus::STATUS_IND_WIND_SPEED_E,GliderVarioStatus::STATUS_IND_WIND_SPEED_E) = 1;
 
-    //--STATUS_IND_ACC_X------------------------------------------------------------------------------------
+    //--STATUS_IND_THERMAL_SPEED------------------------------------------------------------------------------------
     transitionMatrix(GliderVarioStatus::STATUS_IND_THERMAL_SPEED,GliderVarioStatus::STATUS_IND_RATE_OF_SINK) = -1;
     transitionMatrix(GliderVarioStatus::STATUS_IND_THERMAL_SPEED,GliderVarioStatus::STATUS_IND_VERTICAL_SPEED) = 1;
 
@@ -140,8 +139,10 @@ public:
 		  FloatType timeDiff
 		  ){
 	  calcTransitionMatrix(timeDiff,oldStatus);
-	  newStatus.getStatusVector() = transitionMatrix * oldStatus.getStatusVector();
+	  newStatus.getStatusVector_x() = transitionMatrix * oldStatus.getStatusVector_x();
 
+	  newStatus.getErrorCovariance_P() = transitionMatrix * oldStatus.getErrorCovariance_P() * transitionMatrix.transpose()
+			  + oldStatus.getSystemNoiseCovariance_Q();
   }
 
 

@@ -4,18 +4,26 @@
 	* src/GliderVarioStatus.h (GliderVarioStatus): 
 	(GliderVarioStatus::GliderVarioStatus): 
 	(operator <<):
-	  Add gravity and STATUS_IND_GRAVITY to the status vector. 
+	(GliderVarioStatus.getStatusVector_x): 
+	(GliderVarioStatus.getSystemNoiseCovariance_Q): 
+	(GliderVarioStatus.getErrorCovariance_P): 
+	(GliderVarioStatus): 
+	  Add gravity and STATUS_IND_GRAVITY to the status vector.
+	  Add process error and system noise covariances. 
 	
 	* src/GliderVarioTransitionMatrix.cpp (calcTransitionMatrix): 
 	* src/GliderVarioTransitionMatrix.h (GliderVarioTransitionMatrix.GliderVarioTransitionMatrix):
 	(GliderVarioTransitionMatrix.updateStatus): 
+	  Remove the hand-crafted correction from updateStatus. Gravity is now properly part of the status and transition matrix.
+	  Add propagation of the error covariance to updateStatus.
 	(GliderVarioTransitionMatrix::calcTransitionMatrix): 
 	  Use gravity from the status vector for vertical speed and altitude calculation.
-	  Remove the hand-crafted correction from updateStatus. Gravity is now properly part of the status and transition matrix.
+	  Correct rateOfClimb.
 	 
 	* src/openEVario.cpp (main): 
 	  Remove early exit from main function.
-	   
+	  Initialize and print covariance matrixes.
+	  
 2016-03-29  Kai Horstmann  <horstmannkai@hotmail.com>
 
 	* src/openEVario.cpp (main): 

@@ -155,8 +155,6 @@ GliderVarioTransitionMatrix::calcTransitionMatrix (
 
 
   //--STATUS_IND_RATE_OF_SINK------------------------------------------------------------------------------------
-  // transitionMatrix(GliderVarioStatus::STATUS_IND_RATE_OF_SINK,GliderVarioStatus::STATUS_IND_RATE_OF_SINK) = 1;
-
   // basic calculation based on energy transfer from kinetic energy to potential energy (increase of speed leads to increase of sink).
   /// \todo Calculation of Rate of Sink: Refine the vario compensation by considering the decrease of drag based on the polar.
   transitionMatrix(GliderVarioStatus::STATUS_IND_RATE_OF_SINK,GliderVarioStatus::STATUS_IND_ACC_X) = lastStatus.trueAirSpeed/GRAVITY;
@@ -204,7 +202,7 @@ GliderVarioTransitionMatrix::calcTransitionMatrix (
   //--STATUS_IND_WIND_SPEED_E------------------------------------------------------------------------------------
   // transitionMatrix(GliderVarioStatus::STATUS_IND_WIND_SPEED_E,GliderVarioStatus::STATUS_IND_WIND_SPEED_E) = 1;
 
-  //--STATUS_IND_ACC_X------------------------------------------------------------------------------------
+  //--STATUS_IND_THERMAL_SPEED------------------------------------------------------------------------------------
   // transitionMatrix(GliderVarioStatus::STATUS_IND_THERMAL_SPEED,GliderVarioStatus::STATUS_IND_RATE_OF_SINK) = -1;
   // transitionMatrix(GliderVarioStatus::STATUS_IND_THERMAL_SPEED,GliderVarioStatus::STATUS_IND_VERTICAL_SPEED) = 1;
 

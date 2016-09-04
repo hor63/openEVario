@@ -47,7 +47,7 @@ typedef float FloatType;
  * exact values for Germany can be obtained from the German gravity base mesh
  * Deutsches Schweregrundnetz 1994 (DSGN 94)
  * \ref http://www.bkg.bund.de/nn_175464/SharedDocs/Download/DE-Dok/DSGN94-Punktbeschreibung-PDF-de,templateId=raw,property=publicationFile.pdf/DSGN94-Punktbeschreibung-PDF-de.pdf
- * The constant here is a rough average between Hamburg and Munich (I live in Norther Germany).
+ * The constant here is a rough average between Hamburg and Munich (I live in Northern Germany).
  * Since a Kalman filter is not exact numeric science any inaccuracy should be covered by the process variance.
  */
 static FloatType constexpr GRAVITY = 9.81;
@@ -174,6 +174,7 @@ public:
   };
 
   typedef Eigen::Matrix<FloatType,STATUS_NUM_ROWS,1> StatusVectorType; ///< Saves typing of the complex template type
+  typedef Eigen::Matrix<FloatType,STATUS_NUM_ROWS,STATUS_NUM_ROWS> StatusCoVarianceType; ///< Co-variance matrix type for P and Q
 
   GliderVarioStatus ();
   virtual
@@ -183,16 +184,48 @@ public:
    *
    * @return reference to the internal vector for direct matrix manipulation or matrix arithmetics
    */
-  StatusVectorType& getStatusVector() {
-    return statusVector;
+  StatusVectorType& getStatusVector_x() {
+    return statusVector_x;
   }
 
   /**
    *
    * @return reference to the internal vector for direct matrix arithmetics
    */
-  StatusVectorType const &getStatusVector() const {
-    return statusVector;
+  StatusVectorType const &getStatusVector_x() const {
+    return statusVector_x;
+  }
+
+  /**
+   *
+   * @return reference to the system noise covariance Q for direct matrix manipulation or matrix arithmetics
+   */
+  StatusCoVarianceType &getSystemNoiseCovariance_Q() {
+	  return systemNoiseCovariance_Q;
+  }
+
+  /**
+   *
+   * @return reference to the system noise covariance Q for direct matrix arithmetics
+   */
+  StatusCoVarianceType const &getSystemNoiseCovariance_Q() const {
+	  return systemNoiseCovariance_Q;
+  }
+
+  /**
+   *
+   * @return reference to the process error covariance Q for direct matrix manipulation or matrix arithmetics
+   */
+  StatusCoVarianceType &getErrorCovariance_P() {
+	  return errorCovariance_P;
+  }
+
+  /**
+   *
+   * @return reference to the process error covariance Q for direct matrix arithmetics
+   */
+  StatusCoVarianceType const &getErrorCovariance_P() const {
+	  return errorCovariance_P;
   }
 
   /**
@@ -207,47 +240,49 @@ public:
   // Here come all state vector elements as single references into the vector for easier access
 
   // Constants
-  FloatType& gravity  = statusVector [ STATUS_IND_GRAVITY ];  ///< Gravity as constant value of GRAVITY=9.81 m/s^2
+  FloatType& gravity  = statusVector_x [ STATUS_IND_GRAVITY ];  ///< Gravity as constant value of GRAVITY=9.81 m/s^2
 
 
   // Position and attitude
-  FloatType& longitude = statusVector[ STATUS_IND_LONGITUDE	];  ///< Longitude in deg. East
-  FloatType& latitude = statusVector[ STATUS_IND_LATITUDE  	];  ///< Latitude in deg North
-  FloatType& altMSL = statusVector[ STATUS_IND_ALT_MSL   	];  ///< Altitude in m over Mean Sea Level
+  FloatType& longitude = statusVector_x[ STATUS_IND_LONGITUDE	];  ///< Longitude in deg. East
+  FloatType& latitude = statusVector_x[ STATUS_IND_LATITUDE  	];  ///< Latitude in deg North
+  FloatType& altMSL = statusVector_x[ STATUS_IND_ALT_MSL   	];  ///< Altitude in m over Mean Sea Level
   //FloatType& yawAngle Redundant to heading
-  FloatType& pitchAngle = statusVector[ STATUS_IND_PITCH		];  ///< Pitch angle in deg. nose up. Pitch is applied after yaw.
-  FloatType& rollAngle = statusVector[ STATUS_IND_ROLL		];  ///< Roll angle in deg. right. Roll is applied after yaw and pitch.
+  FloatType& pitchAngle = statusVector_x[ STATUS_IND_PITCH		];  ///< Pitch angle in deg. nose up. Pitch is applied after yaw.
+  FloatType& rollAngle = statusVector_x[ STATUS_IND_ROLL		];  ///< Roll angle in deg. right. Roll is applied after yaw and pitch.
 
   // Speeds and directions
-  FloatType& groundSpeedNorth = statusVector[ STATUS_IND_SPEED_GROUND_N	];  ///< Ground speed component North in m/s
-  FloatType& groundSpeedEast = statusVector[ STATUS_IND_SPEED_GROUND_E	];  ///< Ground speed component East in m/s
-  FloatType& trueAirSpeed = statusVector[ STATUS_IND_TAS		];  ///< True air speed in m/s relative to surrounding air.
-  FloatType& heading = statusVector[ STATUS_IND_HEADING		];  ///< Heading of the plane in deg. right turn from true north. This is the flight direction relative to the surrounding air.
-  FloatType& rateOfSink = statusVector[ STATUS_IND_RATE_OF_SINK	]; ///< Rate of sink in m/s relative to the surrounding air. Sink because the Z axis points downward.
-  FloatType& verticalSpeed = statusVector[ STATUS_IND_VERTICAL_SPEED	]; ///< Absolute vertical speed in m/s downward. Z axis is downward.
+  FloatType& groundSpeedNorth = statusVector_x[ STATUS_IND_SPEED_GROUND_N	];  ///< Ground speed component North in m/s
+  FloatType& groundSpeedEast = statusVector_x[ STATUS_IND_SPEED_GROUND_E	];  ///< Ground speed component East in m/s
+  FloatType& trueAirSpeed = statusVector_x[ STATUS_IND_TAS		];  ///< True air speed in m/s relative to surrounding air.
+  FloatType& heading = statusVector_x[ STATUS_IND_HEADING		];  ///< Heading of the plane in deg. right turn from true north. This is the flight direction relative to the surrounding air.
+  FloatType& rateOfSink = statusVector_x[ STATUS_IND_RATE_OF_SINK	]; ///< Rate of sink in m/s relative to the surrounding air. Sink because the Z axis points downward.
+  FloatType& verticalSpeed = statusVector_x[ STATUS_IND_VERTICAL_SPEED	]; ///< Absolute vertical speed in m/s downward. Z axis is downward.
 
   // Accelerations in reference to the body coordinate system. Accelerations are on the axis of the *plane*.
   // If the plane is pitched up an acceleration on the X axis would speed the plane upward, not forward.
-  FloatType& accelX = statusVector[ STATUS_IND_ACC_X		]; ///< Acceleration in m/s^2 on the X axis of the plane
-  FloatType& accelY = statusVector[ STATUS_IND_ACC_Y		]; ///< Acceleration in m/s^2 on the Y axis of the plane
-  FloatType& accelZ = statusVector[ STATUS_IND_ACC_Z		]; ///< Acceleration in m/s^2 on the Z axis of the plane
+  FloatType& accelX = statusVector_x[ STATUS_IND_ACC_X		]; ///< Acceleration in m/s^2 on the X axis of the plane
+  FloatType& accelY = statusVector_x[ STATUS_IND_ACC_Y		]; ///< Acceleration in m/s^2 on the Y axis of the plane
+  FloatType& accelZ = statusVector_x[ STATUS_IND_ACC_Z		]; ///< Acceleration in m/s^2 on the Z axis of the plane
 
   // Turn rates in reference to the body coordinate system
-  FloatType& rollRateX = statusVector[ STATUS_IND_ROTATION_X	]; ///< Roll rate in deg/s to the right around the X axis
-  FloatType& pitchRateY = statusVector[ STATUS_IND_ROTATION_Y	]; ///< Pitch rate in deg/s nose up around the Y axis
-  FloatType& yawRateZ = statusVector[ STATUS_IND_ROTATION_Z	]; ///< Yaw (turn) rate in deg/s around the Z axis
+  FloatType& rollRateX = statusVector_x[ STATUS_IND_ROTATION_X	]; ///< Roll rate in deg/s to the right around the X axis
+  FloatType& pitchRateY = statusVector_x[ STATUS_IND_ROTATION_Y	]; ///< Pitch rate in deg/s nose up around the Y axis
+  FloatType& yawRateZ = statusVector_x[ STATUS_IND_ROTATION_Z	]; ///< Yaw (turn) rate in deg/s around the Z axis
 
   // Derived values which improve the responsiveness of the Kalman filter. Some are also the true goals of the filter
-  FloatType& gyroBiasX = statusVector[ STATUS_IND_GYRO_BIAS_X	]; ///< Bias (0-offset) of the X axis gyro in deg/s
-  FloatType& gyroBiasY = statusVector[ STATUS_IND_GYRO_BIAS_Y	]; ///< Bias (0-offset) of the Y axis gyro in deg/s
-  FloatType& gyroBiasZ = statusVector[ STATUS_IND_GYRO_BIAS_Z	]; ///< Bias (0-offset) of the Z axis gyro in deg/s
-  FloatType& windSpeedNorth = statusVector[ STATUS_IND_WIND_SPEED_N	]; ///< Wind speed North component in m/s
-  FloatType& windSpeedEast = statusVector[ STATUS_IND_WIND_SPEED_E		]; ///< Wind speed East component in m/s
+  FloatType& gyroBiasX = statusVector_x[ STATUS_IND_GYRO_BIAS_X	]; ///< Bias (0-offset) of the X axis gyro in deg/s
+  FloatType& gyroBiasY = statusVector_x[ STATUS_IND_GYRO_BIAS_Y	]; ///< Bias (0-offset) of the Y axis gyro in deg/s
+  FloatType& gyroBiasZ = statusVector_x[ STATUS_IND_GYRO_BIAS_Z	]; ///< Bias (0-offset) of the Z axis gyro in deg/s
+  FloatType& windSpeedNorth = statusVector_x[ STATUS_IND_WIND_SPEED_N	]; ///< Wind speed North component in m/s
+  FloatType& windSpeedEast = statusVector_x[ STATUS_IND_WIND_SPEED_E		]; ///< Wind speed East component in m/s
 				      ///< The direction is the direction *from where* the wind blows.
-  FloatType& thermalSpeed = statusVector[ STATUS_IND_THERMAL_SPEED	]; ///< The true reason for the whole exercise! :)
+  FloatType& thermalSpeed = statusVector_x[ STATUS_IND_THERMAL_SPEED	]; ///< The true reason for the whole exercise! :)
 
 protected:
-  StatusVectorType statusVector;
+  StatusVectorType     statusVector_x;
+  StatusCoVarianceType systemNoiseCovariance_Q;
+  StatusCoVarianceType errorCovariance_P;
 
 
 };

@@ -32,9 +32,11 @@ namespace openEV
 
 GliderVarioStatus::GliderVarioStatus ()
 {
-  statusVector.setZero();
+  statusVector_x.setZero();
+  systemNoiseCovariance_Q.setZero();
+  errorCovariance_P.setZero();
 
-  statusVector(STATUS_IND_GRAVITY)= GRAVITY;
+  statusVector_x(STATUS_IND_GRAVITY)= GRAVITY;
 
 }
 
@@ -141,7 +143,8 @@ void GliderVarioStatus::normalizeAngles() {
 
 std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 
-	o <<    " longitude   "
+	o <<    " gravity     "
+			" longitude   "
 			" latitude    "
 			" altMSL      "
 			" pitchAngle  "
@@ -163,13 +166,15 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 			" gyroBiasZ   "
 			" windSpeedNor"
 			" windSpeedEas"
-			" thermalSpeed"
-			" gravity     " << std::endl;
+			" thermalSpeed" << std::endl;
 
 	o << std::fixed;
 	o.precision(7);
 	o.fill('_');
 
+	o.precision(7);
+	o.width(13);
+	o << s.gravity;
 	o.precision(7);
 	o.width(13);
 	o << s.longitude;
@@ -239,9 +244,6 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 	o.precision(7);
 	o.width(13);
 	o << s.thermalSpeed;
-	o.precision(7);
-	o.width(13);
-	o << s.gravity;
 	o << std::endl;
 
 	return o;
