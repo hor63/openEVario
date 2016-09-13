@@ -72,21 +72,23 @@ typedef Eigen::Matrix<FloatType, 3, 3> RotationMatrix3DType;
  * - Gravity STATUS_IND_GRAVITY: \b Gravity in m/s^2 in world z axis.
  *
  * Worldwide Position:
- * - Longitude STATUS_IND_LONGITUDE:		\b Longitude in decimal degrees. Eastern hemisphere is positive,
+ * - Longitude STATUS_IND_LONGITUDE:		\b Longitude in arc seconds. Eastern hemisphere is positive,
  *  							western hemisphere is negative.
- * - Latitude STATUS_IND_LATITUDE:			\b Latitude in decimal degrees. Nothern hemisphere is positive,
+ * - Latitude STATUS_IND_LATITUDE:			\b Latitude in decimal arc seconds. Northern hemisphere is positive,
  * 							southern hemisphere is negative.
- * - Altitude MSL STATUS_IND_ALT_MSL:		\b Altitude above MSL in m(eter).
+ * - Altitude MSL STATUS_IND_ALT_MSL:		\b Altitude above MSL in meter.
  *
  * Attitude:
- * - Yaw angle STATUS_IND_YAW:			\b Yaw angle in Degrees to the right of true North. Also known as \b Heading
+ * - Yaw angle redundant to \b Heading
  * - Pitch angle STATUS_IND_PITCH:			\b Pitch angle in Degrees nose upward. 0 = horizontal flight. Also known as \b Elevation.
- * - Roll angle STATUS_IND_ROLL:			\b Roll angle in degrees right. Left roll is negative. Also known as \b Bank.
+ * - Roll angle STATUS_IND_ROLL:			\b Roll angle in degrees right. Left roll is negative. Also known as \b Bank angle.
  *
  * Speeds and directions
- * - Ground speed STATUS_IND_SPEED_GROUND		<b>Ground Speed</b> in m/s
+ * - Ground speed STATUS_IND_SPEED_GROUND_N		<b>Ground Speed</b> component North in m/s
+ * - Ground speed STATUS_IND_SPEED_GROUND_E		<b>Ground Speed</b> component East in m/s
  * - Direction over ground STATUS_IND_DIR_GROUND	<b>Flight Direction over ground</b> in Degrees to the right to true North.
- * - True air speed STATUS_IND_TAS			<b>True Air Speed</b> in m/s. Speed relative to the surrounding air
+ * - True air speed STATUS_IND_TAS_N			<b>True Air Speed North component</b> in m/s. Speed relative to the surrounding air
+ * - True air speed STATUS_IND_TAS_E			<b>True Air Speed East  component</b> in m/s. Speed relative to the surrounding air
  * - Plane heading STATUS_IND_HEADING		<b>True Heading of the plane</b>.
  * 							I assume that the heading is equal to my movement vector in the air,
  * 							i.e. I assume that I am not slipping.
@@ -96,22 +98,24 @@ typedef Eigen::Matrix<FloatType, 3, 3> RotationMatrix3DType;
  * - Absolute vertical speed STATUS_IND_VERTICAL_SPEED	<b>Absolute vertical speed</b> in m/s
  *
  * Accelerations in reference to the body coordinate system
- * - Accel X axis STATUS_IND_ACC_X			<b>Acceleration along X axis</b> in m/s^2
- * - Accel Y axis STATUS_IND_ACC_Y			<b>Acceleration along Y axis</b> in m/s^2
- * - Accel Z axis STATUS_IND_ACC_Z			<b>Acceleration along Y axis</b> in m/s^2
+ * - Accel X axis STATUS_IND_ACC_X			<b>Acceleration along X axis</b> in m/s^2 in world coordinates
+ * - Accel Y axis STATUS_IND_ACC_Y			<b>Acceleration along Y axis</b> in m/s^2 in world coordinates
+ * - Accel Z axis STATUS_IND_ACC_Z			<b>Acceleration along Y axis</b> in m/s^2 in world coordinates
  *
  * Turn rates in reference to the body coordinate system
- * - Rotation around X axis 			<b>Rotation around X axis</b> in degrees per second
- * - Rotation around Y axis 			<b>Rotation around Y axis</b> in degrees per second
- * - Rotation around Z axis 			<b>Rotation around Z axis</b> in degrees per second
+ * - Rotation around X axis 			<b>Rotation around X axis</b> in degrees per second in world coordinates
+ * - Rotation around Y axis 			<b>Rotation around Y axis</b> in degrees per second in world coordinates
+ * - Rotation around Z axis 			<b>Rotation around Z axis</b> in degrees per second in world coordinates
  *
  * Derived values which improve the responsiveness of the Kalman filter
  * - Gyro X bias STATUS_IND_GYRO_BIAS_X		<b>Gyro X axis bias</b>
  * 							Gyros tend to have a bias, i.e an offset of the 0-value.
  * 							The bias is not constant but varies over time. Tracking it helps to make the filter more responsive
+ * 							The bias is measured in plane coordinates.
  * - Gyro Y bias STATUS_IND_GYRO_BIAS_Y		<b>Gyro Y axis bias</b>
  * - Gyro Z bias STATUS_IND_GYRO_BIAS_Z		<b>Gyro Z axis bias</b>
- * - Wind speed STATUS_IND_WIND_SPEED		<b>Wind Speed</b> in m/s
+ * - Wind speed STATUS_IND_WIND_SPEED_N		<b>Wind Speed</b> in m/s North component
+ * - Wind speed STATUS_IND_WIND_SPEED_E		<b>Wind Speed</b> in m/s East component
  * - Wind direction STATUS_IND_WIND_DIR		<b>Wind Direction</b> in Degrees
  * - Thermal speed STATUS_IND_THERMAL_SPEED	The real thermal updraft in m/s
  *
@@ -125,52 +129,54 @@ public:
    * Enumeration of the components of the Kalman status vector x
    */
   enum StatusComponentIndex {
-	/// Constants
 
+	/// Constants
 	STATUS_IND_GRAVITY      ,  ///< Gravity as constant value of GRAVITY=9.81 m/s^2
 
-
-	/// Position and attitude
-
-    STATUS_IND_LONGITUDE	,  ///< Longitude in deg. East
-    STATUS_IND_LATITUDE  	,  ///< Latitude in deg North
+	/// Position and altitude
+    STATUS_IND_LATITUDE  	,  ///< Latitude in arc seconds North
+    STATUS_IND_LONGITUDE	,  ///< Longitude in arc seconds East
     STATUS_IND_ALT_MSL   	,  ///< Altitude in m over Mean Sea Level
-    //STATUS_IND_YAW Redundant to Heading.
+
+	/// Attitude of the body to the world coordinate system
+    STATUS_IND_HEADING		,  ///< Heading of the plane in deg. right turn from true north. This is the flight direction relative to the surrounding air.
+     	 	 	 	 	 	   ///< Synonymous with Yaw.
     STATUS_IND_PITCH		,  ///< Pitch angle in deg. nose up. Pitch is applied after yaw.
-    STATUS_IND_ROLL		,  ///< Roll angle in deg. right. Roll is applied after yaw and pitch.
+    STATUS_IND_ROLL		    ,  ///< Roll angle in deg. right. Roll is applied after yaw and pitch.
 
-    /// Speeds and directions
-
+    /// Speeds
     STATUS_IND_SPEED_GROUND_N	,  ///< Ground speed component North in m/s
     STATUS_IND_SPEED_GROUND_E	,  ///< Ground speed component East in m/s
-    STATUS_IND_TAS		,  ///< True air speed in m/s relative to surrounding air.
-    STATUS_IND_HEADING		,  ///< Heading of the plane in deg. right turn from true north. This is the flight direction relative to the surrounding air.
+    STATUS_IND_TAS_N		,  ///< True air speed North component in m/s relative to surrounding air.
+    STATUS_IND_TAS_E		,  ///< True air speed East component in m/s relative to surrounding air.
     STATUS_IND_RATE_OF_SINK	, ///< Rate of sink in m/s relative to the surrounding air. Sink because the z axis points downward
     STATUS_IND_VERTICAL_SPEED	, ///< Absolute vertical speed in m/s downward. Z axis is direction down.
+    STATUS_IND_THERMAL_SPEED	, ///< The true reason for the whole exercise! :)
 
-    /// Accelerations in reference to the body coordinate system. Accelerations are on the axis of the *plane*.
-    /// If the plane is pitched up an acceleration on the X axis would speed the plane upward, not forward.
+    /// Accelerations in reference to the body (plane) coordinate system.
+    STATUS_IND_ACC_X		, ///< Acceleration in m/s^2 along body X axis
+    STATUS_IND_ACC_Y		, ///< Acceleration in m/s^2 along body Y axis
+    STATUS_IND_ACC_Z		, ///< Acceleration in m/s^2 along body Z axis
 
-    STATUS_IND_ACC_X		, ///< Acceleration in m/s^2 on the X axis of the plane
-    STATUS_IND_ACC_Y		, ///< Acceleration in m/s^2 on the Y axis of the plane
-    STATUS_IND_ACC_Z		, ///< Acceleration in m/s^2 on the Z axis of the plane
-
-    /// Turn rates in reference to the body coordinate system
-
+    /// Turn rates in reference to the body (plane) coordinate system
     STATUS_IND_ROTATION_X	, ///< Roll rate in deg/s to the right around the X axis
     STATUS_IND_ROTATION_Y	, ///< Pitch rate in deg/s nose up around the Y axis
-    STATUS_IND_ROTATION_Z	, ///< Yaw (turn) rate in deg/s around the Z axis
+    STATUS_IND_ROTATION_Z	, ///< Yaw (turn) rate clockwise in deg/s around the Z (downward) axis
 
-    /// Derived values which improve the responsiveness of the Kalman filter. Some are also the true goals of the filter
+	/// Turn rate in the world coordinate system
+	STATUS_IND_ROTATION_GLO_Z	, ///< Yaw (turn) rate clockwise in deg/s around the Z (downward) axis
+	 	 	 	 	 	 	 	  ///< I need this one to assess the bank angle together with the TAS.
 
-    STATUS_IND_GYRO_BIAS_X	, ///< Bias (0-offset) of the X axis gyro in deg/s
-    STATUS_IND_GYRO_BIAS_Y	, ///< Bias (0-offset) of the Y axis gyro in deg/s
-    STATUS_IND_GYRO_BIAS_Z	, ///< Bias (0-offset) of the Z axis gyro in deg/s
+	/// Derived values which improve the responsiveness of the Kalman filter. Some are also the true goals of the filter
+    STATUS_IND_GYRO_BIAS_X	, ///< Bias (0-offset) of the plane X axis gyro in deg/s
+    STATUS_IND_GYRO_BIAS_Y	, ///< Bias (0-offset) of the plane Y axis gyro in deg/s
+    STATUS_IND_GYRO_BIAS_Z	, ///< Bias (0-offset) of the plane Z axis gyro in deg/s
     STATUS_IND_WIND_SPEED_N	, ///< Wind speed North component in m/s
     STATUS_IND_WIND_SPEED_E	, ///< Wind speed East component in m/s
-				      ///< The direction is the direction *from where* the wind blows.
-    STATUS_IND_THERMAL_SPEED	, ///< The true reason for the whole exercise! :)
-    STATUS_NUM_ROWS				///< The number of rows in the vector
+	STATUS_IND_WIND_SPEED   , ///< Absolute wind speed in m/s
+	STATUS_IND_WIND_DIR     , ///< The direction is the direction *from where* the wind blows.
+
+	STATUS_NUM_ROWS				///< The number of rows in the vector
   };
 
   typedef Eigen::Matrix<FloatType,STATUS_NUM_ROWS,1> StatusVectorType; ///< Saves typing of the complex template type
@@ -239,45 +245,51 @@ public:
 
   // Here come all state vector elements as single references into the vector for easier access
 
-  // Constants
+  /// Constants
   FloatType& gravity  = statusVector_x [ STATUS_IND_GRAVITY ];  ///< Gravity as constant value of GRAVITY=9.81 m/s^2
 
+  /// Position and altitude
+  FloatType& longitude = statusVector_x[ STATUS_IND_LONGITUDE	];  ///< Latitude in arc seconds North
+  FloatType& latitude = statusVector_x[ STATUS_IND_LATITUDE  	];  ///< Longitude in arc seconds East
+  FloatType& altMSL = statusVector_x[ STATUS_IND_ALT_MSL   	    ];  ///< Altitude in m over Mean Sea Level
 
-  // Position and attitude
-  FloatType& longitude = statusVector_x[ STATUS_IND_LONGITUDE	];  ///< Longitude in deg. East
-  FloatType& latitude = statusVector_x[ STATUS_IND_LATITUDE  	];  ///< Latitude in deg North
-  FloatType& altMSL = statusVector_x[ STATUS_IND_ALT_MSL   	];  ///< Altitude in m over Mean Sea Level
-  //FloatType& yawAngle Redundant to heading
+  /// Attitude of the body to the world coordinate system
+  FloatType& heading = statusVector_x[ STATUS_IND_HEADING		];  ///< Heading of the plane in deg. right turn from true north. This is the flight direction relative to the surrounding air.
+ 	                                                                ///< Synonymous with Yaw.
   FloatType& pitchAngle = statusVector_x[ STATUS_IND_PITCH		];  ///< Pitch angle in deg. nose up. Pitch is applied after yaw.
   FloatType& rollAngle = statusVector_x[ STATUS_IND_ROLL		];  ///< Roll angle in deg. right. Roll is applied after yaw and pitch.
 
-  // Speeds and directions
+  /// Speeds
   FloatType& groundSpeedNorth = statusVector_x[ STATUS_IND_SPEED_GROUND_N	];  ///< Ground speed component North in m/s
   FloatType& groundSpeedEast = statusVector_x[ STATUS_IND_SPEED_GROUND_E	];  ///< Ground speed component East in m/s
-  FloatType& trueAirSpeed = statusVector_x[ STATUS_IND_TAS		];  ///< True air speed in m/s relative to surrounding air.
-  FloatType& heading = statusVector_x[ STATUS_IND_HEADING		];  ///< Heading of the plane in deg. right turn from true north. This is the flight direction relative to the surrounding air.
-  FloatType& rateOfSink = statusVector_x[ STATUS_IND_RATE_OF_SINK	]; ///< Rate of sink in m/s relative to the surrounding air. Sink because the Z axis points downward.
-  FloatType& verticalSpeed = statusVector_x[ STATUS_IND_VERTICAL_SPEED	]; ///< Absolute vertical speed in m/s downward. Z axis is downward.
+  FloatType& trueAirSpeedNorth = statusVector_x[ STATUS_IND_TAS_N		    ];  ///< True air speed North component in m/s relative to surrounding air.
+  FloatType& trueAirSpeedEast = statusVector_x[ STATUS_IND_TAS_E		    ];  ///< True air speed East component in m/s relative to surrounding air.
+  FloatType& rateOfSink = statusVector_x[ STATUS_IND_RATE_OF_SINK	        ]; ///< Rate of sink in m/s relative to the surrounding air. Sink because the Z axis points downward.
+  FloatType& verticalSpeed = statusVector_x[ STATUS_IND_VERTICAL_SPEED	    ]; ///< Absolute vertical speed in m/s downward. Z axis is downward.
+  FloatType& thermalSpeed = statusVector_x[ STATUS_IND_THERMAL_SPEED	    ]; ///< The true reason for the whole exercise! :)
 
-  // Accelerations in reference to the body coordinate system. Accelerations are on the axis of the *plane*.
-  // If the plane is pitched up an acceleration on the X axis would speed the plane upward, not forward.
-  FloatType& accelX = statusVector_x[ STATUS_IND_ACC_X		]; ///< Acceleration in m/s^2 on the X axis of the plane
-  FloatType& accelY = statusVector_x[ STATUS_IND_ACC_Y		]; ///< Acceleration in m/s^2 on the Y axis of the plane
-  FloatType& accelZ = statusVector_x[ STATUS_IND_ACC_Z		]; ///< Acceleration in m/s^2 on the Z axis of the plane
+  /// Accelerations in reference to the body (plane) coordinate system.
+  FloatType& accelX = statusVector_x[ STATUS_IND_ACC_Z		]; ///< Acceleration in m/s^2 along plane X axis
+  FloatType& accelY = statusVector_x[ STATUS_IND_ACC_Y		]; ///< Acceleration in m/s^2 along plane Y axis
+  FloatType& accelZ = statusVector_x[ STATUS_IND_ACC_Z		]; ///< Acceleration in m/s^2 along the plane Z axis
 
-  // Turn rates in reference to the body coordinate system
+  /// Turn rates in reference to the body (plane) coordinate system
   FloatType& rollRateX = statusVector_x[ STATUS_IND_ROTATION_X	]; ///< Roll rate in deg/s to the right around the X axis
   FloatType& pitchRateY = statusVector_x[ STATUS_IND_ROTATION_Y	]; ///< Pitch rate in deg/s nose up around the Y axis
-  FloatType& yawRateZ = statusVector_x[ STATUS_IND_ROTATION_Z	]; ///< Yaw (turn) rate in deg/s around the Z axis
+  FloatType& yawRateZ = statusVector_x[ STATUS_IND_ROTATION_Z	]; ///< Yaw (turn) clockwise rate in deg/s around the Z axis
 
-  // Derived values which improve the responsiveness of the Kalman filter. Some are also the true goals of the filter
-  FloatType& gyroBiasX = statusVector_x[ STATUS_IND_GYRO_BIAS_X	]; ///< Bias (0-offset) of the X axis gyro in deg/s
-  FloatType& gyroBiasY = statusVector_x[ STATUS_IND_GYRO_BIAS_Y	]; ///< Bias (0-offset) of the Y axis gyro in deg/s
-  FloatType& gyroBiasZ = statusVector_x[ STATUS_IND_GYRO_BIAS_Z	]; ///< Bias (0-offset) of the Z axis gyro in deg/s
-  FloatType& windSpeedNorth = statusVector_x[ STATUS_IND_WIND_SPEED_N	]; ///< Wind speed North component in m/s
-  FloatType& windSpeedEast = statusVector_x[ STATUS_IND_WIND_SPEED_E		]; ///< Wind speed East component in m/s
-				      ///< The direction is the direction *from where* the wind blows.
-  FloatType& thermalSpeed = statusVector_x[ STATUS_IND_THERMAL_SPEED	]; ///< The true reason for the whole exercise! :)
+  /// Turn rate in the world coordinate system
+  FloatType& yawRateGloZ = statusVector_x[ STATUS_IND_ROTATION_GLO_Z]; ///< Yaw (turn) rate clockwise in deg/s around the Z (downward) axis
+	 	 	 	 	 	 	 	  ///< I need this one to assess the bank angle together with the TAS.
+
+
+  /// Derived values which improve the responsiveness of the Kalman filter. Some are also the true goals of the filter
+  FloatType& gyroBiasX = statusVector_x[ STATUS_IND_GYRO_BIAS_X	     ]; ///< Bias (0-offset) of the X axis gyro in deg/s
+  FloatType& gyroBiasY = statusVector_x[ STATUS_IND_GYRO_BIAS_Y	     ]; ///< Bias (0-offset) of the Y axis gyro in deg/s
+  FloatType& gyroBiasZ = statusVector_x[ STATUS_IND_GYRO_BIAS_Z	     ]; ///< Bias (0-offset) of the Z axis gyro in deg/s
+  FloatType& windSpeedNorth = statusVector_x[ STATUS_IND_WIND_SPEED_N]; ///< Wind speed North component in m/s
+  FloatType& windSpeedEast  = statusVector_x[ STATUS_IND_WIND_SPEED_E]; ///< Wind speed East component in m/s
+  FloatType& windDirection  = statusVector_x[ STATUS_IND_WIND_DIR    ];  ///< The direction is the direction *from where* the wind blows.
 
 protected:
   StatusVectorType     statusVector_x;
