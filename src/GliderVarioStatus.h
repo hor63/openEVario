@@ -44,94 +44,49 @@ typedef float FloatType;
 
 /**
  * Constant of gravity acceleration.
- * exact values for Germany can be obtained from the German gravity base mesh
- * Deutsches Schweregrundnetz 1994 (DSGN 94)
- * \ref http://www.bkg.bund.de/nn_175464/SharedDocs/Download/DE-Dok/DSGN94-Punktbeschreibung-PDF-de,templateId=raw,property=publicationFile.pdf/DSGN94-Punktbeschreibung-PDF-de.pdf
+ * exact values for Germany can be obtained for the German gravity base mesh
+ * Deutsches Schweregrundnetz 1994 (DSGN 94) from
+ * <a href="https://www.bkg.bund.de/SharedDocs/Downloads/BKG/DE/Downloads-DE-Flyer/BKG-DSGN94-DE.pdf?__blob=publicationFile&v=4" >DSGN94-Punktbeschreibung</a>
  * The constant here is a rough average between Hamburg and Munich (I live in Northern Germany).
  * Since a Kalman filter is not exact numeric science any inaccuracy should be covered by the process variance.
+ *
+ * \sa <a href="https://www.bkg.bund.de/DE/Ueber-das-BKG/Geodaesie/Schwere/Schwere-Deutschland/schwere-deutsch.html#doc57358bodyText1" >Deutsches Schweregrundnetz 1994 (DSGN94)</a>
  */
-static FloatType constexpr GRAVITY = 9.81;
+static FloatType constexpr GRAVITY = 9.811;
 
 
 /**
- * This vector type is used for all 3-dimensional representations of values in Kartesian coodinates
+ * This vector type is used for all 3-dimensional representations of values in Cartesian coordinates
  */
 typedef Eigen::Matrix<FloatType, 3, 1> Vector3DType;
 typedef Eigen::Matrix<FloatType, 3, 3> RotationMatrix3DType;
 /**
  *  \class GliderVarioStatus
  *
- * \brief GliderVarioStatus manages the Kalman filter state x.
+ * \brief GliderVarioStatus manages the Kalman filter state x as #statusVector_x
+ * and the accompanying process error covariance matrix P as #errorCovariance_P,
+ * and the system noise covariance matrix Q as #systemNoiseCovariance_Q
  *
- * The class defines the Kalman filter status x as a vector of floats or doubles. Each component of the
- * status vector is clearly identified by the index in the vector.
- * The indexes are enumerated in the *StatusComponentIndex* enum.
- * The components and index enumerators of the status vector are as follows:
- *
- * Constants
- * - Gravity STATUS_IND_GRAVITY: \b Gravity in m/s^2 in world z axis.
- *
- * Worldwide Position:
- * - Longitude STATUS_IND_LONGITUDE:		\b Longitude in arc seconds. Eastern hemisphere is positive,
- *  							western hemisphere is negative.
- * - Latitude STATUS_IND_LATITUDE:			\b Latitude in decimal arc seconds. Northern hemisphere is positive,
- * 							southern hemisphere is negative.
- * - Altitude MSL STATUS_IND_ALT_MSL:		\b Altitude above MSL in meter.
- *
- * Attitude:
- * - Yaw angle redundant to \b Heading
- * - Pitch angle STATUS_IND_PITCH:			\b Pitch angle in Degrees nose upward. 0 = horizontal flight. Also known as \b Elevation.
- * - Roll angle STATUS_IND_ROLL:			\b Roll angle in degrees right. Left roll is negative. Also known as \b Bank angle.
- *
- * Speeds and directions
- * - Ground speed STATUS_IND_SPEED_GROUND_N		<b>Ground Speed</b> component North in m/s
- * - Ground speed STATUS_IND_SPEED_GROUND_E		<b>Ground Speed</b> component East in m/s
- * - Direction over ground STATUS_IND_DIR_GROUND	<b>Flight Direction over ground</b> in Degrees to the right to true North.
- * - True air speed STATUS_IND_TAS_N			<b>True Air Speed North component</b> in m/s. Speed relative to the surrounding air
- * - True air speed STATUS_IND_TAS_E			<b>True Air Speed East  component</b> in m/s. Speed relative to the surrounding air
- * - Plane heading STATUS_IND_HEADING		<b>True Heading of the plane</b>.
- * 							I assume that the heading is equal to my movement vector in the air,
- * 							i.e. I assume that I am not slipping.
- * - Plane rate of Climb STATUS_IND_RATE_OF_CLIMB	<b>Rate of Climb</b> of the air plane relative to the air in m/s.
- * 							Up is positive. This is kind of my stick thermals.
- * 							STATUS_IND_VERTICAL_SPEED and Rate of climb are identical in stagnant air.
- * - Absolute vertical speed STATUS_IND_VERTICAL_SPEED	<b>Absolute vertical speed</b> in m/s
- *
- * Accelerations in reference to the body coordinate system
- * - Accel X axis STATUS_IND_ACC_X			<b>Acceleration along X axis</b> in m/s^2 in world coordinates
- * - Accel Y axis STATUS_IND_ACC_Y			<b>Acceleration along Y axis</b> in m/s^2 in world coordinates
- * - Accel Z axis STATUS_IND_ACC_Z			<b>Acceleration along Y axis</b> in m/s^2 in world coordinates
- *
- * Turn rates in reference to the body coordinate system
- * - Rotation around X axis 			<b>Rotation around X axis</b> in degrees per second in world coordinates
- * - Rotation around Y axis 			<b>Rotation around Y axis</b> in degrees per second in world coordinates
- * - Rotation around Z axis 			<b>Rotation around Z axis</b> in degrees per second in world coordinates
- *
- * Derived values which improve the responsiveness of the Kalman filter
- * - Gyro X bias STATUS_IND_GYRO_BIAS_X		<b>Gyro X axis bias</b>
- * 							Gyros tend to have a bias, i.e an offset of the 0-value.
- * 							The bias is not constant but varies over time. Tracking it helps to make the filter more responsive
- * 							The bias is measured in plane coordinates.
- * - Gyro Y bias STATUS_IND_GYRO_BIAS_Y		<b>Gyro Y axis bias</b>
- * - Gyro Z bias STATUS_IND_GYRO_BIAS_Z		<b>Gyro Z axis bias</b>
- * - Wind speed STATUS_IND_WIND_SPEED_N		<b>Wind Speed</b> in m/s North component
- * - Wind speed STATUS_IND_WIND_SPEED_E		<b>Wind Speed</b> in m/s East component
- * - Wind direction STATUS_IND_WIND_DIR		<b>Wind Direction</b> in Degrees
- * - Thermal speed STATUS_IND_THERMAL_SPEED	The real thermal updraft in m/s
+ * The class defines the Kalman filter status #statusVector_x as a vector of floats or doubles.
+ * Each component of the status vector is clearly identified by the index in the vector.
+ * The indexes are enumerated in the #StatusComponentIndex enum.
+ * Please see the enumerations for descriptions of the components.
+ * The system noise covariance #systemNoiseCovariance_Q which describes the state uncertainties is defined here too
+ * as well as the process error covariance #errorCovariance_P.
  *
  */
 class GliderVarioStatus
 {
 public:
 
-  /** \brief Index, i.e. positions of the status components in the status vector
+  /** \brief Index, i.e. positions of the status components in #statusVector_x
    *
-   * Enumeration of the components of the Kalman status vector x
+   * Enumeration of the components of the Kalman status vector #statusVector_x
    */
   enum StatusComponentIndex {
 
 	/// Constants
-	STATUS_IND_GRAVITY      ,  ///< Gravity as constant value of GRAVITY=9.81 m/s^2
+	STATUS_IND_CONST_ONE      ,  ///< Having a constant value of one comes handy to handle constant values like the gravity.
 
 	/// Position and altitude
     STATUS_IND_LATITUDE  	,  ///< Latitude in arc seconds North
@@ -149,9 +104,10 @@ public:
     STATUS_IND_SPEED_GROUND_E	,  ///< Ground speed component East in m/s
     STATUS_IND_TAS_N		,  ///< True air speed North component in m/s relative to surrounding air.
     STATUS_IND_TAS_E		,  ///< True air speed East component in m/s relative to surrounding air.
-    STATUS_IND_RATE_OF_SINK	, ///< Rate of sink in m/s relative to the surrounding air. Sink because the z axis points downward
+    STATUS_IND_TAS			,  ///< True air speed absolute value. Needed to calculate the bank angle with #STATUS_IND_ROTATION_GLO_Z.
+    STATUS_IND_RATE_OF_SINK	, ///< Rate of sink in m/s relative to the surrounding air. Sink because the Z axis points downward
     STATUS_IND_VERTICAL_SPEED	, ///< Absolute vertical speed in m/s downward. Z axis is direction down.
-    STATUS_IND_THERMAL_SPEED	, ///< The true reason for the whole exercise! :)
+    STATUS_IND_THERMAL_SPEED	, ///< The true reason for the whole exercise! :). As always in Z axis direction downward.
 
     /// Accelerations in reference to the body (plane) coordinate system.
     STATUS_IND_ACC_X		, ///< Acceleration in m/s^2 along body X axis
@@ -165,18 +121,19 @@ public:
 
 	/// Turn rate in the world coordinate system
 	STATUS_IND_ROTATION_GLO_Z	, ///< Yaw (turn) rate clockwise in deg/s around the Z (downward) axis
-	 	 	 	 	 	 	 	  ///< I need this one to assess the bank angle together with the TAS.
+	 	 	 	 	 	 	 	  ///< I need this one to assess the bank angle together with the #STATUS_IND_TAS.
 
-	/// Derived values which improve the responsiveness of the Kalman filter. Some are also the true goals of the filter
+	/// Derived values which improve the responsiveness of the Kalman filter.
     STATUS_IND_GYRO_BIAS_X	, ///< Bias (0-offset) of the plane X axis gyro in deg/s
     STATUS_IND_GYRO_BIAS_Y	, ///< Bias (0-offset) of the plane Y axis gyro in deg/s
     STATUS_IND_GYRO_BIAS_Z	, ///< Bias (0-offset) of the plane Z axis gyro in deg/s
+	STATUS_IND_COMPASS_ERROR, ///< Combined magnetic declination (variation) and deviation in degrees.
     STATUS_IND_WIND_SPEED_N	, ///< Wind speed North component in m/s
     STATUS_IND_WIND_SPEED_E	, ///< Wind speed East component in m/s
 	STATUS_IND_WIND_SPEED   , ///< Absolute wind speed in m/s
 	STATUS_IND_WIND_DIR     , ///< The direction is the direction *from where* the wind blows.
 
-	STATUS_NUM_ROWS				///< The number of rows in the vector
+	STATUS_NUM_ROWS				///< The number of rows in the vector. This is not a component of the vector!
   };
 
   typedef Eigen::Matrix<FloatType,STATUS_NUM_ROWS,1> StatusVectorType; ///< Saves typing of the complex template type
@@ -246,7 +203,7 @@ public:
   // Here come all state vector elements as single references into the vector for easier access
 
   /// Constants
-  FloatType& gravity  = statusVector_x [ STATUS_IND_GRAVITY ];  ///< Gravity as constant value of GRAVITY=9.81 m/s^2
+  FloatType& constOne  = statusVector_x [ STATUS_IND_CONST_ONE ];  ///< Having a constant value of one comes handy to handle constant values like the gravity.
 
   /// Position and altitude
   FloatType& longitude = statusVector_x[ STATUS_IND_LONGITUDE	];  ///< Latitude in arc seconds North
@@ -264,6 +221,7 @@ public:
   FloatType& groundSpeedEast = statusVector_x[ STATUS_IND_SPEED_GROUND_E	];  ///< Ground speed component East in m/s
   FloatType& trueAirSpeedNorth = statusVector_x[ STATUS_IND_TAS_N		    ];  ///< True air speed North component in m/s relative to surrounding air.
   FloatType& trueAirSpeedEast = statusVector_x[ STATUS_IND_TAS_E		    ];  ///< True air speed East component in m/s relative to surrounding air.
+  FloatType& trueAirSpeed = statusVector_x[ STATUS_IND_TAS		            ];  ///< True air speed absolute value. Needed to calculate the bank angle with #STATUS_IND_ROTATION_GLO_Z.
   FloatType& rateOfSink = statusVector_x[ STATUS_IND_RATE_OF_SINK	        ]; ///< Rate of sink in m/s relative to the surrounding air. Sink because the Z axis points downward.
   FloatType& verticalSpeed = statusVector_x[ STATUS_IND_VERTICAL_SPEED	    ]; ///< Absolute vertical speed in m/s downward. Z axis is downward.
   FloatType& thermalSpeed = statusVector_x[ STATUS_IND_THERMAL_SPEED	    ]; ///< The true reason for the whole exercise! :)
@@ -280,13 +238,14 @@ public:
 
   /// Turn rate in the world coordinate system
   FloatType& yawRateGloZ = statusVector_x[ STATUS_IND_ROTATION_GLO_Z]; ///< Yaw (turn) rate clockwise in deg/s around the Z (downward) axis
-	 	 	 	 	 	 	 	  ///< I need this one to assess the bank angle together with the TAS.
+	 	 	 	 	 	 	 	  ///< I need this one to assess the bank angle together with the #STATUS_IND_TAS.
 
 
   /// Derived values which improve the responsiveness of the Kalman filter. Some are also the true goals of the filter
   FloatType& gyroBiasX = statusVector_x[ STATUS_IND_GYRO_BIAS_X	     ]; ///< Bias (0-offset) of the X axis gyro in deg/s
   FloatType& gyroBiasY = statusVector_x[ STATUS_IND_GYRO_BIAS_Y	     ]; ///< Bias (0-offset) of the Y axis gyro in deg/s
   FloatType& gyroBiasZ = statusVector_x[ STATUS_IND_GYRO_BIAS_Z	     ]; ///< Bias (0-offset) of the Z axis gyro in deg/s
+  FloatType& compassError = statusVector_x[ STATUS_IND_COMPASS_ERROR ]; ///< Combined magnetic declination (variation) and deviation in degrees.
   FloatType& windSpeedNorth = statusVector_x[ STATUS_IND_WIND_SPEED_N]; ///< Wind speed North component in m/s
   FloatType& windSpeedEast  = statusVector_x[ STATUS_IND_WIND_SPEED_E]; ///< Wind speed East component in m/s
   FloatType& windDirection  = statusVector_x[ STATUS_IND_WIND_DIR    ];  ///< The direction is the direction *from where* the wind blows.

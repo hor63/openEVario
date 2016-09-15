@@ -36,7 +36,7 @@ GliderVarioStatus::GliderVarioStatus ()
   systemNoiseCovariance_Q.setZero();
   errorCovariance_P.setZero();
 
-  statusVector_x(STATUS_IND_GRAVITY)= GRAVITY;
+  statusVector_x(STATUS_IND_CONST_ONE)= GRAVITY;
 
 }
 
@@ -155,6 +155,7 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 			" groundSpeedE"
 			" trueAirSpdNo"
 			" trueAirSpdEa"
+			" trueAirSpeed"
 			" rateOfSink  "
 			" verticalSpd "
 			" thermalSpeed"
@@ -168,6 +169,7 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 			" gyroBiasX   "
 			" gyroBiasY   "
 			" gyroBiasZ   "
+			" compassError"
 			" windSpeedNor"
 			" windSpeedEas"
 			" windDirectio"
@@ -177,7 +179,7 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 	o.precision(7);
 	o.fill('_');
 
-	o.precision(7); o.width(13); o << s.gravity     ;
+	o.precision(7); o.width(13); o << s.constOne     ;
 	o.precision(7); o.width(13); o << s.longitude   ;
 	o.precision(7); o.width(13); o << s.latitude    ;
 	o.precision(7); o.width(13); o << s.altMSL      ;
@@ -188,6 +190,7 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 	o.precision(7); o.width(13); o << s.groundSpeedEast;
 	o.precision(7); o.width(13); o << s.trueAirSpeedNorth;
 	o.precision(7); o.width(13); o << s.trueAirSpeedEast;
+	o.precision(7); o.width(13); o << s.trueAirSpeed;
 	o.precision(7); o.width(13); o << s.rateOfSink  ;
 	o.precision(7); o.width(13); o << s.verticalSpeed;
 	o.precision(7); o.width(13); o << s.thermalSpeed;
@@ -201,6 +204,7 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 	o.precision(7); o.width(13); o << s.gyroBiasX   ;
 	o.precision(7); o.width(13); o << s.gyroBiasY   ;
 	o.precision(7); o.width(13); o << s.gyroBiasZ   ;
+	o.precision(7); o.width(13); o << s.compassError;
 	o.precision(7); o.width(13); o << s.windSpeedNorth;
 	o.precision(7); o.width(13); o << s.windSpeedEast;
 	o.precision(7); o.width(13); o << s.windDirection;
