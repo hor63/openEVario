@@ -54,6 +54,7 @@ GliderVarioTransitionMatrix::calcTransitionMatrix (
   RotationMatrix rotMatrix (lastStatus.heading,lastStatus.pitchAngle,lastStatus.rollAngle);
   RotationMatrix3DType &rotMatrixPlaneToWorld = rotMatrix.getMatrixPlaneToGlo();
   RotationMatrix3DType &rotMatrixWorldToPlane = rotMatrix.getMatrixGloToPlane();
+
   // I need half of time square for distance calculations based on acceleration here and there :)
   FloatType timeSquareHalf  = timeDiff*timeDiff / 2.0f;
   FloatType const lenLongitudeArcSec = lenLatitudeArcSec * FastMath::fastCos(lastStatus.latitude);
@@ -87,7 +88,7 @@ GliderVarioTransitionMatrix::calcTransitionMatrix (
   transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ACC_X) = -timeSquareHalf* (rotMatrixPlaneToWorld(2,0));
   transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ACC_Y) = -timeSquareHalf* (rotMatrixPlaneToWorld(2,1));
   transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ACC_Z) = -timeSquareHalf* (rotMatrixPlaneToWorld(2,2));
-  transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_CONST_ONE) = -timeSquareHalf;
+  transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_CONST_ONE) = -timeSquareHalf*GRAVITY;
 
   // STATUS_IND_HEADING
   transitionMatrix(GliderVarioStatus::STATUS_IND_HEADING,GliderVarioStatus::STATUS_IND_HEADING) = 1.0f;
