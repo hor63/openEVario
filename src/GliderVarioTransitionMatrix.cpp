@@ -186,9 +186,17 @@ GliderVarioTransitionMatrix::calcTransitionMatrix (
   transitionMatrix(GliderVarioStatus::STATUS_IND_COMPASS_ERROR,GliderVarioStatus::STATUS_IND_COMPASS_ERROR) = 1.0f;
 
   // STATUS_IND_WIND_SPEED_N
+  transitionMatrix(GliderVarioStatus::STATUS_IND_WIND_SPEED_N,GliderVarioStatus::STATUS_IND_WIND_SPEED) = FastMath::fastCos(lastStatus.windDirection);
+
   // STATUS_IND_WIND_SPEED_E
+  transitionMatrix(GliderVarioStatus::STATUS_IND_WIND_SPEED_E,GliderVarioStatus::STATUS_IND_WIND_SPEED) = FastMath::fastSin(lastStatus.windDirection);
+
+
+  // I will nudge the speed and direction statistically with the Kalman gain. I am entering seriously non-linear territory here...
   // STATUS_IND_WIND_SPEED
+  transitionMatrix(GliderVarioStatus::STATUS_IND_WIND_SPEED,GliderVarioStatus::STATUS_IND_WIND_SPEED) = 1.0f;
   // STATUS_IND_WIND_DIR
+  transitionMatrix(GliderVarioStatus::STATUS_IND_WIND_DIR,GliderVarioStatus::STATUS_IND_WIND_DIR) = 1.0f;
 
 
 
