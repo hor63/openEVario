@@ -199,56 +199,6 @@ GliderVarioTransitionMatrix::calcTransitionMatrix (
   transitionMatrix(GliderVarioStatus::STATUS_IND_WIND_DIR,GliderVarioStatus::STATUS_IND_WIND_DIR) = 1.0f;
 
 
-
-
-
-
-
-
-
-
-  //--STATUS_IND_ACC_X------------------------------------------------------------------------------------
-  // transitionMatrix(GliderVarioStatus::STATUS_IND_ACC_X,GliderVarioStatus::STATUS_IND_ACC_X) = 1;
-
-  //--STATUS_IND_ACC_Y------------------------------------------------------------------------------------
-  // transitionMatrix(GliderVarioStatus::STATUS_IND_ACC_Y,GliderVarioStatus::STATUS_IND_ACC_Y) = 1;
-
-  //--STATUS_IND_ACC_Z------------------------------------------------------------------------------------
-  // transitionMatrix(GliderVarioStatus::STATUS_IND_ACC_Z,GliderVarioStatus::STATUS_IND_ACC_Z) = 1;
-
-  //--STATUS_IND_ROTATION_X------------------------------------------------------------------------------------
-  // transitionMatrix(GliderVarioStatus::STATUS_IND_ROTATION_X,GliderVarioStatus::STATUS_IND_ROTATION_X) = 1;
-
-  //--STATUS_IND_ROTATION_Y------------------------------------------------------------------------------------
-  // transitionMatrix(GliderVarioStatus::STATUS_IND_ROTATION_Y,GliderVarioStatus::STATUS_IND_ROTATION_Y) = 1;
-
-  //--STATUS_IND_ROTATION_Z------------------------------------------------------------------------------------
-  // transitionMatrix(GliderVarioStatus::STATUS_IND_ROTATION_Z,GliderVarioStatus::STATUS_IND_ROTATION_Z) = 1;
-
-  //--STATUS_IND_GYRO_BIAS_X------------------------------------------------------------------------------------
-  // transitionMatrix(GliderVarioStatus::STATUS_IND_GYRO_BIAS_X,GliderVarioStatus::STATUS_IND_GYRO_BIAS_X) = 1;
-
-  //--STATUS_IND_GYRO_BIAS_Y------------------------------------------------------------------------------------
-  // transitionMatrix(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Y,GliderVarioStatus::STATUS_IND_GYRO_BIAS_Y) = 1;
-
-  //--STATUS_IND_GYRO_BIAS_Z------------------------------------------------------------------------------------
-  // transitionMatrix(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Z,GliderVarioStatus::STATUS_IND_GYRO_BIAS_Z) = 1;
-
-  //--STATUS_IND_WIND_SPEED_N------------------------------------------------------------------------------------
-  // transitionMatrix(GliderVarioStatus::STATUS_IND_WIND_SPEED_N,GliderVarioStatus::STATUS_IND_WIND_SPEED_N) = 1;
-
-  //--STATUS_IND_WIND_SPEED_E------------------------------------------------------------------------------------
-  // transitionMatrix(GliderVarioStatus::STATUS_IND_WIND_SPEED_E,GliderVarioStatus::STATUS_IND_WIND_SPEED_E) = 1;
-
-  //--STATUS_IND_THERMAL_SPEED------------------------------------------------------------------------------------
-  // transitionMatrix(GliderVarioStatus::STATUS_IND_THERMAL_SPEED,GliderVarioStatus::STATUS_IND_RATE_OF_SINK) = -1;
-  // transitionMatrix(GliderVarioStatus::STATUS_IND_THERMAL_SPEED,GliderVarioStatus::STATUS_IND_VERTICAL_SPEED) = 1;
-
-  //--STATUS_IND_STATUS_IND_GRAVITY------------------------------------------------------------------------------------
-  // transitionMatrix(GliderVarioStatus::STATUS_IND_GRAVITY,GliderVarioStatus::STATUS_IND_GRAVITY) = 1;
-
-
-
 }
 
 } // namespace openEV
