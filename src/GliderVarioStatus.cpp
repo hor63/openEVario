@@ -36,7 +36,7 @@ GliderVarioStatus::GliderVarioStatus ()
   systemNoiseCovariance_Q.setZero();
   errorCovariance_P.setZero();
 
-  statusVector_x(STATUS_IND_CONST_ONE)= GRAVITY;
+  statusVector_x(STATUS_IND_GRAVITY)= GRAVITY;
 
 }
 
@@ -179,7 +179,7 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 	o.precision(7);
 	o.fill('_');
 
-	o.precision(7); o.width(13); o << s.constOne     ;
+	o.precision(7); o.width(13); o << s.gravity     ;
 	o.precision(7); o.width(13); o << s.longitude   ;
 	o.precision(7); o.width(13); o << s.latitude    ;
 	o.precision(7); o.width(13); o << s.altMSL      ;
