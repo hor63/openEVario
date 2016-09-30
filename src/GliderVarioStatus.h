@@ -248,6 +248,7 @@ public:
   FloatType& compassError = statusVector_x[ STATUS_IND_COMPASS_ERROR ]; ///< Combined magnetic declination (variation) and deviation in degrees.
   FloatType& windSpeedNorth = statusVector_x[ STATUS_IND_WIND_SPEED_N]; ///< Wind speed North component in m/s
   FloatType& windSpeedEast  = statusVector_x[ STATUS_IND_WIND_SPEED_E]; ///< Wind speed East component in m/s
+  FloatType& windSpeed      = statusVector_x[ STATUS_IND_WIND_SPEED  ]; ///< Absolute Wind speed in m/s
   FloatType& windDirection  = statusVector_x[ STATUS_IND_WIND_DIR    ];  ///< The direction is the direction *from where* the wind blows.
 
 protected:

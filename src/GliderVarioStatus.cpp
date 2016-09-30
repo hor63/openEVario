@@ -172,6 +172,7 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 			" compassError"
 			" windSpeedNor"
 			" windSpeedEas"
+			" windSpeed   "
 			" windDirectio"
 		<< std::endl;
 
@@ -207,6 +208,7 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 	o.precision(7); o.width(13); o << s.compassError;
 	o.precision(7); o.width(13); o << s.windSpeedNorth;
 	o.precision(7); o.width(13); o << s.windSpeedEast;
+	o.precision(7); o.width(13); o << s.windSpeed    ;
 	o.precision(7); o.width(13); o << s.windDirection;
 
 	o << std::endl;
