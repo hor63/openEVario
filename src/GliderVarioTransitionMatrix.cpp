@@ -43,9 +43,10 @@ GliderVarioTransitionMatrix::~GliderVarioTransitionMatrix ()
 }
 
 void
-GliderVarioTransitionMatrix::calcTransitionMatrix (
+GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
     FloatType timeDiff,
-    GliderVarioStatus const &lastStatus)
+    GliderVarioStatus const &lastStatus,
+	GliderVarioStatus &newStatus,)
 {
   // I need the square of the time multiple times when calculating distance from acceleration
   FloatType timeDiffSquare = timeDiff * timeDiff;
@@ -59,16 +60,20 @@ GliderVarioTransitionMatrix::calcTransitionMatrix (
   FloatType timeSquareHalf  = timeDiff*timeDiff / 2.0f;
   FloatType const lenLongitudeArcSec = lenLatitudeArcSec * FastMath::fastCos(lastStatus.latitude);
 
+  // I am using a number of temporary variables to store factors used for new status calculation, and to store in the transition matrix.
+  FloatType temp1, temp2, temp3, temp4;
 
   // OK, now systematically propagate the status based on previous status, and the elapsed time
   // Constant factors in comments have been moved to the class constructor. They will not change, and have to be set only once.
 
   // STATUS_IND_CONST_ONE
   transitionMatrix(GliderVarioStatus::STATUS_IND_CONST_ONE,GliderVarioStatus::STATUS_IND_CONST_ONE) = 1.0f;
+  newStatus.constOne = 1.0f;
 
   // STATUS_IND_LATITUDE
   transitionMatrix(GliderVarioStatus::STATUS_IND_LATITUDE,GliderVarioStatus::STATUS_IND_LATITUDE) = 1.0f;
-  transitionMatrix(GliderVarioStatus::STATUS_IND_LATITUDE,GliderVarioStatus::STATUS_IND_SPEED_GROUND_N) = timeDiff / lenLatitudeArcSec;
+  temp1 = timeDiff / lenLatitudeArcSec
+  transitionMatrix(GliderVarioStatus::STATUS_IND_LATITUDE,GliderVarioStatus::STATUS_IND_SPEED_GROUND_N) = temp1;
   FloatType timeSquareHalf2Lat = timeSquareHalf / lenLatitudeArcSec;
   transitionMatrix(GliderVarioStatus::STATUS_IND_LATITUDE,GliderVarioStatus::STATUS_IND_ACC_X) = timeSquareHalf2Lat * rotMatrixPlaneToWorld(0,0);
   transitionMatrix(GliderVarioStatus::STATUS_IND_LATITUDE,GliderVarioStatus::STATUS_IND_ACC_Y) = timeSquareHalf2Lat * rotMatrixPlaneToWorld(0,1);

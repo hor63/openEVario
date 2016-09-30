@@ -64,9 +64,10 @@ public:
    * @param[in] lastStatus Most recent status vector. Used to convert world into local coordinates.
    */
   void
-  calcTransitionMatrix (
+  calcTransitionMatrixAndStatus (
       FloatType timeDiff,
-      GliderVarioStatus const &lastStatus);
+      GliderVarioStatus const &lastStatus,
+	  GliderVarioStatus &newStatus);
 
 
   /**
@@ -83,8 +84,7 @@ public:
 		  GliderVarioStatus &newStatus,
 		  FloatType timeDiff
 		  ){
-	  calcTransitionMatrix(timeDiff,oldStatus);
-	  newStatus.getStatusVector_x() = transitionMatrix * oldStatus.getStatusVector_x();
+	  calcTransitionMatrixAndStatus(timeDiff,oldStatus,newStatus);
 
 	  newStatus.getErrorCovariance_P() = transitionMatrix * oldStatus.getErrorCovariance_P() * transitionMatrix.transpose()
 			  + oldStatus.getSystemNoiseCovariance_Q();
