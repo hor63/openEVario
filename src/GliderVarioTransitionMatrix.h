@@ -64,10 +64,10 @@ public:
    * All other coefficients are supposed to be 0 as they were set at construction time.
    * At the same time the new status is calculated from the old status.
    * Since this is (partially :) ) an EKF the new status is partially calculated from non-linear functions.
-   * In these cases the status transition matrix are written with the (approximate) differential at the point of #lastStatus.
+   * In these cases the status transition matrix are written with the (approximate) differential at the point of \p lastStatus.
    * @param[in] timeDiff Time since last update in seconds.
    * @param[in] lastStatus Most recent status vector. Used to convert world into local coordinates.
-   * @param[out] newStatus The new status extrapolated from the #lastStatus, and #timeDiff.
+   * @param[out] newStatus The new status extrapolated from \p lastStatus, and \p timeDiff.
    */
   void
   calcTransitionMatrixAndStatus (

@@ -1,3 +1,15 @@
+2016-10-01  Kai Horstmann  <horstmannkai@hotmail.com>
+
+	* src/GliderVarioStatus.cpp (operator <<): 
+	* src/GliderVarioStatus.h (GliderVarioStatus):
+	  Added member windSpeed, and incuded in output operator. 
+	* src/GliderVarioTransitionMatrix.cpp (calcTransitionMatrixAndStatus): 
+	* src/GliderVarioTransitionMatrix.h (GliderVarioTransitionMatrix):
+	(GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus):
+	  Re-design and completion of the transition matrix to a Extended Kalman filter (EKF).
+	  Completed calcTransitionMatrixAndStatus to propagate the new status, 
+	  and the transition matrix as approximated Jacobian for trigonometric dependencies to propagate the covariant. 
+	 
 2016-09-04  Kai Horstmann  <horstmannkai@hotmail.com>
 
 	* src/GliderVarioStatus.cpp (~GliderVarioStatus): 
