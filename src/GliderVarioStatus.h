@@ -86,7 +86,7 @@ public:
   enum StatusComponentIndex {
 
 	/// Constants
-	STATUS_IND_CONST_ONE      ,  ///< Having a constant value of one comes handy to handle constant values like the gravity.
+	STATUS_IND_GRAVITY      ,  ///< The gravity, initialized to #::GRAVITY
 
 	/// Position and altitude
     STATUS_IND_LATITUDE  	,  ///< Latitude in arc seconds North
@@ -203,7 +203,7 @@ public:
   // Here come all state vector elements as single references into the vector for easier access
 
   /// Constants
-  FloatType& constOne  = statusVector_x [ STATUS_IND_CONST_ONE ];  ///< Having a constant value of one comes handy to handle constant values like the gravity.
+  FloatType& gravity  = statusVector_x [ STATUS_IND_GRAVITY ];  ///< The gravity, initialized to #::GRAVITY
 
   /// Position and altitude
   FloatType& longitude = statusVector_x[ STATUS_IND_LONGITUDE	];  ///< Latitude in arc seconds North

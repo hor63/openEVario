@@ -44,9 +44,9 @@ GliderVarioTransitionMatrix::~GliderVarioTransitionMatrix ()
 
 void
 GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
-    FloatType timeDiff,
+    FloatType                timeDiff,
     GliderVarioStatus const &lastStatus,
-	GliderVarioStatus &newStatus,)
+	GliderVarioStatus       &newStatus)
 {
   // I need the square of the time multiple times when calculating distance from acceleration
   FloatType timeDiffSquare = timeDiff * timeDiff;
@@ -66,13 +66,14 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
   // OK, now systematically propagate the status based on previous status, and the elapsed time
   // Constant factors in comments have been moved to the class constructor. They will not change, and have to be set only once.
 
-  // STATUS_IND_CONST_ONE
-  transitionMatrix(GliderVarioStatus::STATUS_IND_CONST_ONE,GliderVarioStatus::STATUS_IND_CONST_ONE) = 1.0f;
-  newStatus.constOne = 1.0f;
+  // STATUS_IND_GRAVITY
+  transitionMatrix(GliderVarioStatus::STATUS_IND_GRAVITY,GliderVarioStatus::STATUS_IND_GRAVITY) = 1.0f;
+
+  newStatus.gravity = lastStatus.gravity;
 
   // STATUS_IND_LATITUDE
   transitionMatrix(GliderVarioStatus::STATUS_IND_LATITUDE,GliderVarioStatus::STATUS_IND_LATITUDE) = 1.0f;
-  temp1 = timeDiff / lenLatitudeArcSec
+  temp1 = timeDiff / lenLatitudeArcSec;
   transitionMatrix(GliderVarioStatus::STATUS_IND_LATITUDE,GliderVarioStatus::STATUS_IND_SPEED_GROUND_N) = temp1;
   FloatType timeSquareHalf2Lat = timeSquareHalf / lenLatitudeArcSec;
   transitionMatrix(GliderVarioStatus::STATUS_IND_LATITUDE,GliderVarioStatus::STATUS_IND_ACC_X) = timeSquareHalf2Lat * rotMatrixPlaneToWorld(0,0);
@@ -93,7 +94,7 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
   transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ACC_X) = -timeSquareHalf* (rotMatrixPlaneToWorld(2,0));
   transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ACC_Y) = -timeSquareHalf* (rotMatrixPlaneToWorld(2,1));
   transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ACC_Z) = -timeSquareHalf* (rotMatrixPlaneToWorld(2,2));
-  transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_CONST_ONE) = -timeSquareHalf*GRAVITY;
+  transitionMatrix(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_GRAVITY) = -timeSquareHalf;
 
   // STATUS_IND_HEADING
   transitionMatrix(GliderVarioStatus::STATUS_IND_HEADING,GliderVarioStatus::STATUS_IND_HEADING) = 1.0f;
@@ -154,7 +155,7 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
   transitionMatrix(GliderVarioStatus::STATUS_IND_VERTICAL_SPEED,GliderVarioStatus::STATUS_IND_ACC_Y) = timeDiff * rotMatrixPlaneToWorld(2,1);
   transitionMatrix(GliderVarioStatus::STATUS_IND_VERTICAL_SPEED,GliderVarioStatus::STATUS_IND_ACC_Z) = timeDiff * rotMatrixPlaneToWorld(2,2);
 
-  transitionMatrix(GliderVarioStatus::STATUS_IND_VERTICAL_SPEED,GliderVarioStatus::STATUS_IND_CONST_ONE) = timeDiff * GRAVITY;
+  transitionMatrix(GliderVarioStatus::STATUS_IND_VERTICAL_SPEED,GliderVarioStatus::STATUS_IND_GRAVITY) = timeDiff * GRAVITY;
 
   // STATUS_IND_THERMAL_SPEED
   transitionMatrix(GliderVarioStatus::STATUS_IND_THERMAL_SPEED,GliderVarioStatus::STATUS_IND_VERTICAL_SPEED) = 1.0f;

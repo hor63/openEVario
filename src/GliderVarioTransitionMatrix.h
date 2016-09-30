@@ -59,15 +59,21 @@ public:
   }
 
   /**
-   * Recalculates the transition matrix. Only active coefficients are recalculated. All other coefficients are supposed to be 0 as they were set at construction time.
+   * Recalculates the transition matrix and the new status at the same time.
+   * Only active coefficients of the status transition matrix are recalculated.
+   * All other coefficients are supposed to be 0 as they were set at construction time.
+   * At the same time the new status is calculated from the old status.
+   * Since this is (partially :) ) an EKF the new status is partially calculated from non-linear functions.
+   * In these cases the status transition matrix are written with the (approximate) differential at the point of #lastStatus.
    * @param[in] timeDiff Time since last update in seconds.
    * @param[in] lastStatus Most recent status vector. Used to convert world into local coordinates.
+   * @param[out] newStatus The new status extrapolated from the #lastStatus, and #timeDiff.
    */
   void
   calcTransitionMatrixAndStatus (
-      FloatType timeDiff,
+      FloatType                timeDiff,
       GliderVarioStatus const &lastStatus,
-	  GliderVarioStatus &newStatus);
+	  GliderVarioStatus       &newStatus);
 
 
   /**
