@@ -32,6 +32,13 @@
 
 #include <Dense>
 
+/**
+ * This namespace includes a complex extended kalman filter (EKF) for implementing a complete electronic compensated variometer, and artificial horizon.
+ * Input to this model are inertial measurements from 3-D accelerometer and gyroscopes, a barometric precision altimeter, IAS and TAS measurement from dynamic pressure and GPS coordinates, heading and speed over ground
+ *
+ * Invaluable inputs for understanding Kalman filters in general, and practical implementation hints came from
+ * \sa <a href="http://www.artechhouse.com/static/sample/groves-005_ch03.pdf >Groves - CHAPTER 3 Kalman Filter-Based Estimation</a>
+ */
 namespace openEV
 {
 
@@ -54,6 +61,15 @@ typedef float FloatType;
  */
 static FloatType constexpr GRAVITY = 9.811;
 
+/**
+ * Initialization value for magnetic inclination.
+ * Rough Average value for Germany is about 67 degrees downward (pitch angle is measured upward).
+ *
+ * \sa <a href="http://www.gfz-potsdam.de/sektion/erdmagnetfeld/infrastruktur/deutsche-saekularpunktmessungen/inklination" >Inklinationskarten für Deutschland von 1982 bis 2012</a>
+ * \sa To calculate inclination and declination at any point on earth use <a href="http://www.gfz-potsdam.de/deklinationsrechner" >IGRF-Deklinationsrechner</a>
+ * or <a href="http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html" >International Geomagnetic Reference Field</a> and <a href="http://www.ngdc.noaa.gov/geomag-web/?model=igrf" >NOAA Magnetic Field Calculators</a>
+ */
+extern FloatType MAG_INCLINATION; // = -67.0f;
 
 /**
  * This vector type is used for all 3-dimensional representations of values in Cartesian coordinates
@@ -128,6 +144,7 @@ public:
     STATUS_IND_GYRO_BIAS_Y	, ///< Bias (0-offset) of the plane Y axis gyro in deg/s
     STATUS_IND_GYRO_BIAS_Z	, ///< Bias (0-offset) of the plane Z axis gyro in deg/s
 	STATUS_IND_COMPASS_ERROR, ///< Combined magnetic declination (variation) and deviation in degrees.
+	STATUS_IND_COMPASS_INCLINATION, ///< Inclination of the magnetic vector in degrees in pitch direction (upward), i.e. negative on the northern hemisphere
     STATUS_IND_WIND_SPEED_N	, ///< Wind speed North component in m/s
     STATUS_IND_WIND_SPEED_E	, ///< Wind speed East component in m/s
 	STATUS_IND_WIND_SPEED   , ///< Absolute wind speed in m/s
@@ -246,6 +263,7 @@ public:
   FloatType& gyroBiasY = statusVector_x[ STATUS_IND_GYRO_BIAS_Y	     ]; ///< Bias (0-offset) of the Y axis gyro in deg/s
   FloatType& gyroBiasZ = statusVector_x[ STATUS_IND_GYRO_BIAS_Z	     ]; ///< Bias (0-offset) of the Z axis gyro in deg/s
   FloatType& compassError = statusVector_x[ STATUS_IND_COMPASS_ERROR ]; ///< Combined magnetic declination (variation) and deviation in degrees.
+  FloatType& compassInclination = statusVector_x[ STATUS_IND_COMPASS_INCLINATION]; ///< Inclination of the magnetic vector in degrees in pitch direction (upward), i.e. negative on the northern hemisphere
   FloatType& windSpeedNorth = statusVector_x[ STATUS_IND_WIND_SPEED_N]; ///< Wind speed North component in m/s
   FloatType& windSpeedEast  = statusVector_x[ STATUS_IND_WIND_SPEED_E]; ///< Wind speed East component in m/s
   FloatType& windSpeed      = statusVector_x[ STATUS_IND_WIND_SPEED  ]; ///< Absolute Wind speed in m/s

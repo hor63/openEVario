@@ -30,6 +30,8 @@
 namespace openEV
 {
 
+FloatType MAG_INCLINATION = 67.0f;
+
 GliderVarioStatus::GliderVarioStatus ()
 {
   statusVector_x.setZero();
@@ -170,6 +172,7 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 			" gyroBiasY   "
 			" gyroBiasZ   "
 			" compassError"
+			" compassIncli"
 			" windSpeedNor"
 			" windSpeedEas"
 			" windSpeed   "
@@ -206,6 +209,7 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 	o.precision(7); o.width(13); o << s.gyroBiasY   ;
 	o.precision(7); o.width(13); o << s.gyroBiasZ   ;
 	o.precision(7); o.width(13); o << s.compassError;
+	o.precision(7); o.width(13); o << s.compassInclination;
 	o.precision(7); o.width(13); o << s.windSpeedNorth;
 	o.precision(7); o.width(13); o << s.windSpeedEast;
 	o.precision(7); o.width(13); o << s.windSpeed    ;
