@@ -16,7 +16,7 @@ GliderVarioMeasurementMatrix::GliderVarioMeasurementMatrix() {
 	// Most of the stuff is totally straight forward, i.e. factor 1 :)
 	measurementMatrix ( GliderVarioMeasurementVector::MEASURE_IND_GPS_LAT,		GliderVarioStatus::STATUS_IND_LATITUDE	) = 1.0;
 	measurementMatrix ( GliderVarioMeasurementVector::MEASURE_IND_GPS_LON,		GliderVarioStatus::STATUS_IND_LONGITUDE	) = 1.0;
-	measurementMatrix ( GliderVarioMeasurementVector::MEASURE_IND_GPS_ALTMSL,	GliderVarioStatus::STATUS_IND_ALT_MSL	) = 1.0;
+	measurementMatrix ( GliderVarioMeasurementVector::MEASURE_IND_GPS_ALT_MSL,	GliderVarioStatus::STATUS_IND_ALT_MSL	) = 1.0;
 	measurementMatrix ( GliderVarioMeasurementVector::MEASURE_IND_GPS_HEADING,	GliderVarioStatus::STATUS_IND_HEADING	) = 1.0;
 	// m/s to knots.
 	measurementMatrix ( GliderVarioMeasurementVector::MEASURE_IND_GPS_SPEED,	GliderVarioStatus::STATUS_IND_HEADING	) = 3600.0/1852.0;
