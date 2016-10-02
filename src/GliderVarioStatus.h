@@ -37,7 +37,15 @@
  * Input to this model are inertial measurements from 3-D accelerometer and gyroscopes, a barometric precision altimeter, IAS and TAS measurement from dynamic pressure and GPS coordinates, heading and speed over ground
  *
  * Invaluable inputs for understanding Kalman filters in general, and practical implementation hints came from
- * \sa <a href="http://www.artechhouse.com/static/sample/groves-005_ch03.pdf >Groves - CHAPTER 3 Kalman Filter-Based Estimation</a>
+ * \sa <a href="http://www.artechhouse.com/static/sample/groves-005_ch03.pdf" >Groves - CHAPTER 3 Kalman Filter-Based Estimation</a>
+ *
+ * For an EKF I need a Jacobian matrix with the partial derivates at the point of the last status to approximate a linearization of
+ * the non-linear function at the latest status. To make my life easier I am using a numeric forward derivation with a small step.
+ * For numeric derivation of angles I use an increment of 1 degree. This is small enough for an approximation of sin and cos, and large enough
+ * not to created undue numeric issues with scale factors in single precision floats. It has the additional advantage that the increment is
+ * 1.0 (degrees), i.e. I am saving myself a division by the increment if it were != 0.
+ * \sa <a href="http://www.iue.tuwien.ac.at/phd/khalil/node14.html" >Numerical differentiations of Jacobian matrixes</a>
+ *
  */
 namespace openEV
 {
