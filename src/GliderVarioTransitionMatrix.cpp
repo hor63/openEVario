@@ -181,24 +181,11 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
 		  temp2 * lastStatus.yawRateZ;
 
 // STATUS_IND_ROLL
-  /// \todo Roll not per rotation matrix, but 1:1
   transitionMatrix(GliderVarioStatus::STATUS_IND_ROLL,GliderVarioStatus::STATUS_IND_ROLL) = 1.0f;
-  transitionMatrix(GliderVarioStatus::STATUS_IND_ROLL,GliderVarioStatus::STATUS_IND_ROTATION_X) = temp1 = timeDiff*rotMatrixPlaneToWorld(0,0);
-  transitionMatrix(GliderVarioStatus::STATUS_IND_ROLL,GliderVarioStatus::STATUS_IND_ROTATION_Y) = temp2 = timeDiff*rotMatrixPlaneToWorld(0,1);
-  transitionMatrix(GliderVarioStatus::STATUS_IND_ROLL,GliderVarioStatus::STATUS_IND_ROTATION_Z) = temp3 = timeDiff*rotMatrixPlaneToWorld(0,2);
-
-  // calculate the covariant for angular changes
-  transitionMatrix(GliderVarioStatus::STATUS_IND_ROLL,GliderVarioStatus::STATUS_IND_ROTATION_X) =
-		  timeDiff * lastStatus.rollRateX * (rotMatrixPlaneToWorldIncX(0,0) - rotMatrixPlaneToWorld(0,0));
-  transitionMatrix(GliderVarioStatus::STATUS_IND_ROLL,GliderVarioStatus::STATUS_IND_ROTATION_Y) =
-		  timeDiff * lastStatus.pitchRateY * (rotMatrixPlaneToWorldIncY(0,1) - rotMatrixPlaneToWorld(0,1));
-  transitionMatrix(GliderVarioStatus::STATUS_IND_ROLL,GliderVarioStatus::STATUS_IND_ROTATION_Z) =
-		  timeDiff * lastStatus.yawRateZ * (rotMatrixPlaneToWorldIncZ(0,2) - rotMatrixPlaneToWorld(0,2));
+  transitionMatrix(GliderVarioStatus::STATUS_IND_ROLL,GliderVarioStatus::STATUS_IND_ROTATION_X) = timeDiff;
 
   newStatus.rollAngle = lastStatus.rollAngle +
-		  temp1 * lastStatus.rollRateX +
-		  temp2 * lastStatus.pitchRateY +
-		  temp3 * lastStatus.yawRateZ;
+		  timeDiff * lastStatus.rollRateX;
 
   // STATUS_IND_ROTATION_Z
     transitionMatrix(GliderVarioStatus::STATUS_IND_ROTATION_Z,GliderVarioStatus::STATUS_IND_ROTATION_Z) = 1.0f;
@@ -206,7 +193,6 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
     newStatus.yawRateZ = lastStatus.yawRateZ;
 
   // STATUS_IND_ROTATION_GLO_Z
-    /// \todo Global Rotation depends on yaw and pitch, not roll. Do not the use rotation matrix
     transitionMatrix(GliderVarioStatus::STATUS_IND_ROTATION_GLO_Z,GliderVarioStatus::STATUS_IND_ROTATION_X) = temp1 = rotMatrixPlaneToWorld(2,0);
     transitionMatrix(GliderVarioStatus::STATUS_IND_ROTATION_GLO_Z,GliderVarioStatus::STATUS_IND_ROTATION_Y) = temp2 = rotMatrixPlaneToWorld(2,1);
     transitionMatrix(GliderVarioStatus::STATUS_IND_ROTATION_GLO_Z,GliderVarioStatus::STATUS_IND_ROTATION_Z) = temp3 = rotMatrixPlaneToWorld(2,2);
