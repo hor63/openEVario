@@ -18,7 +18,7 @@
 
 bin_PROGRAMS=openEVario$(EXEEXT)
 openEVario_SOURCES=openEVario.cpp GliderVarioStatus.cpp GliderVarioTransitionMatrix.cpp RotationMatrix.cpp FastMath.cpp FastMathSineTable.cpp MeasureMatrix.cpp \
- GliderVarioMeasurementVector.cpp GliderVarioMeasurementMatrix.cpp
+ GliderVarioMeasurementVector.cpp GliderVarioMeasurementUpdater.cpp
 
 # Build compiler sources are not well supported by autotools. Back to manual
 genSineTables_sources=genSineTables.cpp
