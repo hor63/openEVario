@@ -48,11 +48,11 @@ public:
 
 	enum MeasureComponentIndex {
 		// GPS Measurements
-		MEASURE_IND_GPS_LAT, ///< Latitude in Deg
-		MEASURE_IND_GPS_LON, ///< Longitude in Deg
+		MEASURE_IND_GPS_LAT, ///< Latitude in arc seconds
+		MEASURE_IND_GPS_LON, ///< Longitude in arc seconds
 		MEASURE_IND_GPS_ALT_MSL, ///< Altitude MSL in m
 		MEASURE_IND_GPS_HEADING, ///< Heading in Deg
-		MEASURE_IND_GPS_SPEED, ///< Speed in knots
+		MEASURE_IND_GPS_SPEED, ///< Speed in km/h
 
 		// Accelerometer
 		MEASURE_IND_ACC_X, ///< Acceleration along the X axis in m/s^2
@@ -80,11 +80,11 @@ public:
 	typedef Eigen::Matrix<FloatType,MEASURE_NUM_ROWS,MEASURE_NUM_ROWS> MeasureCovarianceType;
 
 	// Here come all measurement components as references into the matrix
-	FloatType &gpsLatitude = measureVector [MEASURE_IND_GPS_LAT]; ///< Latitude in Deg
-	FloatType &gpsLongitude = measureVector [MEASURE_IND_GPS_LON]; ///< Longitude in Deg
+	FloatType &gpsLatitude = measureVector [MEASURE_IND_GPS_LAT]; ///< Latitude in arc seconds
+	FloatType &gpsLongitude = measureVector [MEASURE_IND_GPS_LON]; ///< Longitude in arc seconds
 	FloatType &gpsMSL = measureVector [MEASURE_IND_GPS_ALT_MSL]; ///< Altitude MSL in m
 	FloatType &gpsHeading = measureVector [MEASURE_IND_GPS_HEADING]; ///< Heading in Deg
-	FloatType &gpsSpeed = measureVector [MEASURE_IND_GPS_SPEED]; ///< Speed in knots
+	FloatType &gpsSpeed = measureVector [MEASURE_IND_GPS_SPEED]; ///< Speed in km/h
 
 	// Accelerometer
 	FloatType &accelX = measureVector [MEASURE_IND_ACC_X]; ///< Acceleration along the X axis in m/s^2
@@ -124,21 +124,24 @@ public:
 	/**
 	 *  @return constant reference to the covariance of the measurement vector.
 	 */
-    MeasureCovarianceType const &getMeasureError() const {
+	MeasureVectorType const &getMeasureError() const {
     	return measureError;
     }
 
 	/**
 	 *  @return reference to the covariance of the measurement vector.
 	 */
-    MeasureCovarianceType &getMeasureError() {
+	MeasureVectorType &getMeasureError() {
     	return measureError;
     }
 
 
 protected:
 	MeasureVectorType measureVector; ///< holder of the vector
-	MeasureCovarianceType measureError; ///< Covariance of the measurement error. However it is supposed to be diagonal.
+	MeasureVectorType measureError; ///< I am not using a measurement covariance matrix here as in classic Kalman theory.
+	 	 	 	 	 	 	 	 	///< The error variances are supposed to be independent, i.e. a matrix would be diagonal.
+	 	 	 	 	 	 	 	 	///< In addition I am using the sequential measurement method according to
+	 	 	 	 	 	 	 	 	///< <a href="http://www.artechhouse.com/static/sample/groves-005_ch03.pdf" >Groves - Kalman Filter-Based Estimation</a>, page 107
 
 
 };
