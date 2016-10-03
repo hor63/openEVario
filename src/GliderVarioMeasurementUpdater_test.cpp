@@ -5,7 +5,7 @@
  *      Author: hor
  */
 
-#include "GliderVarioMeasurementMatrix.h"
+#include "GliderVarioMeasurementUpdater.h"
 
 namespace openEV {
 

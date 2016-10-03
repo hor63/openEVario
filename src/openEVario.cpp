@@ -25,6 +25,7 @@
  *
  */
 
+#include <GliderVarioMeasurementUpdater.h>
 #include <iostream>
 #include <random>
 #include <math.h>
@@ -35,7 +36,6 @@
 #include "RotationMatrix.h"
 #include "FastMath.h"
 #include "GliderVarioMeasurementVector.h"
-#include "GliderVarioMeasurementMatrix.h"
 
 using namespace std;
 using namespace openEV;
@@ -66,7 +66,7 @@ int main (int argc, char *argv[]) {
   GliderVarioTransitionMatrix ovTransition;
   GliderVarioMeasurementVector ovMeasurement;
   GliderVarioMeasurementVector::MeasureVectorType ovMeasureVector;
-  GliderVarioMeasurementMatrix ovMeasureMatrix;
+  GliderVarioMeasurementUpdater ovMeasureMatrix;
 int i;
 
 
@@ -332,9 +332,6 @@ int i;
 	  cout << "After:  Yaw,Pitch,Roll = " << ovStatusOld->heading << ", " << ovStatusOld->pitchAngle << ", " << ovStatusOld->rollAngle << endl << endl;
   }
 
-  cout << "calculating measurement vector from status" << endl;
-  ovMeasureMatrix.calcMeasurementMatrix(0.1f,*ovStatusOld);
-  ovMeasureVector = ovMeasureMatrix.getMeasureMatrix() * ovStatusOld->getStatusVector_x();
 
   cout << endl <<
 		  "-----------------------" << endl;
