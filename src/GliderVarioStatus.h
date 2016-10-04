@@ -70,6 +70,16 @@ typedef float FloatType;
 static FloatType constexpr GRAVITY = 9.811;
 
 /**
+ * difference between K(elvin) and C(elsius)
+ */
+static FloatType constexpr KtoC = 273.15f;
+
+/**
+ * Standard sea level pressure according to ICAO standard atmosphere in Pascal
+ */
+static FloatType constexpr pressureStdMSL = 101325.0f;
+
+/**
  * Initialization value for magnetic inclination.
  * Rough Average value for Germany is about 67 degrees downward (pitch angle is measured upward).
  *
@@ -157,6 +167,7 @@ public:
     STATUS_IND_WIND_SPEED_E	, ///< Wind speed East component in m/s
 	STATUS_IND_WIND_SPEED   , ///< Absolute wind speed in m/s
 	STATUS_IND_WIND_DIR     , ///< The direction is the direction *from where* the wind blows.
+	STATUS_IND_QNH			, ///< QNH in Pascal
 
 	STATUS_NUM_ROWS				///< The number of rows in the vector. This is not a component of the vector!
   };
@@ -275,7 +286,9 @@ public:
   FloatType& windSpeedNorth = statusVector_x[ STATUS_IND_WIND_SPEED_N]; ///< Wind speed North component in m/s
   FloatType& windSpeedEast  = statusVector_x[ STATUS_IND_WIND_SPEED_E]; ///< Wind speed East component in m/s
   FloatType& windSpeed      = statusVector_x[ STATUS_IND_WIND_SPEED  ]; ///< Absolute Wind speed in m/s
-  FloatType& windDirection  = statusVector_x[ STATUS_IND_WIND_DIR    ];  ///< The direction is the direction *from where* the wind blows.
+  FloatType& windDirection  = statusVector_x[ STATUS_IND_WIND_DIR    ]; ///< The direction is the direction *from where* the wind blows.
+  FloatType& qnh			= statusVector_x[ STATUS_IND_QNH		 ]; ///< QNH in Pascal
+
 
 protected:
   StatusVectorType     statusVector_x;

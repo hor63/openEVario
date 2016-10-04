@@ -400,6 +400,11 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
 
   newStatus.windDirection = lastStatus.windDirection;
 
+  // STATUS_IND_QNH
+  transitionMatrix(GliderVarioStatus::STATUS_IND_QNH,GliderVarioStatus::STATUS_IND_QNH) = 1.0f;
+
+  newStatus.qnh = lastStatus.qnh;
+
 
 }
 
