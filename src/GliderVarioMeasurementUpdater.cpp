@@ -9,15 +9,349 @@
 
 namespace openEV {
 
-GliderVarioMeasurementUpdater::GliderVarioMeasurementUpdater() {
+static void
+GliderVarioMeasurementUpdater::gpsLatitudeUpd (
+		FloatType measuredLatitude,
+		GliderVarioMeasurementVector const &measurementVector,
+		GliderVarioStatus &varioStatus
+		) {
+FloatType measuredValue;
+FloatType calculatedValue;
+FloatType measurementVariance_R;
+GliderVarioStatus::StatusVectorType measRowT;
 
+	measRowT.setZero();
+
+	// calculate and fill in local variables here.
+
+	calcSingleMeasureUpdate (
+			measuredValue,
+			calculatedValue,
+			measurementVariance_R,
+			measRowT,
+			varioStatus
+			);
 }
 
-GliderVarioMeasurementUpdater::~GliderVarioMeasurementUpdater() {
+static void
+GliderVarioMeasurementUpdater::gpsLongitudeUpd (
+		FloatType measuredLongitude,
+		GliderVarioMeasurementVector const &measurementVector,
+		GliderVarioStatus &varioStatus
+		) {
+	FloatType measuredValue;
+	FloatType calculatedValue;
+	FloatType measurementVariance_R;
+	GliderVarioStatus::StatusVectorType measRowT;
 
-}
+		measRowT.setZero();
 
-/// \todo implement the specific measurement update functions.
+		// calculate and fill in local variables here.
+
+		calcSingleMeasureUpdate (
+				measuredValue,
+				calculatedValue,
+				measurementVariance_R,
+				measRowT,
+				varioStatus
+				);
+	}
+
+static void
+GliderVarioMeasurementUpdater::gpsAltitudeUpd (
+		FloatType measuredAltitudeMSL,
+		GliderVarioMeasurementVector const &measurementVector,
+		GliderVarioStatus &varioStatus
+		) {
+	FloatType measuredValue;
+	FloatType calculatedValue;
+	FloatType measurementVariance_R;
+	GliderVarioStatus::StatusVectorType measRowT;
+
+		measRowT.setZero();
+
+		// calculate and fill in local variables here.
+
+		calcSingleMeasureUpdate (
+				measuredValue,
+				calculatedValue,
+				measurementVariance_R,
+				measRowT,
+				varioStatus
+				);
+	}
+
+static void
+GliderVarioMeasurementUpdater::gpsHeadingUpd (
+		FloatType measuredCourseOverGround,
+		GliderVarioMeasurementVector const &measurementVector,
+		GliderVarioStatus &varioStatus
+		) {
+	FloatType measuredValue;
+	FloatType calculatedValue;
+	FloatType measurementVariance_R;
+	GliderVarioStatus::StatusVectorType measRowT;
+
+		measRowT.setZero();
+
+		// calculate and fill in local variables here.
+
+		calcSingleMeasureUpdate (
+				measuredValue,
+				calculatedValue,
+				measurementVariance_R,
+				measRowT,
+				varioStatus
+				);
+	}
+
+static void
+GliderVarioMeasurementUpdater::gpsSpeedUpd (
+		FloatType measuredSpeedOverGround,
+		GliderVarioMeasurementVector const &measurementVector,
+		GliderVarioStatus &varioStatus
+		) {
+	FloatType measuredValue;
+	FloatType calculatedValue;
+	FloatType measurementVariance_R;
+	GliderVarioStatus::StatusVectorType measRowT;
+
+		measRowT.setZero();
+
+		// calculate and fill in local variables here.
+
+		calcSingleMeasureUpdate (
+				measuredValue,
+				calculatedValue,
+				measurementVariance_R,
+				measRowT,
+				varioStatus
+				);
+	}
+
+
+static void
+GliderVarioMeasurementUpdater::accelXUpd (
+		FloatType measuredAccelX,
+		GliderVarioMeasurementVector const &measurementVector,
+		GliderVarioStatus &varioStatus
+		) {
+	FloatType measuredValue;
+	FloatType calculatedValue;
+	FloatType measurementVariance_R;
+	GliderVarioStatus::StatusVectorType measRowT;
+
+		measRowT.setZero();
+
+		// calculate and fill in local variables here.
+
+		calcSingleMeasureUpdate (
+				measuredValue,
+				calculatedValue,
+				measurementVariance_R,
+				measRowT,
+				varioStatus
+				);
+	}
+
+static void
+GliderVarioMeasurementUpdater::accelYUpd (
+		FloatType measuredAccelY,
+		GliderVarioMeasurementVector const &measurementVector,
+		GliderVarioStatus &varioStatus
+		) {
+	FloatType measuredValue;
+	FloatType calculatedValue;
+	FloatType measurementVariance_R;
+	GliderVarioStatus::StatusVectorType measRowT;
+
+		measRowT.setZero();
+
+		// calculate and fill in local variables here.
+
+		calcSingleMeasureUpdate (
+				measuredValue,
+				calculatedValue,
+				measurementVariance_R,
+				measRowT,
+				varioStatus
+				);
+	}
+
+static void
+GliderVarioMeasurementUpdater::accelZUpd (
+		FloatType measuredAccelZ,
+		GliderVarioMeasurementVector const &measurementVector,
+		GliderVarioStatus &varioStatus
+		) {
+	FloatType measuredValue;
+	FloatType calculatedValue;
+	FloatType measurementVariance_R;
+	GliderVarioStatus::StatusVectorType measRowT;
+
+		measRowT.setZero();
+
+		// calculate and fill in local variables here.
+
+		calcSingleMeasureUpdate (
+				measuredValue,
+				calculatedValue,
+				measurementVariance_R,
+				measRowT,
+				varioStatus
+				);
+	}
+
+static void
+GliderVarioMeasurementUpdater::gyroXUpd (
+		FloatType measuredRollRateX,
+		GliderVarioMeasurementVector const &measurementVector,
+		GliderVarioStatus &varioStatus
+		) {
+	FloatType measuredValue;
+	FloatType calculatedValue;
+	FloatType measurementVariance_R;
+	GliderVarioStatus::StatusVectorType measRowT;
+
+		measRowT.setZero();
+
+		// calculate and fill in local variables here.
+
+		calcSingleMeasureUpdate (
+				measuredValue,
+				calculatedValue,
+				measurementVariance_R,
+				measRowT,
+				varioStatus
+				);
+	}
+
+static void
+GliderVarioMeasurementUpdater::gyroYUpd (
+		FloatType measuredPitchRateY,
+		GliderVarioMeasurementVector const &measurementVector,
+		GliderVarioStatus &varioStatus
+		) {
+	FloatType measuredValue;
+	FloatType calculatedValue;
+	FloatType measurementVariance_R;
+	GliderVarioStatus::StatusVectorType measRowT;
+
+		measRowT.setZero();
+
+		// calculate and fill in local variables here.
+
+		calcSingleMeasureUpdate (
+				measuredValue,
+				calculatedValue,
+				measurementVariance_R,
+				measRowT,
+				varioStatus
+				);
+	}
+
+static void
+GliderVarioMeasurementUpdater::gyroZUpd (
+		FloatType measuredYawRateZ,
+		GliderVarioMeasurementVector const &measurementVector,
+		GliderVarioStatus &varioStatus
+		) {
+	FloatType measuredValue;
+	FloatType calculatedValue;
+	FloatType measurementVariance_R;
+	GliderVarioStatus::StatusVectorType measRowT;
+
+		measRowT.setZero();
+
+		// calculate and fill in local variables here.
+
+		calcSingleMeasureUpdate (
+				measuredValue,
+				calculatedValue,
+				measurementVariance_R,
+				measRowT,
+				varioStatus
+				);
+	}
+
+static void
+GliderVarioMeasurementUpdater::compassUpd (
+		FloatType measuredMagFlowX,
+		FloatType measuredMagFlowY,
+		FloatType measuredMagFlowZ,
+		GliderVarioMeasurementVector const &measurementVector,
+		GliderVarioStatus &varioStatus
+		) {
+	FloatType measuredValue;
+	FloatType calculatedValue;
+	FloatType measurementVariance_R;
+	GliderVarioStatus::StatusVectorType measRowT;
+
+		measRowT.setZero();
+
+		// calculate and fill in local variables here.
+
+		calcSingleMeasureUpdate (
+				measuredValue,
+				calculatedValue,
+				measurementVariance_R,
+				measRowT,
+				varioStatus
+				);
+	}
+
+
+static void
+GliderVarioMeasurementUpdater::pressureAltUpd (
+		FloatType measuredStaticPressure,
+		FloatType measuredTemperature,
+		GliderVarioMeasurementVector const &measurementVector,
+		GliderVarioStatus &varioStatus
+		) {
+	FloatType measuredValue;
+	FloatType calculatedValue;
+	FloatType measurementVariance_R;
+	GliderVarioStatus::StatusVectorType measRowT;
+
+		measRowT.setZero();
+
+		// calculate and fill in local variables here.
+
+		calcSingleMeasureUpdate (
+				measuredValue,
+				calculatedValue,
+				measurementVariance_R,
+				measRowT,
+				varioStatus
+				);
+	}
+
+static void
+GliderVarioMeasurementUpdater::trueAirSpeedUpd (
+		FloatType measuredDynamicPressure,
+		FloatType measuredTemperature,
+		GliderVarioMeasurementVector const &measurementVector,
+		GliderVarioStatus &varioStatus
+		) {
+	FloatType measuredValue;
+	FloatType calculatedValue;
+	FloatType measurementVariance_R;
+	GliderVarioStatus::StatusVectorType measRowT;
+
+		measRowT.setZero();
+
+		// calculate and fill in local variables here.
+
+
+		calcSingleMeasureUpdate (
+				measuredValue,
+				calculatedValue,
+				measurementVariance_R,
+				measRowT,
+				varioStatus
+				);
+	}
+
 
 void
 GliderVarioMeasurementUpdater::calcSingleMeasureUpdate (

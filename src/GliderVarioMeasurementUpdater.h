@@ -14,20 +14,26 @@
 namespace openEV {
 
 /***
- * Measurement matrix h of a Kalman filter. 
+ * Functional class which performs sequential status updates. This class is stateless.
+ * The idea is taken from
+ * <a href="http://www.artechhouse.com/static/sample/groves-005_ch03.pdf" >Groves - Kalman Filter-Based Estimation</a>, page 107, 3.2.7  Sequential Measurement Update
+ * The functionality is split into two parts:
+ * - A specific function for each measurement which performs necessary conversions into the model units of measurement, and prepares the
+ * Jacobian of the measure matrix row of the concerned measurement.
+ * - #calcSingleMeasureUpdate which performs the actual status update based on the prepared values and Jacobian measure matrix row. This function is
+ * applicable to all measurements.
  * 
  */
 class GliderVarioMeasurementUpdater {
 public:
-	GliderVarioMeasurementUpdater();
-	virtual ~GliderVarioMeasurementUpdater();
 
 	/**
 	 * update the status vector with a new measurement of the latitude
 	 * @param measurementVector
 	 * @param varioStatus
 	 */
-	void gpsLatitudeUpd (
+	static void gpsLatitudeUpd (
+			FloatType measuredLatitude,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
@@ -37,7 +43,8 @@ public:
 	 * @param measurementVector
 	 * @param varioStatus
 	 */
-	void gpsLongitudeUpd (
+	static void gpsLongitudeUpd (
+			FloatType measuredLongitude,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
@@ -47,7 +54,8 @@ public:
 	 * @param measurementVector
 	 * @param varioStatus
 	 */
-	void gpsAltitudeUpd (
+	static void gpsAltitudeUpd (
+			FloatType measuredAltitudeMSL,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
@@ -57,7 +65,8 @@ public:
 	 * @param measurementVector
 	 * @param varioStatus
 	 */
-	void gpsHeadingUpd (
+	static void gpsHeadingUpd (
+			FloatType measuredCourseOverGround,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
@@ -67,7 +76,8 @@ public:
 	 * @param measurementVector
 	 * @param varioStatus
 	 */
-	void gpsSpeedUpd (
+	static void gpsSpeedUpd (
+			FloatType measuredSpeedOverGround,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
@@ -78,7 +88,8 @@ public:
 	 * @param measurementVector
 	 * @param varioStatus
 	 */
-	void accelXUpd (
+	static void accelXUpd (
+			FloatType measuredAccelX,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
@@ -88,7 +99,8 @@ public:
 	 * @param measurementVector
 	 * @param varioStatus
 	 */
-	void accelYUpd (
+	static void accelYUpd (
+			FloatType measuredAccelY,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
@@ -98,7 +110,8 @@ public:
 	 * @param measurementVector
 	 * @param varioStatus
 	 */
-	void accelZUpd (
+	static void accelZUpd (
+			FloatType measuredAccelZ,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
@@ -108,7 +121,8 @@ public:
 	 * @param measurementVector
 	 * @param varioStatus
 	 */
-	void gyroXUpd (
+	static void gyroXUpd (
+			FloatType measuredRollRateX,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
@@ -118,7 +132,8 @@ public:
 	 * @param measurementVector
 	 * @param varioStatus
 	 */
-	void gyroYUpd (
+	static void gyroYUpd (
+			FloatType measuredPitchRateY,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
@@ -128,7 +143,8 @@ public:
 	 * @param measurementVector
 	 * @param varioStatus
 	 */
-	void gyroZUpd (
+	static void gyroZUpd (
+			FloatType measuredYawRateZ,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
@@ -138,27 +154,10 @@ public:
 	 * @param measurementVector
 	 * @param varioStatus
 	 */
-	void compassXUpd (
-			GliderVarioMeasurementVector const &measurementVector,
-    		GliderVarioStatus &varioStatus
-			);
-
-	/**
-	 * update the status vector with a new measurement of the magnetometer along the plane Y axis
-	 * @param measurementVector
-	 * @param varioStatus
-	 */
-	void compassYUpd (
-			GliderVarioMeasurementVector const &measurementVector,
-    		GliderVarioStatus &varioStatus
-			);
-
-	/**
-	 * update the status vector with a new measurement of the magnetometer along the plane Z axis
-	 * @param measurementVector
-	 * @param varioStatus
-	 */
-	void compassZUpd (
+	static void compassUpd (
+			FloatType measuredMagFlowX,
+			FloatType measuredMagFlowY,
+			FloatType measuredMagFlowZ,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
@@ -168,7 +167,9 @@ public:
 	 * @param measurementVector
 	 * @param varioStatus
 	 */
-	void pressureAltUpd (
+	static void pressureAltUpd (
+			FloatType measuredStaticPressure,
+			FloatType measuredTemperature,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
@@ -178,7 +179,9 @@ public:
 	 * @param measurementVector
 	 * @param varioStatus
 	 */
-	void trueAirSpeedUpd (
+	static void trueAirSpeedUpd (
+			FloatType measuredDynamicPressure,
+			FloatType measuredTemperature,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
@@ -187,8 +190,10 @@ public:
 protected:
 
     /**
-     * Calculates the status update for one measurement value according to
-     * <a href="http://www.artechhouse.com/static/sample/groves-005_ch03.pdf" >Groves - Kalman Filter-Based Estimation</a>, page 107, 3.2.7  Sequential Measurement Update
+     * Calculates the status update for one measurement value
+     * This is the generic part which deals with calculating the Kalman gain, and updates the state estimate and the status covariance.
+     * This routine requires some preparation by the specific update routines which apply the (usually non-linear) measurement function
+     * to the latest state estimate to calculate the expected measurement value as well as the Jacobian of the measurement matrix.
      *
      * @param[in] measuredValue the measured value as it was measured by a sensor. This value may be heavily pre-processed, e.g. the IAS or TAS from the
      * dynamic pressure, and static pressure, or altitude from the absolute pressure sensor
