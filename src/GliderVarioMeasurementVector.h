@@ -50,7 +50,7 @@ public:
 		// GPS Measurements
 		MEASURE_IND_GPS_LAT, ///< Latitude in arc seconds
 		MEASURE_IND_GPS_LON, ///< Longitude in arc seconds
-		MEASURE_IND_GPS_ALT_MSL, ///< Altitude MSL in m
+		MEASURE_IND_GPS_ALT_MSL, ///< Altitude MSL (geoid) in m
 		MEASURE_IND_GPS_HEADING, ///< Heading in Deg
 		MEASURE_IND_GPS_SPEED, ///< Speed in km/h
 
@@ -69,9 +69,9 @@ public:
 		MEASURE_IND_MAG_Y, ///< magnetic field strength along Y axis in uT (absolute strength is irrelevant, only used to determine attitude)
 		MEASURE_IND_MAG_Z, ///< magnetic field strength along Z axis in uT (absolute strength is irrelevant, only used to determine attitude)
 
-		// Air pressure values (converted because raw values are highly non-linear to speed and altitude
-		MEASURE_IND_PRESS_ALT, ///< pressure altitude in MSL
-		MEASURE_IND_TAS,       ///< True air speed (based on difference pressure and air density based on absolute pressure) in m/s
+		// Air pressure values
+		MEASURE_IND_STATIC_PRESSURE,  ///< static pressure in Pascal
+		MEASURE_IND_DYNAMIC_PRESSURE, ///< dynamic (pitot) pressure in Pascal, i.e. total pressure-static pressure.
 
 		MEASURE_NUM_ROWS
 	};
@@ -102,8 +102,8 @@ public:
 	FloatType &magZ = measureVector [MEASURE_IND_MAG_Z]; ///< magnetic field strength along Z axis in uT (absolute strength is irrelevant, only used to determine attitude)
 
 	// Air pressure values (converted because raw values are highly non-linear to speed and altitude
-	FloatType &pressAlt = measureVector [MEASURE_IND_PRESS_ALT]; ///< pressure altitude in MSL
-	FloatType &trueAirSpeed = measureVector [MEASURE_IND_TAS];       ///< True air speed (based on difference pressure and air density based on absolute pressure) in m/s
+	FloatType &staticPressure = measureVector [MEASURE_IND_STATIC_PRESSURE]; ///< static pressure in Pascal
+	FloatType &dynamicPressure = measureVector [MEASURE_IND_DYNAMIC_PRESSURE];       ///< True air speed (based on difference pressure and air density based on absolute pressure) in m/s
 
 	/**
 	 *
