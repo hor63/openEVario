@@ -302,7 +302,7 @@ GliderVarioMeasurementUpdater::compassUpd (
 
 
 static void
-GliderVarioMeasurementUpdater::pressureAltUpd (
+GliderVarioMeasurementUpdater::staticPressureUpd (
 		FloatType measuredStaticPressure,
 		FloatType measuredTemperature,
 		GliderVarioMeasurementVector const &measurementVector,
@@ -327,7 +327,7 @@ GliderVarioMeasurementUpdater::pressureAltUpd (
 	}
 
 static void
-GliderVarioMeasurementUpdater::trueAirSpeedUpd (
+GliderVarioMeasurementUpdater::dynamicPressureUpd (
 		FloatType measuredDynamicPressure,
 		FloatType measuredTemperature,
 		GliderVarioMeasurementVector const &measurementVector,
