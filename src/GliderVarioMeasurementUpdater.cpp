@@ -30,22 +30,25 @@ namespace openEV {
 static void
 GliderVarioMeasurementUpdater::GPSLatitudeUpd (
 		FloatType measuredLatitude,
+		FloatType latitudeVariance,
 		GliderVarioMeasurementVector const &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
-FloatType measuredValue;
 FloatType calculatedValue;
-FloatType measurementVariance_R;
 GliderVarioStatus::StatusVectorType measRowT;
 
 	measRowT.setZero();
 
 	// calculate and fill in local variables here.
+	measuredLatitude *= 3600.0f;
+    measurementVector.gpsLatitude = measuredLatitude;
+	measRowT(GliderVarioStatus::STATUS_IND_LATITUDE) = 1.0f;
+	calculatedValue = varioStatus.latitude;
 
 	calcSingleMeasureUpdate (
-			measuredValue,
+			measuredLatitude,
 			calculatedValue,
-			measurementVariance_R,
+			latitudeVariance,
 			measRowT,
 			varioStatus
 			);
@@ -54,22 +57,25 @@ GliderVarioStatus::StatusVectorType measRowT;
 static void
 GliderVarioMeasurementUpdater::GPSLongitudeUpd (
 		FloatType measuredLongitude,
+		FloatType longitudeVariance,
 		GliderVarioMeasurementVector const &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
-	FloatType measuredValue;
 	FloatType calculatedValue;
-	FloatType measurementVariance_R;
 	GliderVarioStatus::StatusVectorType measRowT;
 
 		measRowT.setZero();
 
 		// calculate and fill in local variables here.
+		measuredLongitude *= 3600.0f;
+		measurementVector.gpsLongitude = measuredLongitude;
+		measRowT(GliderVarioStatus::STATUS_IND_LONGITUDE) = 1.0f;
+		calculatedValue = varioStatus.longitude;
 
 		calcSingleMeasureUpdate (
-				measuredValue,
+				measuredLongitude,
 				calculatedValue,
-				measurementVariance_R,
+				longitudeVariance,
 				measRowT,
 				varioStatus
 				);
@@ -78,22 +84,38 @@ GliderVarioMeasurementUpdater::GPSLongitudeUpd (
 static void
 GliderVarioMeasurementUpdater::GPSAltitudeUpd (
 		FloatType measuredAltitudeMSL,
+		FloatType altitudeVariance,
 		GliderVarioMeasurementVector const &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
-	FloatType measuredValue;
 	FloatType calculatedValue;
-	FloatType measurementVariance_R;
 	GliderVarioStatus::StatusVectorType measRowT;
+	FloatType temp1,temp2;
 
 		measRowT.setZero();
 
 		// calculate and fill in local variables here.
+		measurementVector.gpsSpeed = measuredAltitudeMSL;
+		calculatedValue =
+				sqrt(varioStatus.groundSpeedNorth * varioStatus.groundSpeedNorth +
+				     varioStatus.groundSpeedEast * varioStatus.groundSpeedEast);
+
+		// approximate the derivates
+		temp1 = varioStatus.groundSpeedNorth*1.01;
+		temp2 = sqrt(temp1 * temp1 +
+				    varioStatus.groundSpeedEast * varioStatus.groundSpeedEast);
+		measRowT(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N) = (temp2-calculatedValue)/(temp1-varioStatus.groundSpeedNorth);
+
+		// approximate the derivates
+		temp1 = varioStatus.groundSpeedEast*1.01;
+		temp2 = sqrt(temp1 * temp1 +
+				    varioStatus.groundSpeedNorth * varioStatus.groundSpeedNorth);
+		measRowT(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N) = (temp2-calculatedValue)/(temp1-varioStatus.groundSpeedNorth);
 
 		calcSingleMeasureUpdate (
-				measuredValue,
+				measuredAltitudeMSL,
 				calculatedValue,
-				measurementVariance_R,
+				altitudeVariance,
 				measRowT,
 				varioStatus
 				);
@@ -102,12 +124,11 @@ GliderVarioMeasurementUpdater::GPSAltitudeUpd (
 static void
 GliderVarioMeasurementUpdater::GPSHeadingUpd (
 		FloatType measuredCourseOverGround,
+		FloatType courseOverGroundVariance,
 		GliderVarioMeasurementVector const &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
-	FloatType measuredValue;
 	FloatType calculatedValue;
-	FloatType measurementVariance_R;
 	GliderVarioStatus::StatusVectorType measRowT;
 
 		measRowT.setZero();
@@ -115,9 +136,9 @@ GliderVarioMeasurementUpdater::GPSHeadingUpd (
 		// calculate and fill in local variables here.
 
 		calcSingleMeasureUpdate (
-				measuredValue,
+				measuredCourseOverGround,
 				calculatedValue,
-				measurementVariance_R,
+				courseOverGroundVariance,
 				measRowT,
 				varioStatus
 				);

@@ -48,13 +48,15 @@ public:
 
 	/**
 	 * \brief Update the status vector with a new measurement of the latitude
-	 * Update the status vector with a new measurement of the latitude
+	 * Update the status vector with a new measurement of the latitude measurement
 	 * @param[in] measuredLatitude Latitude in degrees North from the GPS receiver
+	 * @param[in] latitudeVariance Variance of the latitude
 	 * @param[in,out] measurementVector The applicable column is updated for information purposes.
 	 * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
 	 */
 	static void GPSLatitudeUpd (
 			FloatType measuredLatitude,
+			FloatType latitudeVariance,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
@@ -63,11 +65,13 @@ public:
 	 * \brief Update the status vector with a new measurement of the longitude
 	 * Update the status vector with a new measurement of the longitude
 	 * @param[in] measuredLongitude Longitude in degrees East
+	 * @param[in] longitudeVariance variance of the longitude measurement
 	 * @param[in,out] measurementVector The applicable column is updated for information purposes.
 	 * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
 	 */
 	static void GPSLongitudeUpd (
 			FloatType measuredLongitude,
+			FloatType longitudeVariance,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
@@ -81,6 +85,7 @@ public:
 	 */
 	static void GPSAltitudeUpd (
 			FloatType measuredAltitudeMSL,
+			FloatType altitudeVariance,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
@@ -88,12 +93,14 @@ public:
 	/**
 	 * \brief Update the status vector with a new measurement of the GPS heading over ground
 	 * Update the status vector with a new measurement of the GPS heading over ground
-	 * @param[in] measuredCourseOverGround True course over ground in deg
+	 * @param[in] measuredCourseOverGround True course over ground in degrees
+	 * @param[in] courseOverGroundVariance Variance of the measured course over ground
 	 * @param[in,out] measurementVector The applicable column is updated for information purposes.
 	 * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
 	 */
 	static void GPSHeadingUpd (
 			FloatType measuredCourseOverGround,
+			FloatType courseOverGroundVariance,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
