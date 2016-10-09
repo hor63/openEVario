@@ -157,14 +157,6 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
 		  temp4 * lastStatus.accelZ +
 		  temp5 * lastStatus.gravity;
 
-// STATUS_IND_HEADING
-  /// \todo Heading also from TAS_N and TAS_E?
-  transitionMatrix(GliderVarioStatus::STATUS_IND_HEADING,GliderVarioStatus::STATUS_IND_HEADING) = 1.0f;
-  transitionMatrix(GliderVarioStatus::STATUS_IND_HEADING,GliderVarioStatus::STATUS_IND_ROTATION_GLO_Z) = temp1 = timeDiff;
-
-  newStatus.heading = lastStatus.heading +
-		  temp1 * lastStatus.yawRateGloZ;
-
 // STATUS_IND_PITCH
   transitionMatrix(GliderVarioStatus::STATUS_IND_PITCH,GliderVarioStatus::STATUS_IND_PITCH) = 1.0f;
 
@@ -211,80 +203,140 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
   		  temp2 * lastStatus.pitchRateY +
   		  temp3 * lastStatus.yawRateZ;
 
+// STATUS_IND_HEADING
+  transitionMatrix(GliderVarioStatus::STATUS_IND_HEADING,GliderVarioStatus::STATUS_IND_HEADING) = 1.0f;
+  transitionMatrix(GliderVarioStatus::STATUS_IND_HEADING,GliderVarioStatus::STATUS_IND_ROTATION_GLO_Z) = temp1 = timeDiff;
+
+  newStatus.heading = lastStatus.heading +
+		  temp1 * lastStatus.yawRateGloZ;
 
 // STATUS_IND_SPEED_GROUND_N
-  transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_TAS_N) = 1.0f;
-  transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_WIND_SPEED_N) = 1.0f;
-  transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_ACC_X) = temp1 = timeDiff * rotMatrixPlaneToWorld(0,0);
-  transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_ACC_Y) = temp2 = timeDiff * rotMatrixPlaneToWorld(0,1);
-  transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_ACC_Z) = temp3 = timeDiff * rotMatrixPlaneToWorld(0,2);
+	transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_TAS_N) = 1.0f;
+	transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_WIND_SPEED_N) = 1.0f;
+	transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_ACC_X) = temp1 = timeDiff * rotMatrixPlaneToWorld(0,0);
+	transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_ACC_Y) = temp2 = timeDiff * rotMatrixPlaneToWorld(0,1);
+	transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_ACC_Z) = temp3 = timeDiff * rotMatrixPlaneToWorld(0,2);
 
-  // calculate the covariant for angular changes
-  transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_ROLL) =
+	// calculate the covariant for angular changes
+	transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_ROLL) =
 		  timeDiff * lastStatus.accelX * (rotMatrixPlaneToWorldIncX(0,0) - rotMatrixPlaneToWorld(0,0));
-  transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_PITCH) =
+	transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_PITCH) =
 		  timeDiff * lastStatus.accelY * (rotMatrixPlaneToWorldIncY(0,1) - rotMatrixPlaneToWorld(0,1));
-  transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_HEADING) =
+	transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_HEADING) =
 		  timeDiff * lastStatus.accelZ * (rotMatrixPlaneToWorldIncZ(0,2) - rotMatrixPlaneToWorld(0,2));
 
-  newStatus.groundSpeedNorth = lastStatus.trueAirSpeedNorth + lastStatus.windSpeedNorth +
+	newStatus.groundSpeedNorth = lastStatus.trueAirSpeedNorth + lastStatus.windSpeedNorth +
 		  temp1 * lastStatus.accelX +
 		  temp2 * lastStatus.accelY +
 		  temp3 * lastStatus.accelZ;
 
 // STATUS_IND_SPEED_GROUND_E
-  /// \todo ground speed comes from air speed + wind
-  transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_TAS_E) = 1.0f;
-  transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_WIND_SPEED_E) = 1.0f;
-  transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_ACC_X) = temp1 = timeDiff * rotMatrixPlaneToWorld(1,0);
-  transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_ACC_Y) = temp2 = timeDiff * rotMatrixPlaneToWorld(1,1);
-  transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_ACC_Z) = temp3 = timeDiff * rotMatrixPlaneToWorld(1,2);
+	transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_TAS_E) = 1.0f;
+	transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_WIND_SPEED_E) = 1.0f;
+	transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_ACC_X) = temp1 = timeDiff * rotMatrixPlaneToWorld(1,0);
+	transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_ACC_Y) = temp2 = timeDiff * rotMatrixPlaneToWorld(1,1);
+	transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_ACC_Z) = temp3 = timeDiff * rotMatrixPlaneToWorld(1,2);
 
-  // calculate the covariant for angular changes
-  transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_ROLL) =
+	// calculate the covariant for angular changes
+	transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_ROLL) =
 		  timeDiff * lastStatus.accelX * (rotMatrixPlaneToWorldIncX(1,0) - rotMatrixPlaneToWorld(1,0));
-  transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_PITCH) =
+	transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_PITCH) =
 		  timeDiff * lastStatus.accelY * (rotMatrixPlaneToWorldIncY(1,1) - rotMatrixPlaneToWorld(1,1));
-  transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_HEADING) =
+	transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_HEADING) =
 		  timeDiff * lastStatus.accelZ * (rotMatrixPlaneToWorldIncZ(1,2) - rotMatrixPlaneToWorld(1,2));
 
-  newStatus.groundSpeedNorth = lastStatus.trueAirSpeedEast + lastStatus.windSpeedEast +
+	newStatus.groundSpeedNorth = lastStatus.trueAirSpeedEast + lastStatus.windSpeedEast +
 		  temp1 * lastStatus.accelX +
 		  temp2 * lastStatus.accelY +
 		  temp3 * lastStatus.accelZ;
 
-
-// STATUS_IND_TAS_N
-  /// \todo 1 + accelerations
-  transitionMatrix(GliderVarioStatus::STATUS_IND_TAS_N,GliderVarioStatus::STATUS_IND_TAS) = temp1 = FastMath::fastCos(lastStatus.heading);
-
-  // Covariance for angular change
-  transitionMatrix(GliderVarioStatus::STATUS_IND_TAS_N,GliderVarioStatus::STATUS_IND_HEADING) = lastStatus.trueAirSpeed * (FastMath::fastCos(lastStatus.heading + 1.0f) - temp1);
-
-  newStatus.trueAirSpeedNorth = temp1 * lastStatus.trueAirSpeed;
-
-// STATUS_IND_TAS_E
-  /// \todo 1 + accelerations
-  transitionMatrix(GliderVarioStatus::STATUS_IND_TAS_E,GliderVarioStatus::STATUS_IND_TAS) = FastMath::fastSin(lastStatus.heading);
-
-  // Covariance for angular change
-  transitionMatrix(GliderVarioStatus::STATUS_IND_TAS_E,GliderVarioStatus::STATUS_IND_HEADING) = lastStatus.trueAirSpeed * (FastMath::fastSin(lastStatus.heading + 1.0f) - temp1);
-
-  newStatus.trueAirSpeedEast = temp1 * lastStatus.trueAirSpeed;
-
 // STATUS_IND_TAS
-  /// \todo TAS absolute from TAS_N and TAS_E
-  transitionMatrix(GliderVarioStatus::STATUS_IND_TAS,GliderVarioStatus::STATUS_IND_TAS) = 1.0f;
-  transitionMatrix(GliderVarioStatus::STATUS_IND_TAS,GliderVarioStatus::STATUS_IND_ACC_X) = temp1 = timeDiff * FastMath::fastCos(lastStatus.pitchAngle);
+  // I need a conversion from the plane coordinates into the heading coordinates, i.e. I factor in pitch and roll, but not heading
+  RotationMatrix rotMatrix (0.0f,lastStatus.pitchAngle,lastStatus.rollAngle);
+  RotationMatrix3DType &rotMatrixPlaneToHeading = rotMatrix.getMatrixPlaneToGlo();
 
-  // Calculate the derivate on angle changes for the covariant too.
-  transitionMatrix(GliderVarioStatus::STATUS_IND_TAS,GliderVarioStatus::STATUS_IND_PITCH) = timeDiff * (FastMath::fastCos(lastStatus.pitchAngle + 1.0f) - temp1);
+  // For the EKF I need an approximate derivation of the rotation matrix for the roll, pitch ands.
+  // For practical reasons I approximate the derivation by an increment of 1 degree.
+  RotationMatrix rotMatrixPlaneToHeadingIncX (lastStatus.heading,lastStatus.pitchAngle,lastStatus.rollAngle + 1.0f);
+  RotationMatrix3DType &rotMatrixPlaneToHeadingIncX = rotMatrixPlaneToHeadingIncX.getMatrixPlaneToGlo();
+  RotationMatrix rotMatrixPlaneToHeadingIncY (lastStatus.heading,lastStatus.pitchAngle + 1.0f,lastStatus.rollAngle);
+  RotationMatrix3DType &rotMatrixPlaneToHeadingIncY = rotMatrixPlaneToHeadingIncY.getMatrixPlaneToGlo();
+
+
+  transitionMatrix(GliderVarioStatus::STATUS_IND_TAS,GliderVarioStatus::STATUS_IND_TAS) = 1.0f;
+  transitionMatrix(GliderVarioStatus::STATUS_IND_TAS,GliderVarioStatus::STATUS_IND_ACC_X) = temp1 = timeDiff * rotMatrixPlaneToHeading(1,0);
+  transitionMatrix(GliderVarioStatus::STATUS_IND_TAS,GliderVarioStatus::STATUS_IND_ACC_Y) = temp2 = timeDiff * rotMatrixPlaneToHeading(1,1);
+  transitionMatrix(GliderVarioStatus::STATUS_IND_TAS,GliderVarioStatus::STATUS_IND_ACC_Z) = temp3 = timeDiff * rotMatrixPlaneToHeading(1,2);
+
+  // calculate the covariant for angular changes
+  transitionMatrix(GliderVarioStatus::STATUS_IND_TAS,GliderVarioStatus::STATUS_IND_ROLL) =
+		  timeDiff * lastStatus.accelX * (rotMatrixPlaneToHeadingIncX(1,0) - rotMatrixPlaneToHeading(1,0));
+  transitionMatrix(GliderVarioStatus::STATUS_IND_TAS,GliderVarioStatus::STATUS_IND_PITCH) =
+		  timeDiff * lastStatus.accelY * (rotMatrixPlaneToHeadingIncY(1,1) - rotMatrixPlaneToHeading(1,1));
 
   newStatus.trueAirSpeed = lastStatus.trueAirSpeed +
-		  temp1 * lastStatus.accelX;
+		  temp1 * lastStatus.accelX +
+		  temp2 * lastStatus.accelY +
+		  temp3 * lastStatus.accelZ;
+
+  // STATUS_IND_TAS_N
+    transitionMatrix(GliderVarioStatus::STATUS_IND_TAS_N,GliderVarioStatus::STATUS_IND_TAS) = temp1 = FastMath::fastCos(lastStatus.heading);
+
+    // Covariance for angular change
+    transitionMatrix(GliderVarioStatus::STATUS_IND_TAS_N,GliderVarioStatus::STATUS_IND_HEADING) = lastStatus.trueAirSpeed * (FastMath::fastCos(lastStatus.heading + 1.0f) - temp1);
+
+    newStatus.trueAirSpeedNorth = temp1 * lastStatus.trueAirSpeed;
+
+  // STATUS_IND_TAS_E
+    transitionMatrix(GliderVarioStatus::STATUS_IND_TAS_E,GliderVarioStatus::STATUS_IND_TAS) = FastMath::fastSin(lastStatus.heading);
+
+    // Covariance for angular change
+    transitionMatrix(GliderVarioStatus::STATUS_IND_TAS_E,GliderVarioStatus::STATUS_IND_HEADING) = lastStatus.trueAirSpeed * (FastMath::fastSin(lastStatus.heading + 1.0f) - temp1);
+
+    newStatus.trueAirSpeedEast = temp1 * lastStatus.trueAirSpeed;
+
+  // STATUS_IND_SPEED_GROUND_N
+      transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_TAS_N) = 1.0f;
+      transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_WIND_SPEED_N) = 1.0f;
+      transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_ACC_X) = temp1 = timeDiff * rotMatrixPlaneToWorld(0,0);
+      transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_ACC_Y) = temp2 = timeDiff * rotMatrixPlaneToWorld(0,1);
+      transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_ACC_Z) = temp3 = timeDiff * rotMatrixPlaneToWorld(0,2);
+
+      // calculate the covariant for angular changes
+      transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_ROLL) =
+    		  timeDiff * lastStatus.accelX * (rotMatrixPlaneToWorldIncX(0,0) - rotMatrixPlaneToWorld(0,0));
+      transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_PITCH) =
+    		  timeDiff * lastStatus.accelY * (rotMatrixPlaneToWorldIncY(0,1) - rotMatrixPlaneToWorld(0,1));
+      transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_HEADING) =
+    		  timeDiff * lastStatus.accelZ * (rotMatrixPlaneToWorldIncZ(0,2) - rotMatrixPlaneToWorld(0,2));
+
+      newStatus.groundSpeedNorth = lastStatus.trueAirSpeedNorth + lastStatus.windSpeedNorth +
+    		  temp1 * lastStatus.accelX +
+    		  temp2 * lastStatus.accelY +
+    		  temp3 * lastStatus.accelZ;
+
+  // STATUS_IND_SPEED_GROUND_E
+      transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_TAS_E) = 1.0f;
+      transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_WIND_SPEED_E) = 1.0f;
+      transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_ACC_X) = temp1 = timeDiff * rotMatrixPlaneToWorld(1,0);
+      transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_ACC_Y) = temp2 = timeDiff * rotMatrixPlaneToWorld(1,1);
+      transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_ACC_Z) = temp3 = timeDiff * rotMatrixPlaneToWorld(1,2);
+
+      // calculate the covariant for angular changes
+      transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_ROLL) =
+    		  timeDiff * lastStatus.accelX * (rotMatrixPlaneToWorldIncX(1,0) - rotMatrixPlaneToWorld(1,0));
+      transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_PITCH) =
+    		  timeDiff * lastStatus.accelY * (rotMatrixPlaneToWorldIncY(1,1) - rotMatrixPlaneToWorld(1,1));
+      transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_HEADING) =
+    		  timeDiff * lastStatus.accelZ * (rotMatrixPlaneToWorldIncZ(1,2) - rotMatrixPlaneToWorld(1,2));
+
+      newStatus.groundSpeedNorth = lastStatus.trueAirSpeedEast + lastStatus.windSpeedEast +
+    		  temp1 * lastStatus.accelX +
+    		  temp2 * lastStatus.accelY +
+    		  temp3 * lastStatus.accelZ;
 
   /*
-* STATUS_IND_RATE_OF_SINK
+   * STATUS_IND_RATE_OF_SINK
    * The calculation is based on the energy transfer from kinetic energy to potential energy (increase of speed leads to increase of sink).
    * The acceleration is measured along the body X axis. If pitched up or down the accelerometer reading is affected by gravity.
    * The actual equation is something like: (accX - sin(pitch)*GRAVITY) * TAS / GRAVITY = (accX*TAS/GRAVITY) - sin(pitch)*TAS*GRAVITY/GRAVITY
