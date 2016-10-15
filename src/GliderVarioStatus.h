@@ -90,6 +90,13 @@ static FloatType constexpr pressureStdMSL = 101325.0f;
 extern FloatType MAG_INCLINATION; // = -67.0f;
 
 /**
+ * Nautical mile to m
+ *
+ * \sa <a href="https://en.wikipedia.org/wiki/Nautical_mile" >Wikipedia: Nautical mile</a>
+ */
+static FloatType constexpr NM_TO_M = 1852.0f;
+
+/**
  * This vector type is used for all 3-dimensional representations of values in Cartesian coordinates
  */
 typedef Eigen::Matrix<FloatType, 3, 1> Vector3DType;
@@ -167,7 +174,7 @@ public:
     STATUS_IND_WIND_SPEED_E	, ///< Wind speed East component in m/s
 	STATUS_IND_WIND_SPEED   , ///< Absolute wind speed in m/s
 	STATUS_IND_WIND_DIR     , ///< The direction is the direction *from where* the wind blows.
-	STATUS_IND_QNH			, ///< QNH in Pascal
+	STATUS_IND_QFF			, ///< QFF in Pascal (Using a realistic model incl. temperature, ignoring humidity).
 
 	STATUS_NUM_ROWS				///< The number of rows in the vector. This is not a component of the vector!
   };
@@ -287,7 +294,7 @@ public:
   FloatType& windSpeedEast  = statusVector_x[ STATUS_IND_WIND_SPEED_E]; ///< Wind speed East component in m/s
   FloatType& windSpeed      = statusVector_x[ STATUS_IND_WIND_SPEED  ]; ///< Absolute Wind speed in m/s
   FloatType& windDirection  = statusVector_x[ STATUS_IND_WIND_DIR    ]; ///< The direction is the direction *from where* the wind blows.
-  FloatType& qnh			= statusVector_x[ STATUS_IND_QNH		 ]; ///< QNH in Pascal
+  FloatType& qff			= statusVector_x[ STATUS_IND_QFF		 ]; ///< QFF in Pascal (Using a realistic model incl. temperature, ignoring humidity).
 
 
 protected:

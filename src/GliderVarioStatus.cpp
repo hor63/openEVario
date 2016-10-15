@@ -215,7 +215,7 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 	o.precision(7); o.width(13); o << s.windSpeedEast;
 	o.precision(7); o.width(13); o << s.windSpeed    ;
 	o.precision(7); o.width(13); o << s.windDirection;
-	o.precision(7); o.width(13); o << s.qnh;
+	o.precision(7); o.width(13); o << s.qff;
 
 	o << std::endl;
 
