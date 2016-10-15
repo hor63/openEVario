@@ -50,7 +50,7 @@ public:
 	 * \brief Update the status vector with a new measurement of the latitude
 	 * Update the status vector with a new measurement of the latitude measurement
 	 * @param[in] measuredLatitude Latitude in degrees North from the GPS receiver
-	 * @param[in] latitudeVariance Variance of the latitude
+	 * @param[in] latitudeVariance Variance of the latitude in Degrees^2
 	 * @param[in,out] measurementVector The applicable column is updated for information purposes.
 	 * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
 	 */
@@ -65,7 +65,7 @@ public:
 	 * \brief Update the status vector with a new measurement of the longitude
 	 * Update the status vector with a new measurement of the longitude
 	 * @param[in] measuredLongitude Longitude in degrees East
-	 * @param[in] longitudeVariance variance of the longitude measurement
+	 * @param[in] longitudeVariance variance of the longitude measurement in Degrees^2
 	 * @param[in,out] measurementVector The applicable column is updated for information purposes.
 	 * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
 	 */
@@ -80,6 +80,7 @@ public:
 	 * \brief Update the status vector with a new measurement of the GPS altitude
 	 * Update the status vector with a new measurement of the GPS altitude
 	 * @param[in] measuredAltitudeMSL GPS altitude MSL (above geoid)
+	 * @param[in] altitudeVariance Variance of the GPS altitude MSL
 	 * @param[in,out] measurementVector The applicable column is updated for information purposes.
 	 * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
 	 */
@@ -109,11 +110,13 @@ public:
 	 * \brief Update the status vector with a new measurement of the GPS speed over ground
 	 * Update the status vector with a new measurement of the GPS speed over ground
 	 * @param[in] measuredSpeedOverGround Speed over ground in kt
+	 * @param[in] speedOverGroundVariance Variance of the measured speed over ground
 	 * @param[in,out] measurementVector The applicable column is updated for information purposes.
 	 * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
 	 */
 	static void GPSSpeedUpd (
 			FloatType measuredSpeedOverGround,
+			FloatType speedOverGroundVariance,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
@@ -123,24 +126,38 @@ public:
 	 * \brief Update the status vector with a new measurement of the acceleration along the plane roll (X) axis
 	 * Update the status vector with a new measurement of the acceleration along the plane roll (X) axis
 	 * @param[in] measuredAccelX Acceleration along the body X axis. Forward is positive.
+	 * @param[in] accelXVariance Variance of the measured acceleration
 	 * @param[in,out] measurementVector The applicable column is updated for information purposes.
 	 * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
 	 */
 	static void accelXUpd (
 			FloatType measuredAccelX,
+			FloatType accelXVariance,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
 
 	/**
 	 * \brief Update the status vector with a new measurement of the acceleration along the plane pitch (Y) axis
-	 * Update the status vector with a new measurement of the acceleration along the plane pitch (Y) axis
+	 * Update the status vector with a new measurement of the acceleration along the plane pitch (Y) axis.
+	 *
+	 * This measurement updates two statuses:
+	 * 1. The Y-acceleration
+	 * 2. static bank angle. This happens when the glider sits on the ground
+	 * with one wing on the ground or when flying with a hanging wing (i.e. a slip, or just flying unclean).
+	 * This calculation is pretty awful:
+	 * First calculate the turn radius from the True Air Speed and the global turn rate.
+	 * Than calculate the bank angle according to
+	 * <a href="https://de.wikipedia.org/wiki/Zentrifugalkraft#Rotierende_Fl.C3.BCssigkeit" >Wikipedia: Zentrifugalkraft, rotating liqids</a>
+	 *
 	 * @param[in] measuredAccelY Acceleration along the body Y axis. Right is positive.
+	 * @param[in] accelYVariance Variance of the measured acceleration
 	 * @param[in,out] measurementVector The applicable column is updated for information purposes.
 	 * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
 	 */
 	static void accelYUpd (
 			FloatType measuredAccelY,
+			FloatType accelYVariance,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
@@ -149,11 +166,13 @@ public:
 	 * \brief Update the status vector with a new measurement of the acceleration along the plane yaw (Z) axis
 	 * Update the status vector with a new measurement of the acceleration along the plane yaw (Z) axis
 	 * @param[in] measuredAccelZ Acceleration along the body Z axis. Downward is positive.
+	 * @param[in] accelZVariance Variance of the measured acceleration
 	 * @param[in,out] measurementVector The applicable column is updated for information purposes.
 	 * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
 	 */
 	static void accelZUpd (
 			FloatType measuredAccelZ,
+			FloatType accelZVariance,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
@@ -162,11 +181,13 @@ public:
 	 * \brief Update the status vector with a new measurement of the roll rate around the plane X axis
 	 * Update the status vector with a new measurement of the roll rate around the plane X axis
 	 * @param[in] measuredRollRateX Rotation rate around the body X axis in degrees per second. Right hand roll is positive.
+	 * @param[in] rollRateXVariance Variance of the measured roll rate
 	 * @param[in,out] measurementVector The applicable column is updated for information purposes.
 	 * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
 	 */
 	static void gyroXUpd (
 			FloatType measuredRollRateX,
+			FloatType rollRateXVariance,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
@@ -175,11 +196,13 @@ public:
 	 * \brief Update the status vector with a new measurement of the turn rate around the plane Y axis
 	 * Update the status vector with a new measurement of the turn rate around the plane Y axis
 	 * @param[in] measuredPitchRateY Rotation rate around the body Y axis in degrees per second. Upward pitch is positive.
+	 * @param[in] rollRateYVariance Variance of the measured roll rate
 	 * @param[in,out] measurementVector The applicable column is updated for information purposes.
 	 * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
 	 */
 	static void gyroYUpd (
 			FloatType measuredPitchRateY,
+			FloatType rollRateYVariance,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
@@ -188,11 +211,13 @@ public:
 	 * \brief Update the status vector with a new measurement of the turn (yaw) rate around the plane Z axis
 	 * Update the status vector with a new measurement of the turn (yaw) rate around the plane Z axis
 	 * @param[in] measuredYawRateZ Rotation rate around the body Z axis in degrees per second. Right (clockwise) turn is positive.
+	 * @param[in] rollRateYVariance Variance of the measured roll rate
 	 * @param[in,out] measurementVector The applicable column is updated for information purposes.
 	 * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
 	 */
 	static void gyroZUpd (
 			FloatType measuredYawRateZ,
+			FloatType rollRateZVariance,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
@@ -205,6 +230,9 @@ public:
 	 * @param[in] measuredMagFlowX Magnetic flow along the X axis of the body
 	 * @param[in] measuredMagFlowY Magnetic flow along the Y axis of the body
 	 * @param[in] measuredMagFlowZ Magnetic flow along the Z axis of the body
+	 * @param[in] magFlowXVariance Variance of the magnetic flow X measurement
+	 * @param[in] magFlowYVariance Variance of the magnetic flow Y measurement
+	 * @param[in] magFlowZVariance Variance of the magnetic flow Z measurement
 	 * @param[in,out] measurementVector The applicable column is updated for information purposes.
 	 * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
 	 */
@@ -212,6 +240,9 @@ public:
 			FloatType measuredMagFlowX,
 			FloatType measuredMagFlowY,
 			FloatType measuredMagFlowZ,
+			FloatType magFlowXVariance,
+			FloatType magFlowYVariance,
+			FloatType magFlowZVariance,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
@@ -226,12 +257,14 @@ public:
 	 * I am ignoring water vapor in all calculations.
 	 * @param[in] measuredStaticPressure Static pressure in Pascal
 	 * @param[in] measuredTemperature Ambient temperature in Degrees Celsius at the current altitude
+	 * @param[in] Variance of the pressure measurement
 	 * @param[in,out] measurementVector The applicable column is updated for information purposes.
 	 * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
 	 */
 	static void staticPressureUpd (
 			FloatType measuredStaticPressure,
 			FloatType measuredTemperature,
+			FloatType staticPressureVariance,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
@@ -245,12 +278,14 @@ public:
 	 * I am ignoring water vapor in all calculations.
 	 * @param[in] measuredDynamicPressure Dynamic (pitot) pressure in Pascal (difference between static and total pressure).
 	 * @param[in] measuredTemperature Ambient temperature in Degrees Celsius at the current altitude
+	 * @param[in] dynamicPressureVariance Variance of the dynamic pressure
 	 * @param[in,out] measurementVector The applicable column is updated for information purposes.
 	 * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
 	 */
 	static void dynamicPressureUpd (
 			FloatType measuredDynamicPressure,
 			FloatType measuredTemperature,
+			FloatType dynamicPressureVariance,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
