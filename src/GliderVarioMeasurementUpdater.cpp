@@ -90,27 +90,12 @@ GliderVarioMeasurementUpdater::GPSAltitudeUpd (
 		) {
 	FloatType calculatedValue;
 	GliderVarioStatus::StatusVectorType measRowT;
-	FloatType temp1,temp2;
 
 		measRowT.setZero();
 
 		// calculate and fill in local variables here.
-		measurementVector.gpsSpeed = measuredAltitudeMSL;
-		calculatedValue =
-				sqrt(varioStatus.groundSpeedNorth * varioStatus.groundSpeedNorth +
-				     varioStatus.groundSpeedEast * varioStatus.groundSpeedEast);
-
-		// approximate the derivates
-		temp1 = varioStatus.groundSpeedNorth*1.01;
-		temp2 = sqrt(temp1 * temp1 +
-				    varioStatus.groundSpeedEast * varioStatus.groundSpeedEast);
-		measRowT(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N) = (temp2-calculatedValue)/(temp1-varioStatus.groundSpeedNorth);
-
-		// approximate the derivates
-		temp1 = varioStatus.groundSpeedEast*1.01;
-		temp2 = sqrt(temp1 * temp1 +
-				    varioStatus.groundSpeedNorth * varioStatus.groundSpeedNorth);
-		measRowT(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N) = (temp2-calculatedValue)/(temp1-varioStatus.groundSpeedNorth);
+		measurementVector.gpsMSL = measuredAltitudeMSL;
+		measRowT(GliderVarioStatus::STATUS_IND_ALT_MSL) = 1.0f;
 
 		calcSingleMeasureUpdate (
 				measuredAltitudeMSL,
@@ -130,10 +115,22 @@ GliderVarioMeasurementUpdater::GPSHeadingUpd (
 		) {
 	FloatType calculatedValue;
 	GliderVarioStatus::StatusVectorType measRowT;
+	FloatType temp1;
 
 		measRowT.setZero();
 
 		// calculate and fill in local variables here.
+		measurementVector.gpsHeading = measuredCourseOverGround;
+		calculatedValue = FastMath::fastATan2(varioStatus.groundSpeedEast,varioStatus.groundSpeedNorth);
+
+		// approximate the derivates
+		// to avoid numeric issues use the same increment for both directions
+		temp1 = (varioStatus.groundSpeedNorth + varioStatus.groundSpeedEast) / 100.0f;
+
+		measRowT(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N) =
+				FastMath::fastATan2(varioStatus.groundSpeedEast,varioStatus.groundSpeedNorth + temp1) / temp1;
+		measRowT(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E) =
+				FastMath::fastATan2(varioStatus.groundSpeedEast + temp1,varioStatus.groundSpeedNorth) / temp1;
 
 		calcSingleMeasureUpdate (
 				measuredCourseOverGround,
@@ -147,22 +144,42 @@ GliderVarioMeasurementUpdater::GPSHeadingUpd (
 static void
 GliderVarioMeasurementUpdater::GPSSpeedUpd (
 		FloatType measuredSpeedOverGround,
+		FloatType speedOverGroundVariance,
 		GliderVarioMeasurementVector const &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
-	FloatType measuredValue;
 	FloatType calculatedValue;
-	FloatType measurementVariance_R;
 	GliderVarioStatus::StatusVectorType measRowT;
+	FloatType temp1, temp2, temp3;
 
 		measRowT.setZero();
 
 		// calculate and fill in local variables here.
+		measuredSpeedOverGround *= NM_TO_M / 3600.0f;
+		measurementVector.gpsSpeed = measuredSpeedOverGround;
+		calculatedValue =
+				sqrt(varioStatus.groundSpeedNorth * varioStatus.groundSpeedNorth +
+				     varioStatus.groundSpeedEast * varioStatus.groundSpeedEast);
+
+		// approximate the derivates
+		// use the same increment for both directions to avoid numerical resolution problems
+		temp3 = calculatedValue / 100.0f;
+
+		temp1 = varioStatus.groundSpeedNorth + temp3;
+		temp2 = sqrt(temp1 * temp1 +
+				    varioStatus.groundSpeedEast * varioStatus.groundSpeedEast);
+		measRowT(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N) = (temp2-calculatedValue) / temp3;
+
+		temp1 = varioStatus.groundSpeedEast + temp3;
+		temp2 = sqrt(temp1 * temp1 +
+				    varioStatus.groundSpeedNorth * varioStatus.groundSpeedNorth);
+		measRowT(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N) = (temp2-calculatedValue) / temp3;
+
 
 		calcSingleMeasureUpdate (
-				measuredValue,
+				measuredSpeedOverGround,
 				calculatedValue,
-				measurementVariance_R,
+				speedOverGroundVariance,
 				measRowT,
 				varioStatus
 				);
@@ -172,22 +189,24 @@ GliderVarioMeasurementUpdater::GPSSpeedUpd (
 static void
 GliderVarioMeasurementUpdater::accelXUpd (
 		FloatType measuredAccelX,
+		FloatType accelXVariance,
 		GliderVarioMeasurementVector const &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
-	FloatType measuredValue;
 	FloatType calculatedValue;
-	FloatType measurementVariance_R;
 	GliderVarioStatus::StatusVectorType measRowT;
 
 		measRowT.setZero();
 
 		// calculate and fill in local variables here.
+		measurementVector.accelX = measuredAccelX;
+		calculatedValue = varioStatus.accelX;
+		measRowT(GliderVarioStatus::STATUS_IND_ACC_X) = 1.0f;
 
 		calcSingleMeasureUpdate (
-				measuredValue,
+				measuredAccelX,
 				calculatedValue,
-				measurementVariance_R,
+				accelXVariance,
 				measRowT,
 				varioStatus
 				);
@@ -196,70 +215,100 @@ GliderVarioMeasurementUpdater::accelXUpd (
 static void
 GliderVarioMeasurementUpdater::accelYUpd (
 		FloatType measuredAccelY,
+		FloatType accelYVariance,
 		GliderVarioMeasurementVector const &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
-	FloatType measuredValue;
 	FloatType calculatedValue;
-	FloatType measurementVariance_R;
 	GliderVarioStatus::StatusVectorType measRowT;
+	FloatType turnRateRad, turnRadius, bankAngleRot, staticAngle;
 
+	    // First run: update of the Y acceleration
 		measRowT.setZero();
 
 		// calculate and fill in local variables here.
+		measurementVector.accelY = measuredAccelY;
+		calculatedValue = varioStatus.accelY;
+		measRowT(GliderVarioStatus::STATUS_IND_ACC_Y) = 1.0f;
 
 		calcSingleMeasureUpdate (
-				measuredValue,
+				measuredAccelY,
 				calculatedValue,
-				measurementVariance_R,
+				accelYVariance,
 				measRowT,
 				varioStatus
 				);
+
+	    // Second run: Assess the bank angle
+		measRowT.setZero();
+
+		// calculate and fill in local variables here.
+		turnRadius = varioStatus.trueAirSpeed / varioStatus.yawRateGloZ * FastMath::radToDeg;
+		turnRateRad = varioStatus.yawRateGloZ * FastMath::degToRad;
+		bankAngleRot = FastMath::fastATan2(turnRateRad*turnRateRad * turnRadius / GRAVITY,1.0f);
+		staticAngle = varioStatus.rollAngle - bankAngleRot;
+		calculatedValue = GRAVITY * FastMath::fastSin(staticAngle);
+		measRowT(GliderVarioStatus::STATUS_IND_ROLL) = GRAVITY * FastMath::fastSin(staticAngle + 1.0f) - calculatedValue;
+
+		calcSingleMeasureUpdate (
+				measuredAccelY,
+				calculatedValue,
+				accelYVariance,
+				measRowT,
+				varioStatus
+				);
+
+
 	}
 
 static void
 GliderVarioMeasurementUpdater::accelZUpd (
 		FloatType measuredAccelZ,
+		FloatType accelZVariance,
 		GliderVarioMeasurementVector const &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
-	FloatType measuredValue;
 	FloatType calculatedValue;
-	FloatType measurementVariance_R;
 	GliderVarioStatus::StatusVectorType measRowT;
 
 		measRowT.setZero();
 
 		// calculate and fill in local variables here.
+		measurementVector.accelZ = measuredAccelZ;
+		calculatedValue = varioStatus.accelZ;
+		measRowT(GliderVarioStatus::STATUS_IND_ACC_Z) = 1.0f;
 
 		calcSingleMeasureUpdate (
-				measuredValue,
+				measuredAccelZ,
 				calculatedValue,
-				measurementVariance_R,
+				accelZVariance,
 				measRowT,
 				varioStatus
 				);
 	}
 
+
 static void
 GliderVarioMeasurementUpdater::gyroXUpd (
 		FloatType measuredRollRateX,
+		FloatType rollRateXVariance,
 		GliderVarioMeasurementVector const &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
-	FloatType measuredValue;
 	FloatType calculatedValue;
-	FloatType measurementVariance_R;
 	GliderVarioStatus::StatusVectorType measRowT;
 
 		measRowT.setZero();
 
 		// calculate and fill in local variables here.
+		measurementVector.gyroRateX = measuredRollRateX;
+		calculatedValue = varioStatus.rollRateX;
+		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_X) = 1.0f;
 
 		calcSingleMeasureUpdate (
-				measuredValue,
+				measuredRollRateX,
 				calculatedValue,
-				measurementVariance_R,
+				rollRateXVariance,
 				measRowT,
 				varioStatus
 				);
@@ -267,50 +316,59 @@ GliderVarioMeasurementUpdater::gyroXUpd (
 
 static void
 GliderVarioMeasurementUpdater::gyroYUpd (
-		FloatType measuredPitchRateY,
+		FloatType measuredRollRateY,
+		FloatType rollRateYVariance,
 		GliderVarioMeasurementVector const &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
-	FloatType measuredValue;
 	FloatType calculatedValue;
-	FloatType measurementVariance_R;
 	GliderVarioStatus::StatusVectorType measRowT;
 
 		measRowT.setZero();
 
 		// calculate and fill in local variables here.
+		measurementVector.gyroRateY = measuredRollRateY;
+		calculatedValue = varioStatus.yawRateZ;
+		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_Y) = 1.0f;
 
 		calcSingleMeasureUpdate (
-				measuredValue,
+				measuredRollRateY,
 				calculatedValue,
-				measurementVariance_R,
+				rollRateYVariance,
 				measRowT,
 				varioStatus
 				);
+
+		/// \todo update bank angle from turn rate
 	}
 
 static void
 GliderVarioMeasurementUpdater::gyroZUpd (
-		FloatType measuredYawRateZ,
+		FloatType measuredRollRateZ,
+		FloatType rollRateZVariance,
 		GliderVarioMeasurementVector const &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
-	FloatType measuredValue;
 	FloatType calculatedValue;
-	FloatType measurementVariance_R;
 	GliderVarioStatus::StatusVectorType measRowT;
 
 		measRowT.setZero();
 
 		// calculate and fill in local variables here.
+		measurementVector.gyroRateZ = measuredRollRateZ;
+		calculatedValue = varioStatus.pitchRateY;
+		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_Z) = 1.0f;
 
 		calcSingleMeasureUpdate (
-				measuredValue,
+				measuredRollRateZ,
 				calculatedValue,
-				measurementVariance_R,
+				rollRateZVariance,
 				measRowT,
 				varioStatus
 				);
+
+		/// \todo update bank angle from turn rate
+
 	}
 
 static void
@@ -318,6 +376,9 @@ GliderVarioMeasurementUpdater::compassUpd (
 		FloatType measuredMagFlowX,
 		FloatType measuredMagFlowY,
 		FloatType measuredMagFlowZ,
+		FloatType magFlowXVariance,
+		FloatType magFlowYVariance,
+		FloatType magFlowZVariance,
 		GliderVarioMeasurementVector const &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
@@ -344,6 +405,7 @@ static void
 GliderVarioMeasurementUpdater::staticPressureUpd (
 		FloatType measuredStaticPressure,
 		FloatType measuredTemperature,
+		FloatType staticPressureVariance,
 		GliderVarioMeasurementVector const &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
@@ -369,6 +431,7 @@ static void
 GliderVarioMeasurementUpdater::dynamicPressureUpd (
 		FloatType measuredDynamicPressure,
 		FloatType measuredTemperature,
+		FloatType dynamicPressureVariance,
 		GliderVarioMeasurementVector const &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
