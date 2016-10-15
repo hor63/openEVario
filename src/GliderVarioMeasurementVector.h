@@ -52,7 +52,7 @@ public:
 		MEASURE_IND_GPS_LON, ///< Longitude in arc seconds
 		MEASURE_IND_GPS_ALT_MSL, ///< Altitude MSL (geoid) in m
 		MEASURE_IND_GPS_HEADING, ///< Heading in Deg
-		MEASURE_IND_GPS_SPEED, ///< Speed in km/h
+		MEASURE_IND_GPS_SPEED, ///< Speed in m/s
 
 		// Accelerometer
 		MEASURE_IND_ACC_X, ///< Acceleration along the X axis in m/s^2
@@ -84,7 +84,7 @@ public:
 	FloatType &gpsLongitude = measureVector [MEASURE_IND_GPS_LON]; ///< Longitude in arc seconds
 	FloatType &gpsMSL = measureVector [MEASURE_IND_GPS_ALT_MSL]; ///< Altitude MSL in m
 	FloatType &gpsHeading = measureVector [MEASURE_IND_GPS_HEADING]; ///< Heading in Deg
-	FloatType &gpsSpeed = measureVector [MEASURE_IND_GPS_SPEED]; ///< Speed in km/h
+	FloatType &gpsSpeed = measureVector [MEASURE_IND_GPS_SPEED]; ///< Speed in m/s
 
 	// Accelerometer
 	FloatType &accelX = measureVector [MEASURE_IND_ACC_X]; ///< Acceleration along the X axis in m/s^2
