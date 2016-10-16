@@ -180,6 +180,13 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
   newStatus.rollAngle = lastStatus.rollAngle +
 		  timeDiff * lastStatus.rollRateX;
 
+  // STATUS_IND_HEADING
+    transitionMatrix(GliderVarioStatus::STATUS_IND_HEADING,GliderVarioStatus::STATUS_IND_HEADING) = 1.0f;
+    transitionMatrix(GliderVarioStatus::STATUS_IND_HEADING,GliderVarioStatus::STATUS_IND_ROTATION_GLO_Z) = temp1 = timeDiff;
+
+    newStatus.heading = lastStatus.heading +
+  		  temp1 * lastStatus.yawRateGloZ;
+
   // STATUS_IND_ROTATION_Z
     transitionMatrix(GliderVarioStatus::STATUS_IND_ROTATION_Z,GliderVarioStatus::STATUS_IND_ROTATION_Z) = 1.0f;
 
@@ -202,13 +209,6 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
   		  temp1 * lastStatus.rollRateX +
   		  temp2 * lastStatus.pitchRateY +
   		  temp3 * lastStatus.yawRateZ;
-
-// STATUS_IND_HEADING
-  transitionMatrix(GliderVarioStatus::STATUS_IND_HEADING,GliderVarioStatus::STATUS_IND_HEADING) = 1.0f;
-  transitionMatrix(GliderVarioStatus::STATUS_IND_HEADING,GliderVarioStatus::STATUS_IND_ROTATION_GLO_Z) = temp1 = timeDiff;
-
-  newStatus.heading = lastStatus.heading +
-		  temp1 * lastStatus.yawRateGloZ;
 
 // STATUS_IND_SPEED_GROUND_N
 	transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_TAS_N) = 1.0f;
@@ -390,7 +390,7 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
 
   newStatus.windDirection = lastStatus.windDirection;
 
-  // STATUS_IND_QNH
+  // STATUS_IND_QFF
   transitionMatrix(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF) = 1.0f;
 
   newStatus.qff = lastStatus.qff;
