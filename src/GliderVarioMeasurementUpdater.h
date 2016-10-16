@@ -148,7 +148,10 @@ public:
 	 * This calculation is pretty awful:
 	 * First calculate the turn radius from the True Air Speed and the global turn rate.
 	 * Than calculate the bank angle according to
-	 * <a href="https://de.wikipedia.org/wiki/Zentrifugalkraft#Rotierende_Fl.C3.BCssigkeit" >Wikipedia: Zentrifugalkraft, rotating liqids</a>
+	 * <a href="https://de.wikipedia.org/wiki/Zentrifugalkraft#Rotierende_Fl.C3.BCssigkeit" >Wikipedia: Zentrifugalkraft, rotating liqids</a> or
+	 * <a href="https://en.wikipedia.org/wiki/Bucket_argument#Newton.27s_laws_of_motion" >Wikipedia: Bucket argument, Newton's laws of motion</a>,
+	 * using this formula:
+	 * <a href="https://wikimedia.org/api/rest_v1/media/math/render/svg/3aebc043525d0268f6a128d4f9c64636a5481b33" >Angle of the surface of a rotating liquid</a>.
 	 *
 	 * @param[in] measuredAccelY Acceleration along the body Y axis. Right is positive.
 	 * @param[in] accelYVariance Variance of the measured acceleration
