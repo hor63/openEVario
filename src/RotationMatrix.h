@@ -30,13 +30,15 @@
 
 namespace openEV
 {
-/***
- * \class RotationMatrix
+
+/**
  * \brief Rotation matrix to transform the global coordinate system into the plane's coordinate system.
+ *
  * Rotation matrix to transform the global coordinate system into the plane's coordinate system
- * References are \ref https://en.wikipedia.org/wiki/Euler_angles#Vehicles_and_moving_frames. The matrix used is Tait-Bryan angles from
- * \ref https://en.wikipedia.org/wiki/Euler_angles#Rotation_matrix.
- * A IMHO more concise description is in German \ref https://de.wikipedia.org/wiki/Eulersche_Winkel#Drehfolgen_in_der_Fahrzeugtechnik
+ * References are <a href="https://en.wikipedia.org/wiki/Euler_angles#Vehicles_and_moving_frames">Wikipedia: Vehicles and moving frames</a>.
+ * The matrix used is Tait-Bryan angles from
+ * <a href="https://en.wikipedia.org/wiki/Euler_angles#Rotation_matrix" >Wikipedia: Euler angles - Rotation_matrix</a>.
+ * A IMHO more concise description is in German <a href="https://de.wikipedia.org/wiki/Eulersche_Winkel#Drehfolgen_in_der_Fahrzeugtechnik">Wikipedia: Eulersche Winkel - Drehfolgen in der Fahrzeugtechnik</a>.
  * I am using the Y-Y-Z order as defined in DIN 9300 for aircraft rotational order.
  * I am also using the coordinate system definition according to DIN 9300:
  * - x = horizontal North.
@@ -167,7 +169,21 @@ protected:
 
 
   /**
-   * Calculates the rotation matrix global to plane is calculated.
+   * Calculates the rotation matrix. The matrix from world coordinates to plane coordinates is calculated only.
+   *
+   * Again the the angle definitions:
+   * - Yaw angle 		\Psi 	= Heading
+   * - Pitch angle 	\Theta	= Elevation
+   * - Rollwinkel 	\Phi	= Bank angle
+   *
+   * Implementing the matrix according to the German Wikipedia <a href="https://de.wikipedia.org/wiki/Eulersche_Winkel#Drehfolgen_in_der_Fahrzeugtechnik">Wikipedia: Eulersche Winkel - Drehfolgen in der Fahrzeugtechnik</a>
+   *
+   * \begin{align} M_{GNR} & =
+   * \begin{pmatrix} 	\cos \Theta \cos \Psi 					& 	\cos \Theta \sin \Psi 					& -\sin \Theta
+   * \\ 			\sin \Phi \sin \Theta \cos \Psi - \cos \Phi \sin \Psi 	&	\sin \Phi \sin \Theta \sin \Psi + \cos \Phi \cos \Psi 	& \sin \Phi \cos \Theta
+   * \\ 			\cos \Phi \sin \Theta \cos \Psi + \sin \Phi \sin \Psi 	& \cos \Phi \sin \Theta \sin \Psi - \sin \Phi \cos \Psi 	& \cos \Phi \cos \Theta
+   * \end{pmatrix} \end{align}
+   *
    */
   void
   calculateRotationMatrixGloToPlane ();

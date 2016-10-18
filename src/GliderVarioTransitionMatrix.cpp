@@ -64,6 +64,18 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
   RotationMatrix rotMatrixIncZ (lastStatus.heading + 1.0f,lastStatus.pitchAngle,lastStatus.rollAngle);
   RotationMatrix3DType &rotMatrixPlaneToWorldIncZ = rotMatrixIncZ.getMatrixPlaneToGlo();
 
+  // I need a conversion from the plane coordinates into the heading coordinates, i.e. I factor in pitch and roll, but not heading
+  RotationMatrix rotMatrix (0.0f,lastStatus.pitchAngle,lastStatus.rollAngle);
+  RotationMatrix3DType &rotMatrixPlaneToHeading = rotMatrix.getMatrixPlaneToGlo();
+  // For the EKF I need an approximate derivation of the rotation matrix for the roll, pitch and yaw.
+  // For practical reasons I approximate the derivation by an increment of 1 degree.
+  RotationMatrix rotMatrixPlaneToHeadingIncX (0.0f,lastStatus.pitchAngle,lastStatus.rollAngle + 1.0f);
+  RotationMatrix3DType &rotMatrixPlaneToHeadingIncX = rotMatrixPlaneToHeadingIncX.getMatrixPlaneToGlo();
+  RotationMatrix rotMatrixPlaneToHeadingIncY (0.0f,lastStatus.pitchAngle + 1.0f,lastStatus.rollAngle);
+  RotationMatrix3DType &rotMatrixPlaneToHeadingIncY = rotMatrixPlaneToHeadingIncY.getMatrixPlaneToGlo();
+  RotationMatrix rotMatrixPlaneToHeadingIncZ (1.0f,lastStatus.pitchAngle,lastStatus.rollAngle);
+  RotationMatrix3DType &rotMatrixPlaneToHeadingIncZ = rotMatrixPlaneToHeadingIncY.getMatrixPlaneToGlo();
+
 
   // I need half of time square for distance calculations based on acceleration here and there :)
   FloatType timeSquareHalf  = timeDiff*timeDiff / 2.0f;
@@ -160,14 +172,14 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
 // STATUS_IND_PITCH
   transitionMatrix(GliderVarioStatus::STATUS_IND_PITCH,GliderVarioStatus::STATUS_IND_PITCH) = 1.0f;
 
-  transitionMatrix(GliderVarioStatus::STATUS_IND_PITCH,GliderVarioStatus::STATUS_IND_ROTATION_Y) = temp1 =  timeDiff * FastMath::fastCos(lastStatus.rollAngle);
-  transitionMatrix(GliderVarioStatus::STATUS_IND_PITCH,GliderVarioStatus::STATUS_IND_ROTATION_Z) = temp2 = -timeDiff * FastMath::fastSin(lastStatus.rollAngle);
+  transitionMatrix(GliderVarioStatus::STATUS_IND_PITCH,GliderVarioStatus::STATUS_IND_ROTATION_Y) = temp1 = timeDiff * rotMatrixPlaneToHeading(1,1);
+  transitionMatrix(GliderVarioStatus::STATUS_IND_PITCH,GliderVarioStatus::STATUS_IND_ROTATION_Z) = temp2 = timeDiff * rotMatrixPlaneToHeading(1,2);
 
   // calculate the covariant for angular changes
   transitionMatrix(GliderVarioStatus::STATUS_IND_PITCH,GliderVarioStatus::STATUS_IND_ROTATION_Y) =
-		  lastStatus.pitchRateY * (timeDiff * FastMath::fastCos(lastStatus.rollAngle + 1.0f) - temp1);
+		  lastStatus.pitchRateY * (timeDiff * rotMatrixPlaneToHeadingIncY(1,1) - temp1);
   transitionMatrix(GliderVarioStatus::STATUS_IND_PITCH,GliderVarioStatus::STATUS_IND_ROTATION_Z) =
-		  lastStatus.yawRateZ * (-timeDiff * FastMath::fastSin(lastStatus.rollAngle + 1.0f) - temp2);
+		  lastStatus.yawRateZ * (-timeDiff * rotMatrixPlaneToHeadingIncZ(1,2) - temp2);
 
   newStatus.pitchAngle = lastStatus.pitchAngle +
 		  temp1 * lastStatus.pitchRateY +
@@ -223,17 +235,6 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
 	newStatus.groundSpeedNorth = lastStatus.trueAirSpeedEast + lastStatus.windSpeedEast;
 
 // STATUS_IND_TAS
-  // I need a conversion from the plane coordinates into the heading coordinates, i.e. I factor in pitch and roll, but not heading
-  RotationMatrix rotMatrix (0.0f,lastStatus.pitchAngle,lastStatus.rollAngle);
-  RotationMatrix3DType &rotMatrixPlaneToHeading = rotMatrix.getMatrixPlaneToGlo();
-
-  // For the EKF I need an approximate derivation of the rotation matrix for the roll, pitch ands.
-  // For practical reasons I approximate the derivation by an increment of 1 degree.
-  RotationMatrix rotMatrixPlaneToHeadingIncX (lastStatus.heading,lastStatus.pitchAngle,lastStatus.rollAngle + 1.0f);
-  RotationMatrix3DType &rotMatrixPlaneToHeadingIncX = rotMatrixPlaneToHeadingIncX.getMatrixPlaneToGlo();
-  RotationMatrix rotMatrixPlaneToHeadingIncY (lastStatus.heading,lastStatus.pitchAngle + 1.0f,lastStatus.rollAngle);
-  RotationMatrix3DType &rotMatrixPlaneToHeadingIncY = rotMatrixPlaneToHeadingIncY.getMatrixPlaneToGlo();
-
 
   transitionMatrix(GliderVarioStatus::STATUS_IND_TAS,GliderVarioStatus::STATUS_IND_TAS) = 1.0f;
   transitionMatrix(GliderVarioStatus::STATUS_IND_TAS,GliderVarioStatus::STATUS_IND_ACC_X) = temp1 = timeDiff * rotMatrixPlaneToHeading(1,0);

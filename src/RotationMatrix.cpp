@@ -35,23 +35,6 @@ RotationMatrix::~RotationMatrix ()
 
 }
 
-/**
- * Calculates the rotation matrix. The matrix from world coordinates to plane coordinates is calculated only.
- *
- * Again the the angle definitions:
- * - Yaw angle 		\Psi 	= Heading
- * - Pitch angle 	\Theta	= Elevation
- * - Rollwinkel 	\Phi	= Bank angle
- *
- * Implementing the matrix according to the German Wikipedia  \ref https://de.wikipedia.org/wiki/Eulersche_Winkel#Drehfolgen_in_der_Fahrzeugtechnik
- *
- * \begin{align} M_{GNR} & =
- * \begin{pmatrix} 	\cos \Theta \cos \Psi 					& 	\cos \Theta \sin \Psi 					& -\sin \Theta
- * \\ 			\sin \Phi \sin \Theta \cos \Psi - \cos \Phi \sin \Psi 	&	\sin \Phi \sin \Theta \sin \Psi + \cos \Phi \cos \Psi 	& \sin \Phi \cos \Theta
- * \\ 			\cos \Phi \sin \Theta \cos \Psi + \sin \Phi \sin \Psi 	& \cos \Phi \sin \Theta \sin \Psi - \sin \Phi \cos \Psi 	& \cos \Phi \cos \Theta
- * \end{pmatrix} \end{align}
- *
- */
 void
 RotationMatrix::calculateRotationMatrixGloToPlane ()
 {
