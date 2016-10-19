@@ -96,9 +96,42 @@ public:
 			  + oldStatus.getSystemNoiseCovariance_Q();
   }
 
+  /// See \ref staticRollTimeConstant
+  static inline  FloatType getStaticRollTimeConstant() {
+	  return staticRollTimeConstant;
+  }
+
+
+  /**
+   * See \ref staticRollTimeConstant
+   *
+   * @param staticRollTimeConstant New value of \ref staticRollTimeConstant
+   */
+  static inline void setStaticRollTimeConstant(FloatType staticRollTimeConstant) {
+	  this->staticRollTimeConstant = staticRollTimeConstant;
+  }
+
+  /// See \ref dynamicRollTimeConstant
+  static inline FloatType getDynamicRollTimeConstant () {
+	  return dynamicRollTimeConstant;
+  }
+
+  /**
+   * See \ref dynamicRollTimeConstant
+   * @param dynamicRollTimeConstant New value of \ref dynamicRollTimeConstant
+   */
+  static inline void getDynamicRollTimeConstant (FloatType dynamicRollTimeConstant ) {
+	  this->dynamicRollTimeConstant = dynamicRollTimeConstant;
+  }
+
 
 protected:
   TransitionMatrixType transitionMatrix;
+
+  /// Time constant in seconds to correct the roll angle according to the static lateral acceleration ratio to \ref GRAVITY.
+  static FloatType staticRollTimeConstant = 5.0f;
+  /// Time constant in seconds to correct the roll angle according to the ideal bank angle for the current turn rate and True Air Speed (TAS).
+  static FloatType dynamicRollTimeConstant = 1.0f;
 };
 
 } // namespace openEV
