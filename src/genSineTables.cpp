@@ -103,6 +103,8 @@ const double FastMath::sinusTable [FastMath::sizeSineTable + 1] = {\
 "};\n\
 \n" );
 
+
+  // Print the ATAN2 table
   fprintf(fastMathSineTable,"\n%s",
   "const double FastMath::atanTable [FastMath::sizeATanTable + 1] = {\
   \n	0.0"
@@ -114,6 +116,27 @@ const double FastMath::sinusTable [FastMath::sizeSineTable + 1] = {\
   for (i = 1 ; i <= openEV::FastMath::sizeATanTable ; i++ ) {
       fprintf(fastMathSineTable,",\n	%.20f",
 	      atan(static_cast<double>(i)/static_cast<double>(openEV::FastMath::sizeATanTable))*openEV::FastMath::radToDeg
+	      );
+  }
+
+  // print the closure of the definition of FastMath::atanTable
+  fprintf(fastMathSineTable,"\n%s",
+"};\n\
+\n\
+" );
+
+  // print the ASIN table
+  fprintf(fastMathSineTable,"\n%s",
+  "const double FastMath::asinTable [FastMath::sizeASinTable + 1] = {\
+  \n	0.0"
+  	 );
+
+  // Now print the asin values in 512 steps from 0 - 90 deg.
+  // do *not* print the 0 value. That is already printed as static text
+  // First quadrant: sin as it comes
+  for (i = 1 ; i <= openEV::FastMath::sizeASinTable ; i++ ) {
+      fprintf(fastMathSineTable,",\n	%.20f",
+	      asin(static_cast<double>(i)/static_cast<double>(openEV::FastMath::sizeASinTable))*openEV::FastMath::radToDeg
 	      );
   }
 
