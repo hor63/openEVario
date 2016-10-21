@@ -56,7 +56,7 @@ FloatType x = 0;
 int main (int argc, char *argv[]) {
   double U1,U2,V1,V2,S,polarFactor,X,Y	;
   mt19937::result_type min;
-  double x,y, tanRes,fastTanRes,maxDev = 0.0;
+  double x,y, res,fastRes,maxDev = 0.0,maxDevAt = -100.0;
   double range;
   double sqrSum = 0.0,sum = 0.0,absSum =0.0;
   GliderVarioStatus ovStatus1, ovStatus2;
@@ -103,19 +103,46 @@ int i;
 	   << "Test of fast arc tangent " << endl;
   for (x = -1 ; x<=1 ; x+=0.2) {
 	  for (y = -1 ; y<=1 ; y+=0.2) {
-		  tanRes = atan2(y,x) * FastMath::radToDeg;
-		  fastTanRes = FastMath::fastATan2(y,x);
-		  if (fastTanRes > 180.0) {
-			  fastTanRes = -360 + fastTanRes;
+		  res = atan2(y,x) * FastMath::radToDeg;
+		  fastRes = FastMath::fastATan2(y,x);
+		  if (fastRes > 180.0) {
+			  fastRes = -360 + fastRes;
 		  }
-		  if (fabs(tanRes-fastTanRes) > fabs(maxDev) && fabs(tanRes-fastTanRes) < 359.0) {
-			  maxDev = tanRes-fastTanRes;
+		  if (fabs(res-fastRes) > fabs(maxDev) && fabs(res-fastRes) < 359.0) {
+			  maxDev = res-fastRes;
 		  }
 	  }
-	  cout << "x = " << x << ", y = " << y << ", tanRes = " << tanRes << ", fastTanRes = " << fastTanRes << endl;
-	  cout << "maxDev = " << maxDev << endl;
-
+	  cout << "x = " << x << ", y = " << y << ", tanRes = " << res << ", fastRes = " << fastRes << endl;
   }
+  cout << "maxDev = " << maxDev << endl;
+
+  cout << "-------------------" << endl
+	   << "Test of fast arc sin " << endl;
+  maxDev = 0.0;
+  for (x = -100 ; x<=100 ; x++) {
+	  res = asin(x/100.0) * FastMath::radToDeg;
+	  fastRes = FastMath::fastASin(x/100.0);
+	  if (fabs(res-fastRes)>fabs(maxDev)) {
+		  maxDev = res-fastRes;
+		  maxDevAt = x/100;
+	  }
+  }
+  cout << "maxDev = " << maxDev << " at " << maxDevAt << endl;
+
+  cout << "-------------------" << endl
+	   << "Test of fast arc cos " << endl;
+  maxDev = 0.0;
+  for (x = -100 ; x<=100 ; x++) {
+	  res = acos(x/100.0) * FastMath::radToDeg;
+	  fastRes = FastMath::fastACos(x/100.0);
+	  if (fabs(res-fastRes)>fabs(maxDev)) {
+		  maxDev = res-fastRes;
+		  maxDevAt = x/100;
+	  }
+  }
+  cout << "maxDev = " << maxDev << " at " << maxDevAt << endl;
+
+
 
 
   cout << "-----------------------" << endl;

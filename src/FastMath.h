@@ -96,6 +96,7 @@ public:
    * Calculates the arc tan angle for the x and y component in Cartesian coordinates.
    * Based on the signs of x and y the function returns angles from the entire circle
    * The returned angle is in degrees from 0 to 360 degrees.
+   *
    * Please note that x and y here are counted as in mathematics on the unit circle.
    * Meaning x to the left, y up. Angle from x axis counterclockwise to the y axis.
    * If you wonder how that fits with the world coordinate system which I am using, remember that the z axis points *down* not against you
@@ -128,6 +129,57 @@ public:
 	  }
   }
 
+  /**
+   *
+   * @param y The ratio of the opposite (German Gegenkathete) to hypotenuse. Precondition is -1.0 <= x <= 1.0
+   * @return The angle in Degrees where the opposite on a unit circle is y. Return range is -90 to +90 degrees.
+   *
+   * \sa <a href="https://en.wikipedia.org/wiki/Sine">Wikipedia: Sine</a> or
+   * <a href="https://de.wikipedia.org/wiki/Sinus_und_Kosinus">Sinus und Cosinus</a>
+   * \sa <a href="https://en.wikipedia.org/wiki/Unit_circle" >Unit Circle</a>
+   *
+   */
+  static inline FloatType fastASin(FloatType y) {
+	  assert (-1.0f <= y && y <= 1.0f);
+
+	  if (y < 0.0f) {
+		  return -fastASin(-y);
+	  }
+	  if (y == 0.0f) {
+		  return 0.0f;
+	  }
+	  if (y == 1.0f) {
+		  return 90.0f;
+	  }
+
+	  // Calculate the result interpolating the table.
+	  {
+	  	 double scaledASinVal = y * static_cast<double>(sizeASinTable);
+	  	 double indexD = trunc(scaledASinVal);
+	  	 unsigned index = static_cast<unsigned>(indexD);
+
+	  	 assert (y >= 0.0 && y < 1.0);
+
+	  	 // return the interpolated value.
+	  	 return (asinTable[index] + (asinTable[index+1]-asinTable[index])*(scaledASinVal-indexD));
+	  }
+  }
+
+  /**
+   *
+   * @param x The ratio of the adjacent (German Ankathete) to hypotenuse. Precondition is -1.0 <= x <= 1.0
+   * @return The angle in Degrees where the opposite on a unit circle is x. Return range is 0.0 to 180.0 degrees.
+   *
+   * \sa <a href="https://en.wikipedia.org/wiki/Sine">Wikipedia: Sine</a> or
+   * <a href="https://de.wikipedia.org/wiki/Sinus_und_Kosinus">Sinus und Cosinus</a>
+   * \sa <a href="https://en.wikipedia.org/wiki/Unit_circle" >Unit Circle</a>
+   *
+   */
+  static inline FloatType fastACos(FloatType x) {
+	  assert (-1.0f <= x && x <= 1.0f);
+
+	  return (90.0f - fastASin (x));
+  }
 
 protected:
 
