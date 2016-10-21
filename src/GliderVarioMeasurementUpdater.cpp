@@ -24,10 +24,11 @@
  */
 
 #include "GliderVarioMeasurementUpdater.h"
+#include "FastMath.h"
 
 namespace openEV {
 
-static void
+void
 GliderVarioMeasurementUpdater::GPSLatitudeUpd (
 		FloatType measuredLatitude,
 		FloatType latitudeVariance,
@@ -54,7 +55,7 @@ GliderVarioStatus::StatusVectorType measRowT;
 			);
 }
 
-static void
+void
 GliderVarioMeasurementUpdater::GPSLongitudeUpd (
 		FloatType measuredLongitude,
 		FloatType longitudeVariance,
@@ -81,7 +82,7 @@ GliderVarioMeasurementUpdater::GPSLongitudeUpd (
 				);
 	}
 
-static void
+void
 GliderVarioMeasurementUpdater::GPSAltitudeUpd (
 		FloatType measuredAltitudeMSL,
 		FloatType altitudeVariance,
@@ -106,7 +107,7 @@ GliderVarioMeasurementUpdater::GPSAltitudeUpd (
 				);
 	}
 
-static void
+void
 GliderVarioMeasurementUpdater::GPSHeadingUpd (
 		FloatType measuredCourseOverGround,
 		FloatType courseOverGroundVariance,
@@ -141,7 +142,7 @@ GliderVarioMeasurementUpdater::GPSHeadingUpd (
 				);
 	}
 
-static void
+void
 GliderVarioMeasurementUpdater::GPSSpeedUpd (
 		FloatType measuredSpeedOverGround,
 		FloatType speedOverGroundVariance,
@@ -186,7 +187,7 @@ GliderVarioMeasurementUpdater::GPSSpeedUpd (
 	}
 
 
-static void
+void
 GliderVarioMeasurementUpdater::accelXUpd (
 		FloatType measuredAccelX,
 		FloatType accelXVariance,
@@ -212,7 +213,7 @@ GliderVarioMeasurementUpdater::accelXUpd (
 				);
 	}
 
-static void
+void
 GliderVarioMeasurementUpdater::accelYUpd (
 		FloatType measuredAccelY,
 		FloatType accelYVariance,
@@ -261,7 +262,7 @@ GliderVarioMeasurementUpdater::accelYUpd (
 
 	}
 
-static void
+void
 GliderVarioMeasurementUpdater::accelZUpd (
 		FloatType measuredAccelZ,
 		FloatType accelZVariance,
@@ -288,7 +289,7 @@ GliderVarioMeasurementUpdater::accelZUpd (
 	}
 
 
-static void
+void
 GliderVarioMeasurementUpdater::gyroXUpd (
 		FloatType measuredRollRateX,
 		FloatType rollRateXVariance,
@@ -314,7 +315,7 @@ GliderVarioMeasurementUpdater::gyroXUpd (
 				);
 	}
 
-static void
+void
 GliderVarioMeasurementUpdater::gyroYUpd (
 		FloatType measuredRollRateY,
 		FloatType rollRateYVariance,
@@ -342,7 +343,7 @@ GliderVarioMeasurementUpdater::gyroYUpd (
 		/// \todo update bank angle from turn rate
 	}
 
-static void
+void
 GliderVarioMeasurementUpdater::gyroZUpd (
 		FloatType measuredRollRateZ,
 		FloatType rollRateZVariance,
@@ -371,7 +372,7 @@ GliderVarioMeasurementUpdater::gyroZUpd (
 
 	}
 
-static void
+void
 GliderVarioMeasurementUpdater::compassUpd (
 		FloatType measuredMagFlowX,
 		FloatType measuredMagFlowY,
@@ -401,7 +402,7 @@ GliderVarioMeasurementUpdater::compassUpd (
 	}
 
 
-static void
+void
 GliderVarioMeasurementUpdater::staticPressureUpd (
 		FloatType measuredStaticPressure,
 		FloatType measuredTemperature,
@@ -427,7 +428,7 @@ GliderVarioMeasurementUpdater::staticPressureUpd (
 				);
 	}
 
-static void
+void
 GliderVarioMeasurementUpdater::dynamicPressureUpd (
 		FloatType measuredDynamicPressure,
 		FloatType measuredTemperature,
