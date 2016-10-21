@@ -58,6 +58,7 @@ public:
   static constexpr unsigned sineSamplesPerDegree = 8;   ///< the sinus table is calculated in 1/8 degree steps
   static constexpr unsigned sizeSineTable = 360*sineSamplesPerDegree;   ///< the sinus table is calculated in 1/8 degree steps
   static constexpr unsigned sizeATanTable = 256; ///< the arc tan table is defined for the 1st 45 degrees in 256 steps.
+  static constexpr unsigned sizeASinTable = 512; ///< the arc sin table is defined for the 1st 90 degrees in 512 steps.
   static constexpr double   radToDeg = 180.0 / M_PI;
   static constexpr double   degToRad = M_PI / 180.0;
 
@@ -95,27 +96,34 @@ public:
    * Calculates the arc tan angle for the x and y component in Cartesian coordinates.
    * Based on the signs of x and y the function returns angles from the entire circle
    * The returned angle is in degrees from 0 to 360 degrees.
+   * Please note that x and y here are counted as in mathematics on the unit circle.
+   * Meaning x to the left, y up. Angle from x axis counterclockwise to the y axis.
+   * If you wonder how that fits with the world coordinate system which I am using, remember that the z axis points *down* not against you
+   * like in the unit circle
+   *
+   * \sa <a href="https://en.wikipedia.org/wiki/Unit_circle" >Wikipedia: Unit circle</a>
+   *
    * @param[in] x component
    * @param[in] y component
    * @return Angle in degrees 0-360 deg.
    */
-  static inline FloatType fastATan2 (FloatType y, FloatType x) {
+  static inline FloatType fastATan2 (FloatType x, FloatType y) {
 
-	  if (y >= 0) {
-		  if (x >= 0) {
+	  if (x >= 0) {
+		  if (y >= 0) {
 			  // first quadrant
-			  return (fastATan2Pos(y,x));
+			  return (fastATan2Pos(x,y));
 		  } else {
 			  // I am in the second quadrant
-			  return (180-fastATan2Pos(y,-x));
+			  return (180-fastATan2Pos(x,-y));
 		  }
 	  } else {
-		  if (x >= 0) {
+		  if (y >= 0) {
 			  // I am in the fourth quadrant
-			  return (360-fastATan2Pos(-y,x));
+			  return (360-fastATan2Pos(-x,y));
 		  } else {
 			  // I am in the third quadrant
-			  return (180+fastATan2Pos(-y,-x));
+			  return (180+fastATan2Pos(-x,-y));
 		  }
 	  }
   }
@@ -126,9 +134,13 @@ protected:
   /// The table of pre-computed sine values. The table is one item longer than sizeSineTable because I need the interpolation to +360 degrees!
   static const double sinusTable [sizeSineTable+1];
 
-  /// The table of pre-computed arc sine values from 0 to 45 deg. Anything else is derived from this range.
+  /// The table of pre-computed arc tangent values from 0 to 45 deg. Anything else is derived from this range.
   /// Here 2 larger than the number of increments: including 0, all 256 steps in between, and 1
   static const double atanTable [sizeATanTable+1];
+
+  /// The table of pre-computed arc sine values from 0 to 90 deg. Anything else is derived from this range.
+  /// Here 2 larger than the number of increments: including 0, all 512 steps in between, and 1
+  static const double asinTable [sizeASinTable+1];
 
   /**
    *
@@ -150,23 +162,26 @@ protected:
 
   /**
    * Calculates the arc tangent from the x and y component of Cartesian coordinates within the first quadrant, i.e. x and y must >= 0
+   * For directions of x and y, and direction of the angle see \ref fastATan2
+   *
    * @param[in] x x-component of a point in Cartesian coordinates
    * @param[in] y x-component of a point in Cartesian coordinates
    * @return the arc tangent of the ratio of x and y
    */
-  static inline FloatType fastATan2Pos (FloatType y, FloatType x) {
+  static inline FloatType fastATan2Pos (FloatType x, FloatType y) {
 
-	  assert (y>=0 && x >= 0);
+	  assert (x>=0 && y >= 0);
 
-	  if (y < x) {
+	  if (x < y) {
 		  // the angle is between 0 and 45 deg.
-		  return (fastATanRaw(y/x));
+		  return (fastATanRaw(x/y));
 	  } else {
-		  if (y > x) {
+		  if (x > y) {
 			  // I am between 45 and 90 deg. Return from the second half of the quadrant
-			  return (90-fastATanRaw(x/y));
+			  return (90-fastATanRaw(y/x));
 		  } else {
-			  if (y == 0) {
+
+			  if (x == 0) {
 				  // x and y are 0! This is actually nonsense. Before I enter a division by 0 I just return 0 :)
 				  return 0.0;
 			  } else {
