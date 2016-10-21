@@ -108,7 +108,7 @@ public:
    * @param staticRollTimeConstant New value of \ref staticRollTimeConstant
    */
   static inline void setStaticRollTimeConstant(FloatType staticRollTimeConstant) {
-	  this->staticRollTimeConstant = staticRollTimeConstant;
+	  GliderVarioTransitionMatrix::staticRollTimeConstant = staticRollTimeConstant;
   }
 
   /// See \ref dynamicRollTimeConstant
@@ -121,7 +121,7 @@ public:
    * @param dynamicRollTimeConstant New value of \ref dynamicRollTimeConstant
    */
   static inline void getDynamicRollTimeConstant (FloatType dynamicRollTimeConstant ) {
-	  this->dynamicRollTimeConstant = dynamicRollTimeConstant;
+	  GliderVarioTransitionMatrix::dynamicRollTimeConstant = dynamicRollTimeConstant;
   }
 
 
@@ -129,9 +129,9 @@ protected:
   TransitionMatrixType transitionMatrix;
 
   /// Time constant in seconds to correct the roll angle according to the static lateral acceleration ratio to \ref GRAVITY.
-  static FloatType staticRollTimeConstant = 5.0f;
+  static FloatType staticRollTimeConstant;
   /// Time constant in seconds to correct the roll angle according to the ideal bank angle for the current turn rate and True Air Speed (TAS).
-  static FloatType dynamicRollTimeConstant = 1.0f;
+  static FloatType dynamicRollTimeConstant;
 };
 
 } // namespace openEV

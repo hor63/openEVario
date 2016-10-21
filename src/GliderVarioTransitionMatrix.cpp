@@ -37,6 +37,10 @@ namespace openEV
    */
   FloatType constexpr lenLatitudeArcSec = 111132.0 / 3600.0;
 
+  FloatType GliderVarioTransitionMatrix::staticRollTimeConstant = 5.0f;
+  FloatType GliderVarioTransitionMatrix::dynamicRollTimeConstant = 5.0f;
+
+
 GliderVarioTransitionMatrix::~GliderVarioTransitionMatrix ()
 {
 
@@ -65,16 +69,17 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
   RotationMatrix3DType &rotMatrixPlaneToWorldIncZ = rotMatrixIncZ.getMatrixPlaneToGlo();
 
   // I need a conversion from the plane coordinates into the heading coordinates, i.e. I factor in pitch and roll, but not heading
-  RotationMatrix rotMatrix (0.0f,lastStatus.pitchAngle,lastStatus.rollAngle);
-  RotationMatrix3DType &rotMatrixPlaneToHeading = rotMatrix.getMatrixPlaneToGlo();
+  RotationMatrix rotMatrixHeading (0.0f,lastStatus.pitchAngle,lastStatus.rollAngle);
+  RotationMatrix3DType &rotMatrixPlaneToHeading = rotMatrixHeading.getMatrixPlaneToGlo();
+
   // For the EKF I need an approximate derivation of the rotation matrix for the roll, pitch and yaw.
   // For practical reasons I approximate the derivation by an increment of 1 degree.
-  RotationMatrix rotMatrixPlaneToHeadingIncX (0.0f,lastStatus.pitchAngle,lastStatus.rollAngle + 1.0f);
-  RotationMatrix3DType &rotMatrixPlaneToHeadingIncX = rotMatrixPlaneToHeadingIncX.getMatrixPlaneToGlo();
-  RotationMatrix rotMatrixPlaneToHeadingIncY (0.0f,lastStatus.pitchAngle + 1.0f,lastStatus.rollAngle);
-  RotationMatrix3DType &rotMatrixPlaneToHeadingIncY = rotMatrixPlaneToHeadingIncY.getMatrixPlaneToGlo();
-  RotationMatrix rotMatrixPlaneToHeadingIncZ (1.0f,lastStatus.pitchAngle,lastStatus.rollAngle);
-  RotationMatrix3DType &rotMatrixPlaneToHeadingIncZ = rotMatrixPlaneToHeadingIncY.getMatrixPlaneToGlo();
+  RotationMatrix rotMatrixHeadingIncX (0.0f,lastStatus.pitchAngle,lastStatus.rollAngle + 1.0f);
+  RotationMatrix3DType &rotMatrixPlaneToHeadingIncX = rotMatrixHeadingIncX.getMatrixPlaneToGlo();
+  RotationMatrix rotMatrixHeadingIncY (0.0f,lastStatus.pitchAngle + 1.0f,lastStatus.rollAngle);
+  RotationMatrix3DType &rotMatrixPlaneToHeadingIncY = rotMatrixHeadingIncY.getMatrixPlaneToGlo();
+  RotationMatrix rotMatrixHeadingIncZ (1.0f,lastStatus.pitchAngle,lastStatus.rollAngle);
+  RotationMatrix3DType &rotMatrixPlaneToHeadingIncZ = rotMatrixHeadingIncY.getMatrixPlaneToGlo();
 
 
   // I need half of time square for distance calculations based on acceleration here and there :)
