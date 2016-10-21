@@ -232,11 +232,14 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
   {
 	FloatType turnRateRad, turnRadius, bankAngleRot, staticAngle;
 
-
-
-	turnRadius = lastStatus.trueAirSpeed / lastStatus.yawRateGloZ * FastMath::radToDeg;
-	turnRateRad = lastStatus.yawRateGloZ * FastMath::degToRad;
-	bankAngleRot = FastMath::fastATan2(turnRateRad*turnRateRad * turnRadius / GRAVITY,1.0f);
+	if (lastStatus.yawRateGloZ == 0.0f) {
+		// When I am not turning I have no dynamic bank angle. Period.
+		bankAngleRot = 0.0f;
+	} else {
+		turnRadius = lastStatus.trueAirSpeed / lastStatus.yawRateGloZ * FastMath::radToDeg;
+		turnRateRad = lastStatus.yawRateGloZ * FastMath::degToRad;
+		bankAngleRot = FastMath::fastATan2(turnRateRad*turnRateRad * turnRadius / GRAVITY,1.0f);
+	}
 	staticAngle = FastMath::fastATan2(lastStatus.accelY,GRAVITY);
 /// \todo complete this stuff.
 
