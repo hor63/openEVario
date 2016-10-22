@@ -38,7 +38,7 @@ namespace openEV
   FloatType constexpr lenLatitudeArcSec = 111132.0 / 3600.0;
 
   FloatType GliderVarioTransitionMatrix::staticRollTimeConstant = 5.0f;
-  FloatType GliderVarioTransitionMatrix::dynamicRollTimeConstant = 5.0f;
+  FloatType GliderVarioTransitionMatrix::dynamicRollTimeConstant = 1.0f;
 
 
 GliderVarioTransitionMatrix::~GliderVarioTransitionMatrix ()
