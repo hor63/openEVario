@@ -128,7 +128,7 @@ public:
 protected:
   TransitionMatrixType transitionMatrix;
 
-  /// Time constant in seconds to correct the roll angle according to the static lateral acceleration ratio to \ref GRAVITY.
+  /// Time constant in seconds to correct the roll angle according to the static lateral acceleration ratio to \ref openEV::GRAVITY.
   static FloatType staticRollTimeConstant;
   /// Time constant in seconds to correct the roll angle according to the ideal bank angle for the current turn rate and True Air Speed (TAS).
   static FloatType dynamicRollTimeConstant;
