@@ -244,9 +244,14 @@ GliderVarioMeasurementUpdater::accelYUpd (
 		measRowT.setZero();
 
 		// calculate and fill in local variables here.
-		turnRadius = varioStatus.trueAirSpeed / varioStatus.yawRateGloZ * FastMath::radToDeg;
-		turnRateRad = varioStatus.yawRateGloZ * FastMath::degToRad;
-		bankAngleRot = FastMath::fastATan2(turnRateRad*turnRateRad * turnRadius / GRAVITY,1.0f);
+		if (varioStatus.yawRateGloZ == 0) {
+			bankAngleRot = 0.0f;
+		} else {
+			turnRadius = varioStatus.trueAirSpeed / varioStatus.yawRateGloZ * FastMath::radToDeg;
+			turnRateRad = varioStatus.yawRateGloZ * FastMath::degToRad;
+			bankAngleRot = FastMath::fastATan2(turnRateRad*turnRateRad * turnRadius,GRAVITY);
+		}
+
 		staticAngle = varioStatus.rollAngle - bankAngleRot;
 		calculatedValue = GRAVITY * FastMath::fastSin(staticAngle);
 		measRowT(GliderVarioStatus::STATUS_IND_ROLL) = GRAVITY * FastMath::fastSin(staticAngle + 1.0f) - calculatedValue;
