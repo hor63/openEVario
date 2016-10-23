@@ -132,6 +132,22 @@ protected:
   static FloatType staticRollTimeConstant;
   /// Time constant in seconds to correct the roll angle according to the ideal bank angle for the current turn rate and True Air Speed (TAS).
   static FloatType dynamicRollTimeConstant;
+
+  static inline FloatType calcRotBankAngle (FloatType gloTurnRate,FloatType trueAirSpeed) {
+	  FloatType turnRateRad, turnRadius, bankAngleRot;
+	  if (gloTurnRate == 0.0f) {
+		  // When I am not turning I have no dynamic bank angle. Period.
+		  bankAngleRot = 0.0f;
+	  } else {
+		  turnRadius = trueAirSpeed / gloTurnRate * FastMath::radToDeg;
+		  turnRateRad = gloTurnRate * FastMath::degToRad;
+		  bankAngleRot = FastMath::fastATan2(turnRateRad*turnRateRad * turnRadius / GRAVITY,1.0f);
+	  }
+
+	  return bankAngleRot;
+  }
+
+
 };
 
 } // namespace openEV
