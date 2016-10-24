@@ -317,6 +317,8 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
 		  timeDiff * lastStatus.accelX * (rotMatrixPlaneToHeadingIncX(1,0) - rotMatrixPlaneToHeading(1,0));
   transitionMatrix(GliderVarioStatus::STATUS_IND_TAS,GliderVarioStatus::STATUS_IND_PITCH) =
 		  timeDiff * lastStatus.accelY * (rotMatrixPlaneToHeadingIncY(1,1) - rotMatrixPlaneToHeading(1,1));
+  transitionMatrix(GliderVarioStatus::STATUS_IND_TAS,GliderVarioStatus::STATUS_IND_HEADING) =
+		  timeDiff * lastStatus.accelZ * (rotMatrixPlaneToHeadingIncZ(1,2) - rotMatrixPlaneToHeading(1,2));
 
   newStatus.trueAirSpeed = lastStatus.trueAirSpeed +
 		  temp1 * lastStatus.accelX +
