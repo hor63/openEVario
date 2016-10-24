@@ -238,24 +238,25 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
 	FloatType bankAngleRot, staticAngle;
 
 	bankAngleRot = calcRotBankAngle(lastStatus.yawRateGloZ,lastStatus.trueAirSpeed);
-	staticAngle = FastMath::fastASin(lastStatus.accelY/GRAVITY);
 
 	// calculate the correction for dynamic bank
-	temp1 = (newStatus.rollAngle - bankAngleRot) / dynamicRollTimeConstant * timeDiff;
+	temp1 = (bankAngleRot - newStatus.rollAngle) / dynamicRollTimeConstant * timeDiff;
 	// ... and the covariant factors for the TAS and turn rate
 	temp2 = calcRotBankAngle(lastStatus.yawRateGloZ,lastStatus.trueAirSpeed + 0.1);
 	transitionMatrix(GliderVarioStatus::STATUS_IND_ROLL,GliderVarioStatus::STATUS_IND_TAS) =
-			((newStatus.rollAngle - temp2) / dynamicRollTimeConstant * timeDiff - temp1) * 10;
+			((temp2 - newStatus.rollAngle) / dynamicRollTimeConstant * timeDiff - temp1) * 10;
 	temp2 = calcRotBankAngle(lastStatus.yawRateGloZ + 0.1,lastStatus.trueAirSpeed);
 	transitionMatrix(GliderVarioStatus::STATUS_IND_ROLL,GliderVarioStatus::STATUS_IND_ROTATION_GLO_Z) =
-			((newStatus.rollAngle - temp2) / dynamicRollTimeConstant * timeDiff - temp1) * 10;
+			((temp2 - newStatus.rollAngle) / dynamicRollTimeConstant * timeDiff - temp1) * 10;
 
 	// calculate the correction for static bank
-	temp3 = (newStatus.rollAngle - staticAngle) / staticRollTimeConstant * timeDiff;
+	/// \todo Static bank angle is currently calculated correctly when there is no bank otherwise.
+	staticAngle = FastMath::fastASin(lastStatus.accelY/GRAVITY);
+	temp3 = staticAngle / staticRollTimeConstant * timeDiff;
 	// ... and the covariant factors for the lateral acceleration
-	temp2 = FastMath::fastASin(lastStatus.accelY + 0.01/GRAVITY);
+	temp2 = FastMath::fastASin((lastStatus.accelY + 0.01)/GRAVITY) / staticRollTimeConstant * timeDiff;
 	transitionMatrix(GliderVarioStatus::STATUS_IND_ROLL,GliderVarioStatus::STATUS_IND_ACC_Y) =
-			((newStatus.rollAngle - temp2) / dynamicRollTimeConstant * timeDiff - temp3) * 100;
+			(temp2 - temp3) * 100;
 
 	// Now apply the corrections to the new status
 	newStatus.rollAngle += temp1 + temp3;
