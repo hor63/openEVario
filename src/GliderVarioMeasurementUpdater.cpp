@@ -152,28 +152,26 @@ GliderVarioMeasurementUpdater::GPSSpeedUpd (
 	FloatType calculatedValue;
 	GliderVarioStatus::StatusVectorType measRowT;
 	FloatType temp1, temp2, temp3;
+	FloatType groundSpeedNSquare = varioStatus.groundSpeedNorth * varioStatus.groundSpeedNorth;
+	FloatType groundSpeedESquare = varioStatus.groundSpeedEast  * varioStatus.groundSpeedEast;
 
 		measRowT.setZero();
 
 		// calculate and fill in local variables here.
 		measuredSpeedOverGround *= NM_TO_M / 3600.0f;
 		measurementVector.gpsSpeed = measuredSpeedOverGround;
-		calculatedValue =
-				sqrt(varioStatus.groundSpeedNorth * varioStatus.groundSpeedNorth +
-				     varioStatus.groundSpeedEast * varioStatus.groundSpeedEast);
+		calculatedValue = sqrt(groundSpeedNSquare + groundSpeedESquare);
 
 		// approximate the derivates
 		// use the same increment for both directions to avoid numerical resolution problems
 		temp3 = calculatedValue / 100.0f;
 
 		temp1 = varioStatus.groundSpeedNorth + temp3;
-		temp2 = sqrt(temp1 * temp1 +
-				    varioStatus.groundSpeedEast * varioStatus.groundSpeedEast);
+		temp2 = sqrt(temp1 * temp1 + groundSpeedESquare);
 		measRowT(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N) = (temp2-calculatedValue) / temp3;
 
 		temp1 = varioStatus.groundSpeedEast + temp3;
-		temp2 = sqrt(temp1 * temp1 +
-				    varioStatus.groundSpeedNorth * varioStatus.groundSpeedNorth);
+		temp2 = sqrt(groundSpeedNSquare + temp1 * temp1);
 		measRowT(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N) = (temp2-calculatedValue) / temp3;
 
 
@@ -240,6 +238,9 @@ GliderVarioMeasurementUpdater::accelYUpd (
 				varioStatus
 				);
 
+/*
+ * Never mind. The 'pull' effect on the roll (bank) angle already happens in the status propagation model
+ * So the measurement update will propagate through the model covariance.
 	    // Second run: Assess the bank angle
 		measRowT.setZero();
 
@@ -264,7 +265,7 @@ GliderVarioMeasurementUpdater::accelYUpd (
 				varioStatus
 				);
 
-
+ */
 	}
 
 void
@@ -308,8 +309,9 @@ GliderVarioMeasurementUpdater::gyroXUpd (
 
 		// calculate and fill in local variables here.
 		measurementVector.gyroRateX = measuredRollRateX;
-		calculatedValue = varioStatus.rollRateX;
+		calculatedValue = varioStatus.rollRateX + varioStatus.gyroBiasX;
 		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_X) = 1.0f;
+		measRowT(GliderVarioStatus::STATUS_IND_GYRO_BIAS_X) = 1.0f;
 
 		calcSingleMeasureUpdate (
 				measuredRollRateX,
@@ -322,7 +324,7 @@ GliderVarioMeasurementUpdater::gyroXUpd (
 
 void
 GliderVarioMeasurementUpdater::gyroYUpd (
-		FloatType measuredRollRateY,
+		FloatType measuredPitchRateY,
 		FloatType rollRateYVariance,
 		GliderVarioMeasurementVector const &measurementVector,
 		GliderVarioStatus &varioStatus
@@ -333,12 +335,13 @@ GliderVarioMeasurementUpdater::gyroYUpd (
 		measRowT.setZero();
 
 		// calculate and fill in local variables here.
-		measurementVector.gyroRateY = measuredRollRateY;
-		calculatedValue = varioStatus.yawRateZ;
+		measurementVector.gyroRateY = measuredPitchRateY;
+		calculatedValue = varioStatus.yawRateZ + varioStatus.gyroBiasY;
 		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_Y) = 1.0f;
+		measRowT(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Y) = 1.0f;
 
 		calcSingleMeasureUpdate (
-				measuredRollRateY,
+				measuredPitchRateY,
 				calculatedValue,
 				rollRateYVariance,
 				measRowT,
@@ -350,7 +353,7 @@ GliderVarioMeasurementUpdater::gyroYUpd (
 
 void
 GliderVarioMeasurementUpdater::gyroZUpd (
-		FloatType measuredRollRateZ,
+		FloatType measuredYawRateZ,
 		FloatType rollRateZVariance,
 		GliderVarioMeasurementVector const &measurementVector,
 		GliderVarioStatus &varioStatus
@@ -361,12 +364,13 @@ GliderVarioMeasurementUpdater::gyroZUpd (
 		measRowT.setZero();
 
 		// calculate and fill in local variables here.
-		measurementVector.gyroRateZ = measuredRollRateZ;
-		calculatedValue = varioStatus.pitchRateY;
+		measurementVector.gyroRateZ = measuredYawRateZ;
+		calculatedValue = varioStatus.yawRateZ + varioStatus.gyroBiasZ;
 		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_Z) = 1.0f;
+		measRowT(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Z) = 1.0f;
 
 		calcSingleMeasureUpdate (
-				measuredRollRateZ,
+				measuredYawRateZ,
 				calculatedValue,
 				rollRateZVariance,
 				measRowT,
