@@ -238,34 +238,6 @@ GliderVarioMeasurementUpdater::accelYUpd (
 				varioStatus
 				);
 
-/*
- * Never mind. The 'pull' effect on the roll (bank) angle already happens in the status propagation model
- * So the measurement update will propagate through the model covariance.
-	    // Second run: Assess the bank angle
-		measRowT.setZero();
-
-		// calculate and fill in local variables here.
-		if (varioStatus.yawRateGloZ == 0) {
-			bankAngleRot = 0.0f;
-		} else {
-			turnRadius = varioStatus.trueAirSpeed / varioStatus.yawRateGloZ * FastMath::radToDeg;
-			turnRateRad = varioStatus.yawRateGloZ * FastMath::degToRad;
-			bankAngleRot = FastMath::fastATan2(turnRateRad*turnRateRad * turnRadius,GRAVITY);
-		}
-
-		staticAngle = varioStatus.rollAngle - bankAngleRot;
-		calculatedValue = GRAVITY * FastMath::fastSin(staticAngle);
-		measRowT(GliderVarioStatus::STATUS_IND_ROLL) = GRAVITY * FastMath::fastSin(staticAngle + 1.0f) - calculatedValue;
-
-		calcSingleMeasureUpdate (
-				measuredAccelY,
-				calculatedValue,
-				accelYVariance,
-				measRowT,
-				varioStatus
-				);
-
- */
 	}
 
 void

@@ -141,18 +141,6 @@ public:
 	 * \brief Update the status vector with a new measurement of the acceleration along the plane pitch (Y) axis
 	 * Update the status vector with a new measurement of the acceleration along the plane pitch (Y) axis.
 	 *
-	 * This measurement updates two statuses:
-	 * 1. The Y-acceleration
-	 * 2. static bank angle. This happens when the glider sits on the ground
-	 * with one wing on the ground or when flying with a hanging wing (i.e. a slip, or just flying unclean).
-	 * This calculation is pretty awful:
-	 * First calculate the turn radius from the True Air Speed and the global turn rate.
-	 * Than calculate the bank angle according to
-	 * <a href="https://de.wikipedia.org/wiki/Zentrifugalkraft#Rotierende_Fl.C3.BCssigkeit" >Wikipedia: Zentrifugalkraft, rotating liqids</a> or
-	 * <a href="https://en.wikipedia.org/wiki/Bucket_argument#Newton.27s_laws_of_motion" >Wikipedia: Bucket argument, Newton's laws of motion</a>,
-	 * using this formula:
-	 * <a href="https://wikimedia.org/api/rest_v1/media/math/render/svg/3aebc043525d0268f6a128d4f9c64636a5481b33" >Angle of the surface of a rotating liquid</a>.
-	 *
 	 * @param[in] measuredAccelY Acceleration along the body Y axis. Right is positive.
 	 * @param[in] accelYVariance Variance of the measured acceleration
 	 * @param[in,out] measurementVector The applicable column is updated for information purposes.
