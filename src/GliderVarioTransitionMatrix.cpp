@@ -231,6 +231,7 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
    * I do not want bumps in the aerial road (i.e. short lateral accelerations) affect the bank angle arbitrarily I make the time constant for lateral
    * acceleration rather long, but the time constant for the turn rate correction rather short in order to get (modeled) reality and model in line rather
    * quickly.
+   *
    */
 
   {
