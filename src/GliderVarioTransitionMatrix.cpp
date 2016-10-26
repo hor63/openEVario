@@ -26,7 +26,6 @@
 #include <GliderVarioTransitionMatrix.h>
 #include "GliderVarioStatus.h"
 #include "RotationMatrix.h"
-#include "FastMath.h"
 
 namespace openEV
 {
@@ -432,12 +431,32 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
 
   newStatus.gyroBiasZ = lastStatus.gyroBiasZ;
 
-  // STATUS_IND_COMPASS_ERROR
-  transitionMatrix(GliderVarioStatus::STATUS_IND_COMPASS_ERROR,GliderVarioStatus::STATUS_IND_COMPASS_ERROR) = 1.0f;
+  // STATUS_IND_MAGNETIC_DECLINATION
+    transitionMatrix(GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION,GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION) = 1.0f;
 
-  newStatus.compassError = lastStatus.compassError;
+    newStatus.magneticDeclination = lastStatus.magneticDeclination;
+
+// STATUS_IND_MAGNETIC_INCLINATION
+    transitionMatrix(GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION,GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION) = 1.0f;
+
+    newStatus.magneticInclination = lastStatus.magneticInclination;
+
+// STATUS_IND_COMPASS_HOR_DEVIATION
+	transitionMatrix(GliderVarioStatus::STATUS_IND_COMPASS_HOR_DEVIATION,GliderVarioStatus::STATUS_IND_COMPASS_HOR_DEVIATION) = 1.0f;
+
+	newStatus.compassHorDeviation = lastStatus.compassHorDeviation;
+
+// STATUS_IND_COMPASS_VERT_DEVIATION
+	transitionMatrix(GliderVarioStatus::STATUS_IND_COMPASS_VERT_DEVIATION,GliderVarioStatus::STATUS_IND_COMPASS_VERT_DEVIATION) = 1.0f;
+
+	newStatus.compassVertDeviation = lastStatus.compassVertDeviation;
 
 // STATUS_IND_WIND_SPEED_N
+  transitionMatrix(GliderVarioStatus::STATUS_IND_WIND_SPEED_N,GliderVarioStatus::STATUS_IND_WIND_SPEED_N) = 1.0f;
+
+  newStatus.windSpeedNorth = lastStatus.windSpeedNorth;
+
+  /*
   transitionMatrix(GliderVarioStatus::STATUS_IND_WIND_SPEED_N,GliderVarioStatus::STATUS_IND_WIND_SPEED) = temp1 = FastMath::fastCos(lastStatus.windDirection);
 
   // angular change in the covariant
@@ -445,8 +464,14 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
 		  lastStatus.windSpeed * (FastMath::fastCos(lastStatus.windDirection + 1.0f) - temp1) ;
 
   newStatus.windSpeedNorth = temp1 * lastStatus.windSpeed;
-
+  */
 // STATUS_IND_WIND_SPEED_E
+  transitionMatrix(GliderVarioStatus::STATUS_IND_WIND_SPEED_E,GliderVarioStatus::STATUS_IND_WIND_SPEED_E) = 1.0f;
+
+  newStatus.windSpeedEast = lastStatus.windSpeedEast;
+
+
+  /*
   transitionMatrix(GliderVarioStatus::STATUS_IND_WIND_SPEED_E,GliderVarioStatus::STATUS_IND_WIND_SPEED) = temp1 = FastMath::fastSin(lastStatus.windDirection);
 
   // angular change in the covariant
@@ -454,8 +479,9 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
 		  lastStatus.windSpeed * (FastMath::fastSin(lastStatus.windDirection + 1.0f) - temp1) ;
 
   newStatus.windSpeedEast = temp1 * lastStatus.windSpeed;
+  */
 
-
+/*  Not really needed within the Kalman filter...
 // STATUS_IND_WIND_SPEED
   transitionMatrix(GliderVarioStatus::STATUS_IND_WIND_SPEED,GliderVarioStatus::STATUS_IND_WIND_SPEED) = 1.0f;
 
@@ -465,6 +491,7 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
   transitionMatrix(GliderVarioStatus::STATUS_IND_WIND_DIR,GliderVarioStatus::STATUS_IND_WIND_DIR) = 1.0f;
 
   newStatus.windDirection = lastStatus.windDirection;
+*/
 
   // STATUS_IND_QFF
   transitionMatrix(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF) = 1.0f;

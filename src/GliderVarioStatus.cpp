@@ -171,13 +171,15 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 			" gyroBiasX   "
 			" gyroBiasY   "
 			" gyroBiasZ   "
-			" compassError"
-			" compassIncli"
+			" magDeclinati"
+			" magInclinati"
+			" compHorDevia"
+			" compVertDevi"
 			" windSpeedNor"
 			" windSpeedEas"
-			" windSpeed   "
-			" windDirectio"
-			" QNH         "
+//			" windSpeed   "
+//			" windDirectio"
+			" QFF         "
 		<< std::endl;
 
 	o << std::fixed;
@@ -209,12 +211,14 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 	o.precision(7); o.width(13); o << s.gyroBiasX   ;
 	o.precision(7); o.width(13); o << s.gyroBiasY   ;
 	o.precision(7); o.width(13); o << s.gyroBiasZ   ;
-	o.precision(7); o.width(13); o << s.compassError;
-	o.precision(7); o.width(13); o << s.compassInclination;
+	o.precision(7); o.width(13); o << s.magneticDeclination;
+	o.precision(7); o.width(13); o << s.magneticInclination;
+	o.precision(7); o.width(13); o << s.compassHorDeviation;
+	o.precision(7); o.width(13); o << s.compassVertDeviation;
 	o.precision(7); o.width(13); o << s.windSpeedNorth;
 	o.precision(7); o.width(13); o << s.windSpeedEast;
-	o.precision(7); o.width(13); o << s.windSpeed    ;
-	o.precision(7); o.width(13); o << s.windDirection;
+//	o.precision(7); o.width(13); o << s.windSpeed    ;
+//	o.precision(7); o.width(13); o << s.windDirection;
 	o.precision(7); o.width(13); o << s.qff;
 
 	o << std::endl;
