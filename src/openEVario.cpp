@@ -169,14 +169,31 @@ int i;
   cout << "Crucial to convert magnetic vector measurements into rotation vectors for attitude and direction" << endl;
 
   RotationMatrix rotMag (-5,-70,0); // magnetic field 5 deg West, 70deg inclination (realistic in N-Germany)
-  Vector3DType uniVector (1,0,0), magField (0,0,0);
+  Vector3DType uniVector (1,0,0), magField (0,0,0),magField1(0,0,0);
   rotMag.calcPlaneVectorToWorldVector(uniVector,magField);
   cout << "Magnetic field vector at 5Deg W, 70Deg incl. = " << endl << magField << endl;
   cout << "length of magnetic field vector is " << sqrtf(magField(0)*magField(0) + magField(1)*magField(1) + magField(2)*magField(2)) << endl;
   cout << "The rotation matrix of the vector is " << endl << rotMag.getMatrixGloToPlane() << endl;
 
-  RotationMatrix rotPlane (60,0,0);
+  rotMag.setYaw(-2.0f); // magnetic field 2 deg West variation, 70deg inclination downward (realistic in N-Germany)
+  rotMag.setPitch(-70.0f);
+  rotMag.setRoll(0.0f);
+  rotMag.calcPlaneVectorToWorldVector(uniVector,magField);
+  cout << "Unit vector is " << endl << uniVector << endl;
+  cout << "Magnetic field vector at 2Deg W, 70Deg incl. = " << endl << magField << endl;
+  cout << "length of magnetic field vector is " << sqrtf(magField(0)*magField(0) + magField(1)*magField(1) + magField(2)*magField(2)) << endl;
+  cout << "The rotation matrix of the vector is " << endl << rotMag.getMatrixGloToPlane() << endl;
+  // Now add -3 deg deviation
+  rotMat.setYaw(-3.0f);
+  rotMat.setPitch(0.0f);
+  rotMat.setRoll(0.0f);
+  magField1 = (rotMat.getMatrixPlaneToGlo() * rotMag.getMatrixPlaneToGlo()) * uniVector;
+  cout << "Magnetic field vector with 3Deg W Deviation added = " << endl << magField1 << endl;
+  cout << "length of magnetic field vector is " << sqrtf(magField1(0)*magField1(0) + magField1(1)*magField1(1) + magField1(2)*magField1(2)) << endl;
+  cout << "The rotation matrix of the deviation is " << endl << rotMat.getMatrixGloToPlane() << endl;
 
+  rotMat.calcPlaneVectorToWorldVector(magField,magField1);
+  cout << "Magnetic field vector with 3Deg W Deviation added = " << endl << magField1 << endl;
 
   cout << endl <<
 		  "-----------------------" << endl;
