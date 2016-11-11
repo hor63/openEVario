@@ -453,15 +453,20 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
 
     newStatus.magneticInclination = lastStatus.magneticInclination;
 
-// STATUS_IND_COMPASS_HOR_DEVIATION
-	transitionMatrix(GliderVarioStatus::STATUS_IND_COMPASS_HOR_DEVIATION,GliderVarioStatus::STATUS_IND_COMPASS_HOR_DEVIATION) = 1.0f;
+// STATUS_IND_COMPASS_DEVIATION_X
+	transitionMatrix(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_X,GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_X) = 1.0f;
 
-	newStatus.compassHorDeviation = lastStatus.compassHorDeviation;
+	newStatus.compassDeviationX = lastStatus.compassDeviationX;
 
-// STATUS_IND_COMPASS_VERT_DEVIATION
-	transitionMatrix(GliderVarioStatus::STATUS_IND_COMPASS_VERT_DEVIATION,GliderVarioStatus::STATUS_IND_COMPASS_VERT_DEVIATION) = 1.0f;
+// STATUS_IND_COMPASS_DEVIATION_Y
+	transitionMatrix(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Y,GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Y) = 1.0f;
 
-	newStatus.compassVertDeviation = lastStatus.compassVertDeviation;
+	newStatus.compassDeviationY = lastStatus.compassDeviationY;
+
+// STATUS_IND_COMPASS_DEVIATION_Z
+	transitionMatrix(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Z,GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Z) = 1.0f;
+
+	newStatus.compassDeviationZ = lastStatus.compassDeviationZ;
 
 // STATUS_IND_WIND_SPEED_N
   transitionMatrix(GliderVarioStatus::STATUS_IND_WIND_SPEED_N,GliderVarioStatus::STATUS_IND_WIND_SPEED_N) = 1.0f;

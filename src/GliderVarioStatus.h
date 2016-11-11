@@ -170,9 +170,9 @@ public:
     STATUS_IND_GYRO_BIAS_Z	, ///< Bias (0-offset) of the plane Z axis gyro in deg/s
 	STATUS_IND_MAGNETIC_DECLINATION, ///< Magnetic declination (variation) in degrees.
 	STATUS_IND_MAGNETIC_INCLINATION, ///< Inclination of the magnetic vector in degrees in pitch direction (upward), i.e. negative on the northern hemisphere
-	STATUS_IND_COMPASS_HOR_DEVIATION, ///< (Horizontal) deviation of the compass in degrees. This is the standard deviation in the deviation table.
-	STATUS_IND_COMPASS_VERT_DEVIATION, ///< (Vertical) deviation of the compass in degrees. No one cares about that one for a whiskey compass because it varies
-	                                   ///< soooo badly anyway due to the counterweight on the compass rose in a turn.
+	STATUS_IND_COMPASS_DEVIATION_X, ///< Strength of the local airplane magnetic field in X direction
+	STATUS_IND_COMPASS_DEVIATION_Y, ///< Strength of the local airplane magnetic field in Y direction
+	STATUS_IND_COMPASS_DEVIATION_Z, ///< Strength of the local airplane magnetic field in Z direction
     STATUS_IND_WIND_SPEED_N	, ///< Wind speed North component in m/s
     STATUS_IND_WIND_SPEED_E	, ///< Wind speed East component in m/s
 //	STATUS_IND_WIND_SPEED   , ///< Absolute wind speed in m/s
@@ -293,9 +293,9 @@ public:
   FloatType& gyroBiasZ = statusVector_x[ STATUS_IND_GYRO_BIAS_Z	     ]; ///< Bias (0-offset) of the Z axis gyro in deg/s
   FloatType& magneticDeclination = statusVector_x [ STATUS_IND_MAGNETIC_DECLINATION ] ; ///< Combined magnetic declination (variation) and deviation in degrees.
   FloatType& magneticInclination = statusVector_x [ STATUS_IND_MAGNETIC_INCLINATION]  ; ///< Inclination of the magnetic vector in degrees in pitch direction (upward), i.e. negative on the northern hemisphere
-  FloatType& compassHorDeviation = statusVector_x [ STATUS_IND_COMPASS_HOR_DEVIATION] ; ///< (Horizontal) deviation of the compass in degrees. This is the standard deviation in the deviation table.
-  FloatType& compassVertDeviation = statusVector_x[ STATUS_IND_COMPASS_VERT_DEVIATION]; ///< (Vertical) deviation of the compass in degrees. No one cares about that one for a whiskey compass because it varies
-	                                   ///< soooo badly anyway due to the counterweight on the compass rose in a turn.
+  FloatType& compassDeviationX = statusVector_x [ STATUS_IND_COMPASS_DEVIATION_X] ; ///< Strength of the local airplane magnetic field in X direction
+  FloatType& compassDeviationY = statusVector_x [ STATUS_IND_COMPASS_DEVIATION_Y] ; ///< Strength of the local airplane magnetic field in Y direction
+  FloatType& compassDeviationZ = statusVector_x [ STATUS_IND_COMPASS_DEVIATION_Z] ; ///< Strength of the local airplane magnetic field in Z direction
   FloatType& windSpeedNorth = statusVector_x[ STATUS_IND_WIND_SPEED_N]; ///< Wind speed North component in m/s
   FloatType& windSpeedEast  = statusVector_x[ STATUS_IND_WIND_SPEED_E]; ///< Wind speed East component in m/s
 //  FloatType& windSpeed      = statusVector_x[ STATUS_IND_WIND_SPEED  ]; ///< Absolute Wind speed in m/s
