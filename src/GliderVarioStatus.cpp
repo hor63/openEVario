@@ -155,8 +155,8 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 			" rollAngle   "
 			" groundSpeedN"
 			" groundSpeedE"
-			" trueAirSpdNo"
-			" trueAirSpdEa"
+//			" trueAirSpdNo"
+//			" trueAirSpdEa"
 			" trueAirSpeed"
 			" rateOfSink  "
 			" verticalSpd "
@@ -195,8 +195,8 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 	o.precision(7); o.width(13); o << s.rollAngle   ;
 	o.precision(7); o.width(13); o << s.groundSpeedNorth;
 	o.precision(7); o.width(13); o << s.groundSpeedEast;
-	o.precision(7); o.width(13); o << s.trueAirSpeedNorth;
-	o.precision(7); o.width(13); o << s.trueAirSpeedEast;
+///	o.precision(7); o.width(13); o << s.trueAirSpeedNorth;*/
+//	o.precision(7); o.width(13); o << s.trueAirSpeedEast;
 	o.precision(7); o.width(13); o << s.trueAirSpeed;
 	o.precision(7); o.width(13); o << s.rateOfSink  ;
 	o.precision(7); o.width(13); o << s.verticalSpeed;

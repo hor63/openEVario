@@ -36,8 +36,8 @@ namespace openEV
    */
   FloatType constexpr lenLatitudeArcSec = 111132.0 / 3600.0;
 
-  FloatType GliderVarioTransitionMatrix::staticRollTimeConstant = 5.0f;
-  FloatType GliderVarioTransitionMatrix::dynamicRollTimeConstant = 1.0f;
+  FloatType GliderVarioTransitionMatrix::staticRollTimeConstant = 2.0f;
+  FloatType GliderVarioTransitionMatrix::dynamicRollTimeConstant = 0.5f;
 
 
 GliderVarioTransitionMatrix::~GliderVarioTransitionMatrix ()
@@ -294,16 +294,24 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
   		  temp3 * lastStatus.yawRateZ;
 
 // STATUS_IND_SPEED_GROUND_N
-	transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_TAS_N) = 1.0f;
+	transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_TAS) = temp1 = FastMath::fastCos(lastStatus.heading);
 	transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_WIND_SPEED_N) = 1.0f;
 
-	newStatus.groundSpeedNorth = lastStatus.trueAirSpeedNorth + lastStatus.windSpeedNorth;
+	// angular change to the covariant
+	transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_HEADING) =
+			lastStatus.trueAirSpeed * (FastMath::fastCos(lastStatus.heading + 1.0f) - temp1);
+
+	newStatus.groundSpeedNorth = lastStatus.trueAirSpeed * temp1 + lastStatus.windSpeedNorth;
 
 // STATUS_IND_SPEED_GROUND_E
-	transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_TAS_E) = 1.0f;
+	transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_TAS) = temp1 = FastMath::fastSin(lastStatus.heading);
 	transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_WIND_SPEED_E) = 1.0f;
 
-	newStatus.groundSpeedEast = lastStatus.trueAirSpeedEast + lastStatus.windSpeedEast;
+	// angular change to the covariant
+	transitionMatrix(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_HEADING) =
+			lastStatus.trueAirSpeed * (FastMath::fastSin(lastStatus.heading + 1.0f) - temp1);
+
+	newStatus.groundSpeedEast = lastStatus.trueAirSpeed * temp1 + lastStatus.windSpeedEast;
 
 // STATUS_IND_TAS
 
@@ -325,23 +333,26 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
 		  temp2 * lastStatus.accelY +
 		  temp3 * lastStatus.accelZ;
 
-  // STATUS_IND_TAS_N
-    transitionMatrix(GliderVarioStatus::STATUS_IND_TAS_N,GliderVarioStatus::STATUS_IND_TAS) = temp1 = FastMath::fastCos(lastStatus.heading);
-
-    // Covariance for angular change
-    transitionMatrix(GliderVarioStatus::STATUS_IND_TAS_N,GliderVarioStatus::STATUS_IND_HEADING) =
-    		lastStatus.trueAirSpeed * (FastMath::fastCos(lastStatus.heading + 1.0f) - temp1);
-
-    newStatus.trueAirSpeedNorth = temp1 * lastStatus.trueAirSpeed;
-
-  // STATUS_IND_TAS_E
-    transitionMatrix(GliderVarioStatus::STATUS_IND_TAS_E,GliderVarioStatus::STATUS_IND_TAS) = FastMath::fastSin(lastStatus.heading);
-
-    // Covariance for angular change
-    transitionMatrix(GliderVarioStatus::STATUS_IND_TAS_E,GliderVarioStatus::STATUS_IND_HEADING) =
-    		lastStatus.trueAirSpeed * (FastMath::fastSin(lastStatus.heading + 1.0f) - temp1);
-
-    newStatus.trueAirSpeedEast = temp1 * lastStatus.trueAirSpeed;
+/*
+ *
+ *  // STATUS_IND_TAS_N
+ *    transitionMatrix(GliderVarioStatus::STATUS_IND_TAS_N,GliderVarioStatus::STATUS_IND_TAS) = temp1 = FastMath::fastCos(lastStatus.heading);
+ *
+ *    // Covariance for angular change
+ *    transitionMatrix(GliderVarioStatus::STATUS_IND_TAS_N,GliderVarioStatus::STATUS_IND_HEADING) =
+ *    		lastStatus.trueAirSpeed * (FastMath::fastCos(lastStatus.heading + 1.0f) - temp1);
+ *
+ *    newStatus.trueAirSpeedNorth = temp1 * lastStatus.trueAirSpeed;
+ *
+ *  // STATUS_IND_TAS_E
+ *    transitionMatrix(GliderVarioStatus::STATUS_IND_TAS_E,GliderVarioStatus::STATUS_IND_TAS) = FastMath::fastSin(lastStatus.heading);
+ *
+ *    // Covariance for angular change
+ *    transitionMatrix(GliderVarioStatus::STATUS_IND_TAS_E,GliderVarioStatus::STATUS_IND_HEADING) =
+ *    		lastStatus.trueAirSpeed * (FastMath::fastSin(lastStatus.heading + 1.0f) - temp1);
+ *
+ *    newStatus.trueAirSpeedEast = temp1 * lastStatus.trueAirSpeed;
+ */
 
   /*
    * STATUS_IND_RATE_OF_SINK
