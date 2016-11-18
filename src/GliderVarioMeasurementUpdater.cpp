@@ -25,6 +25,7 @@
 
 #include "GliderVarioMeasurementUpdater.h"
 #include "FastMath.h"
+#include "RotationMatrix.h"
 
 namespace openEV {
 
@@ -320,7 +321,6 @@ GliderVarioMeasurementUpdater::gyroYUpd (
 				varioStatus
 				);
 
-		/// \todo update bank angle from turn rate
 	}
 
 void
@@ -349,7 +349,6 @@ GliderVarioMeasurementUpdater::gyroZUpd (
 				varioStatus
 				);
 
-		/// \todo update bank angle from turn rate
 
 	}
 
@@ -364,19 +363,98 @@ GliderVarioMeasurementUpdater::compassUpd (
 		GliderVarioMeasurementVector const &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
-	FloatType measuredValue;
 	FloatType calculatedValue;
-	FloatType measurementVariance_R;
 	GliderVarioStatus::StatusVectorType measRowT;
+	FloatType temp;
+
+	FloatType magFlowCompensatedX = measuredMagFlowX - varioStatus.compassDeviationX;
+	FloatType magFlowCompensatedY = measuredMagFlowY - varioStatus.compassDeviationY;
+	FloatType magFlowCompensatedZ = measuredMagFlowZ - varioStatus.compassDeviationZ;
+	FloatType compensatedMagVectorLength = sqrtf(
+			magFlowCompensatedX * magFlowCompensatedX +
+			magFlowCompensatedY * magFlowCompensatedY +
+			magFlowCompensatedZ * magFlowCompensatedZ
+			);
+	RotationMatrix magRotMatrix              (varioStatus.magneticDeclination       ,varioStatus.magneticInclination       ,0.0f);
+	RotationMatrix magRotMatrixIncDeclination(varioStatus.magneticDeclination + 1.0f,varioStatus.magneticInclination       ,0.0f);
+	RotationMatrix magRotMatrixIncInclination(varioStatus.magneticDeclination       ,varioStatus.magneticInclination + 1.0f,0.0f);
+	RotationMatrix attitudeRotMatrix         (varioStatus.heading       ,varioStatus.pitchAngle       ,varioStatus.rollAngle);
+	RotationMatrix attitudeRotMatrixIncYaw   (varioStatus.heading + 1.0f,varioStatus.pitchAngle       ,varioStatus.rollAngle);
+	RotationMatrix attitudeRotMatrixIncPitch (varioStatus.heading       ,varioStatus.pitchAngle + 1.0f,varioStatus.rollAngle);
+	RotationMatrix attitudeRotMatrixIncRoll  (varioStatus.heading       ,varioStatus.pitchAngle       ,varioStatus.rollAngle + 1.0f);
+
+	RotationMatrix3DType compassMatrix = magRotMatrix.getMatrixPlaneToGlo() * attitudeRotMatrix.getMatrixGloToPlane();
+	RotationMatrix3DType compassMatrixIncDeclination = magRotMatrixIncDeclination.getMatrixPlaneToGlo() * attitudeRotMatrix.getMatrixGloToPlane();
+	RotationMatrix3DType compassMatrixIncInclination = magRotMatrixIncInclination.getMatrixPlaneToGlo() * attitudeRotMatrix.getMatrixGloToPlane();
+	RotationMatrix3DType compassMatrixIncYaw  = magRotMatrix.getMatrixPlaneToGlo() * attitudeRotMatrixIncYaw.getMatrixGloToPlane();
+	RotationMatrix3DType compassMatrixIncPitch = magRotMatrix.getMatrixPlaneToGlo() * attitudeRotMatrixIncPitch.getMatrixGloToPlane();
+	RotationMatrix3DType compassMatrixIncRoll  = magRotMatrix.getMatrixPlaneToGlo() * attitudeRotMatrixIncRoll.getMatrixGloToPlane();
+
+	Vector3DType magVecLength (compensatedMagVectorLength,0.0f,0.0f);
+
+	Vector3DType compassVector               = compassMatrix               * magVecLength;
+	Vector3DType compassVectorIncDeclination = compassMatrixIncDeclination * magVecLength;
+	Vector3DType compassVectorIncInclination = compassMatrixIncInclination * magVecLength;
+	Vector3DType compassVectorIncYaw         = compassMatrixIncYaw         * magVecLength;
+	Vector3DType compassVectorIncPitch       = compassMatrixIncPitch       * magVecLength;
+	Vector3DType compassVectorIncRoll        = compassMatrixIncRoll        * magVecLength;
 
 		measRowT.setZero();
 
 		// calculate and fill in local variables here.
+		temp = compassVector(0);
+		calculatedValue = temp + varioStatus.compassDeviationX;
+		measRowT(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_X)  =  1.0f;
+		measRowT(GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION) = compassVectorIncDeclination(0) - temp;
+		measRowT(GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION) = compassVectorIncInclination(0) - temp;
+		measRowT(GliderVarioStatus::STATUS_IND_HEADING)              = compassVectorIncYaw(0)         - temp;
+		measRowT(GliderVarioStatus::STATUS_IND_PITCH)                = compassVectorIncPitch(0)       - temp;
+		measRowT(GliderVarioStatus::STATUS_IND_ROLL)                 = compassVectorIncRoll(0)        - temp;
 
 		calcSingleMeasureUpdate (
-				measuredValue,
+				measuredMagFlowX,
 				calculatedValue,
-				measurementVariance_R,
+				magFlowXVariance,
+				measRowT,
+				varioStatus
+				);
+
+		measRowT.setZero();
+
+		// calculate and fill in local variables here.
+		temp = compassVector(1);
+		calculatedValue = temp + varioStatus.compassDeviationY;
+		measRowT(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Y)  =  1.0f;
+		measRowT(GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION) = compassVectorIncDeclination(1) - temp;
+		measRowT(GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION) = compassVectorIncInclination(1) - temp;
+		measRowT(GliderVarioStatus::STATUS_IND_HEADING)              = compassVectorIncYaw(1)         - temp;
+		measRowT(GliderVarioStatus::STATUS_IND_PITCH)                = compassVectorIncPitch(1)       - temp;
+		measRowT(GliderVarioStatus::STATUS_IND_ROLL)                 = compassVectorIncRoll(1)        - temp;
+
+		calcSingleMeasureUpdate (
+				measuredMagFlowY,
+				calculatedValue,
+				magFlowYVariance,
+				measRowT,
+				varioStatus
+				);
+
+		measRowT.setZero();
+
+		// calculate and fill in local variables here.
+		temp = compassVector(2);
+		calculatedValue = temp + varioStatus.compassDeviationZ;
+		measRowT(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Z)  =  1.0f;
+		measRowT(GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION) = compassVectorIncDeclination(2) - temp;
+		measRowT(GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION) = compassVectorIncInclination(2) - temp;
+		measRowT(GliderVarioStatus::STATUS_IND_HEADING)              = compassVectorIncYaw(2)         - temp;
+		measRowT(GliderVarioStatus::STATUS_IND_PITCH)                = compassVectorIncPitch(2)       - temp;
+		measRowT(GliderVarioStatus::STATUS_IND_ROLL)                 = compassVectorIncRoll(2)        - temp;
+
+		calcSingleMeasureUpdate (
+				measuredMagFlowZ,
+				calculatedValue,
+				magFlowYVariance,
 				measRowT,
 				varioStatus
 				);

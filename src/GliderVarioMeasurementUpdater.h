@@ -215,12 +215,15 @@ public:
 
 	/**
 	 * \brief Update the status vector with a new measurement of the magnetometer readings along all 3 axis.
+	 *
 	 * Update the status vector with a new measurement of the magnetometer readings along all 3 axis.
-	 * The unit of the measurements is irrelevant but must be equal for all three axis. Internally they are normalized because the measurements
-	 * are used for attitude estimations only.
-	 * @param[in] measuredMagFlowX Magnetic flow along the X axis of the body
-	 * @param[in] measuredMagFlowY Magnetic flow along the Y axis of the body
-	 * @param[in] measuredMagFlowZ Magnetic flow along the Z axis of the body
+	 *
+	 * The magnetic measurements are only used to correct the attitude. Except from the local body deviation vector the absolute strength is not relevant
+	 * Therefore the factor to the unit vector of the attitude is the absolute length of the measurement vector minus the body deviation.
+	 *
+	 * @param[in] measuredMagFlowX Magnetic flow along the X axis of the body in uTesla
+	 * @param[in] measuredMagFlowY Magnetic flow along the Y axis of the body in uTesla
+	 * @param[in] measuredMagFlowZ Magnetic flow along the Z axis of the body in uTesla
 	 * @param[in] magFlowXVariance Variance of the magnetic flow X measurement
 	 * @param[in] magFlowYVariance Variance of the magnetic flow Y measurement
 	 * @param[in] magFlowZVariance Variance of the magnetic flow Z measurement
