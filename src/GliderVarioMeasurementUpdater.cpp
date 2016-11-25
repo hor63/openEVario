@@ -367,23 +367,34 @@ GliderVarioMeasurementUpdater::compassUpd (
 	GliderVarioStatus::StatusVectorType measRowT;
 	FloatType temp;
 
+	// Compensated magnetic flow, i.e. measurement - deviation flow vector
 	FloatType magFlowCompensatedX = measuredMagFlowX - varioStatus.compassDeviationX;
 	FloatType magFlowCompensatedY = measuredMagFlowY - varioStatus.compassDeviationY;
 	FloatType magFlowCompensatedZ = measuredMagFlowZ - varioStatus.compassDeviationZ;
+
+	// The absolute strength of the compensated magnetic flow, i.e. the vector length
 	FloatType compensatedMagVectorLength = sqrtf(
 			magFlowCompensatedX * magFlowCompensatedX +
 			magFlowCompensatedY * magFlowCompensatedY +
 			magFlowCompensatedZ * magFlowCompensatedZ
 			);
+
+	// The rotation matrix of the magnetic flow vector (unit vector turned by declination and inclination)
 	RotationMatrix magRotMatrix              (varioStatus.magneticDeclination       ,varioStatus.magneticInclination       ,0.0f);
+	// The same rotation matrix with incremments to declination and inclination to assess the Jacobian
 	RotationMatrix magRotMatrixIncDeclination(varioStatus.magneticDeclination + 1.0f,varioStatus.magneticInclination       ,0.0f);
 	RotationMatrix magRotMatrixIncInclination(varioStatus.magneticDeclination       ,varioStatus.magneticInclination + 1.0f,0.0f);
+
+	// Rotation matrix of the plane attitude to project the magnetic vector to the plane measurements
 	RotationMatrix attitudeRotMatrix         (varioStatus.heading       ,varioStatus.pitchAngle       ,varioStatus.rollAngle);
+	// Increment plane attitude rotation matrixes to assess the Jacobians for the attitude angles
 	RotationMatrix attitudeRotMatrixIncYaw   (varioStatus.heading + 1.0f,varioStatus.pitchAngle       ,varioStatus.rollAngle);
 	RotationMatrix attitudeRotMatrixIncPitch (varioStatus.heading       ,varioStatus.pitchAngle + 1.0f,varioStatus.rollAngle);
 	RotationMatrix attitudeRotMatrixIncRoll  (varioStatus.heading       ,varioStatus.pitchAngle       ,varioStatus.rollAngle + 1.0f);
 
+	// The resulting rotation matrix from unit vector to the magnetic vector as seen in the plane
 	RotationMatrix3DType compassMatrix = magRotMatrix.getMatrixPlaneToGlo() * attitudeRotMatrix.getMatrixGloToPlane();
+	// The resulting rotation matrixes with the 5 increments
 	RotationMatrix3DType compassMatrixIncDeclination = magRotMatrixIncDeclination.getMatrixPlaneToGlo() * attitudeRotMatrix.getMatrixGloToPlane();
 	RotationMatrix3DType compassMatrixIncInclination = magRotMatrixIncInclination.getMatrixPlaneToGlo() * attitudeRotMatrix.getMatrixGloToPlane();
 	RotationMatrix3DType compassMatrixIncYaw  = magRotMatrix.getMatrixPlaneToGlo() * attitudeRotMatrixIncYaw.getMatrixGloToPlane();
@@ -392,12 +403,20 @@ GliderVarioMeasurementUpdater::compassUpd (
 
 	Vector3DType magVecLength (compensatedMagVectorLength,0.0f,0.0f);
 
+	// The calculated vector of magnetic measurements.
 	Vector3DType compassVector               = compassMatrix               * magVecLength;
+
+	// Vector of compensated magnetic flows as calculated from the current attitude, inclination, and declination
 	Vector3DType compassVectorIncDeclination = compassMatrixIncDeclination * magVecLength;
+	// Variations of the vector with increments of the 5 paticipating factors.
 	Vector3DType compassVectorIncInclination = compassMatrixIncInclination * magVecLength;
 	Vector3DType compassVectorIncYaw         = compassMatrixIncYaw         * magVecLength;
 	Vector3DType compassVectorIncPitch       = compassMatrixIncPitch       * magVecLength;
 	Vector3DType compassVectorIncRoll        = compassMatrixIncRoll        * magVecLength;
+
+		measurementVector.magX = measuredMagFlowX;
+		measurementVector.magY = measuredMagFlowY;
+		measurementVector.magZ = measuredMagFlowZ;
 
 		measRowT.setZero();
 
