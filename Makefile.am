@@ -16,7 +16,7 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-SUBDIRS=3rdParty/googletest/googletest src
+SUBDIRS= src
 
 MOSTLYCLEANFILES= $(DX_CLEANFILES)
 

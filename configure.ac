@@ -26,8 +26,6 @@ AC_CANONICAL_SYSTEM
 AM_INIT_AUTOMAKE()
 
 
-AC_CONFIG_SUBDIRS(3rdParty/googletest/googletest)
-
 AC_PROG_CXX
 AX_PROG_CXX_FOR_BUILD
 AX_CXX_COMPILE_STDCXX_11(noext, mandatory)
@@ -38,6 +36,10 @@ AX_PTHREAD()
 # get a suitable command like mkdir -p on LINUX systems use install if mkdir -p does not work.
 AC_PROG_INSTALL
 AC_PROG_MKDIR_P
+
+# commands for the archiver
+AM_PROG_AR
+AC_PROG_RANLIB
 
 DX_DOXYGEN_FEATURE(ON)
 DX_DOT_FEATURE(ON)
