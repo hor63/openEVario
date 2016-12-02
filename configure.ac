@@ -26,7 +26,7 @@ AC_CANONICAL_SYSTEM
 AM_INIT_AUTOMAKE()
 
 
-AC_CONFIG_SUBDIRS(3rdParty/googletest/googletest)
+# AC_CONFIG_SUBDIRS(3rdParty/googletest/googletest)
 
 AC_PROG_CXX
 AX_PROG_CXX_FOR_BUILD
