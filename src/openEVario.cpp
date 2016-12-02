@@ -379,6 +379,97 @@ int i;
 
   cout << endl <<
 		  "-----------------------" << endl;
+  cout << "test the barometric formula" << endl;
+
+  /*
+   Equation 1:
+
+    P = P b ⋅ [ T b T b + L b ⋅ ( h − h b ) ] g 0 ⋅ M R ∗ ⋅ L b {\displaystyle {P}=P_{b}\cdot \left[{\frac {T_{b}}{T_{b}+L_{b}\cdot (h-h_{b})}}\right]^{\textstyle {\frac {g_{0}\cdot M}{R^{*}\cdot L_{b}}}}} {P}=P_{b}\cdot \left[{\frac {T_{b}}{T_{b}+L_{b}\cdot (h-h_{b})}}\right]^{{\textstyle {\frac {g_{0}\cdot M}{R^{*}\cdot L_{b}}}}}
+
+
+where
+
+    P b {\displaystyle P_{b}} P_{b} = static pressure (Pa)
+    T b {\displaystyle T_{b}} T_{b} = standard temperature (K)
+    L b {\displaystyle L_{b}} L_{b} = standard temperature lapse rate (K/m) in ISA
+    h {\displaystyle h} h = height above sea level (m)
+    h b {\displaystyle h_{b}} h_b = height at bottom of layer b (meters; e.g., h1 = 11 000 m)
+    R ∗ {\displaystyle R^{*}} R^{*} = universal gas constant: 8.3144598  J /mol/K
+    g 0 {\displaystyle g_{0}} g_{0} = gravitational acceleration: 9.80665 m/s2
+    M {\displaystyle M} M = molar mass of Earth's air: 0.0289644 kg/mol
+
+   */
+  FloatType qff = 1013.250;          // 1013.25 mb
+  FloatType temp = 273.15 + 15.0;   // 15C
+  FloatType tempLapse = -0.01;      // -1C/100m
+  FloatType height    = 1000;       // m
+  FloatType R         = 8.3144598;   // 8.3144598  J /mol/K
+  FloatType Rspec     = 287.058;     // Specific R for dry air
+  FloatType M         = 0.0289644; // 0.0289644 kg/mol
+  FloatType ex = GRAVITY * M / R / tempLapse;
+  FloatType p;
+  FloatType density;
+  FloatType speed;
+
+  height = 1000.0f;
+  p = qff * powf ((temp / (temp + tempLapse * height)),ex);
+  cout << "Pressure at " << height << "m is " << p << "mb." << endl;
+
+  height = 2000.0f;
+  p = qff * powf ((temp / (temp + tempLapse * height)),ex);
+  cout << "Pressure at " << height << "m is " << p << "mb." << endl;
+
+  height = 3000.0f;
+  p = qff * powf ((temp / (temp + tempLapse * height)),ex);
+  cout << "Pressure at " << height << "m is " << p << "mb." << endl;
+
+  height = 5500.0f;
+  p = qff * powf ((temp / (temp + tempLapse * height)),ex);
+  cout << "Pressure at " << height << "m is " << p << "mb." << endl;
+
+
+  cout << endl <<
+		  "-----------------------" << endl;
+  cout << "test the dynamic pressure formula" << endl;
+
+  cout << endl << "Pressure = 1013.25 mb, Temp = 15C" << endl;
+  density = 101325 / Rspec / temp;
+  cout << "Density in standard air is" << density << endl;
+
+  speed = 60.0f / 3.6f;
+  p = 0.5f * density * speed * speed;
+  cout << "Dynamic pressure at " << speed*3.6f << "km/h is " << p/100.0f << "mb." << endl;
+
+  speed = 80.0f / 3.6f;
+  p = 0.5f * density * speed * speed;
+  cout << "Dynamic pressure at " << speed*3.6f << "km/h is " << p/100.0f << "mb." << endl;
+
+  speed = 100.0f / 3.6f;
+  p = 0.5f * density * speed * speed;
+  cout << "Dynamic pressure at " << speed*3.6f << "km/h is " << p/100.0f << "mb." << endl;
+
+  speed = 120.0f / 3.6f;
+  p = 0.5f * density * speed * speed;
+  cout << "Dynamic pressure at " << speed*3.6f << "km/h is " << p/100.0f << "mb." << endl;
+
+  speed = 150.0f / 3.6f;
+  p = 0.5f * density * speed * speed;
+  cout << "Dynamic pressure at " << speed*3.6f << "km/h is " << p/100.0f << "mb." << endl;
+
+  speed = 200.0f / 3.6f;
+  p = 0.5f * density * speed * speed;
+  cout << "Dynamic pressure at " << speed*3.6f << "km/h is " << p/100.0f << "mb." << endl;
+
+  speed = 250.0f / 3.6f;
+  p = 0.5f * density * speed * speed;
+  cout << "Dynamic pressure at " << speed*3.6f << "km/h is " << p/100.0f << "mb." << endl;
+
+  speed = 300.0f / 3.6f;
+  p = 0.5f * density * speed * speed;
+  cout << "Dynamic pressure at " << speed*3.6f << "km/h is " << p/100.0f << "mb." << endl;
+
+  cout << endl <<
+		  "-----------------------" << endl;
   cout << "test the random generator" << endl;
 
 	min = randomGenerator.min();
