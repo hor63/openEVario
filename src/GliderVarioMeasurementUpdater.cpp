@@ -488,22 +488,46 @@ GliderVarioMeasurementUpdater::staticPressureUpd (
 		GliderVarioMeasurementVector const &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
-	FloatType measuredValue;
-	FloatType calculatedValue;
-	FloatType measurementVariance_R;
 	GliderVarioStatus::StatusVectorType measRowT;
+
+	static FloatType constexpr tempLapse = -0.01;      // -1C/100m
+	static FloatType constexpr R         = 8.3144598f;   // 8.3144598  J /mol/K
+	static FloatType constexpr Rspec     = 287.058f;     // Specific R for dry air
+	static FloatType constexpr M         = 0.0289644f; // 0.0289644 kg/mol
+	static FloatType constexpr ex        = GRAVITY * M / R / tempLapse;
+	FloatType pFactor;
+	FloatType p;
+	FloatType p1;
+
 
 		measRowT.setZero();
 
 		// calculate and fill in local variables here.
+		measurementVector.staticPressure = measuredStaticPressure;
+
+		// to Kelvin
+		measuredTemperature += 273.15f;
+
+		// This is used to calculate the pressure and at the same time the derivate for Qff.
+		pFactor = powf ((measuredTemperature - (tempLapse * varioStatus.altMSL) / measuredTemperature),ex);
+		// The pressure at the height in the dry indifferent boundary layer.
+		p = varioStatus.qff * pFactor;
+		// The pressure 10m above to assess the derivate for altitude deviations
+		p1 = varioStatus.qff * powf ((measuredTemperature - (tempLapse * (varioStatus.altMSL + 10)) / measuredTemperature),ex);
+
+		measRowT(GliderVarioStatus::STATUS_IND_QFF) = pFactor;
+		measRowT(GliderVarioStatus::STATUS_IND_ALT_MSL) = (p1 - p) / 10.0f;
 
 		calcSingleMeasureUpdate (
-				measuredValue,
-				calculatedValue,
-				measurementVariance_R,
+				measuredStaticPressure,
+				p,
+				staticPressureVariance,
 				measRowT,
 				varioStatus
 				);
+
+		// store the calculated pressure for later use for determining the dynamic pressure from TAS
+		varioStatus.lastPressure = p;
 	}
 
 void
@@ -514,20 +538,30 @@ GliderVarioMeasurementUpdater::dynamicPressureUpd (
 		GliderVarioMeasurementVector const &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
-	FloatType measuredValue;
-	FloatType calculatedValue;
-	FloatType measurementVariance_R;
+	static FloatType constexpr RspecTimes2     = 287.058 * 2.0f;     // Specific R for dry air
+
+	// This term is used repeatedly
+	FloatType pressRspecTemp = varioStatus.lastPressure / RspecTimes2 / (measuredTemperature + 273.15f);
+	FloatType tmp1;
+	FloatType dynPressure;
 	GliderVarioStatus::StatusVectorType measRowT;
 
 		measRowT.setZero();
 
 		// calculate and fill in local variables here.
+		// Develop the dynamic pressure gradually to get the derivates of the variables most efficiently
+		// dyn pressure = 0.5 * density * speed * speed
+		// dyn pressure = 0.5 * (pressure / Rspec /temp) * speed * speed
+		tmp1 = pressRspecTemp * varioStatus.trueAirSpeed;
+		dynPressure = tmp1 * varioStatus.trueAirSpeed;
+		// True derivate
+		measRowT(GliderVarioStatus::STATUS_IND_TAS) = tmp1 * 0.5f;
 
 
 		calcSingleMeasureUpdate (
-				measuredValue,
-				calculatedValue,
-				measurementVariance_R,
+				measuredDynamicPressure,
+				dynPressure,
+				dynamicPressureVariance,
 				measRowT,
 				varioStatus
 				);
