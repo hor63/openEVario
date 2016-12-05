@@ -488,32 +488,16 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
   newStatus.windSpeedEast = lastStatus.windSpeedEast;
 
 
-  /*
-  transitionMatrix(GliderVarioStatus::STATUS_IND_WIND_SPEED_E,GliderVarioStatus::STATUS_IND_WIND_SPEED) = temp1 = FastMath::fastSin(lastStatus.windDirection);
-
-  // angular change in the covariant
-  transitionMatrix(GliderVarioStatus::STATUS_IND_WIND_SPEED_E,GliderVarioStatus::STATUS_IND_WIND_DIR) =
-		  lastStatus.windSpeed * (FastMath::fastSin(lastStatus.windDirection + 1.0f) - temp1) ;
-
-  newStatus.windSpeedEast = temp1 * lastStatus.windSpeed;
-  */
-
-/*  Not really needed within the Kalman filter...
-// STATUS_IND_WIND_SPEED
-  transitionMatrix(GliderVarioStatus::STATUS_IND_WIND_SPEED,GliderVarioStatus::STATUS_IND_WIND_SPEED) = 1.0f;
-
-  newStatus.windSpeed = lastStatus.windSpeed;
-
-// STATUS_IND_WIND_DIR
-  transitionMatrix(GliderVarioStatus::STATUS_IND_WIND_DIR,GliderVarioStatus::STATUS_IND_WIND_DIR) = 1.0f;
-
-  newStatus.windDirection = lastStatus.windDirection;
-*/
-
   // STATUS_IND_QFF
   transitionMatrix(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF) = 1.0f;
 
   newStatus.qff = lastStatus.qff;
+
+  // STATUS_IND_LAST_PRESSURE
+  transitionMatrix(GliderVarioStatus::STATUS_IND_LAST_PRESSURE,GliderVarioStatus::STATUS_IND_LAST_PRESSURE) = 1.0f;
+
+  newStatus.lastPressure = lastStatus.lastPressure;
+
 
 
 }

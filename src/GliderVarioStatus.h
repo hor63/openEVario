@@ -175,9 +175,10 @@ public:
 	STATUS_IND_COMPASS_DEVIATION_Z, ///< Strength of the local airplane magnetic field in Z direction
     STATUS_IND_WIND_SPEED_N	, ///< Wind speed North component in m/s
     STATUS_IND_WIND_SPEED_E	, ///< Wind speed East component in m/s
-//	STATUS_IND_WIND_SPEED   , ///< Absolute wind speed in m/s
-//	STATUS_IND_WIND_DIR     , ///< The direction is the direction *from where* the wind blows.
 	STATUS_IND_QFF			, ///< QFF in Pascal (Using a realistic model incl. temperature, ignoring humidity).
+	STATUS_IND_LAST_PRESSURE, ///< Calculated pressure from last altMSL. Used to avoid to calculate the expensive
+	                          ///< barometric formula multiple times. I am ignoring the error imposed by the
+	                          ///< last altitude update :)
 
 	STATUS_NUM_ROWS				///< The number of rows in the vector. This is not a component of the vector!
   };
@@ -298,9 +299,10 @@ public:
   FloatType& compassDeviationZ = statusVector_x [ STATUS_IND_COMPASS_DEVIATION_Z] ; ///< Strength of the local airplane magnetic field in Z direction
   FloatType& windSpeedNorth = statusVector_x[ STATUS_IND_WIND_SPEED_N]; ///< Wind speed North component in m/s
   FloatType& windSpeedEast  = statusVector_x[ STATUS_IND_WIND_SPEED_E]; ///< Wind speed East component in m/s
-//  FloatType& windSpeed      = statusVector_x[ STATUS_IND_WIND_SPEED  ]; ///< Absolute Wind speed in m/s
-//  FloatType& windDirection  = statusVector_x[ STATUS_IND_WIND_DIR    ]; ///< The direction is the direction *from where* the wind blows.
   FloatType& qff			= statusVector_x[ STATUS_IND_QFF		 ]; ///< QFF in Pascal (Using a realistic model incl. temperature, ignoring humidity).
+  FloatType& lastPressure   = statusVector_x[ STATUS_IND_LAST_PRESSURE]; ///< Calculated pressure from last altMSL. Used to avoid to calculate the expensive
+	                          ///< barometric formula multiple times. I am ignoring the error imposed by the
+	                          ///< last altitude update :)
 
 
 protected:
