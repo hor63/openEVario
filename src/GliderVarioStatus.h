@@ -143,17 +143,17 @@ public:
     /// Speeds
     STATUS_IND_SPEED_GROUND_N	,  ///< Ground speed component North in m/s
     STATUS_IND_SPEED_GROUND_E	,  ///< Ground speed component East in m/s
-//    STATUS_IND_TAS_N		,  ///< True air speed North component in m/s relative to surrounding air.
-//    STATUS_IND_TAS_E		,  ///< True air speed East component in m/s relative to surrounding air.
     STATUS_IND_TAS			,  ///< True air speed absolute value. Needed to calculate the bank angle with #STATUS_IND_ROTATION_GLO_Z.
     STATUS_IND_RATE_OF_SINK	, ///< Rate of sink in m/s relative to the surrounding air. Sink because the Z axis points downward
     STATUS_IND_VERTICAL_SPEED	, ///< Absolute vertical speed in m/s downward. Z axis is direction down.
     STATUS_IND_THERMAL_SPEED	, ///< The true reason for the whole exercise! :). As always in Z axis direction downward.
 
-    /// Accelerations in reference to the body (plane) coordinate system.
-    STATUS_IND_ACC_X		, ///< Acceleration in m/s^2 along body X axis
-    STATUS_IND_ACC_Y		, ///< Acceleration in m/s^2 along body Y axis
-    STATUS_IND_ACC_Z		, ///< Acceleration in m/s^2 along body Z axis
+    /// Accelerations in direction of the heading, vertical and perpendicular to heading.
+    STATUS_IND_ACC_HEADING		, ///< Acceleration in m/s^2 horizontally along the heading of the plane
+    STATUS_IND_ACC_CROSS		, ///< Acceleration in m/s^2 horizontally perpendicular to the heading
+                                  ///< Note that this does *not* include centrifugal force!!!
+                                  ///< This is only residual acceleration not accounted by turning.
+    STATUS_IND_ACC_VERTICAL		, ///< Acceleration in m/s^2 along body Z axis
 
     /// Turn rates in reference to the body (plane) coordinate system
     STATUS_IND_ROTATION_X	, ///< Roll rate in deg/s to the right around the X axis
@@ -266,17 +266,17 @@ public:
   /// Speeds
   FloatType& groundSpeedNorth = statusVector_x[ STATUS_IND_SPEED_GROUND_N	];  ///< Ground speed component North in m/s
   FloatType& groundSpeedEast = statusVector_x[ STATUS_IND_SPEED_GROUND_E	];  ///< Ground speed component East in m/s
-//  FloatType& trueAirSpeedNorth = statusVector_x[ STATUS_IND_TAS_N		    ];  ///< True air speed North component in m/s relative to surrounding air.
-//  FloatType& trueAirSpeedEast = statusVector_x[ STATUS_IND_TAS_E		    ];  ///< True air speed East component in m/s relative to surrounding air.
   FloatType& trueAirSpeed = statusVector_x[ STATUS_IND_TAS		            ];  ///< True air speed absolute value. Needed to calculate the bank angle with #STATUS_IND_ROTATION_GLO_Z.
   FloatType& rateOfSink = statusVector_x[ STATUS_IND_RATE_OF_SINK	        ]; ///< Rate of sink in m/s relative to the surrounding air. Sink because the Z axis points downward.
   FloatType& verticalSpeed = statusVector_x[ STATUS_IND_VERTICAL_SPEED	    ]; ///< Absolute vertical speed in m/s downward. Z axis is downward.
   FloatType& thermalSpeed = statusVector_x[ STATUS_IND_THERMAL_SPEED	    ]; ///< The true reason for the whole exercise! :)
 
   /// Accelerations in reference to the body (plane) coordinate system.
-  FloatType& accelX = statusVector_x[ STATUS_IND_ACC_Z		]; ///< Acceleration in m/s^2 along plane X axis
-  FloatType& accelY = statusVector_x[ STATUS_IND_ACC_Y		]; ///< Acceleration in m/s^2 along plane Y axis
-  FloatType& accelZ = statusVector_x[ STATUS_IND_ACC_Z		]; ///< Acceleration in m/s^2 along the plane Z axis
+  FloatType& accelHeading = statusVector_x[ STATUS_IND_ACC_HEADING ]; ///< Acceleration in m/s^2 horizontally along the heading of the plane
+  FloatType& accelCross = statusVector_x[ STATUS_IND_ACC_CROSS	 ];///< Acceleration in m/s^2 horizontally perpendicular to the heading
+  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	   ///< Note that this does *not* include centrifugal force!!!
+  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	   ///< This is only residual acceleration not accounted by turning.
+  FloatType& accelVertical = statusVector_x[ STATUS_IND_ACC_VERTICAL]; ///< Acceleration in m/s^2 along body Z axis
 
   /// Turn rates in reference to the body (plane) coordinate system
   FloatType& rollRateX = statusVector_x[ STATUS_IND_ROTATION_X	]; ///< Roll rate in deg/s to the right around the X axis

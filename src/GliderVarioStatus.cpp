@@ -159,9 +159,9 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 			" rateOfSink  "
 			" verticalSpd "
 			" thermalSpeed"
-			" accelX      "
-			" accelY      "
-			" accelZ      "
+			" accelHeading"
+			" accelCross  "
+			" accelVertica"
 			" rollRateX   "
 			" pitchRateY  "
 			" yawRateZ    "
@@ -197,9 +197,9 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 	o.precision(7); o.width(13); o << s.rateOfSink  ;
 	o.precision(7); o.width(13); o << s.verticalSpeed;
 	o.precision(7); o.width(13); o << s.thermalSpeed;
-	o.precision(7); o.width(13); o << s.accelX      ;
-	o.precision(7); o.width(13); o << s.accelY      ;
-	o.precision(7); o.width(13); o << s.accelZ      ;
+	o.precision(7); o.width(13); o << s.accelHeading      ;
+	o.precision(7); o.width(13); o << s.accelCross      ;
+	o.precision(7); o.width(13); o << s.accelVertical      ;
 	o.precision(7); o.width(13); o << s.rollRateX   ;
 	o.precision(7); o.width(13); o << s.pitchRateY  ;
 	o.precision(7); o.width(13); o << s.yawRateZ    ;

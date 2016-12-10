@@ -200,8 +200,8 @@ GliderVarioMeasurementUpdater::accelXUpd (
 
 		// calculate and fill in local variables here.
 		measurementVector.accelX = measuredAccelX;
-		calculatedValue = varioStatus.accelX;
-		measRowT(GliderVarioStatus::STATUS_IND_ACC_X) = 1.0f;
+		calculatedValue = varioStatus.accelHeading;
+		measRowT(GliderVarioStatus::STATUS_IND_ACC_HEADING) = 1.0f;
 
 		calcSingleMeasureUpdate (
 				measuredAccelX,
@@ -228,8 +228,8 @@ GliderVarioMeasurementUpdater::accelYUpd (
 
 		// calculate and fill in local variables here.
 		measurementVector.accelY = measuredAccelY;
-		calculatedValue = varioStatus.accelY;
-		measRowT(GliderVarioStatus::STATUS_IND_ACC_Y) = 1.0f;
+		calculatedValue = varioStatus.accelCross;
+		measRowT(GliderVarioStatus::STATUS_IND_ACC_CROSS) = 1.0f;
 
 		calcSingleMeasureUpdate (
 				measuredAccelY,
@@ -255,8 +255,8 @@ GliderVarioMeasurementUpdater::accelZUpd (
 
 		// calculate and fill in local variables here.
 		measurementVector.accelZ = measuredAccelZ;
-		calculatedValue = varioStatus.accelZ;
-		measRowT(GliderVarioStatus::STATUS_IND_ACC_Z) = 1.0f;
+		calculatedValue = varioStatus.accelVertical;
+		measRowT(GliderVarioStatus::STATUS_IND_ACC_VERTICAL) = 1.0f;
 
 		calcSingleMeasureUpdate (
 				measuredAccelZ,
