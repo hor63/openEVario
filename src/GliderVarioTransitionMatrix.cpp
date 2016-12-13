@@ -263,6 +263,74 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
 
   }
 
+  /*
+   * Special consideration of propagating the roll (bank) angle
+   * ----------------------------------------------------------
+   *
+   * OK, here's some really weird stuff.
+   *
+   * One of my nagging pains in the ass with this program is the attitude of the plane, especially the roll (bank) angle of my plane.
+   *
+   * Since we glider pilots spend a *lot* time circling the knowledge of the roll (bank) angle is crucial
+   * because at a serious bank angle (30-50 deg is quite normal) the inertial gyro measurements become a mix of pitch up, and yaw, where in fact
+   * these combined ones result in a flat horizontal turn. The centrifugal force becomes a major factor, as it determines our bank angle for flying clean
+   * circles in the end.
+   *
+   * There is no direct measurement of the bank angle. My instrument simply cannot look out of the canopy as we do all the time to assess
+   * the bank against the horizon. (Even if there was a horizon sensor, I would not trust it a lot in the Alps).
+   * Naively trusting the accelerometer for acceleration along the Y axis as for someone standing on the ground playing Pokemon Go is foolish:
+   * As long as we fly with the yaw string straight,
+   * as we do all the time as good glider pilots there should be virtually no lateral acceleration on the Y axis. Only the acceleration
+   * downward relative to the plane changes depending on how steep and fast we are turning.
+   * The most reliable way to assess the bank angle is computing the centrifugal force from the turn rate, and the TAS.
+   * This way I can assess the bank angle even from GPS speed, and changes of my (GPS) course over ground.
+   *
+   * However sometimes we may do a slip, i.e. fly with an intentionally hanging wing, or the plane sits still on the ground with one wing on the ground.
+   * Both cases still impose a static roll component which I want to properly factor in.
+   *
+   * On the other side I do want to preserve the standard model of a constant bank angle which changes on short term driven by the roll rate from the
+   * gyro.
+   *
+   * Therefore I approach this with a hybrid solution: Basically I assume the bank is constant, and changed primarily by the gyro roll rate.
+   * As correction I use a 'rubberband effect' from the static bank (lateral acceleration) and the turn induced dynamic bank. The factor for these
+   * corrections comes from the difference of the calculated value, and the current model value. It is further calculated from a configurable time constant
+   * and the current time interval.
+   * I do not want bumps in the aerial road (i.e. short lateral accelerations) affect the bank angle arbitrarily I make the time constant for lateral
+   * acceleration rather long, but the time constant for the turn rate correction rather short in order to get (modeled) reality and model in line rather
+   * quickly.
+   *
+   * /
+
+  {
+	FloatType bankAngleRot, staticAngle;
+
+	bankAngleRot = calcRotBankAngle(lastStatus.yawRateGloZ,lastStatus.trueAirSpeed);
+
+	// calculate the correction for dynamic bank
+	temp1 = (bankAngleRot - newStatus.rollAngle) / dynamicRollTimeConstant * timeDiff;
+	// ... and the covariant factors for the TAS and turn rate
+	temp2 = calcRotBankAngle(lastStatus.yawRateGloZ,lastStatus.trueAirSpeed + 0.1);
+	transitionMatrix(GliderVarioStatus::STATUS_IND_ROLL,GliderVarioStatus::STATUS_IND_TAS) =
+			((temp2 - newStatus.rollAngle) / dynamicRollTimeConstant * timeDiff - temp1) * 10;
+	temp2 = calcRotBankAngle(lastStatus.yawRateGloZ + 0.1,lastStatus.trueAirSpeed);
+	transitionMatrix(GliderVarioStatus::STATUS_IND_ROLL,GliderVarioStatus::STATUS_IND_ROTATION_GLO_Z) =
+			((temp2 - newStatus.rollAngle) / dynamicRollTimeConstant * timeDiff - temp1) * 10;
+
+	// calculate the correction for static bank
+	/// \todo Static bank angle is currently calculated correctly when there is no bank otherwise.
+	staticAngle = FastMath::fastASin(lastStatus.accelY/GRAVITY);
+	temp3 = staticAngle / staticRollTimeConstant * timeDiff;
+	// ... and the covariant factors for the lateral acceleration
+	temp2 = FastMath::fastASin((lastStatus.accelY + 0.01)/GRAVITY) / staticRollTimeConstant * timeDiff;
+	transitionMatrix(GliderVarioStatus::STATUS_IND_ROLL,GliderVarioStatus::STATUS_IND_ACC_Y) =
+			(temp2 - temp3) * 100;
+
+	// Now apply the corrections to the new status
+	newStatus.rollAngle += temp1 + temp3;
+
+  }
+  */
+
   // STATUS_IND_HEADING
     transitionMatrix(GliderVarioStatus::STATUS_IND_HEADING,GliderVarioStatus::STATUS_IND_HEADING) = 1.0f;
     transitionMatrix(GliderVarioStatus::STATUS_IND_HEADING,GliderVarioStatus::STATUS_IND_ROTATION_GLO_Z) = temp1 = timeDiff;
