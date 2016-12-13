@@ -219,9 +219,9 @@ int i;
 
   // Accelerations in reference to the body coordinate system. Accelerations are on the axis of the *plane*.
   // If the plane is pitched up an acceleration on the X axis would speed the plane upward, not forward.
-  ovStatusOld->accelX = 0.0f;
-  ovStatusOld->accelY = 0.0f;
-  ovStatusOld->accelZ = -9.81/FastMath::fastCos(ovStatusOld->rollAngle);
+  ovStatusOld->accelHeading = 0.0f;
+  ovStatusOld->accelCross = 0.0f;
+  ovStatusOld->accelVertical = -9.81/FastMath::fastCos(ovStatusOld->rollAngle);
 
   // Turn rates in reference to the body coordinate system
   ovStatusOld->rollRateX = 0.0f;

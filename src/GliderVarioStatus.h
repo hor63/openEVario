@@ -143,17 +143,17 @@ public:
     /// Speeds
     STATUS_IND_SPEED_GROUND_N	,  ///< Ground speed component North in m/s
     STATUS_IND_SPEED_GROUND_E	,  ///< Ground speed component East in m/s
-//    STATUS_IND_TAS_N		,  ///< True air speed North component in m/s relative to surrounding air.
-//    STATUS_IND_TAS_E		,  ///< True air speed East component in m/s relative to surrounding air.
     STATUS_IND_TAS			,  ///< True air speed absolute value. Needed to calculate the bank angle with #STATUS_IND_ROTATION_GLO_Z.
     STATUS_IND_RATE_OF_SINK	, ///< Rate of sink in m/s relative to the surrounding air. Sink because the Z axis points downward
     STATUS_IND_VERTICAL_SPEED	, ///< Absolute vertical speed in m/s downward. Z axis is direction down.
     STATUS_IND_THERMAL_SPEED	, ///< The true reason for the whole exercise! :). As always in Z axis direction downward.
 
-    /// Accelerations in reference to the body (plane) coordinate system.
-    STATUS_IND_ACC_X		, ///< Acceleration in m/s^2 along body X axis
-    STATUS_IND_ACC_Y		, ///< Acceleration in m/s^2 along body Y axis
-    STATUS_IND_ACC_Z		, ///< Acceleration in m/s^2 along body Z axis
+    /// Accelerations in direction of the heading, vertical and perpendicular to heading.
+    STATUS_IND_ACC_HEADING		, ///< Acceleration in m/s^2 horizontally along the heading of the plane
+    STATUS_IND_ACC_CROSS		, ///< Acceleration in m/s^2 horizontally perpendicular to the heading
+                                  ///< Note that this does *not* include centrifugal force!!!
+                                  ///< This is only residual acceleration not accounted by turning.
+    STATUS_IND_ACC_VERTICAL		, ///< Acceleration in m/s^2 along body Z axis
 
     /// Turn rates in reference to the body (plane) coordinate system
     STATUS_IND_ROTATION_X	, ///< Roll rate in deg/s to the right around the X axis
@@ -175,9 +175,10 @@ public:
 	STATUS_IND_COMPASS_DEVIATION_Z, ///< Strength of the local airplane magnetic field in Z direction
     STATUS_IND_WIND_SPEED_N	, ///< Wind speed North component in m/s
     STATUS_IND_WIND_SPEED_E	, ///< Wind speed East component in m/s
-//	STATUS_IND_WIND_SPEED   , ///< Absolute wind speed in m/s
-//	STATUS_IND_WIND_DIR     , ///< The direction is the direction *from where* the wind blows.
 	STATUS_IND_QFF			, ///< QFF in Pascal (Using a realistic model incl. temperature, ignoring humidity).
+	STATUS_IND_LAST_PRESSURE, ///< Calculated pressure from last altMSL. Used to avoid to calculate the expensive
+	                          ///< barometric formula multiple times. I am ignoring the error imposed by the
+	                          ///< last altitude update :)
 
 	STATUS_NUM_ROWS				///< The number of rows in the vector. This is not a component of the vector!
   };
@@ -265,17 +266,17 @@ public:
   /// Speeds
   FloatType& groundSpeedNorth = statusVector_x[ STATUS_IND_SPEED_GROUND_N	];  ///< Ground speed component North in m/s
   FloatType& groundSpeedEast = statusVector_x[ STATUS_IND_SPEED_GROUND_E	];  ///< Ground speed component East in m/s
-//  FloatType& trueAirSpeedNorth = statusVector_x[ STATUS_IND_TAS_N		    ];  ///< True air speed North component in m/s relative to surrounding air.
-//  FloatType& trueAirSpeedEast = statusVector_x[ STATUS_IND_TAS_E		    ];  ///< True air speed East component in m/s relative to surrounding air.
   FloatType& trueAirSpeed = statusVector_x[ STATUS_IND_TAS		            ];  ///< True air speed absolute value. Needed to calculate the bank angle with #STATUS_IND_ROTATION_GLO_Z.
   FloatType& rateOfSink = statusVector_x[ STATUS_IND_RATE_OF_SINK	        ]; ///< Rate of sink in m/s relative to the surrounding air. Sink because the Z axis points downward.
   FloatType& verticalSpeed = statusVector_x[ STATUS_IND_VERTICAL_SPEED	    ]; ///< Absolute vertical speed in m/s downward. Z axis is downward.
   FloatType& thermalSpeed = statusVector_x[ STATUS_IND_THERMAL_SPEED	    ]; ///< The true reason for the whole exercise! :)
 
   /// Accelerations in reference to the body (plane) coordinate system.
-  FloatType& accelX = statusVector_x[ STATUS_IND_ACC_Z		]; ///< Acceleration in m/s^2 along plane X axis
-  FloatType& accelY = statusVector_x[ STATUS_IND_ACC_Y		]; ///< Acceleration in m/s^2 along plane Y axis
-  FloatType& accelZ = statusVector_x[ STATUS_IND_ACC_Z		]; ///< Acceleration in m/s^2 along the plane Z axis
+  FloatType& accelHeading = statusVector_x[ STATUS_IND_ACC_HEADING ]; ///< Acceleration in m/s^2 horizontally along the heading of the plane
+  FloatType& accelCross = statusVector_x[ STATUS_IND_ACC_CROSS	 ];///< Acceleration in m/s^2 horizontally perpendicular to the heading
+  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	   ///< Note that this does *not* include centrifugal force!!!
+  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	   ///< This is only residual acceleration not accounted by turning.
+  FloatType& accelVertical = statusVector_x[ STATUS_IND_ACC_VERTICAL]; ///< Acceleration in m/s^2 along body Z axis
 
   /// Turn rates in reference to the body (plane) coordinate system
   FloatType& rollRateX = statusVector_x[ STATUS_IND_ROTATION_X	]; ///< Roll rate in deg/s to the right around the X axis
@@ -298,9 +299,10 @@ public:
   FloatType& compassDeviationZ = statusVector_x [ STATUS_IND_COMPASS_DEVIATION_Z] ; ///< Strength of the local airplane magnetic field in Z direction
   FloatType& windSpeedNorth = statusVector_x[ STATUS_IND_WIND_SPEED_N]; ///< Wind speed North component in m/s
   FloatType& windSpeedEast  = statusVector_x[ STATUS_IND_WIND_SPEED_E]; ///< Wind speed East component in m/s
-//  FloatType& windSpeed      = statusVector_x[ STATUS_IND_WIND_SPEED  ]; ///< Absolute Wind speed in m/s
-//  FloatType& windDirection  = statusVector_x[ STATUS_IND_WIND_DIR    ]; ///< The direction is the direction *from where* the wind blows.
   FloatType& qff			= statusVector_x[ STATUS_IND_QFF		 ]; ///< QFF in Pascal (Using a realistic model incl. temperature, ignoring humidity).
+  FloatType& lastPressure   = statusVector_x[ STATUS_IND_LAST_PRESSURE]; ///< Calculated pressure from last altMSL. Used to avoid to calculate the expensive
+	                          ///< barometric formula multiple times. I am ignoring the error imposed by the
+	                          ///< last altitude update :)
 
 
 protected:

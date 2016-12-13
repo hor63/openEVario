@@ -155,15 +155,13 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 			" rollAngle   "
 			" groundSpeedN"
 			" groundSpeedE"
-//			" trueAirSpdNo"
-//			" trueAirSpdEa"
 			" trueAirSpeed"
 			" rateOfSink  "
 			" verticalSpd "
 			" thermalSpeed"
-			" accelX      "
-			" accelY      "
-			" accelZ      "
+			" accelHeading"
+			" accelCross  "
+			" accelVertica"
 			" rollRateX   "
 			" pitchRateY  "
 			" yawRateZ    "
@@ -178,9 +176,8 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 			" compDeviatiZ"
 			" windSpeedNor"
 			" windSpeedEas"
-//			" windSpeed   "
-//			" windDirectio"
 			" QFF         "
+			" lastPressure"
 		<< std::endl;
 
 	o << std::fixed;
@@ -196,15 +193,13 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 	o.precision(7); o.width(13); o << s.rollAngle   ;
 	o.precision(7); o.width(13); o << s.groundSpeedNorth;
 	o.precision(7); o.width(13); o << s.groundSpeedEast;
-///	o.precision(7); o.width(13); o << s.trueAirSpeedNorth;*/
-//	o.precision(7); o.width(13); o << s.trueAirSpeedEast;
 	o.precision(7); o.width(13); o << s.trueAirSpeed;
 	o.precision(7); o.width(13); o << s.rateOfSink  ;
 	o.precision(7); o.width(13); o << s.verticalSpeed;
 	o.precision(7); o.width(13); o << s.thermalSpeed;
-	o.precision(7); o.width(13); o << s.accelX      ;
-	o.precision(7); o.width(13); o << s.accelY      ;
-	o.precision(7); o.width(13); o << s.accelZ      ;
+	o.precision(7); o.width(13); o << s.accelHeading      ;
+	o.precision(7); o.width(13); o << s.accelCross      ;
+	o.precision(7); o.width(13); o << s.accelVertical      ;
 	o.precision(7); o.width(13); o << s.rollRateX   ;
 	o.precision(7); o.width(13); o << s.pitchRateY  ;
 	o.precision(7); o.width(13); o << s.yawRateZ    ;
@@ -219,9 +214,8 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 	o.precision(7); o.width(13); o << s.compassDeviationZ;
 	o.precision(7); o.width(13); o << s.windSpeedNorth;
 	o.precision(7); o.width(13); o << s.windSpeedEast;
-//	o.precision(7); o.width(13); o << s.windSpeed    ;
-//	o.precision(7); o.width(13); o << s.windDirection;
 	o.precision(7); o.width(13); o << s.qff;
+	o.precision(7); o.width(13); o << s.lastPressure;
 
 	o << std::endl;
 
