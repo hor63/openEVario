@@ -156,8 +156,8 @@ protected:
 		  // When I am not turning I have no dynamic bank angle. Period.
 		  bankAngleRot = 0.0f;
 	  } else {
-		  turnRadius = trueAirSpeed / gloTurnRate * FastMath::radToDeg;
 		  turnRateRad = gloTurnRate * FastMath::degToRad;
+		  turnRadius = trueAirSpeed / turnRateRad;
 		  bankAngleRot = FastMath::fastATan2(turnRateRad*turnRateRad * turnRadius / GRAVITY,1.0f);
 	  }
 
