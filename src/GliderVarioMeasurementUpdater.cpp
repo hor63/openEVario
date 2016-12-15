@@ -173,7 +173,7 @@ GliderVarioMeasurementUpdater::GPSSpeedUpd (
 
 		temp1 = varioStatus.groundSpeedEast + temp3;
 		temp2 = sqrt(groundSpeedNSquare + temp1 * temp1);
-		measRowT(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N) = (temp2-calculatedValue) / temp3;
+		measRowT(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E) = (temp2-calculatedValue) / temp3;
 
 
 		calcSingleMeasureUpdate (
