@@ -187,81 +187,63 @@ GliderVarioMeasurementUpdater::GPSSpeedUpd (
 
 
 void
-GliderVarioMeasurementUpdater::accelXUpd (
+GliderVarioMeasurementUpdater::accelUpd (
 		FloatType measuredAccelX,
 		FloatType accelXVariance,
-		GliderVarioMeasurementVector const &measurementVector,
-		GliderVarioStatus &varioStatus
-		) {
-	FloatType calculatedValue;
-	GliderVarioStatus::StatusVectorType measRowT;
-
-		measRowT.setZero();
-
-		// calculate and fill in local variables here.
-		measurementVector.accelX = measuredAccelX;
-		calculatedValue = varioStatus.accelHeading;
-		measRowT(GliderVarioStatus::STATUS_IND_ACC_HEADING) = 1.0f;
-
-		calcSingleMeasureUpdate (
-				measuredAccelX,
-				calculatedValue,
-				accelXVariance,
-				measRowT,
-				varioStatus
-				);
-	}
-
-void
-GliderVarioMeasurementUpdater::accelYUpd (
 		FloatType measuredAccelY,
 		FloatType accelYVariance,
-		GliderVarioMeasurementVector const &measurementVector,
-		GliderVarioStatus &varioStatus
-		) {
-	FloatType calculatedValue;
-	GliderVarioStatus::StatusVectorType measRowT;
-	FloatType turnRateRad, turnRadius, bankAngleRot, staticAngle;
-
-	    // First run: update of the Y acceleration
-		measRowT.setZero();
-
-		// calculate and fill in local variables here.
-		measurementVector.accelY = measuredAccelY;
-		calculatedValue = varioStatus.accelCross;
-		measRowT(GliderVarioStatus::STATUS_IND_ACC_CROSS) = 1.0f;
-
-		calcSingleMeasureUpdate (
-				measuredAccelY,
-				calculatedValue,
-				accelYVariance,
-				measRowT,
-				varioStatus
-				);
-
-	}
-
-void
-GliderVarioMeasurementUpdater::accelZUpd (
 		FloatType measuredAccelZ,
 		FloatType accelZVariance,
 		GliderVarioMeasurementVector const &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
-	FloatType calculatedValue;
+	FloatType calculatedValueX, calculatedValueY, calculatedValueZ;
+	FloatType modelAccelX, modelAccelY, modelAccelZ, accelCenterfuge;
+	FloatType turnRadius, turnRateRad;
 	GliderVarioStatus::StatusVectorType measRowT;
+	RotationMatrix rotMat, rotMatIncX, rotMatIncY,rotMatIncZ;
+	Vector3DType modelAccelVector,calcAccelVector,calcAccelVectorIncX,calcAccelVectorIncY,calcAccelVectorIncZ;
 
 		measRowT.setZero();
 
 		// calculate and fill in local variables here.
+		measurementVector.accelX = measuredAccelX;
+		measurementVector.accelY = measuredAccelY;
 		measurementVector.accelZ = measuredAccelZ;
-		calculatedValue = varioStatus.accelVertical;
-		measRowT(GliderVarioStatus::STATUS_IND_ACC_VERTICAL) = 1.0f;
+
+		rotMat.setYaw(0.0f); // Remember, model coordinate system points to heading?
+		rotMat.setPitch(varioStatus.pitchAngle);
+		rotMat.setRoll(varioStatus.rollAngle);
+		rotMatIncX.setYaw(0.0f);
+		rotMatIncX.setPitch(varioStatus.pitchAngle);
+		rotMatIncX.setRoll(varioStatus.rollAngle + 1.0f);
+		rotMatIncY.setYaw(0.0f);
+		rotMatIncY.setPitch(varioStatus.pitchAngle + 1.0f);
+		rotMatIncY.setRoll(varioStatus.rollAngle);
+		rotMatIncZ.setYaw(1.0f);
+		rotMatIncZ.setPitch(varioStatus.pitchAngle);
+		rotMatIncZ.setRoll(varioStatus.rollAngle);
+
+		turnRateRad = varioStatus.yawRateGloZ * FastMath::degToRad;
+		turnRadius = varioStatus.trueAirSpeed / turnRateRad;
+
+		modelAccelVector(0) = varioStatus.accelHeading;
+		modelAccelVector(1) = turnRateRad*turnRateRad * turnRadius;
+		modelAccelVector(2) = varioStatus.accelVertical - varioStatus.gravity;
+
+		rotMat.calcWorldVectorToPlaneVector(modelAccelVector,calcAccelVector);
+		rotMatIncX.calcWorldVectorToPlaneVector(modelAccelVector,calcAccelVectorIncX);
+		rotMatIncY.calcWorldVectorToPlaneVector(modelAccelVector,calcAccelVectorIncY);
+		rotMatIncZ.calcWorldVectorToPlaneVector(modelAccelVector,calcAccelVectorIncZ);
+
+		///todo: continue calculations from here.
+		calculatedValueX = calcAccelVector(1);
+		measRowT(GliderVarioStatus::STATUS_IND_ACC_HEADING) = 1.0f;
 
 		calcSingleMeasureUpdate (
-				measuredAccelZ,
-				calculatedValue,
-				accelZVariance,
+				measuredAccelX,
+				calculatedValueX,
+				accelXVariance,
 				measRowT,
 				varioStatus
 				);

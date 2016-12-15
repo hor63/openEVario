@@ -123,50 +123,30 @@ public:
 
 
 	/**
-	 * \brief Update the status vector with a new measurement of the acceleration along the plane roll (X) axis
-	 * Update the status vector with a new measurement of the acceleration along the plane roll (X) axis
+	 * \brief Update the status vector with a new measurement of the acceleration at all three axis
+	 * Update the status vector with a new measurement of the acceleration at all three axis.
+	 * All three measurements are moved into this one routine because the model coordinate system is a world coordinate system
+	 * where x points horizontal in heading direction, z points straight down, and y is horizontal, and perpendicular to heading.
 	 * @param[in] measuredAccelX Acceleration along the body X axis. Forward is positive.
 	 * @param[in] accelXVariance Variance of the measured acceleration
-	 * @param[in,out] measurementVector The applicable column is updated for information purposes.
-	 * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
-	 */
-	static void accelXUpd (
-			FloatType measuredAccelX,
-			FloatType accelXVariance,
-			GliderVarioMeasurementVector const &measurementVector,
-    		GliderVarioStatus &varioStatus
-			);
-
-	/**
-	 * \brief Update the status vector with a new measurement of the acceleration along the plane pitch (Y) axis
-	 * Update the status vector with a new measurement of the acceleration along the plane pitch (Y) axis.
-	 *
 	 * @param[in] measuredAccelY Acceleration along the body Y axis. Right is positive.
 	 * @param[in] accelYVariance Variance of the measured acceleration
-	 * @param[in,out] measurementVector The applicable column is updated for information purposes.
-	 * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
-	 */
-	static void accelYUpd (
-			FloatType measuredAccelY,
-			FloatType accelYVariance,
-			GliderVarioMeasurementVector const &measurementVector,
-    		GliderVarioStatus &varioStatus
-			);
-
-	/**
-	 * \brief Update the status vector with a new measurement of the acceleration along the plane yaw (Z) axis
-	 * Update the status vector with a new measurement of the acceleration along the plane yaw (Z) axis
 	 * @param[in] measuredAccelZ Acceleration along the body Z axis. Downward is positive.
 	 * @param[in] accelZVariance Variance of the measured acceleration
 	 * @param[in,out] measurementVector The applicable column is updated for information purposes.
 	 * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
 	 */
-	static void accelZUpd (
+	static void accelUpd (
+			FloatType measuredAccelX,
+			FloatType accelXVariance,
+			FloatType measuredAccelY,
+			FloatType accelYVariance,
 			FloatType measuredAccelZ,
 			FloatType accelZVariance,
 			GliderVarioMeasurementVector const &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
+
 
 	/**
 	 * \brief Update the status vector with a new measurement of the roll rate around the plane X axis
