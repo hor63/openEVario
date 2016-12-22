@@ -211,7 +211,7 @@ GliderVarioMeasurementUpdater::accelUpd (
 		measurementVector.accelY = measuredAccelY;
 		measurementVector.accelZ = measuredAccelZ;
 
-		rotMat.setYaw(0.0f); // Remember, model coordinate system points to heading?
+		rotMat.setYaw(0.0f); // Remember, model coordinate system X axis points to heading direction?
 		rotMat.setPitch(varioStatus.pitchAngle);
 		rotMat.setRoll(varioStatus.rollAngle);
 		rotMatIncX.setYaw(0.0f);
@@ -225,25 +225,97 @@ GliderVarioMeasurementUpdater::accelUpd (
 		rotMatIncZ.setRoll(varioStatus.rollAngle);
 
 		turnRateRad = varioStatus.yawRateGloZ * FastMath::degToRad;
-		turnRadius = varioStatus.trueAirSpeed / turnRateRad;
+		// turnRadius = varioStatus.trueAirSpeed / turnRateRad;
 
 		modelAccelVector(0) = varioStatus.accelHeading;
-		modelAccelVector(1) = turnRateRad*turnRateRad * turnRadius;
+		// modelAccelVector(1) = turnRateRad*turnRateRad * turnRadius;
+		// Shorten turnRateRad once from the commented term above.
+		modelAccelVector(1) = turnRateRad * varioStatus.trueAirSpeed + varioStatus.accelCross;
 		modelAccelVector(2) = varioStatus.accelVertical - varioStatus.gravity;
 
+		RotationMatrix3DType &rotMatGloToPlane = rotMat.getMatrixGloToPlane();
 		rotMat.calcWorldVectorToPlaneVector(modelAccelVector,calcAccelVector);
 		rotMatIncX.calcWorldVectorToPlaneVector(modelAccelVector,calcAccelVectorIncX);
 		rotMatIncY.calcWorldVectorToPlaneVector(modelAccelVector,calcAccelVectorIncY);
 		rotMatIncZ.calcWorldVectorToPlaneVector(modelAccelVector,calcAccelVectorIncZ);
 
-		///todo: continue calculations from here.
-		calculatedValueX = calcAccelVector(1);
-		measRowT(GliderVarioStatus::STATUS_IND_ACC_HEADING) = 1.0f;
+		// Now the update for the X-Axis measurement
+		calculatedValueX = calcAccelVector(0);
+
+		// The linear factors
+		measRowT(GliderVarioStatus::STATUS_IND_ACC_HEADING) = rotMatGloToPlane(0,0);
+		measRowT(GliderVarioStatus::STATUS_IND_ACC_CROSS) = rotMatGloToPlane(0,1);
+		measRowT(GliderVarioStatus::STATUS_IND_TAS) = rotMatGloToPlane(0,1) * turnRateRad;
+		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_GLO_Z) = rotMatGloToPlane(0,1) * varioStatus.trueAirSpeed * FastMath::degToRad;
+		measRowT(GliderVarioStatus::STATUS_IND_ACC_VERTICAL) = rotMatGloToPlane(0,2);
+		measRowT(GliderVarioStatus::STATUS_IND_GRAVITY) = -(rotMatGloToPlane(0,2));
+
+		// Now the non-linear factors by approximation (the attitude angles)
+		measRowT(GliderVarioStatus::STATUS_IND_ROLL) = calcAccelVectorIncX(0) - calcAccelVector(0);
+		measRowT(GliderVarioStatus::STATUS_IND_PITCH) = calcAccelVectorIncX(1) - calcAccelVector(1);
+
+		// Change of heading does not affect the accelerometer readings. The derivation of cos(0) is -sin(0) = 0 anyway.
+		// measRowT(GliderVarioStatus::STATUS_IND_HEADING) = calcAccelVectorIncX(2) - calcAccelVector(2);
+
 
 		calcSingleMeasureUpdate (
 				measuredAccelX,
 				calculatedValueX,
 				accelXVariance,
+				measRowT,
+				varioStatus
+				);
+
+		// Now the update for the Y-Axis measurement
+		calculatedValueY = calcAccelVector(1);
+
+		// The linear factors
+		measRowT(GliderVarioStatus::STATUS_IND_ACC_HEADING) = rotMatGloToPlane(1,0);
+		measRowT(GliderVarioStatus::STATUS_IND_ACC_CROSS) = rotMatGloToPlane(1,1);
+		measRowT(GliderVarioStatus::STATUS_IND_TAS) = rotMatGloToPlane(1,1) * turnRateRad;
+		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_GLO_Z) = rotMatGloToPlane(1,1) * varioStatus.trueAirSpeed * FastMath::degToRad;
+		measRowT(GliderVarioStatus::STATUS_IND_ACC_VERTICAL) = rotMatGloToPlane(1,2);
+		measRowT(GliderVarioStatus::STATUS_IND_GRAVITY) = -(rotMatGloToPlane(1,2));
+
+		// Now the non-linear factors by approximation (the attitude angles)
+		measRowT(GliderVarioStatus::STATUS_IND_ROLL) = calcAccelVectorIncY(0) - calcAccelVector(0);
+		measRowT(GliderVarioStatus::STATUS_IND_PITCH) = calcAccelVectorIncY(1) - calcAccelVector(1);
+
+		// Change of heading does not affect the accelerometer readings. The derivation of cos(0) is -sin(0) = 0 anyway.
+		// measRowT(GliderVarioStatus::STATUS_IND_HEADING) = calcAccelVectorIncX(2) - calcAccelVector(2);
+
+
+		calcSingleMeasureUpdate (
+				measuredAccelY,
+				calculatedValueY,
+				accelYVariance,
+				measRowT,
+				varioStatus
+				);
+
+		// Now the update for the Z-Axis measurement
+		calculatedValueZ = calcAccelVector(2);
+
+		// The linear factors
+		measRowT(GliderVarioStatus::STATUS_IND_ACC_HEADING) = rotMatGloToPlane(2,0);
+		measRowT(GliderVarioStatus::STATUS_IND_ACC_CROSS) = rotMatGloToPlane(2,1);
+		measRowT(GliderVarioStatus::STATUS_IND_TAS) = rotMatGloToPlane(2,1) * turnRateRad;
+		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_GLO_Z) = rotMatGloToPlane(2,1) * varioStatus.trueAirSpeed * FastMath::degToRad;
+		measRowT(GliderVarioStatus::STATUS_IND_ACC_VERTICAL) = rotMatGloToPlane(2,2);
+		measRowT(GliderVarioStatus::STATUS_IND_GRAVITY) = -(rotMatGloToPlane(2,2));
+
+		// Now the non-linear factors by approximation (the attitude angles)
+		measRowT(GliderVarioStatus::STATUS_IND_ROLL) = calcAccelVectorIncZ(0) - calcAccelVector(0);
+		measRowT(GliderVarioStatus::STATUS_IND_PITCH) = calcAccelVectorIncZ(1) - calcAccelVector(1);
+
+		// Change of heading does not affect the accelerometer readings. The derivation of cos(0) is -sin(0) = 0 anyway.
+		// measRowT(GliderVarioStatus::STATUS_IND_HEADING) = calcAccelVectorIncX(0) - calcAccelVector(0);
+
+
+		calcSingleMeasureUpdate (
+				measuredAccelY,
+				calculatedValueY,
+				accelYVariance,
 				measRowT,
 				varioStatus
 				);
