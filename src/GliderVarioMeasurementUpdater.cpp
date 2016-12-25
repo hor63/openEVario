@@ -33,7 +33,7 @@ void
 GliderVarioMeasurementUpdater::GPSLatitudeUpd (
 		FloatType measuredLatitude,
 		FloatType latitudeVariance,
-		GliderVarioMeasurementVector const &measurementVector,
+		GliderVarioMeasurementVector &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
 FloatType calculatedValue;
@@ -60,7 +60,7 @@ void
 GliderVarioMeasurementUpdater::GPSLongitudeUpd (
 		FloatType measuredLongitude,
 		FloatType longitudeVariance,
-		GliderVarioMeasurementVector const &measurementVector,
+		GliderVarioMeasurementVector &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
 	FloatType calculatedValue;
@@ -87,7 +87,7 @@ void
 GliderVarioMeasurementUpdater::GPSAltitudeUpd (
 		FloatType measuredAltitudeMSL,
 		FloatType altitudeVariance,
-		GliderVarioMeasurementVector const &measurementVector,
+		GliderVarioMeasurementVector &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
 	FloatType calculatedValue;
@@ -112,7 +112,7 @@ void
 GliderVarioMeasurementUpdater::GPSHeadingUpd (
 		FloatType measuredCourseOverGround,
 		FloatType courseOverGroundVariance,
-		GliderVarioMeasurementVector const &measurementVector,
+		GliderVarioMeasurementVector &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
 	FloatType calculatedValue;
@@ -147,7 +147,7 @@ void
 GliderVarioMeasurementUpdater::GPSSpeedUpd (
 		FloatType measuredSpeedOverGround,
 		FloatType speedOverGroundVariance,
-		GliderVarioMeasurementVector const &measurementVector,
+		GliderVarioMeasurementVector &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
 	FloatType calculatedValue;
@@ -194,7 +194,7 @@ GliderVarioMeasurementUpdater::accelUpd (
 		FloatType accelYVariance,
 		FloatType measuredAccelZ,
 		FloatType accelZVariance,
-		GliderVarioMeasurementVector const &measurementVector,
+		GliderVarioMeasurementVector &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
 	FloatType calculatedValueX, calculatedValueY, calculatedValueZ;
@@ -323,10 +323,14 @@ GliderVarioMeasurementUpdater::accelUpd (
 
 
 void
-GliderVarioMeasurementUpdater::gyroXUpd (
+GliderVarioMeasurementUpdater::gyroUpd (
 		FloatType measuredRollRateX,
 		FloatType rollRateXVariance,
-		GliderVarioMeasurementVector const &measurementVector,
+		FloatType measuredRollRateY,
+		FloatType rollRateYVariance,
+		FloatType measuredRollRateZ,
+		FloatType rollRateZVariance,
+		GliderVarioMeasurementVector &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
 	FloatType calculatedValue;
@@ -350,63 +354,6 @@ GliderVarioMeasurementUpdater::gyroXUpd (
 	}
 
 void
-GliderVarioMeasurementUpdater::gyroYUpd (
-		FloatType measuredPitchRateY,
-		FloatType rollRateYVariance,
-		GliderVarioMeasurementVector const &measurementVector,
-		GliderVarioStatus &varioStatus
-		) {
-	FloatType calculatedValue;
-	GliderVarioStatus::StatusVectorType measRowT;
-
-		measRowT.setZero();
-
-		// calculate and fill in local variables here.
-		measurementVector.gyroRateY = measuredPitchRateY;
-		calculatedValue = varioStatus.yawRateZ + varioStatus.gyroBiasY;
-		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_Y) = 1.0f;
-		measRowT(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Y) = 1.0f;
-
-		calcSingleMeasureUpdate (
-				measuredPitchRateY,
-				calculatedValue,
-				rollRateYVariance,
-				measRowT,
-				varioStatus
-				);
-
-	}
-
-void
-GliderVarioMeasurementUpdater::gyroZUpd (
-		FloatType measuredYawRateZ,
-		FloatType rollRateZVariance,
-		GliderVarioMeasurementVector const &measurementVector,
-		GliderVarioStatus &varioStatus
-		) {
-	FloatType calculatedValue;
-	GliderVarioStatus::StatusVectorType measRowT;
-
-		measRowT.setZero();
-
-		// calculate and fill in local variables here.
-		measurementVector.gyroRateZ = measuredYawRateZ;
-		calculatedValue = varioStatus.yawRateZ + varioStatus.gyroBiasZ;
-		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_Z) = 1.0f;
-		measRowT(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Z) = 1.0f;
-
-		calcSingleMeasureUpdate (
-				measuredYawRateZ,
-				calculatedValue,
-				rollRateZVariance,
-				measRowT,
-				varioStatus
-				);
-
-
-	}
-
-void
 GliderVarioMeasurementUpdater::compassUpd (
 		FloatType measuredMagFlowX,
 		FloatType measuredMagFlowY,
@@ -414,7 +361,7 @@ GliderVarioMeasurementUpdater::compassUpd (
 		FloatType magFlowXVariance,
 		FloatType magFlowYVariance,
 		FloatType magFlowZVariance,
-		GliderVarioMeasurementVector const &measurementVector,
+		GliderVarioMeasurementVector &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
 	FloatType calculatedValue;
@@ -539,7 +486,7 @@ GliderVarioMeasurementUpdater::staticPressureUpd (
 		FloatType measuredStaticPressure,
 		FloatType measuredTemperature,
 		FloatType staticPressureVariance,
-		GliderVarioMeasurementVector const &measurementVector,
+		GliderVarioMeasurementVector &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
 	GliderVarioStatus::StatusVectorType measRowT;
@@ -589,7 +536,7 @@ GliderVarioMeasurementUpdater::dynamicPressureUpd (
 		FloatType measuredDynamicPressure,
 		FloatType measuredTemperature,
 		FloatType dynamicPressureVariance,
-		GliderVarioMeasurementVector const &measurementVector,
+		GliderVarioMeasurementVector &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
 	static FloatType constexpr RspecTimes2     = 287.058 * 2.0f;     // Specific R for dry air

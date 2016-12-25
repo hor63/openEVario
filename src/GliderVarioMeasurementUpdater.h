@@ -57,7 +57,7 @@ public:
 	static void GPSLatitudeUpd (
 			FloatType measuredLatitude,
 			FloatType latitudeVariance,
-			GliderVarioMeasurementVector const &measurementVector,
+			GliderVarioMeasurementVector &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
 
@@ -72,7 +72,7 @@ public:
 	static void GPSLongitudeUpd (
 			FloatType measuredLongitude,
 			FloatType longitudeVariance,
-			GliderVarioMeasurementVector const &measurementVector,
+			GliderVarioMeasurementVector &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
 
@@ -87,7 +87,7 @@ public:
 	static void GPSAltitudeUpd (
 			FloatType measuredAltitudeMSL,
 			FloatType altitudeVariance,
-			GliderVarioMeasurementVector const &measurementVector,
+			GliderVarioMeasurementVector &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
 
@@ -102,7 +102,7 @@ public:
 	static void GPSHeadingUpd (
 			FloatType measuredCourseOverGround,
 			FloatType courseOverGroundVariance,
-			GliderVarioMeasurementVector const &measurementVector,
+			GliderVarioMeasurementVector &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
 
@@ -117,7 +117,7 @@ public:
 	static void GPSSpeedUpd (
 			FloatType measuredSpeedOverGround,
 			FloatType speedOverGroundVariance,
-			GliderVarioMeasurementVector const &measurementVector,
+			GliderVarioMeasurementVector &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
 
@@ -143,55 +143,34 @@ public:
 			FloatType accelYVariance,
 			FloatType measuredAccelZ,
 			FloatType accelZVariance,
-			GliderVarioMeasurementVector const &measurementVector,
+			GliderVarioMeasurementVector &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
 
 
 	/**
-	 * \brief Update the status vector with a new measurement of the roll rate around the plane X axis
-	 * Update the status vector with a new measurement of the roll rate around the plane X axis
+	 * \brief Update the status vector with a new measurement of the roll rates of the plane along the 3 plane axis
+	 * Update the status vector with a new measurement of the roll rates of the plane along the 3 plane axis
 	 * @param[in] measuredRollRateX Rotation rate around the body X axis in degrees per second. Right hand roll is positive.
+	 * @param[in] rollRateXVariance Variance of the measured roll rate
+	 * @param[in] measuredRollRatY Rotation rate around the body Y axis in degrees per second. Pitch up is positive.
+	 * @param[in] rollRateXVariance Variance of the measured roll rate
+	 * @param[in] measuredRollRateZ Rotation rate around the body Z axis in degrees per second. Rightward yaw is positive.
 	 * @param[in] rollRateXVariance Variance of the measured roll rate
 	 * @param[in,out] measurementVector The applicable column is updated for information purposes.
 	 * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
 	 */
-	static void gyroXUpd (
+	static void gyroUpd (
 			FloatType measuredRollRateX,
 			FloatType rollRateXVariance,
-			GliderVarioMeasurementVector const &measurementVector,
-    		GliderVarioStatus &varioStatus
-			);
-
-	/**
-	 * \brief Update the status vector with a new measurement of the turn rate around the plane Y axis
-	 * Update the status vector with a new measurement of the turn rate around the plane Y axis
-	 * @param[in] measuredPitchRateY Rotation rate around the body Y axis in degrees per second. Upward pitch is positive.
-	 * @param[in] rollRateYVariance Variance of the measured roll rate
-	 * @param[in,out] measurementVector The applicable column is updated for information purposes.
-	 * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
-	 */
-	static void gyroYUpd (
-			FloatType measuredPitchRateY,
+			FloatType measuredRollRateY,
 			FloatType rollRateYVariance,
-			GliderVarioMeasurementVector const &measurementVector,
-    		GliderVarioStatus &varioStatus
+			FloatType measuredRollRateZ,
+			FloatType rollRateZVariance,
+			GliderVarioMeasurementVector &measurementVector,
+			GliderVarioStatus &varioStatus
 			);
 
-	/**
-	 * \brief Update the status vector with a new measurement of the turn (yaw) rate around the plane Z axis
-	 * Update the status vector with a new measurement of the turn (yaw) rate around the plane Z axis
-	 * @param[in] measuredYawRateZ Rotation rate around the body Z axis in degrees per second. Right (clockwise) turn is positive.
-	 * @param[in] rollRateYVariance Variance of the measured roll rate
-	 * @param[in,out] measurementVector The applicable column is updated for information purposes.
-	 * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
-	 */
-	static void gyroZUpd (
-			FloatType measuredYawRateZ,
-			FloatType rollRateZVariance,
-			GliderVarioMeasurementVector const &measurementVector,
-    		GliderVarioStatus &varioStatus
-			);
 
 	/**
 	 * \brief Update the status vector with a new measurement of the magnetometer readings along all 3 axis.
@@ -217,7 +196,7 @@ public:
 			FloatType magFlowXVariance,
 			FloatType magFlowYVariance,
 			FloatType magFlowZVariance,
-			GliderVarioMeasurementVector const &measurementVector,
+			GliderVarioMeasurementVector &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
 
@@ -239,7 +218,7 @@ public:
 			FloatType measuredStaticPressure,
 			FloatType measuredTemperature,
 			FloatType staticPressureVariance,
-			GliderVarioMeasurementVector const &measurementVector,
+			GliderVarioMeasurementVector &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
 
@@ -260,7 +239,7 @@ public:
 			FloatType measuredDynamicPressure,
 			FloatType measuredTemperature,
 			FloatType dynamicPressureVariance,
-			GliderVarioMeasurementVector const &measurementVector,
+			GliderVarioMeasurementVector &measurementVector,
     		GliderVarioStatus &varioStatus
 			);
 	
