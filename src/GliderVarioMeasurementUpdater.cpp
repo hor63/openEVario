@@ -223,7 +223,7 @@ GliderVarioMeasurementUpdater::accelUpd (
 		rotMatIncZ.setPitch(varioStatus.pitchAngle);
 		rotMatIncZ.setRoll(varioStatus.rollAngle);
 
-		turnRateRad = varioStatus.yawRateGloZ * FastMath::degToRad;
+		turnRateRad = varioStatus.yawRateZ * FastMath::degToRad;
 
 		modelAccelVector(0) = varioStatus.accelHeading;
 		modelAccelVector(1) = turnRateRad * varioStatus.trueAirSpeed + varioStatus.accelCross;
@@ -242,7 +242,7 @@ GliderVarioMeasurementUpdater::accelUpd (
 		measRowT(GliderVarioStatus::STATUS_IND_ACC_HEADING) = rotMatGloToPlane(0,0);
 		measRowT(GliderVarioStatus::STATUS_IND_ACC_CROSS) = rotMatGloToPlane(0,1);
 		measRowT(GliderVarioStatus::STATUS_IND_TAS) = rotMatGloToPlane(0,1) * turnRateRad;
-		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_GLO_Z) = rotMatGloToPlane(0,1) * varioStatus.trueAirSpeed * FastMath::degToRad;
+		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_Z) = rotMatGloToPlane(0,1) * varioStatus.trueAirSpeed * FastMath::degToRad;
 		measRowT(GliderVarioStatus::STATUS_IND_ACC_VERTICAL) = rotMatGloToPlane(0,2);
 		measRowT(GliderVarioStatus::STATUS_IND_GRAVITY) = -(rotMatGloToPlane(0,2));
 		
@@ -269,7 +269,7 @@ GliderVarioMeasurementUpdater::accelUpd (
 		measRowT(GliderVarioStatus::STATUS_IND_ACC_HEADING) = rotMatGloToPlane(1,0);
 		measRowT(GliderVarioStatus::STATUS_IND_ACC_CROSS) = rotMatGloToPlane(1,1);
 		measRowT(GliderVarioStatus::STATUS_IND_TAS) = rotMatGloToPlane(1,1) * turnRateRad;
-		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_GLO_Z) = rotMatGloToPlane(1,1) * varioStatus.trueAirSpeed * FastMath::degToRad;
+		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_Z) = rotMatGloToPlane(1,1) * varioStatus.trueAirSpeed * FastMath::degToRad;
 		measRowT(GliderVarioStatus::STATUS_IND_ACC_VERTICAL) = rotMatGloToPlane(1,2);
 		measRowT(GliderVarioStatus::STATUS_IND_GRAVITY) = -(rotMatGloToPlane(1,2));
 
@@ -296,7 +296,7 @@ GliderVarioMeasurementUpdater::accelUpd (
 		measRowT(GliderVarioStatus::STATUS_IND_ACC_HEADING) = rotMatGloToPlane(2,0);
 		measRowT(GliderVarioStatus::STATUS_IND_ACC_CROSS) = rotMatGloToPlane(2,1);
 		measRowT(GliderVarioStatus::STATUS_IND_TAS) = rotMatGloToPlane(2,1) * turnRateRad;
-		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_GLO_Z) = rotMatGloToPlane(2,1) * varioStatus.trueAirSpeed * FastMath::degToRad;
+		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_Z) = rotMatGloToPlane(2,1) * varioStatus.trueAirSpeed * FastMath::degToRad;
 		measRowT(GliderVarioStatus::STATUS_IND_ACC_VERTICAL) = rotMatGloToPlane(2,2);
 		measRowT(GliderVarioStatus::STATUS_IND_GRAVITY) = -(rotMatGloToPlane(2,2));
 
@@ -356,7 +356,7 @@ GliderVarioMeasurementUpdater::gyroUpd (
 
 		modelRotVector(0) = varioStatus.rollRateX;
 		modelRotVector(1) = varioStatus.pitchRateY;
-		modelRotVector(2) = varioStatus.yawRateGloZ;
+		modelRotVector(2) = varioStatus.yawRateZ;
 
 		RotationMatrix3DType &rotMatGloToPlane = rotMat.getMatrixGloToPlane();
 		rotMat.calcWorldVectorToPlaneVector(modelRotVector,calcRotVector);
@@ -371,7 +371,7 @@ GliderVarioMeasurementUpdater::gyroUpd (
 		measRowT(GliderVarioStatus::STATUS_IND_GYRO_BIAS_X)    = 1.0f;
 		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_X)     = rotMatGloToPlane(0,0);
 		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_Y)     = rotMatGloToPlane(0,1);
-		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_GLO_Z) = rotMatGloToPlane(0,2);
+		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_Z) = rotMatGloToPlane(0,2);
 		
 		// Now the non-linear factors by approximation (the attitude angles)
 		measRowT(GliderVarioStatus::STATUS_IND_ROLL) = calcRotVectorIncX(0) - calcRotation;
@@ -395,7 +395,7 @@ GliderVarioMeasurementUpdater::gyroUpd (
 		measRowT(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Y)    = 1.0f;
 		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_X)     = rotMatGloToPlane(1,0);
 		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_Y)     = rotMatGloToPlane(1,1);
-		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_GLO_Z) = rotMatGloToPlane(1,2);
+		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_Z) = rotMatGloToPlane(1,2);
 
 		// Now the non-linear factors by approximation (the attitude angles)
 		measRowT(GliderVarioStatus::STATUS_IND_ROLL) = calcRotVectorIncX(1) - calcRotation;
@@ -419,7 +419,7 @@ GliderVarioMeasurementUpdater::gyroUpd (
 		measRowT(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Z)    = 1.0f;
 		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_X)     = rotMatGloToPlane(2,0);
 		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_Y)     = rotMatGloToPlane(2,1);
-		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_GLO_Z) = rotMatGloToPlane(2,2);
+		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_Z) = rotMatGloToPlane(2,2);
 
 		// Now the non-linear factors by approximation (the attitude angles)
 		measRowT(GliderVarioStatus::STATUS_IND_ROLL) = calcRotVectorIncX(2) - calcRotation;
@@ -466,7 +466,7 @@ GliderVarioMeasurementUpdater::compassUpd (
 
 	// The rotation matrix of the magnetic flow vector (unit vector turned by declination and inclination)
 	RotationMatrix magRotMatrix              (varioStatus.magneticDeclination       ,varioStatus.magneticInclination       ,0.0f);
-	// The same rotation matrix with incremments to declination and inclination to assess the Jacobian
+	// The same rotation matrix with increments to declination and inclination to assess the Jacobian
 	RotationMatrix magRotMatrixIncDeclination(varioStatus.magneticDeclination + 1.0f,varioStatus.magneticInclination       ,0.0f);
 	RotationMatrix magRotMatrixIncInclination(varioStatus.magneticDeclination       ,varioStatus.magneticInclination + 1.0f,0.0f);
 
@@ -489,11 +489,11 @@ GliderVarioMeasurementUpdater::compassUpd (
 	Vector3DType magVecLength (compensatedMagVectorLength,0.0f,0.0f);
 
 	// The calculated vector of magnetic measurements.
+	// This is the vector of compensated magnetic flows as calculated from the current attitude, inclination, and declination
 	Vector3DType compassVector               = compassMatrix               * magVecLength;
 
-	// Vector of compensated magnetic flows as calculated from the current attitude, inclination, and declination
+	// Variations of the vector with increments of the 5 participating factors.
 	Vector3DType compassVectorIncDeclination = compassMatrixIncDeclination * magVecLength;
-	// Variations of the vector with increments of the 5 paticipating factors.
 	Vector3DType compassVectorIncInclination = compassMatrixIncInclination * magVecLength;
 	Vector3DType compassVectorIncYaw         = compassMatrixIncYaw         * magVecLength;
 	Vector3DType compassVectorIncPitch       = compassMatrixIncPitch       * magVecLength;
@@ -523,11 +523,12 @@ GliderVarioMeasurementUpdater::compassUpd (
 				varioStatus
 				);
 
-		measRowT.setZero();
+		// measRowT.setZero(); Just reset the previous deviation factor. All others are re-used
 
 		// calculate and fill in local variables here.
 		temp = compassVector(1);
 		calculatedValue = temp + varioStatus.compassDeviationY;
+		measRowT(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_X)  =  0.0f;
 		measRowT(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Y)  =  1.0f;
 		measRowT(GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION) = compassVectorIncDeclination(1) - temp;
 		measRowT(GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION) = compassVectorIncInclination(1) - temp;
@@ -543,11 +544,12 @@ GliderVarioMeasurementUpdater::compassUpd (
 				varioStatus
 				);
 
-		measRowT.setZero();
+		// measRowT.setZero(); Just reset the previous deviation factor. All others are re-used
 
 		// calculate and fill in local variables here.
 		temp = compassVector(2);
 		calculatedValue = temp + varioStatus.compassDeviationZ;
+		measRowT(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Y)  =  0.0f;
 		measRowT(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Z)  =  1.0f;
 		measRowT(GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION) = compassVectorIncDeclination(2) - temp;
 		measRowT(GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION) = compassVectorIncInclination(2) - temp;
@@ -575,11 +577,8 @@ GliderVarioMeasurementUpdater::staticPressureUpd (
 		) {
 	GliderVarioStatus::StatusVectorType measRowT;
 
-	static FloatType constexpr tempLapse = -0.01;      // -1C/100m
-	static FloatType constexpr R         = 8.3144598f;   // 8.3144598  J /mol/K
-	static FloatType constexpr Rspec     = 287.058f;     // Specific R for dry air
-	static FloatType constexpr M         = 0.0289644f; // 0.0289644 kg/mol
-	static FloatType constexpr ex        = GRAVITY * M / R / tempLapse;
+	static FloatType constexpr tempLapse = -0.01; // -1C/100m. Indifferent lapse for adiabatic mixed air in the boundary layer
+	static FloatType constexpr exponent        = GRAVITY * M / R / tempLapse;
 	FloatType pFactor;
 	FloatType p;
 	FloatType p1;
@@ -590,15 +589,15 @@ GliderVarioMeasurementUpdater::staticPressureUpd (
 		// calculate and fill in local variables here.
 		measurementVector.staticPressure = measuredStaticPressure;
 
-		// to Kelvin
-		measuredTemperature += 273.15f;
+		// Temperature in Kelvin
+		measuredTemperature += KtoC;
 
 		// This is used to calculate the pressure and at the same time the derivate for Qff.
-		pFactor = powf ((measuredTemperature - (tempLapse * varioStatus.altMSL) / measuredTemperature),ex);
+		pFactor = powf ((measuredTemperature - (tempLapse * varioStatus.altMSL) / measuredTemperature),exponent);
 		// The pressure at the height in the dry indifferent boundary layer.
 		p = varioStatus.qff * pFactor;
 		// The pressure 10m above to assess the derivate for altitude deviations
-		p1 = varioStatus.qff * powf ((measuredTemperature - (tempLapse * (varioStatus.altMSL + 10)) / measuredTemperature),ex);
+		p1 = varioStatus.qff * powf ((measuredTemperature - (tempLapse * (varioStatus.altMSL + 10)) / measuredTemperature),exponent);
 
 		measRowT(GliderVarioStatus::STATUS_IND_QFF) = pFactor;
 		measRowT(GliderVarioStatus::STATUS_IND_ALT_MSL) = (p1 - p) / 10.0f;
@@ -623,10 +622,10 @@ GliderVarioMeasurementUpdater::dynamicPressureUpd (
 		GliderVarioMeasurementVector &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
-	static FloatType constexpr RspecTimes2     = 287.058 * 2.0f;     // Specific R for dry air
+	static FloatType constexpr RspecTimes2     = R * 2.0f;     // Specific R for dry air
 
 	// This term is used repeatedly
-	FloatType pressRspecTemp = varioStatus.lastPressure / RspecTimes2 / (measuredTemperature + 273.15f);
+	FloatType pressRspecTemp = varioStatus.lastPressure / RspecTimes2 / (measuredTemperature + KtoC);
 	FloatType tmp1;
 	FloatType dynPressure;
 	GliderVarioStatus::StatusVectorType measRowT;

@@ -34,7 +34,9 @@
 
 /**
  * This namespace includes a complex extended kalman filter (EKF) for implementing a complete electronic compensated variometer, and artificial horizon.
- * Input to this model are inertial measurements from 3-D accelerometer and gyroscopes, a barometric precision altimeter, IAS and TAS measurement from dynamic pressure and GPS coordinates, heading and speed over ground
+ *
+ * Input to this model are inertial measurements from 3-D accelerometer and gyroscopes, a barometric precision altimeter,
+ * IAS and TAS measurement from dynamic pressure and GPS coordinates, heading and speed over ground
  *
  * Invaluable inputs for understanding Kalman filters in general, and practical implementation hints came from
  * \sa <a href="http://www.artechhouse.com/static/sample/groves-005_ch03.pdf" >Groves - CHAPTER 3 Kalman Filter-Based Estimation</a>
@@ -42,7 +44,7 @@
  * For an EKF I need a Jacobian matrix with the partial derivates at the point of the last status to approximate a linearization of
  * the non-linear function at the latest status. To make my life easier I am using a numeric forward derivation with a small step.
  * For numeric derivation of angles I use an increment of 1 degree. This is small enough for an approximation of sin and cos, and large enough
- * not to created undue numeric issues with scale factors in single precision floats. It has the additional advantage that the increment is
+ * not to create undue numeric issues with scale factors in single precision floats. It has the additional advantage that the increment is
  * 1.0 (degrees), i.e. I am saving myself a division by the increment if it were != 0.
  * \sa <a href="http://www.iue.tuwien.ac.at/phd/khalil/node14.html" >Numerical differentiations of Jacobian matrixes</a>
  *
@@ -97,10 +99,24 @@ extern FloatType MAG_INCLINATION; // = -67.0f;
 static FloatType constexpr NM_TO_M = 1852.0f;
 
 /**
+ * Here a bunch of gas constants for dry air as an ideal gas
+ */
+
+/// Universal gas constant = 8.3144598 J/mol/K
+static FloatType constexpr R         = 8.3144598f;
+/// Molar mass of dry air = 0.0289644 kg/mol
+static FloatType constexpr M         = 0.0289644f;
+/// Specific gas constant for dry air = R/M
+static FloatType constexpr Rspec     = R/M;
+
+
+/**
  * This vector type is used for all 3-dimensional representations of values in Cartesian coordinates
  */
 typedef Eigen::Matrix<FloatType, 3, 1> Vector3DType;
 typedef Eigen::Matrix<FloatType, 3, 3> RotationMatrix3DType;
+
+
 /**
  *  \class GliderVarioStatus
  *
@@ -155,14 +171,10 @@ public:
                                   ///< This is only residual acceleration not accounted by turning.
     STATUS_IND_ACC_VERTICAL		, ///< Acceleration in m/s^2 along body Z axis
 
-    /// Turn rates in reference to the body (plane) coordinate system
+    /// Turn rates in reference to the world coordinate system
     STATUS_IND_ROTATION_X	, ///< Roll rate in deg/s to the right around the X axis
     STATUS_IND_ROTATION_Y	, ///< Pitch rate in deg/s nose up around the Y axis
-    STATUS_IND_ROTATION_Z	, ///< Yaw (turn) rate clockwise in deg/s around the Z (downward) axis
-
-	/// Turn rate in the world coordinate system
-	STATUS_IND_ROTATION_GLO_Z	, ///< Yaw (turn) rate clockwise in deg/s around the Z (downward) axis
-	 	 	 	 	 	 	 	  ///< I need this one to assess the bank angle together with the #STATUS_IND_TAS.
+	STATUS_IND_ROTATION_Z	, ///< Yaw (turn) rate clockwise in deg/s around the Z (downward) axis
 
 	/// Derived values which improve the responsiveness of the Kalman filter.
     STATUS_IND_GYRO_BIAS_X	, ///< Bias (0-offset) of the plane X axis gyro in deg/s
@@ -175,7 +187,7 @@ public:
 	STATUS_IND_COMPASS_DEVIATION_Z, ///< Strength of the local airplane magnetic field in Z direction
     STATUS_IND_WIND_SPEED_N	, ///< Wind speed North component in m/s
     STATUS_IND_WIND_SPEED_E	, ///< Wind speed East component in m/s
-	STATUS_IND_QFF			, ///< QFF in Pascal (Using a realistic model incl. temperature, ignoring humidity).
+	STATUS_IND_QFF			, ///< QFF in Pascal (Using a more realistic model incl. temperature, but ignoring humidity).
 	STATUS_IND_LAST_PRESSURE, ///< Calculated pressure from last altMSL. Used to avoid to calculate the expensive
 	                          ///< barometric formula multiple times. I am ignoring the error imposed by the
 	                          ///< last altitude update :)
@@ -281,12 +293,7 @@ public:
   /// Turn rates in reference to the body (plane) coordinate system
   FloatType& rollRateX = statusVector_x[ STATUS_IND_ROTATION_X	]; ///< Roll rate in deg/s to the right around the X axis
   FloatType& pitchRateY = statusVector_x[ STATUS_IND_ROTATION_Y	]; ///< Pitch rate in deg/s nose up around the Y axis
-  FloatType& yawRateZ = statusVector_x[ STATUS_IND_ROTATION_Z	]; ///< Yaw (turn) clockwise rate in deg/s around the Z axis
-
-  /// Turn rate in the world coordinate system
-  FloatType& yawRateGloZ = statusVector_x[ STATUS_IND_ROTATION_GLO_Z]; ///< Yaw (turn) rate clockwise in deg/s around the Z (downward) axis
-	 	 	 	 	 	 	 	  ///< I need this one to assess the bank angle together with the #STATUS_IND_TAS.
-
+  FloatType& yawRateZ = statusVector_x[ STATUS_IND_ROTATION_Z]; ///< Yaw (turn) rate clockwise in deg/s around the Z (downward) axis
 
   /// Derived values which improve the responsiveness of the Kalman filter. Some are also the true goals of the filter
   FloatType& gyroBiasX = statusVector_x[ STATUS_IND_GYRO_BIAS_X	     ]; ///< Bias (0-offset) of the X axis gyro in deg/s
@@ -301,8 +308,8 @@ public:
   FloatType& windSpeedEast  = statusVector_x[ STATUS_IND_WIND_SPEED_E]; ///< Wind speed East component in m/s
   FloatType& qff			= statusVector_x[ STATUS_IND_QFF		 ]; ///< QFF in Pascal (Using a realistic model incl. temperature, ignoring humidity).
   FloatType& lastPressure   = statusVector_x[ STATUS_IND_LAST_PRESSURE]; ///< Calculated pressure from last altMSL. Used to avoid to calculate the expensive
-	                          ///< barometric formula multiple times. I am ignoring the error imposed by the
-	                          ///< last altitude update :)
+  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 ///< barometric formula multiple times. I am ignoring the error imposed by the
+  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 ///< last altitude update :)
 
 
 protected:

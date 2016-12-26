@@ -39,6 +39,7 @@ GliderVarioStatus::GliderVarioStatus ()
   errorCovariance_P.setZero();
 
   statusVector_x(STATUS_IND_GRAVITY)= GRAVITY;
+  statusVector_x(STATUS_IND_LAST_PRESSURE) = pressureStdMSL;
 
 }
 
@@ -165,7 +166,6 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 			" rollRateX   "
 			" pitchRateY  "
 			" yawRateZ    "
-			" yawRateGloZ "
 			" gyroBiasX   "
 			" gyroBiasY   "
 			" gyroBiasZ   "
@@ -202,8 +202,7 @@ std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 	o.precision(7); o.width(13); o << s.accelVertical      ;
 	o.precision(7); o.width(13); o << s.rollRateX   ;
 	o.precision(7); o.width(13); o << s.pitchRateY  ;
-	o.precision(7); o.width(13); o << s.yawRateZ    ;
-	o.precision(7); o.width(13); o << s.yawRateGloZ ;
+	o.precision(7); o.width(13); o << s.yawRateZ ;
 	o.precision(7); o.width(13); o << s.gyroBiasX   ;
 	o.precision(7); o.width(13); o << s.gyroBiasY   ;
 	o.precision(7); o.width(13); o << s.gyroBiasZ   ;

@@ -203,10 +203,15 @@ public:
 	/**
 	 * \brief Update the status vector with a new measurement of the pressure altitude
 	 * Update the status vector with a new measurement of the pressure altitude
+	 *
 	 * Converting static pressure to altitude uses formulas from
 	 * <a href="https://en.wikipedia.org/wiki/Barometric_formula" >Wikipedia: Barometric formula</a>. Use formula 1 which includes a temperature gradient
-	 * In contrast to the standard atmosphere I am using a gradient of 1K/100m. The boundary layer which we glider pilots populate the air is usually
+	 * In contrast to the standard atmosphere I am using a gradient of 1K/100m. In the boundary layer which we glider pilots populate during thermal flight the air is usually
 	 * thoroughly mixed by the thermals, and the gradient approaches an dry adiabatic indifferent gradient, i.e 1K/100m.
+	 * *Beware*, this assumption is true for thermal flights only where the boundary layer is pretty thoroughly mixed, and practically indifferent.
+	 * This is not the case for wave flight where the atmosphere usually has a stable gradient,
+	 * usually somewhere around -0.5 - 0.6C/100m.
+	 *
 	 * I am ignoring water vapor in all calculations.
 	 * @param[in] measuredStaticPressure Static pressure in Pascal
 	 * @param[in] measuredTemperature Ambient temperature in Degrees Celsius at the current altitude
