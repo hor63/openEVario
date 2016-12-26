@@ -153,20 +153,20 @@ public:
 	 * Update the status vector with a new measurement of the roll rates of the plane along the 3 plane axis
 	 * @param[in] measuredRollRateX Rotation rate around the body X axis in degrees per second. Right hand roll is positive.
 	 * @param[in] rollRateXVariance Variance of the measured roll rate
-	 * @param[in] measuredRollRatY Rotation rate around the body Y axis in degrees per second. Pitch up is positive.
-	 * @param[in] rollRateXVariance Variance of the measured roll rate
-	 * @param[in] measuredRollRateZ Rotation rate around the body Z axis in degrees per second. Rightward yaw is positive.
-	 * @param[in] rollRateXVariance Variance of the measured roll rate
+	 * @param[in] measuredPitchRateY Rotation rate around the body Y axis in degrees per second. Pitch up is positive.
+	 * @param[in] pitchRateYVariance Variance of the measured pitch rate
+	 * @param[in] measuredYawRateZ Rotation rate around the body Z axis in degrees per second. Rightward yaw is positive.
+	 * @param[in] yawRateZVariance Variance of the measured yaw rate
 	 * @param[in,out] measurementVector The applicable column is updated for information purposes.
 	 * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
 	 */
 	static void gyroUpd (
 			FloatType measuredRollRateX,
 			FloatType rollRateXVariance,
-			FloatType measuredRollRateY,
-			FloatType rollRateYVariance,
-			FloatType measuredRollRateZ,
-			FloatType rollRateZVariance,
+			FloatType measuredPitchRateY,
+			FloatType pitchRateYVariance,
+			FloatType measuredYawRateZ,
+			FloatType yawRateZVariance,
 			GliderVarioMeasurementVector &measurementVector,
 			GliderVarioStatus &varioStatus
 			);
