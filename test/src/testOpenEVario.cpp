@@ -1,8 +1,11 @@
 /*
- * FastMath_test.cpp
+ * testOpenEVario.cpp
  *
- *  Created on: Dec 23, 2015
+ *  Main entry into the unit test program
+ *
+ *  Created on: Jan 2, 2017
  *      Author: hor
+ *
  *
  *   This file is part of openEVario, an electronic variometer for glider planes
  *   Copyright (C) 2016  Kai Horstmann
@@ -23,5 +26,12 @@
  *
  */
 
-#include "FastMath.h"
+#include "gtest/gtest.h"
+
+int main(int argc, char **argv) {
+      ::testing::InitGoogleTest(&argc, argv);
+      return RUN_ALL_TESTS();
+}
+
+
 

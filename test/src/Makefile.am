@@ -15,19 +15,38 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+noinst_LIBRARIES = libgoogletest.a
+libgoogletest_a_SOURCES = $(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc
 
-bin_PROGRAMS=openEVario$(EXEEXT)
-
-openEVario_SOURCES=openEVario.cpp GliderVarioStatus.cpp GliderVarioTransitionMatrix.cpp RotationMatrix.cpp FastMath.cpp FastMathSineTable.cpp MeasureMatrix.cpp \
- GliderVarioMeasurementVector.cpp GliderVarioMeasurementUpdater.cpp
- 
-openEVario_LDADD = $(PTHREAD_LIBS)
+bin_PROGRAMS = testOpenEVario$(EXEEXT)
+testOpenEVario_SOURCES = testOpenEVario.cpp \
+  $(top_srcdir)/src/GliderVarioStatus.cpp \
+  $(top_srcdir)/src/GliderVarioTransitionMatrix.cpp \
+  $(top_srcdir)/src/RotationMatrix.cpp \
+  $(top_srcdir)/src/FastMath.cpp \
+  $(top_srcdir)/src/FastMathSineTable.cpp \
+  $(top_srcdir)/src/MeasureMatrix.cpp \
+  $(top_srcdir)/src/GliderVarioMeasurementVector.cpp \
+  $(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp \
+  FastMath_test.cpp \
+  GliderVarioTransitionMatrix_test.cpp \
+  GliderVarioMeasurementUpdater_test.cpp \
+  GliderVarioMeasurementVector_test.cpp	\
+  MeasureMatrix_test.cpp \
+  GliderVarioStatus_test.cpp
+  
+testOpenEVario_LDADD = ./libgoogletest.a $(PTHREAD_LIBS)
 
 # Build compiler sources are not well supported by autotools. Back to manual
-genSineTables_sources=genSineTables.cpp
+genSineTables_sources=../../src/genSineTables.cpp
 
-AM_CXXFLAGS = -I$(top_srcdir)/3rdParty/eigen/Eigen \
-	$(PTHREAD_CFLAGS)
+AM_CXXFLAGS = -isystem $(top_srcdir)/3rdParty/googletest/googletest/include \
+	-I$(top_srcdir)/3rdParty/eigen/Eigen \
+	-I$(top_srcdir)/src \
+	$(PTHREAD_CFLAGS) 
+
+# compiling googletest itself requires PTHRED options, and the googletest source directory as include path.
+libgoogletest_a_CXXFLAGS = -isystem $(top_srcdir)/3rdParty/googletest/googletest/include -I$(top_srcdir)/3rdParty/googletest/googletest
 
 AM_CXXFLAGS_FOR_BUILD="-I$(top_srcdir)/3rdParty/eigen/Eigen"
 
