@@ -95,6 +95,8 @@ public:
 
 	  newStatus.getErrorCovariance_P() = transitionMatrix * oldStatus.getErrorCovariance_P() * transitionMatrix.transpose()
 			  + oldStatus.getSystemNoiseCovariance_Q();
+
+	  newStatus.normalizeAngles();
   }
 
   /// See \ref staticRollTimeConstant
