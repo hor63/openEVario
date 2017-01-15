@@ -54,7 +54,7 @@ FloatType x = 0;
  * TODO remove all the test code, and replace it by real application code.
  */
 int main (int argc, char *argv[]) {
-  double U1,U2,V1,V2,S,polarFactor,X,Y	;
+  double U1,U2,V1,V2,S,polarFactor,X,Y,dummy = 0.0	;
   mt19937::result_type min;
   double x,y, res,fastRes,maxDev = 0.0,maxDevAt = -100.0;
   double range;
@@ -80,23 +80,24 @@ int i;
 
   cout << "Start test sin" << endl;
   gettimeofday(&tv1,NULL);
-  for (i=0;i<100000;i++) {
+  for (i=0;i<10000;i++) {
       for (j=0.0;j<=360;j+=1.0){
-	  x = sin(j);
+	  dummy += sin(j);
       }
   }
   gettimeofday(&tv2,NULL);
-  cout << 100000*360 << "End test sin" << endl;
-  cout << " sin calls took " << double(tv2.tv_sec-tv1.tv_sec)+double(tv2.tv_usec-tv1.tv_usec)/1000000000 << endl;
+  cout << 10000*360 << "End test sin" << endl;
+  cout << " sin calls took " << double(tv2.tv_sec-tv1.tv_sec)+double(tv2.tv_usec-tv1.tv_usec)/1000000 << endl;
   gettimeofday(&tv3,NULL);
-  for (i=0;i<100000;i++) {
+  for (i=0;i<10000;i++) {
       for (j=0.0;j<=360;j+=1.0){
-	  x = FastMath::fastSin(j);
+	  dummy += FastMath::fastSin(j);
       }
   }
   gettimeofday(&tv4,NULL);
   cout << "End test fastSin" << endl;
-  cout << 100000*360 << " fastSin calls took " << double(tv4.tv_sec-tv3.tv_sec)+double(tv4.tv_usec-tv3.tv_usec)/1000000000 << endl;
+  cout << 10000*360 << " fastSin calls took " << double(tv4.tv_sec-tv3.tv_sec)+double(tv4.tv_usec-tv3.tv_usec)/1000000 << endl;
+  cout << "Dummy = " << dummy << endl;
   cout << endl;
 
   cout << "-------------------" << endl
@@ -221,7 +222,7 @@ int i;
   // If the plane is pitched up an acceleration on the X axis would speed the plane upward, not forward.
   ovStatusOld->accelHeading = 0.0f;
   ovStatusOld->accelCross = 0.0f;
-  ovStatusOld->accelVertical = -9.81/FastMath::fastCos(ovStatusOld->rollAngle);
+  ovStatusOld->accelVertical = 0.0;
 
   // Turn rates in reference to the body coordinate system
   ovStatusOld->rollRateX = 0.0f;
@@ -233,15 +234,10 @@ int i;
 	  FloatType radius = ovStatusOld->trueAirSpeed*ovStatusOld->trueAirSpeed/angularAccel;
 	  // the circumfence of the circle is 2PI*r, with the speed the time for a full 360 deg circle is therefore
 	  // t = 2PIr/TAS
-	  FloatType timeFullCircle = 2*M_PI*radius/ovStatusOld->trueAirSpeed;
+	  FloatType timeFullCircle = 2.0*M_PI*radius/ovStatusOld->trueAirSpeed;
 	  RotationMatrix rotMat1 (ovStatusOld->heading,ovStatusOld->pitchAngle,ovStatusOld->rollAngle);
 
-	  ovStatusOld->yawRateZ = 360/timeFullCircle;
-
-	  Vector3DType worldRot (ovStatusOld->rollRateX,ovStatusOld->pitchRateY,ovStatusOld->yawRateZ);
-	  Vector3DType planeRot;
-
-	  rotMat1.calcWorldVectorToPlaneVector(worldRot,planeRot);
+	  ovStatusOld->yawRateZ = 360.0/timeFullCircle;
 
 	  cout << " -- yaw rate calculation ------------" << endl;
 	  cout << " angularAccel      = " << angularAccel << endl;
@@ -251,9 +247,6 @@ int i;
 	  cout << " World rotation rate vector = " << endl << worldRot << endl;
 	  cout << " Plane rotation rate vector = " << endl << planeRot << endl;
 
-	  ovStatusOld->rollRateX = planeRot(0);
-	  ovStatusOld->pitchRateY = planeRot(1);
-	  ovStatusOld->yawRateZ   = planeRot(2);
   }
 
   // Derived values which improve the responsiveness of the Kalman filter. Some are also the true goals of the filter
@@ -291,7 +284,7 @@ int i;
   ovStatusNew = tmp;
 
   for (i = 0; i< 20; i++) {
-	  ovTransition.updateStatus(*ovStatusOld,*ovStatusNew,0.1f);
+	  ovTransition.updateStatus(*ovStatusOld,*ovStatusNew,0.01f);
 	  cout << *ovStatusNew;
 
 	  tmp = ovStatusOld;
@@ -300,6 +293,20 @@ int i;
   }
 
   cout << "-- Error Covariance after 21 iterations = " << endl << ovStatusNew->getErrorCovariance_P() << endl;
+
+  gettimeofday(&tv1,NULL);
+  for (i = 0; i< 10000; i++) {
+	  ovTransition.updateStatus(*ovStatusOld,*ovStatusNew,0.01f);
+
+	  tmp = ovStatusOld;
+	  ovStatusOld=ovStatusNew;
+	  ovStatusNew = tmp;
+  }
+  gettimeofday(&tv2,NULL);
+  cout << 10000 << " timesovTransition.updateStatus";
+  cout << " calls took " << double(tv2.tv_sec-tv1.tv_sec)+double(tv2.tv_usec-tv1.tv_usec)/1000000 << endl;
+
+  cout << "-- Error Covariance after 10021 iterations = " << endl << ovStatusNew->getErrorCovariance_P() << endl;
 
   cout << endl <<
 		  "-----------------------" << endl;
