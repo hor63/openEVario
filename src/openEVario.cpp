@@ -262,17 +262,17 @@ int i;
 
   // initialize the error covariance and the system noise covariance
   for ( i=0 ; i < GliderVarioStatus::STATUS_NUM_ROWS ; i++) {
-	  ovStatus1.getErrorCovariance_P()(i,i) = 1.0f;
-	  ovStatus2.getErrorCovariance_P()(i,i) = 1.0f;
-	  ovStatus1.getSystemNoiseCovariance_Q()(i,i) = 0.1f;
-	  ovStatus2.getSystemNoiseCovariance_Q()(i,i) = 0.1f;
+	  ovStatus1.getErrorCovariance_P().insert(i,i) = 1.0f;
+	  ovStatus2.getErrorCovariance_P().insert(i,i) = 1.0f;
+	  ovStatus1.getSystemNoiseCovariance_Q().insert(i,i) = 0.1f;
+	  ovStatus2.getSystemNoiseCovariance_Q().insert(i,i) = 0.1f;
   }
 
   // Gravity has a bit of variance in the error covariance, but none in the system noise. So it should not increase.
-  ovStatus1.getSystemNoiseCovariance_Q()(GliderVarioStatus::STATUS_IND_GRAVITY,GliderVarioStatus::STATUS_IND_GRAVITY) = 0.0f;
-  ovStatus1.getErrorCovariance_P()(GliderVarioStatus::STATUS_IND_GRAVITY,GliderVarioStatus::STATUS_IND_GRAVITY) = 0.01f;
-  ovStatus2.getSystemNoiseCovariance_Q()(GliderVarioStatus::STATUS_IND_GRAVITY,GliderVarioStatus::STATUS_IND_GRAVITY) = 0.0f;
-  ovStatus2.getErrorCovariance_P()(GliderVarioStatus::STATUS_IND_GRAVITY,GliderVarioStatus::STATUS_IND_GRAVITY) = 0.01f;
+  ovStatus1.getSystemNoiseCovariance_Q().coeffRef(GliderVarioStatus::STATUS_IND_GRAVITY,GliderVarioStatus::STATUS_IND_GRAVITY) = 0.0f;
+  ovStatus1.getErrorCovariance_P().coeffRef(GliderVarioStatus::STATUS_IND_GRAVITY,GliderVarioStatus::STATUS_IND_GRAVITY) = 0.01f;
+  ovStatus2.getSystemNoiseCovariance_Q().coeffRef(GliderVarioStatus::STATUS_IND_GRAVITY,GliderVarioStatus::STATUS_IND_GRAVITY) = 0.0f;
+  ovStatus2.getErrorCovariance_P().coeffRef(GliderVarioStatus::STATUS_IND_GRAVITY,GliderVarioStatus::STATUS_IND_GRAVITY) = 0.01f;
 
   ovTransition.updateStatus(*ovStatusOld,*ovStatusNew,0.1f);
   cout << "-- ovTransition = " << endl << ovTransition.getTransitionMatrix() << endl;

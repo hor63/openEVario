@@ -31,6 +31,7 @@
 #define GLIDERVARIOSTATUS_H_
 
 #include <Dense>
+#include <Sparse>
 
 /**
  * This namespace includes a complex extended kalman filter (EKF) for implementing a complete electronic compensated variometer, and artificial horizon.
@@ -196,7 +197,7 @@ public:
   };
 
   typedef Eigen::Matrix<FloatType,STATUS_NUM_ROWS,1> StatusVectorType; ///< Saves typing of the complex template type
-  typedef Eigen::Matrix<FloatType,STATUS_NUM_ROWS,STATUS_NUM_ROWS> StatusCoVarianceType; ///< Co-variance matrix type for P and Q
+  typedef Eigen::SparseMatrix<FloatType> StatusCoVarianceType; ///< Co-variance matrix type for P and Q
 
   GliderVarioStatus ();
   virtual

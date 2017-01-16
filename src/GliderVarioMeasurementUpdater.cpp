@@ -37,14 +37,14 @@ GliderVarioMeasurementUpdater::GPSLatitudeUpd (
 		GliderVarioStatus &varioStatus
 		) {
 FloatType calculatedValue;
-GliderVarioStatus::StatusVectorType measRowT;
+Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,1);
 
-	measRowT.setZero();
+	// measRowT.setZero();
 
 	// calculate and fill in local variables here.
 	measuredLatitude *= 3600.0f;
     measurementVector.gpsLatitude = measuredLatitude;
-	measRowT(GliderVarioStatus::STATUS_IND_LATITUDE) = 1.0f;
+	measRowT.coeffRef(GliderVarioStatus::STATUS_IND_LATITUDE,0) = 1.0f;
 	calculatedValue = varioStatus.latitude;
 
 	calcSingleMeasureUpdate (
@@ -64,14 +64,14 @@ GliderVarioMeasurementUpdater::GPSLongitudeUpd (
 		GliderVarioStatus &varioStatus
 		) {
 	FloatType calculatedValue;
-	GliderVarioStatus::StatusVectorType measRowT;
+	Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,1);
 
-		measRowT.setZero();
+		// measRowT.setZero();
 
 		// calculate and fill in local variables here.
 		measuredLongitude *= 3600.0f;
 		measurementVector.gpsLongitude = measuredLongitude;
-		measRowT(GliderVarioStatus::STATUS_IND_LONGITUDE) = 1.0f;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_LONGITUDE,0) = 1.0f;
 		calculatedValue = varioStatus.longitude;
 
 		calcSingleMeasureUpdate (
@@ -91,13 +91,13 @@ GliderVarioMeasurementUpdater::GPSAltitudeUpd (
 		GliderVarioStatus &varioStatus
 		) {
 	FloatType calculatedValue;
-	GliderVarioStatus::StatusVectorType measRowT;
+	Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,1);
 
-		measRowT.setZero();
+		// measRowT.setZero();
 
 		// calculate and fill in local variables here.
 		measurementVector.gpsMSL = measuredAltitudeMSL;
-		measRowT(GliderVarioStatus::STATUS_IND_ALT_MSL) = 1.0f;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ALT_MSL,0) = 1.0f;
 
 		calcSingleMeasureUpdate (
 				measuredAltitudeMSL,
@@ -116,10 +116,10 @@ GliderVarioMeasurementUpdater::GPSHeadingUpd (
 		GliderVarioStatus &varioStatus
 		) {
 	FloatType calculatedValue;
-	GliderVarioStatus::StatusVectorType measRowT;
+	Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,1);
 	FloatType temp1;
 
-		measRowT.setZero();
+		// measRowT.setZero();
 
 		// calculate and fill in local variables here.
 		measurementVector.gpsHeading = measuredCourseOverGround;
@@ -129,9 +129,9 @@ GliderVarioMeasurementUpdater::GPSHeadingUpd (
 		// to avoid numeric issues use the same increment for both directions
 		temp1 = (varioStatus.groundSpeedNorth + varioStatus.groundSpeedEast) / 100.0f;
 
-		measRowT(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N) =
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,0) =
 				FastMath::fastATan2(varioStatus.groundSpeedEast,varioStatus.groundSpeedNorth + temp1) / temp1;
-		measRowT(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E) =
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,0) =
 				FastMath::fastATan2(varioStatus.groundSpeedEast + temp1,varioStatus.groundSpeedNorth) / temp1;
 
 		calcSingleMeasureUpdate (
@@ -151,12 +151,12 @@ GliderVarioMeasurementUpdater::GPSSpeedUpd (
 		GliderVarioStatus &varioStatus
 		) {
 	FloatType calculatedValue;
-	GliderVarioStatus::StatusVectorType measRowT;
+	Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,1);
 	FloatType temp1, temp2, temp3;
 	FloatType groundSpeedNSquare = varioStatus.groundSpeedNorth * varioStatus.groundSpeedNorth;
 	FloatType groundSpeedESquare = varioStatus.groundSpeedEast  * varioStatus.groundSpeedEast;
 
-		measRowT.setZero();
+		// measRowT.setZero();
 
 		// calculate and fill in local variables here.
 		measuredSpeedOverGround *= NM_TO_M / 3600.0f;
@@ -169,11 +169,11 @@ GliderVarioMeasurementUpdater::GPSSpeedUpd (
 
 		temp1 = varioStatus.groundSpeedNorth + temp3;
 		temp2 = sqrt(temp1 * temp1 + groundSpeedESquare);
-		measRowT(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N) = (temp2-calculatedValue) / temp3;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,0) = (temp2-calculatedValue) / temp3;
 
 		temp1 = varioStatus.groundSpeedEast + temp3;
 		temp2 = sqrt(groundSpeedNSquare + temp1 * temp1);
-		measRowT(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E) = (temp2-calculatedValue) / temp3;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,0) = (temp2-calculatedValue) / temp3;
 
 
 		calcSingleMeasureUpdate (
@@ -198,12 +198,12 @@ GliderVarioMeasurementUpdater::accelUpd (
 		GliderVarioStatus &varioStatus
 		) {
 	FloatType turnRateRad;
-	GliderVarioStatus::StatusVectorType measRowT;
+	Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,1);
 	RotationMatrix rotMat, rotMatIncX, rotMatIncY,rotMatIncZ;
 	Vector3DType modelAccelVector,calcAccelVector,calcAccelVectorIncX,calcAccelVectorIncY,calcAccelVectorIncZ;
 	FloatType calcAccel;
 
-		measRowT.setZero();
+		// measRowT.setZero();
 
 		// calculate and fill in local variables here.
 		measurementVector.accelX = measuredAccelX;
@@ -239,19 +239,19 @@ GliderVarioMeasurementUpdater::accelUpd (
 		calcAccel = calcAccelVector(0);
 
 		// The linear factors
-		measRowT(GliderVarioStatus::STATUS_IND_ACC_HEADING) = rotMatGloToPlane(0,0);
-		measRowT(GliderVarioStatus::STATUS_IND_ACC_CROSS) = rotMatGloToPlane(0,1);
-		measRowT(GliderVarioStatus::STATUS_IND_TAS) = rotMatGloToPlane(0,1) * turnRateRad;
-		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_Z) = rotMatGloToPlane(0,1) * varioStatus.trueAirSpeed * FastMath::degToRad;
-		measRowT(GliderVarioStatus::STATUS_IND_ACC_VERTICAL) = rotMatGloToPlane(0,2);
-		measRowT(GliderVarioStatus::STATUS_IND_GRAVITY) = -(rotMatGloToPlane(0,2));
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ACC_HEADING,0) = rotMatGloToPlane(0,0);
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ACC_CROSS,0) = rotMatGloToPlane(0,1);
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_TAS,0) = rotMatGloToPlane(0,1) * turnRateRad;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROTATION_Z,0) = rotMatGloToPlane(0,1) * varioStatus.trueAirSpeed * FastMath::degToRad;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ACC_VERTICAL,0) = rotMatGloToPlane(0,2);
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_GRAVITY,0) = -(rotMatGloToPlane(0,2));
 		
 		// Now the non-linear factors by approximation (the attitude angles)
-		measRowT(GliderVarioStatus::STATUS_IND_ROLL) = calcAccelVectorIncX(0) - calcAccel;
-		measRowT(GliderVarioStatus::STATUS_IND_PITCH) = calcAccelVectorIncY(0) - calcAccel;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROLL,0) = calcAccelVectorIncX(0) - calcAccel;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_PITCH,0) = calcAccelVectorIncY(0) - calcAccel;
 
 		// Change of heading does not affect the accelerometer readings. The derivation of cos(0) is -sin(0) = 0 anyway.
-		// measRowT(GliderVarioStatus::STATUS_IND_HEADING) = calcAccelVectorIncZ(0) - calcAccelVector(0);
+		// measRowT.coeffRef(GliderVarioStatus::STATUS_IND_HEADING,0) = calcAccelVectorIncZ(0) - calcAccelVector(0);
 
 
 		calcSingleMeasureUpdate (
@@ -266,19 +266,19 @@ GliderVarioMeasurementUpdater::accelUpd (
 		calcAccel = calcAccelVector(1);
 
 		// The linear factors
-		measRowT(GliderVarioStatus::STATUS_IND_ACC_HEADING) = rotMatGloToPlane(1,0);
-		measRowT(GliderVarioStatus::STATUS_IND_ACC_CROSS) = rotMatGloToPlane(1,1);
-		measRowT(GliderVarioStatus::STATUS_IND_TAS) = rotMatGloToPlane(1,1) * turnRateRad;
-		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_Z) = rotMatGloToPlane(1,1) * varioStatus.trueAirSpeed * FastMath::degToRad;
-		measRowT(GliderVarioStatus::STATUS_IND_ACC_VERTICAL) = rotMatGloToPlane(1,2);
-		measRowT(GliderVarioStatus::STATUS_IND_GRAVITY) = -(rotMatGloToPlane(1,2));
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ACC_HEADING,0) = rotMatGloToPlane(1,0);
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ACC_CROSS,0) = rotMatGloToPlane(1,1);
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_TAS,0) = rotMatGloToPlane(1,1) * turnRateRad;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROTATION_Z,0) = rotMatGloToPlane(1,1) * varioStatus.trueAirSpeed * FastMath::degToRad;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ACC_VERTICAL,0) = rotMatGloToPlane(1,2);
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_GRAVITY,0) = -(rotMatGloToPlane(1,2));
 
 		// Now the non-linear factors by approximation (the attitude angles)
-		measRowT(GliderVarioStatus::STATUS_IND_ROLL) = calcAccelVectorIncX(1) - calcAccel;
-		measRowT(GliderVarioStatus::STATUS_IND_PITCH) = calcAccelVectorIncY(1) - calcAccel;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROLL,0) = calcAccelVectorIncX(1) - calcAccel;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_PITCH,0) = calcAccelVectorIncY(1) - calcAccel;
 
 		// Change of heading does not affect the accelerometer readings. The derivation of cos(0) is -sin(0) = 0 anyway.
-		// measRowT(GliderVarioStatus::STATUS_IND_HEADING) = calcAccelVectorIncZ(1) - calcAccel;
+		// measRowT.coeffRef(GliderVarioStatus::STATUS_IND_HEADING,0) = calcAccelVectorIncZ(1) - calcAccel;
 
 
 		calcSingleMeasureUpdate (
@@ -293,19 +293,19 @@ GliderVarioMeasurementUpdater::accelUpd (
 		calcAccel = calcAccelVector(2);
 
 		// The linear factors
-		measRowT(GliderVarioStatus::STATUS_IND_ACC_HEADING) = rotMatGloToPlane(2,0);
-		measRowT(GliderVarioStatus::STATUS_IND_ACC_CROSS) = rotMatGloToPlane(2,1);
-		measRowT(GliderVarioStatus::STATUS_IND_TAS) = rotMatGloToPlane(2,1) * turnRateRad;
-		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_Z) = rotMatGloToPlane(2,1) * varioStatus.trueAirSpeed * FastMath::degToRad;
-		measRowT(GliderVarioStatus::STATUS_IND_ACC_VERTICAL) = rotMatGloToPlane(2,2);
-		measRowT(GliderVarioStatus::STATUS_IND_GRAVITY) = -(rotMatGloToPlane(2,2));
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ACC_HEADING,0) = rotMatGloToPlane(2,0);
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ACC_CROSS,0) = rotMatGloToPlane(2,1);
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_TAS,0) = rotMatGloToPlane(2,1) * turnRateRad;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROTATION_Z,0) = rotMatGloToPlane(2,1) * varioStatus.trueAirSpeed * FastMath::degToRad;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ACC_VERTICAL,0) = rotMatGloToPlane(2,2);
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_GRAVITY,0) = -(rotMatGloToPlane(2,2));
 
 		// Now the non-linear factors by approximation (the attitude angles)
-		measRowT(GliderVarioStatus::STATUS_IND_ROLL) = calcAccelVectorIncX(2) - calcAccel;
-		measRowT(GliderVarioStatus::STATUS_IND_PITCH) = calcAccelVectorIncY(2) - calcAccel;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROLL,0) = calcAccelVectorIncX(2) - calcAccel;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_PITCH,0) = calcAccelVectorIncY(2) - calcAccel;
 
 		// Change of heading does not affect the accelerometer readings. The derivation of cos(0) is -sin(0) = 0 anyway.
-		// measRowT(GliderVarioStatus::STATUS_IND_HEADING) = calcAccelVectorIncZ(2) - calcAccel;
+		// measRowT.coeffRef(GliderVarioStatus::STATUS_IND_HEADING,0) = calcAccelVectorIncZ(2) - calcAccel;
 
 
 		calcSingleMeasureUpdate (
@@ -329,12 +329,12 @@ GliderVarioMeasurementUpdater::gyroUpd (
 		GliderVarioMeasurementVector &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
-	GliderVarioStatus::StatusVectorType measRowT;
+	Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,1);
 	RotationMatrix rotMat, rotMatIncX, rotMatIncY,rotMatIncZ;
 	Vector3DType modelRotVector,calcRotVector,calcRotVectorIncX,calcRotVectorIncY,calcRotVectorIncZ;
 	FloatType calcRotation;
 
-		measRowT.setZero();
+		// measRowT.setZero();
 
 		// calculate and fill in local variables here.
 		measurementVector.gyroRateX = measuredRollRateX;
@@ -368,17 +368,17 @@ GliderVarioMeasurementUpdater::gyroUpd (
 		calcRotation = calcRotVector(0) + varioStatus.gyroBiasX;
 
 		// The linear factors
-		measRowT(GliderVarioStatus::STATUS_IND_GYRO_BIAS_X)    = 1.0f;
-		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_X)     = rotMatGloToPlane(0,0);
-		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_Y)     = rotMatGloToPlane(0,1);
-		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_Z) = rotMatGloToPlane(0,2);
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_GYRO_BIAS_X,0)    = 1.0f;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROTATION_X,0)     = rotMatGloToPlane(0,0);
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROTATION_Y,0)     = rotMatGloToPlane(0,1);
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROTATION_Z,0) = rotMatGloToPlane(0,2);
 		
 		// Now the non-linear factors by approximation (the attitude angles)
-		measRowT(GliderVarioStatus::STATUS_IND_ROLL) = calcRotVectorIncX(0) - calcRotation;
-		measRowT(GliderVarioStatus::STATUS_IND_PITCH) = calcRotVectorIncY(0) - calcRotation;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROLL,0) = calcRotVectorIncX(0) - calcRotation;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_PITCH,0) = calcRotVectorIncY(0) - calcRotation;
 
 		// Change of heading does not affect the accelerometer readings. The derivation of cos(0) is -sin(0) = 0 anyway.
-		// measRowT(GliderVarioStatus::STATUS_IND_HEADING) = calcAccelVectorIncZ(0) - calcAccelVector(0);
+		// measRowT.coeffRef(GliderVarioStatus::STATUS_IND_HEADING,0) = calcAccelVectorIncZ(0) - calcAccelVector(0);
 
 		calcSingleMeasureUpdate (
 				measuredRollRateX,
@@ -392,17 +392,17 @@ GliderVarioMeasurementUpdater::gyroUpd (
 		calcRotation = calcRotVector(1) + varioStatus.gyroBiasY;
 
 		// The linear factors
-		measRowT(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Y)    = 1.0f;
-		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_X)     = rotMatGloToPlane(1,0);
-		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_Y)     = rotMatGloToPlane(1,1);
-		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_Z) = rotMatGloToPlane(1,2);
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Y,0)    = 1.0f;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROTATION_X,0)     = rotMatGloToPlane(1,0);
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROTATION_Y,0)     = rotMatGloToPlane(1,1);
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROTATION_Z,0) = rotMatGloToPlane(1,2);
 
 		// Now the non-linear factors by approximation (the attitude angles)
-		measRowT(GliderVarioStatus::STATUS_IND_ROLL) = calcRotVectorIncX(1) - calcRotation;
-		measRowT(GliderVarioStatus::STATUS_IND_PITCH) = calcRotVectorIncY(1) - calcRotation;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROLL,0) = calcRotVectorIncX(1) - calcRotation;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_PITCH,0) = calcRotVectorIncY(1) - calcRotation;
 
 		// Change of heading does not affect the accelerometer readings. The derivation of cos(0) is -sin(0) = 0 anyway.
-		// measRowT(GliderVarioStatus::STATUS_IND_HEADING) = calcAccelVectorIncZ(0) - calcAccelVector(0);
+		// measRowT.coeffRef(GliderVarioStatus::STATUS_IND_HEADING) = calcAccelVectorIncZ(0) - calcAccelVector(0);
 
 		calcSingleMeasureUpdate (
 				measuredPitchRateY,
@@ -416,17 +416,17 @@ GliderVarioMeasurementUpdater::gyroUpd (
 		calcRotation = calcRotVector(2) + varioStatus.gyroBiasZ;
 
 		// The linear factors
-		measRowT(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Z)    = 1.0f;
-		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_X)     = rotMatGloToPlane(2,0);
-		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_Y)     = rotMatGloToPlane(2,1);
-		measRowT(GliderVarioStatus::STATUS_IND_ROTATION_Z) = rotMatGloToPlane(2,2);
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Z,0)    = 1.0f;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROTATION_X,0)     = rotMatGloToPlane(2,0);
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROTATION_Y,0)     = rotMatGloToPlane(2,1);
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROTATION_Z,0) = rotMatGloToPlane(2,2);
 
 		// Now the non-linear factors by approximation (the attitude angles)
-		measRowT(GliderVarioStatus::STATUS_IND_ROLL) = calcRotVectorIncX(2) - calcRotation;
-		measRowT(GliderVarioStatus::STATUS_IND_PITCH) = calcRotVectorIncY(2) - calcRotation;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROLL,0) = calcRotVectorIncX(2) - calcRotation;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_PITCH,0) = calcRotVectorIncY(2) - calcRotation;
 
 		// Change of heading does not affect the accelerometer readings. The derivation of cos(0) is -sin(0) = 0 anyway.
-		// measRowT(GliderVarioStatus::STATUS_IND_HEADING) = calcAccelVectorIncZ(0) - calcAccelVector(0);
+		// measRowT.coeffRef(GliderVarioStatus::STATUS_IND_HEADING,0) = calcAccelVectorIncZ(0) - calcAccelVector(0);
 
 		calcSingleMeasureUpdate (
 				measuredYawRateZ,
@@ -449,7 +449,7 @@ GliderVarioMeasurementUpdater::compassUpd (
 		GliderVarioStatus &varioStatus
 		) {
 	FloatType calculatedValue;
-	GliderVarioStatus::StatusVectorType measRowT;
+	Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,1);
 	FloatType temp;
 
 	// Compensated magnetic flow, i.e. measurement - deviation flow vector
@@ -503,17 +503,17 @@ GliderVarioMeasurementUpdater::compassUpd (
 		measurementVector.magY = measuredMagFlowY;
 		measurementVector.magZ = measuredMagFlowZ;
 
-		measRowT.setZero();
+		// measRowT.setZero();
 
 		// calculate and fill in local variables here.
 		temp = compassVector(0);
 		calculatedValue = temp + varioStatus.compassDeviationX;
-		measRowT(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_X)  =  1.0f;
-		measRowT(GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION) = compassVectorIncDeclination(0) - temp;
-		measRowT(GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION) = compassVectorIncInclination(0) - temp;
-		measRowT(GliderVarioStatus::STATUS_IND_HEADING)              = compassVectorIncYaw(0)         - temp;
-		measRowT(GliderVarioStatus::STATUS_IND_PITCH)                = compassVectorIncPitch(0)       - temp;
-		measRowT(GliderVarioStatus::STATUS_IND_ROLL)                 = compassVectorIncRoll(0)        - temp;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_X,0)  =  1.0f;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION,0) = compassVectorIncDeclination(0) - temp;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION,0) = compassVectorIncInclination(0) - temp;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_HEADING,0)              = compassVectorIncYaw(0)         - temp;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_PITCH,0)                = compassVectorIncPitch(0)       - temp;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROLL,0)                 = compassVectorIncRoll(0)        - temp;
 
 		calcSingleMeasureUpdate (
 				measuredMagFlowX,
@@ -523,18 +523,18 @@ GliderVarioMeasurementUpdater::compassUpd (
 				varioStatus
 				);
 
-		// measRowT.setZero(); Just reset the previous deviation factor. All others are re-used
+		// // measRowT.setZero(); Just reset the previous deviation factor. All others are re-used
 
 		// calculate and fill in local variables here.
 		temp = compassVector(1);
 		calculatedValue = temp + varioStatus.compassDeviationY;
-		measRowT(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_X)  =  0.0f;
-		measRowT(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Y)  =  1.0f;
-		measRowT(GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION) = compassVectorIncDeclination(1) - temp;
-		measRowT(GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION) = compassVectorIncInclination(1) - temp;
-		measRowT(GliderVarioStatus::STATUS_IND_HEADING)              = compassVectorIncYaw(1)         - temp;
-		measRowT(GliderVarioStatus::STATUS_IND_PITCH)                = compassVectorIncPitch(1)       - temp;
-		measRowT(GliderVarioStatus::STATUS_IND_ROLL)                 = compassVectorIncRoll(1)        - temp;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_X,0)  =  0.0f;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Y,0)  =  1.0f;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION,0) = compassVectorIncDeclination(1) - temp;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION,0) = compassVectorIncInclination(1) - temp;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_HEADING,0)              = compassVectorIncYaw(1)         - temp;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_PITCH,0)                = compassVectorIncPitch(1)       - temp;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROLL,0)                 = compassVectorIncRoll(1)        - temp;
 
 		calcSingleMeasureUpdate (
 				measuredMagFlowY,
@@ -544,18 +544,18 @@ GliderVarioMeasurementUpdater::compassUpd (
 				varioStatus
 				);
 
-		// measRowT.setZero(); Just reset the previous deviation factor. All others are re-used
+		// // measRowT.setZero(); Just reset the previous deviation factor. All others are re-used
 
 		// calculate and fill in local variables here.
 		temp = compassVector(2);
 		calculatedValue = temp + varioStatus.compassDeviationZ;
-		measRowT(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Y)  =  0.0f;
-		measRowT(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Z)  =  1.0f;
-		measRowT(GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION) = compassVectorIncDeclination(2) - temp;
-		measRowT(GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION) = compassVectorIncInclination(2) - temp;
-		measRowT(GliderVarioStatus::STATUS_IND_HEADING)              = compassVectorIncYaw(2)         - temp;
-		measRowT(GliderVarioStatus::STATUS_IND_PITCH)                = compassVectorIncPitch(2)       - temp;
-		measRowT(GliderVarioStatus::STATUS_IND_ROLL)                 = compassVectorIncRoll(2)        - temp;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Y,0)  =  0.0f;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Z,0)  =  1.0f;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION,0) = compassVectorIncDeclination(2) - temp;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION,0) = compassVectorIncInclination(2) - temp;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_HEADING,0)              = compassVectorIncYaw(2)         - temp;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_PITCH,0)                = compassVectorIncPitch(2)       - temp;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROLL,0)                 = compassVectorIncRoll(2)        - temp;
 
 		calcSingleMeasureUpdate (
 				measuredMagFlowZ,
@@ -575,7 +575,7 @@ GliderVarioMeasurementUpdater::staticPressureUpd (
 		GliderVarioMeasurementVector &measurementVector,
 		GliderVarioStatus &varioStatus
 		) {
-	GliderVarioStatus::StatusVectorType measRowT;
+	Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,1);
 
 	static FloatType constexpr tempLapse = -0.01; // -1C/100m. Indifferent lapse for adiabatic mixed air in the boundary layer
 	static FloatType constexpr exponent        = GRAVITY * M / R / tempLapse;
@@ -584,7 +584,7 @@ GliderVarioMeasurementUpdater::staticPressureUpd (
 	FloatType p1;
 
 
-		measRowT.setZero();
+		// measRowT.setZero();
 
 		// calculate and fill in local variables here.
 		measurementVector.staticPressure = measuredStaticPressure;
@@ -599,8 +599,8 @@ GliderVarioMeasurementUpdater::staticPressureUpd (
 		// The pressure 10m above to assess the derivate for altitude deviations
 		p1 = varioStatus.qff * powf ((measuredTemperature - (tempLapse * (varioStatus.altMSL + 10)) / measuredTemperature),exponent);
 
-		measRowT(GliderVarioStatus::STATUS_IND_QFF) = pFactor;
-		measRowT(GliderVarioStatus::STATUS_IND_ALT_MSL) = (p1 - p) / 10.0f;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_QFF,0) = pFactor;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ALT_MSL,0) = (p1 - p) / 10.0f;
 
 		calcSingleMeasureUpdate (
 				measuredStaticPressure,
@@ -628,9 +628,9 @@ GliderVarioMeasurementUpdater::dynamicPressureUpd (
 	FloatType pressRspecTemp = varioStatus.lastPressure / RspecTimes2 / (measuredTemperature + KtoC);
 	FloatType tmp1;
 	FloatType dynPressure;
-	GliderVarioStatus::StatusVectorType measRowT;
+	Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,1);
 
-		measRowT.setZero();
+		// measRowT.setZero();
 
 		// calculate and fill in local variables here.
 		// Develop the dynamic pressure gradually to get the derivates of the variables most efficiently
@@ -639,7 +639,7 @@ GliderVarioMeasurementUpdater::dynamicPressureUpd (
 		tmp1 = pressRspecTemp * varioStatus.trueAirSpeed;
 		dynPressure = tmp1 * varioStatus.trueAirSpeed;
 		// True derivate
-		measRowT(GliderVarioStatus::STATUS_IND_TAS) = tmp1 * 0.5f;
+		measRowT.coeffRef(GliderVarioStatus::STATUS_IND_TAS,0) = tmp1 * 0.5f;
 
 
 		calcSingleMeasureUpdate (
@@ -657,33 +657,44 @@ GliderVarioMeasurementUpdater::calcSingleMeasureUpdate (
 		FloatType measuredValue,
 		FloatType calculatedValue,
 		FloatType measurementVariance_R,
-		GliderVarioStatus::StatusVectorType const &measRowT,
+		Eigen::SparseMatrix<FloatType> const &measRowT,
 		GliderVarioStatus &varioStatus
 		) {
 	GliderVarioStatus::StatusCoVarianceType &coVariance_P = varioStatus.getErrorCovariance_P();
 	GliderVarioStatus::StatusVectorType &statusVector_x = varioStatus.getStatusVector_x();
 
-	GliderVarioStatus::StatusVectorType kalmanGain_K;
+	Eigen::SparseMatrix <FloatType> kalmanGain_K(GliderVarioStatus::STATUS_NUM_ROWS,1);
 	FloatType denominator;
+	Eigen::SparseMatrix<FloatType> denominatorMatrix;
+	// Eigen::SparseMatrix<FloatType> measRow = measRowT.transpose();
 
 	// Intermediate because a term is used twice
-	Eigen::Matrix<FloatType,1,GliderVarioStatus::STATUS_NUM_ROWS> hTimesP;
+	Eigen::SparseMatrix <FloatType> hTimesP(1,GliderVarioStatus::STATUS_NUM_ROWS);
 	// Intermediate storage to avoid side effects
-	GliderVarioStatus::StatusVectorType newState;
-	GliderVarioStatus::StatusCoVarianceType newCoVariance;
+	//GliderVarioStatus::StatusVectorType newState;
+	Eigen::SparseMatrix <FloatType> newState(GliderVarioStatus::STATUS_NUM_ROWS,1);
+	GliderVarioStatus::StatusCoVarianceType newCoVariance(GliderVarioStatus::STATUS_NUM_ROWS,GliderVarioStatus::STATUS_NUM_ROWS);
+	FloatType valueDiff = measuredValue - calculatedValue;
 
+	// hTimesP = measRow * coVariance_P;
 	hTimesP = measRowT.transpose() * coVariance_P;
+	denominatorMatrix = hTimesP * measRowT;
 
-	denominator = hTimesP * measRowT + measurementVariance_R;
+	denominator = denominatorMatrix.coeff(0,0) + measurementVariance_R;
 
 	kalmanGain_K = coVariance_P * measRowT;
 	kalmanGain_K /= denominator;
 
 	// Use a temporary variable to avoid side effects when calculating the state based on the previous status.
-	newState = statusVector_x + kalmanGain_K * (measuredValue - calculatedValue);
+	//newState = statusVector_x + kalmanGain_K * (measuredValue - calculatedValue);
+	// substitute direct assignment by iterating over the sparse kalman gain vector, and perform the correct element wise.
+	// Eigen does not take mixing dense and sparse matrixes lightly.
+	for (Eigen::SparseMatrix<FloatType>::InnerIterator iter(kalmanGain_K,0); iter ; ++iter){
+		newState.coeffRef(iter.row(),0) = statusVector_x(iter.row()) + iter.value() * valueDiff;
+	}
 	statusVector_x.operator = (newState);
 
-	newCoVariance = coVariance_P - kalmanGain_K * hTimesP;
+	newCoVariance = coVariance_P - (kalmanGain_K * hTimesP);
 
 	coVariance_P.operator = (newCoVariance);
 

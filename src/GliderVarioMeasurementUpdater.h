@@ -275,7 +275,7 @@ protected:
 			FloatType measuredValue,
 			FloatType calculatedValue,
 			FloatType measurementVariance,
-			GliderVarioStatus::StatusVectorType const &measRowT,
+			Eigen::SparseMatrix<FloatType> const &measRowT,
     		GliderVarioStatus &varioStatus
 			);
 };

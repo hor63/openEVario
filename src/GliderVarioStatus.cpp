@@ -33,10 +33,12 @@ namespace openEV
 FloatType MAG_INCLINATION = 67.0f;
 
 GliderVarioStatus::GliderVarioStatus ()
+	:systemNoiseCovariance_Q{STATUS_NUM_ROWS,STATUS_NUM_ROWS},
+	 errorCovariance_P{STATUS_NUM_ROWS,STATUS_NUM_ROWS}
 {
   statusVector_x.setZero();
-  systemNoiseCovariance_Q.setZero();
-  errorCovariance_P.setZero();
+  //systemNoiseCovariance_Q.setZero();
+  //errorCovariance_P.setZero();
 
   statusVector_x(STATUS_IND_GRAVITY)= GRAVITY;
   statusVector_x(STATUS_IND_LAST_PRESSURE) = pressureStdMSL;

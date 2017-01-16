@@ -41,12 +41,15 @@ namespace openEV
 class GliderVarioTransitionMatrix
 {
 public:
-  typedef Eigen::Matrix<FloatType,GliderVarioStatus::STATUS_NUM_ROWS,GliderVarioStatus::STATUS_NUM_ROWS> TransitionMatrixType;
+	  // typedef Eigen::Matrix<FloatType,GliderVarioStatus::STATUS_NUM_ROWS,GliderVarioStatus::STATUS_NUM_ROWS> TransitionMatrixType;
+	  typedef Eigen::SparseMatrix<FloatType> TransitionMatrixType;
 
 
-  GliderVarioTransitionMatrix () {
+  GliderVarioTransitionMatrix ()
+	  :transitionMatrix{GliderVarioStatus::STATUS_NUM_ROWS,GliderVarioStatus::STATUS_NUM_ROWS}
+	  {
     // Set the matrix to 0. There will be a lot of 0s in the matrix.
-    transitionMatrix.setZero();
+    //transitionMatrix.setZero();
 
 
 
