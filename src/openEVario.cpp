@@ -36,6 +36,7 @@
 #include "RotationMatrix.h"
 #include "FastMath.h"
 #include "GliderVarioMeasurementVector.h"
+#include "GliderVarioMeasurementUpdater.h"
 
 using namespace std;
 using namespace openEV;
@@ -203,8 +204,8 @@ int i;
 
 
   // Initialize the status vector
-  ovStatusOld->longitude = 55.0f;
-  ovStatusOld->latitude = 10.0f;
+  ovStatusOld->longitude = 55.0f * 3600.0f;
+  ovStatusOld->latitude = 10.0f * 3600.0f;
   ovStatusOld->altMSL = 500.0f;
   // ovStatusOld->yawAngle = 30.0f;
   ovStatusOld->pitchAngle = 0.0f;
@@ -307,6 +308,21 @@ int i;
   cout << " calls took " << double(tv2.tv_sec-tv1.tv_sec)+double(tv2.tv_usec-tv1.tv_usec)/1000000 << endl;
 
   cout << "-- Error Covariance after 10021 iterations = " << endl << ovStatusNew->getErrorCovariance_P() << endl;
+
+  {
+	GliderVarioMeasurementVector measurementVector;
+
+	  cout << endl <<
+			  "-----------------------" << endl;
+	  cout << "test measurement updates" << endl;
+
+
+      GliderVarioMeasurementUpdater::GPSLongitudeUpd(55.0f,9.0e-05f,measurementVector,*ovStatusNew);
+      GliderVarioMeasurementUpdater::GPSLatitudeUpd(55.0f,2.0e-04f,measurementVector,*ovStatusNew);
+      GliderVarioMeasurementUpdater::GPSAltitudeUpd(500.0f,15.0f,measurementVector,*ovStatusNew);
+
+
+  }
 
   cout << endl <<
 		  "-----------------------" << endl;
