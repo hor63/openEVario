@@ -24,8 +24,23 @@
  *
  */
 
+#include "gtest/gtest.h"
 #include "GliderVarioMeasurementVector.h"
 
-namespace openEV {
+using namespace openEV;
 
-} /* namespace openEV */
+class GliderVarioMeasurementVectorTest :public ::testing::Test {
+public:
+
+
+	openEV::GliderVarioMeasurementVector measVector;
+};
+
+TEST_F(GliderVarioMeasurementVectorTest, InitTest) {
+
+	// verify that all elements of the status vector are initialized to 0 except selected components
+	for (int i = 0; i < measVector.MEASURE_NUM_ROWS; i++){
+		EXPECT_EQ (measVector.getMeasureVector()(i),0.0f) << "Measurement vector ("<<i<<") is not 0.0";
+	}
+
+}

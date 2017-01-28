@@ -23,5 +23,42 @@
  *
  */
 
+#include "gtest/gtest.h"
 #include "GliderVarioStatus.h"
 
+
+using namespace openEV;
+
+class GliderVarioStatusTest :public ::testing::Test {
+public:
+
+
+	GliderVarioStatus statusVector;
+};
+
+TEST_F(GliderVarioStatusTest, InitTest) {
+
+	// verify that all elements of the status vector are initialized to 0 except selected components
+	for (int i = 0; i < statusVector.STATUS_NUM_ROWS; i++){
+		switch (i) {
+		case statusVector.STATUS_IND_GRAVITY:
+		 EXPECT_EQ (statusVector.getStatusVector_x()(i),::GRAVITY) << "Status vector (STATUS_IND_GRAVITY) is not ::GRAVITY = " << ::GRAVITY;
+		 break;
+		case statusVector.STATUS_IND_LAST_PRESSURE:
+		 EXPECT_EQ (statusVector.getStatusVector_x()(i),::pressureStdMSL) << "Status vector (STATUS_IND_LAST_PRESSURE) is not ::pressureStdMSL = " << ::pressureStdMSL;
+		 break;
+		default:
+			EXPECT_EQ (statusVector.getStatusVector_x()(i),0.0f) << "Status vector ("<<i<<") is not 0.0";
+		}
+	}
+
+}
+
+TEST_F(GliderVarioStatusTest, Accessor) {
+
+	// Set all components to different values
+	for (int i = 0; i < statusVector.STATUS_NUM_ROWS; i++){
+		statusVector.getStatusVector_x()(i) = FloatType(i);
+	}
+#error Complete this test with actual accessors
+}
