@@ -54,11 +54,80 @@ TEST_F(GliderVarioStatusTest, InitTest) {
 
 }
 
-TEST_F(GliderVarioStatusTest, Accessor) {
-
+TEST_F(GliderVarioStatusTest, AccessorTest) {
+int i;
 	// Set all components to different values
-	for (int i = 0; i < statusVector.STATUS_NUM_ROWS; i++){
+	for (i = 0; i < statusVector.STATUS_NUM_ROWS; i++){
 		statusVector.getStatusVector_x()(i) = FloatType(i);
 	}
-#error Complete this test with actual accessors
+
+	// count the accessor tests. At the end I want to test ALL accessors.
+	i=0;
+
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_GRAVITY), statusVector.gravity);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_LATITUDE), statusVector.latitude);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_LONGITUDE), statusVector.longitude);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_ALT_MSL), statusVector.altMSL);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_HEADING), statusVector.heading);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_PITCH), statusVector.pitchAngle);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_ROLL), statusVector.rollAngle);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_SPEED_GROUND_N), statusVector.groundSpeedNorth);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_SPEED_GROUND_E), statusVector.groundSpeedEast);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_TAS), statusVector.trueAirSpeed);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_RATE_OF_SINK), statusVector.rateOfSink);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_VERTICAL_SPEED), statusVector.verticalSpeed);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_THERMAL_SPEED), statusVector.thermalSpeed);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_ACC_HEADING), statusVector.accelHeading);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_ACC_CROSS), statusVector.accelCross);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_ACC_VERTICAL), statusVector.accelVertical);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_ROTATION_X), statusVector.rollRateX);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_ROTATION_Y), statusVector.pitchRateY);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_ROTATION_Z), statusVector.yawRateZ);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_GYRO_BIAS_X), statusVector.gyroBiasX);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_GYRO_BIAS_Y), statusVector.gyroBiasY);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_GYRO_BIAS_Z), statusVector.gyroBiasZ);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_MAGNETIC_DECLINATION), statusVector.magneticDeclination);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_MAGNETIC_INCLINATION), statusVector.magneticInclination);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_COMPASS_DEVIATION_X), statusVector.compassDeviationX);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_COMPASS_DEVIATION_Y), statusVector.compassDeviationY);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_COMPASS_DEVIATION_Z), statusVector.compassDeviationZ);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_WIND_SPEED_N), statusVector.windSpeedNorth);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_WIND_SPEED_E), statusVector.windSpeedEast);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_QFF), statusVector.qff);
+	i++;
+	EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_LAST_PRESSURE), statusVector.lastPressure);
+	i++;
+
+	EXPECT_EQ (statusVector.STATUS_NUM_ROWS, i) << "Not all accessors have been tested.";
+
+
 }
