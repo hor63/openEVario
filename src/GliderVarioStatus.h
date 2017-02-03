@@ -79,6 +79,7 @@ static FloatType constexpr KtoC = 273.15f;
 
 /**
  * Standard sea level pressure according to ICAO standard atmosphere in Pascal
+ * \sa <a href="https://en.wikipedia.org/wiki/International_Standard_Atmosphere#ICAO_Standard_Atmosphere" >ICAO Standard atmosphere</a>
  */
 static FloatType constexpr pressureStdMSL = 101325.0f;
 
@@ -99,15 +100,17 @@ extern FloatType MAG_INCLINATION; // = -67.0f;
  */
 static FloatType constexpr NM_TO_M = 1852.0f;
 
-/**
+/*
  * Here a bunch of gas constants for dry air as an ideal gas
  */
 
 /// Universal gas constant = 8.3144598 J/mol/K
+/// \sa <a href="https://en.wikipedia.org/wiki/Gas_constant" >Universal Gas Constant</a>
 static FloatType constexpr R         = 8.3144598f;
 /// Molar mass of dry air = 0.0289644 kg/mol
 static FloatType constexpr M         = 0.0289644f;
 /// Specific gas constant for dry air = R/M
+/// \sa <a href="https://en.wikipedia.org/wiki/Gas_constant#Specific_gas_constant" >Specific Gas Constant for dry air</a>
 static FloatType constexpr Rspec     = R/M;
 
 
