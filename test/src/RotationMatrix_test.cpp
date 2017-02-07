@@ -1,0 +1,75 @@
+/*
+ * RotationMatrix_test.cpp
+ *
+ *  Created on: Feb 07, 2017
+ *      Author: hor
+ *
+ *
+ *   This file is part of openEVario, an electronic variometer for glider planes
+ *   Copyright (C) 2017  Kai Horstmann
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License along
+ *   with this program; if not, write to the Free Software Foundation, Inc.,
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ */
+
+#include <math.h>
+#include "gtest/gtest.h"
+#include "RotationMatrix.h"
+
+using namespace openEV;
+
+class RotationMatrixTest :public ::testing::Test {
+public:
+
+
+	openEV::RotationMatrix rotMatrix;
+};
+
+TEST_F(RotationMatrixTest, CoefficientTest) {
+
+	int psi;
+	int theta;
+	int phi;
+
+	// Verify the correct calculation of the coefficient of the matrix
+	for (psi = 0; psi < 360 ; psi+= 5) {
+		for (theta = -90; theta < 90; theta+= 5) {
+			for (phi = -180 ; phi < 180 ; phi += 5) {
+				double psiRad = double(psi) * M_PI / 180.0;
+				double thetaRad = double(theta) * M_PI / 180.0;
+				double phiRad = double(phi) * M_PI / 180.0;
+				rotMatrix.setYaw(psi);
+				rotMatrix.setPitch(theta);
+				rotMatrix.setRoll(phi);
+				RotationMatrix3DType& glo2Plane = rotMatrix.getMatrixGloToPlane();
+
+				EXPECT_LE ( fabs(double(glo2Plane(0,0)) - cos(thetaRad) * cos(psiRad)) , 0.00001 );
+				EXPECT_LE ( fabs(double(glo2Plane(0,1)) - (cos(thetaRad) * sin(psiRad))) , 0.00001 );
+				EXPECT_LE ( fabs(double(glo2Plane(0,2)) + sin(thetaRad)), 0.001);
+
+				EXPECT_LE ( fabs(double(glo2Plane(1,0)) - (sin(phiRad) * sin(thetaRad) * cos(psiRad) - cos(phiRad) * sin(psiRad))),0.00001);
+				EXPECT_LE ( fabs(double(glo2Plane(1,1)) - (sin(phiRad) * sin(thetaRad) * sin(psiRad) + cos(phiRad) * cos(psiRad))),0.00001);
+				EXPECT_LE ( fabs(double(glo2Plane(1,2)) - (sin(phiRad) * cos(thetaRad))),0.0001);
+
+				EXPECT_LE ( fabs(double(glo2Plane(2,0)) - (cos(phiRad) * sin(thetaRad) * cos(psiRad) + sin(phiRad) * sin(psiRad))),0.00001);
+				EXPECT_LE ( fabs(double(glo2Plane(2,1)) - (cos(phiRad) * sin(thetaRad) * sin(psiRad) - sin(phiRad) * cos(psiRad))),0.00001);
+				EXPECT_LE ( fabs(double(glo2Plane(2,2)) - (cos(phiRad) * cos(thetaRad))),0.0001);
+
+			}
+		}
+	}
+
+}
+

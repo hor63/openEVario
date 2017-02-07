@@ -140,7 +140,8 @@ am_testOpenEVario_OBJECTS = testOpenEVario.$(OBJEXT) \
 	GliderVarioTransitionMatrix_test.$(OBJEXT) \
 	GliderVarioMeasurementUpdater_test.$(OBJEXT) \
 	GliderVarioMeasurementVector_test.$(OBJEXT) \
-	MeasureMatrix_test.$(OBJEXT) GliderVarioStatus_test.$(OBJEXT)
+	MeasureMatrix_test.$(OBJEXT) GliderVarioStatus_test.$(OBJEXT) \
+	RotationMatrix_test.$(OBJEXT)
 testOpenEVario_OBJECTS = $(am_testOpenEVario_OBJECTS)
 am__DEPENDENCIES_1 =
 testOpenEVario_DEPENDENCIES = ./libgoogletest.a $(am__DEPENDENCIES_1)
@@ -371,7 +372,8 @@ testOpenEVario_SOURCES = testOpenEVario.cpp \
   GliderVarioMeasurementUpdater_test.cpp \
   GliderVarioMeasurementVector_test.cpp	\
   MeasureMatrix_test.cpp \
-  GliderVarioStatus_test.cpp
+  GliderVarioStatus_test.cpp \
+  RotationMatrix_test.cpp
 
 testOpenEVario_LDADD = ./libgoogletest.a $(PTHREAD_LIBS)
 
@@ -495,6 +497,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MeasureMatrix.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MeasureMatrix_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RotationMatrix.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RotationMatrix_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgoogletest_a-gtest-all.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testOpenEVario.Po@am__quote@
 

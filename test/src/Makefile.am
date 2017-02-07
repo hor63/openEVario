@@ -33,7 +33,8 @@ testOpenEVario_SOURCES = testOpenEVario.cpp \
   GliderVarioMeasurementUpdater_test.cpp \
   GliderVarioMeasurementVector_test.cpp	\
   MeasureMatrix_test.cpp \
-  GliderVarioStatus_test.cpp
+  GliderVarioStatus_test.cpp \
+  RotationMatrix_test.cpp
   
 testOpenEVario_LDADD = ./libgoogletest.a $(PTHREAD_LIBS)
 
