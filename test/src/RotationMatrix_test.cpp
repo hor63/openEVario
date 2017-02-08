@@ -73,3 +73,53 @@ TEST_F(RotationMatrixTest, CoefficientTest) {
 
 }
 
+TEST_F(RotationMatrixTest, VectorTest) {
+
+	int psi;
+	int theta;
+	int phi;
+
+	// Verify the correct calculation of the coefficient of the matrix
+	for (psi = 0; psi < 360 ; psi+= 5) {
+		for (theta = -90; theta < 90; theta+= 5) {
+			for (phi = -180 ; phi < 180 ; phi += 5) {
+				rotMatrix.setYaw(psi);
+				rotMatrix.setPitch(theta);
+				rotMatrix.setRoll(phi);
+
+				RotationMatrix3DType& glo2Plane = rotMatrix.getMatrixGloToPlane();
+				RotationMatrix3DType& plane2Glo = rotMatrix.getMatrixPlaneToGlo();
+
+				Vector3DType orgVect = {1.1f,2.2f,3.3f}, vect1, vect2;
+				FloatType x,y,z;
+
+				// vector calculation vs. component wise manual calculation
+				rotMatrix.calcWorldVectorToPlaneVector(orgVect,vect1);
+				x =     glo2Plane(0,0) * orgVect(0) +
+						glo2Plane(0,1) * orgVect(1) +
+						glo2Plane(0,2) * orgVect(2) ;
+				y =     glo2Plane(1,0) * orgVect(0) +
+						glo2Plane(1,1) * orgVect(1) +
+						glo2Plane(1,2) * orgVect(2) ;
+				z =     glo2Plane(2,0) * orgVect(0) +
+						glo2Plane(2,1) * orgVect(1) +
+						glo2Plane(2,2) * orgVect(2) ;
+
+				EXPECT_EQ (vect1(0),x);
+				EXPECT_EQ (vect1(1),y);
+				EXPECT_EQ (vect1(2),z);
+
+				// convert the plane vector back to the world coordinates, and compare with the original
+				rotMatrix.calcPlaneVectorToWorldVector(vect1,vect2);
+				EXPECT_LE (fabs(orgVect(0)-vect2(0)),0.0000001);
+				EXPECT_LE (fabs(orgVect(1)-vect2(1)),0.0000001);
+				EXPECT_LE (fabs(orgVect(2)-vect2(2)),0.0000001);
+
+			}
+		}
+	}
+
+
+
+}
+
