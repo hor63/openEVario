@@ -57,15 +57,15 @@ TEST_F(RotationMatrixTest, CoefficientTest) {
 
 				EXPECT_LE ( fabs(double(glo2Plane(0,0)) - cos(thetaRad) * cos(psiRad)) , 0.00001 );
 				EXPECT_LE ( fabs(double(glo2Plane(0,1)) - (cos(thetaRad) * sin(psiRad))) , 0.00001 );
-				EXPECT_LE ( fabs(double(glo2Plane(0,2)) + sin(thetaRad)), 0.001);
+				EXPECT_LE ( fabs(double(glo2Plane(0,2)) + sin(thetaRad)), 0.00001);
 
 				EXPECT_LE ( fabs(double(glo2Plane(1,0)) - (sin(phiRad) * sin(thetaRad) * cos(psiRad) - cos(phiRad) * sin(psiRad))),0.00001);
 				EXPECT_LE ( fabs(double(glo2Plane(1,1)) - (sin(phiRad) * sin(thetaRad) * sin(psiRad) + cos(phiRad) * cos(psiRad))),0.00001);
-				EXPECT_LE ( fabs(double(glo2Plane(1,2)) - (sin(phiRad) * cos(thetaRad))),0.0001);
+				EXPECT_LE ( fabs(double(glo2Plane(1,2)) - (sin(phiRad) * cos(thetaRad))),0.00001);
 
 				EXPECT_LE ( fabs(double(glo2Plane(2,0)) - (cos(phiRad) * sin(thetaRad) * cos(psiRad) + sin(phiRad) * sin(psiRad))),0.00001);
 				EXPECT_LE ( fabs(double(glo2Plane(2,1)) - (cos(phiRad) * sin(thetaRad) * sin(psiRad) - sin(phiRad) * cos(psiRad))),0.00001);
-				EXPECT_LE ( fabs(double(glo2Plane(2,2)) - (cos(phiRad) * cos(thetaRad))),0.0001);
+				EXPECT_LE ( fabs(double(glo2Plane(2,2)) - (cos(phiRad) * cos(thetaRad))),0.00001);
 
 			}
 		}
@@ -111,9 +111,9 @@ TEST_F(RotationMatrixTest, VectorTest) {
 
 				// convert the plane vector back to the world coordinates, and compare with the original
 				rotMatrix.calcPlaneVectorToWorldVector(vect1,vect2);
-				EXPECT_LE (fabs(orgVect(0)-vect2(0)),0.0000001);
-				EXPECT_LE (fabs(orgVect(1)-vect2(1)),0.0000001);
-				EXPECT_LE (fabs(orgVect(2)-vect2(2)),0.0000001);
+				EXPECT_LE (fabs(orgVect(0)-vect2(0)),0.000001);
+				EXPECT_LE (fabs(orgVect(1)-vect2(1)),0.000001);
+				EXPECT_LE (fabs(orgVect(2)-vect2(2)),0.000001);
 
 			}
 		}
