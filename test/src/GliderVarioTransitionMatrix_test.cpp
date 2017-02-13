@@ -69,7 +69,7 @@ TEST_F(TransitionMatrixTest, Latitude) {
 	// and a number of time differences
 	// input values are: Gravity
 	for (FloatType t = 0.01f; t<=1.3f; t+=0.23f  ) {
-		for (FloatType lat = 45.0f ; lat <= 65; lat+=5.33f) {
+		for (FloatType lat = 45.0f ; lat <= 65.0f; lat += 5.33f) {
 			for (FloatType speedGroundN = 0.0f; speedGroundN <= 80.0f; speedGroundN += 6.77f) {
 				for (FloatType accel = -0.5f ; accel <= 0.5f; accel += 0.193f) {
 					for (FloatType heading = 0.0f ; heading < 360.0f; heading += 23.3f){
@@ -87,11 +87,91 @@ TEST_F(TransitionMatrixTest, Latitude) {
 								+ arcSecPerM * FastMath::fastCos(heading) * accel *t*t/2
 								;
 
-						EXPECT_NEAR (st2.latitude,expectResult,0.00000001) <<
+						EXPECT_NEAR (st2.latitude,expectResult,expectResult*0.000001) <<
 								" at Latitude = " << lat << " groundSpeedN = " << speedGroundN << " acceleration = " << accel <<
 								" heading = " << heading << " time = " << t;
 
-						/// todo: test the matrix factors
+						// Test the matrix factors
+						FloatType orgResult = expectResult;
+						FloatType resultDelta;
+						FloatType deltaValue;
+
+
+						// Modify the latitude
+						deltaValue = 10.0f;
+						st1.latitude = lat * 3600.0f + deltaValue;
+						transMatrix.updateStatus(st1,st2,t);
+						expectResult =
+								(lat * 3600.0f + deltaValue)
+								+ arcSecPerM * t*speedGroundN
+								+ arcSecPerM * FastMath::fastCos(heading) * accel *t*t/2
+								;
+						resultDelta = deltaValue *
+								transMatrix.getTransitionMatrix()
+								.coeff(GliderVarioStatus::STATUS_IND_LATITUDE,GliderVarioStatus::STATUS_IND_LATITUDE);
+
+						EXPECT_NEAR (expectResult,orgResult + resultDelta,expectResult*0.000001) << " Latitude delta = " << deltaValue;
+						st1.latitude = lat * 3600.0f;
+
+						// Modify groundSpeedN
+						deltaValue = 1.0f;
+						st1.groundSpeedNorth = speedGroundN + deltaValue;
+						transMatrix.updateStatus(st1,st2,t);
+						expectResult =
+								lat * 3600.0f
+								+ arcSecPerM * t* (speedGroundN + deltaValue)
+								+ arcSecPerM * FastMath::fastCos(heading) * accel *t*t/2
+								;
+						resultDelta = deltaValue *
+								transMatrix.getTransitionMatrix()
+								.coeff(GliderVarioStatus::STATUS_IND_LATITUDE,GliderVarioStatus::STATUS_IND_SPEED_GROUND_N);
+
+						EXPECT_NEAR (expectResult,orgResult + resultDelta,expectResult*0.000001) <<
+								" groundSpeedN delta = " << deltaValue <<
+								" resultDelta = " << resultDelta;
+						st1.groundSpeedNorth = speedGroundN;
+
+						// Modify the acceleration
+						deltaValue = 1.0f;
+						st1.accelHeading = accel + deltaValue;
+						transMatrix.updateStatus(st1,st2,t);
+						expectResult =
+								lat * 3600.0f
+								+ arcSecPerM * t* speedGroundN
+								+ arcSecPerM * FastMath::fastCos(heading) * (accel + deltaValue) *t*t/2
+								;
+						resultDelta = deltaValue *
+								transMatrix.getTransitionMatrix()
+								.coeff(GliderVarioStatus::STATUS_IND_LATITUDE,GliderVarioStatus::STATUS_IND_ACC_HEADING);
+
+						EXPECT_NEAR (expectResult,orgResult + resultDelta,expectResult*0.000001) <<
+								" accelHeading delta = " << deltaValue <<
+								" resultDelta = " << resultDelta;
+						st1.accelHeading = accel;
+
+						// Modify the heading
+						deltaValue = 1.0f;
+						st1.heading = heading + deltaValue;
+						transMatrix.updateStatus(st1,st2,t);
+						expectResult =
+								lat * 3600.0f
+								+ arcSecPerM * t*speedGroundN
+								+ arcSecPerM * FastMath::fastCos(heading + deltaValue) * accel *t*t/2
+								;
+						resultDelta = deltaValue *
+								transMatrix.getTransitionMatrix()
+								.coeff(GliderVarioStatus::STATUS_IND_LATITUDE,GliderVarioStatus::STATUS_IND_HEADING);
+
+						EXPECT_NEAR (expectResult,orgResult + resultDelta,expectResult*0.000001) <<
+								" heading delta = " << deltaValue <<
+								" resultDelta = " << resultDelta <<
+								" heading = " << st1.heading <<
+								" acceleration = " << st1.accelHeading <<
+								" time = " << t <<
+								" Coefficient = " << transMatrix.getTransitionMatrix()
+								.coeff(GliderVarioStatus::STATUS_IND_LATITUDE,GliderVarioStatus::STATUS_IND_HEADING);
+						st1.heading = heading;
+
 					}
 				}
 			}
