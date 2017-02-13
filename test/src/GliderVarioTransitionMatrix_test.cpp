@@ -41,7 +41,7 @@ TEST_F(TransitionMatrixTest, Gravity) {
 	// Test the result for a given combination of input values
 	// and a number of time differences
 	// input values are: Gravity
-	for (FloatType t = 0.01f; t<=1.0f; t+=0.1f  ) {
+	for (FloatType t = 0.01f; t<=1.0f; t+=0.11f  ) {
 		for (FloatType g = 9.0f ; g <= 10.f; g+=0.01f) {
 			FloatType tmp1;
 			st1.gravity = g;
@@ -60,6 +60,44 @@ TEST_F(TransitionMatrixTest, Gravity) {
 
 		}
 	}
+
+}
+
+TEST_F(TransitionMatrixTest, Latitude) {
+
+	// Test the result for a given combination of input values
+	// and a number of time differences
+	// input values are: Gravity
+	for (FloatType t = 0.01f; t<=1.3f; t+=0.23f  ) {
+		for (FloatType lat = 45.0f ; lat <= 65; lat+=5.33f) {
+			for (FloatType speedGroundN = 0.0f; speedGroundN <= 80.0f; speedGroundN += 6.77f) {
+				for (FloatType accel = -0.5f ; accel <= 0.5f; accel += 0.193f) {
+					for (FloatType heading = 0.0f ; heading < 360.0f; heading += 23.3f){
+						st1.latitude = lat * 3600.0f;
+						st1.groundSpeedNorth = speedGroundN;
+						st1.accelHeading = accel;
+						st1.heading = heading;
+
+						transMatrix.updateStatus(st1,st2,t);
+
+						FloatType arcSecPerM = 3600.0 / 111132.0;
+						FloatType expectResult =
+								lat * 3600.0f
+								+ arcSecPerM * t*speedGroundN
+								+ arcSecPerM * FastMath::fastCos(heading) * accel *t*t/2
+								;
+
+						EXPECT_NEAR (st2.latitude,expectResult,0.00000001) <<
+								" at Latitude = " << lat << " groundSpeedN = " << speedGroundN << " acceleration = " << accel <<
+								" heading = " << heading << " time = " << t;
+
+						/// todo: test the matrix factors
+					}
+				}
+			}
+		}
+	}
+
 
 }
 
