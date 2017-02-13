@@ -106,8 +106,8 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
 
   // The angles have an indirect effect on the new status by means of the rotation matrix with the accelerations
   // Do a direct deviation of cos.
-  transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LATITUDE,GliderVarioStatus::STATUS_IND_ROLL) =
-		  timeSquareHalf2Lat * lastStatus.accelHeading * (-FastMath::fastSin(lastStatus.heading));
+  transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LATITUDE,GliderVarioStatus::STATUS_IND_HEADING) =
+		  timeSquareHalf2Lat * lastStatus.accelHeading * (-FastMath::fastSin(lastStatus.heading) * FastMath::degToRad);
 
 
   newStatus.latitude = lastStatus.latitude +
@@ -125,7 +125,7 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
   // The angles have an indirect effect on the new status by means of the rotation matrix with the accelerations
   // I calculate the derivate of sin as cos.
   transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LONGITUDE,GliderVarioStatus::STATUS_IND_ROLL) =
-		  timeSquareHalf2Lat * lastStatus.accelHeading * FastMath::fastCos(lastStatus.heading);
+		  timeSquareHalf2Lat * lastStatus.accelHeading * FastMath::fastCos(lastStatus.heading * FastMath::degToRad);
 
   newStatus.longitude =
 		  lastStatus.longitude +
