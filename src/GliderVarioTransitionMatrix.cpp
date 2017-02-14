@@ -83,7 +83,7 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
 
   // I need half of time square for distance calculations based on acceleration here and there :)
   FloatType timeSquareHalf  = timeDiff*timeDiff / 2.0f;
-  FloatType const lenLongitudeArcSec = lenLatitudeArcSec * FastMath::fastCos(lastStatus.latitude);
+  FloatType const lenLongitudeArcSec = lenLatitudeArcSec * FastMath::fastCos(lastStatus.latitude/3600.0f);
 
   // I am using a number of temporary variables to store factors used for new status calculation, and to store in the transition matrix.
   FloatType temp1, temp2, temp3, temp4, temp5;
@@ -124,8 +124,8 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
 
   // The angles have an indirect effect on the new status by means of the rotation matrix with the accelerations
   // I calculate the derivate of sin as cos.
-  transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LONGITUDE,GliderVarioStatus::STATUS_IND_ROLL) =
-		  timeSquareHalf2Lat * lastStatus.accelHeading * FastMath::fastCos(lastStatus.heading * FastMath::degToRad);
+  transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LONGITUDE,GliderVarioStatus::STATUS_IND_HEADING) =
+		  timeSquareHalf2Lat * lastStatus.accelHeading * (FastMath::fastCos(lastStatus.heading) * FastMath::degToRad);
 
   newStatus.longitude =
 		  lastStatus.longitude +
