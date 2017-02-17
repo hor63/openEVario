@@ -67,7 +67,7 @@ TEST_F(TransitionMatrixTest, Latitude) {
 
 	// Test the result for a given combination of input values
 	// and a number of time differences
-	// input values are: Gravity
+	// input values are: Latitude, ground speed North, lineal acceleration, heading
 	for (FloatType t = 0.01f; t<=1.3f; t+=0.23f  ) {
 		for (FloatType lat = 45.0f ; lat <= 65.0f; lat += 5.33f) {
 			for (FloatType speedGroundN = 0.0f; speedGroundN <= 80.0f; speedGroundN += 6.77f) {
@@ -87,7 +87,7 @@ TEST_F(TransitionMatrixTest, Latitude) {
 								+ arcSecPerM * FastMath::fastCos(heading) * accel *t*t/2
 								;
 
-						EXPECT_NEAR (st2.latitude,expectResult,expectResult*0.000001) <<
+						EXPECT_NEAR (st2.latitude,expectResult,fabs(expectResult*0.000001f)) <<
 								" at Latitude = " << lat << " groundSpeedN = " << speedGroundN << " acceleration = " << accel <<
 								" heading = " << heading << " time = " << t;
 
@@ -110,7 +110,7 @@ TEST_F(TransitionMatrixTest, Latitude) {
 								transMatrix.getTransitionMatrix()
 								.coeff(GliderVarioStatus::STATUS_IND_LATITUDE,GliderVarioStatus::STATUS_IND_LATITUDE);
 
-						EXPECT_NEAR (expectResult,orgResult + resultDelta,expectResult*0.000001) << " Latitude delta = " << deltaValue;
+						EXPECT_NEAR (expectResult,orgResult + resultDelta,fabs(expectResult*0.000001f)) << " Latitude delta = " << deltaValue;
 						st1.latitude = lat * 3600.0f;
 
 						// Modify groundSpeedN
@@ -126,7 +126,7 @@ TEST_F(TransitionMatrixTest, Latitude) {
 								transMatrix.getTransitionMatrix()
 								.coeff(GliderVarioStatus::STATUS_IND_LATITUDE,GliderVarioStatus::STATUS_IND_SPEED_GROUND_N);
 
-						EXPECT_NEAR (expectResult,orgResult + resultDelta,expectResult*0.000001) <<
+						EXPECT_NEAR (expectResult,orgResult + resultDelta,fabs(expectResult*0.000001f)) <<
 								" groundSpeedN delta = " << deltaValue <<
 								" resultDelta = " << resultDelta;
 						st1.groundSpeedNorth = speedGroundN;
@@ -144,7 +144,7 @@ TEST_F(TransitionMatrixTest, Latitude) {
 								transMatrix.getTransitionMatrix()
 								.coeff(GliderVarioStatus::STATUS_IND_LATITUDE,GliderVarioStatus::STATUS_IND_ACC_HEADING);
 
-						EXPECT_NEAR (expectResult,orgResult + resultDelta,expectResult*0.000001) <<
+						EXPECT_NEAR (expectResult,orgResult + resultDelta,fabs(expectResult*0.000001f)) <<
 								" accelHeading delta = " << deltaValue <<
 								" resultDelta = " << resultDelta;
 						st1.accelHeading = accel;
@@ -162,7 +162,7 @@ TEST_F(TransitionMatrixTest, Latitude) {
 								transMatrix.getTransitionMatrix()
 								.coeff(GliderVarioStatus::STATUS_IND_LATITUDE,GliderVarioStatus::STATUS_IND_HEADING);
 
-						EXPECT_NEAR (expectResult,orgResult + resultDelta,expectResult*0.000001) <<
+						EXPECT_NEAR (expectResult,orgResult + resultDelta,fabs(expectResult*0.000001f)) <<
 								" heading delta = " << deltaValue <<
 								" resultDelta = " << resultDelta <<
 								" heading = " << st1.heading <<
@@ -185,7 +185,7 @@ TEST_F(TransitionMatrixTest, Longitude) {
 
 	// Test the result for a given combination of input values
 	// and a number of time differences
-	// input values are: Gravity
+	// input values are: latitude, longitude, ground speed East, lineal acceleation, heading
 	for (FloatType t = 0.01f; t<=1.3f; t+=0.23f  ) {
 		for (FloatType latitude = 45.0f ; latitude <= 69.0f; latitude += 10.33f) {
 			for (FloatType lon = 0.1f ; lon <= 0.9f; lon += 0.183f) {
@@ -207,7 +207,7 @@ TEST_F(TransitionMatrixTest, Longitude) {
 									+ arcSecPerM * FastMath::fastSin(heading) * accel *t*t/2
 									;
 
-							EXPECT_NEAR (st2.longitude,expectResult,expectResult*0.000001) <<
+							EXPECT_NEAR (st2.longitude,expectResult,fabs(expectResult*0.000001f)) <<
 									" at Latitude = " << lon << " groundSpeedE = " << speedGroundE << " acceleration = " << accel <<
 									" heading = " << heading << " time = " << t;
 
@@ -230,7 +230,7 @@ TEST_F(TransitionMatrixTest, Longitude) {
 									transMatrix.getTransitionMatrix()
 									.coeff(GliderVarioStatus::STATUS_IND_LONGITUDE,GliderVarioStatus::STATUS_IND_LONGITUDE);
 
-							EXPECT_NEAR (expectResult,orgResult + resultDelta,expectResult*0.000001) << " Latitude delta = " << deltaValue;
+							EXPECT_NEAR (expectResult,orgResult + resultDelta,fabs(expectResult*0.000001f)) << " Latitude delta = " << deltaValue;
 							st1.longitude = lon * 3600.0f;
 
 							// Modify groundSpeedE
@@ -246,7 +246,7 @@ TEST_F(TransitionMatrixTest, Longitude) {
 									transMatrix.getTransitionMatrix()
 									.coeff(GliderVarioStatus::STATUS_IND_LONGITUDE,GliderVarioStatus::STATUS_IND_SPEED_GROUND_E);
 
-							EXPECT_NEAR (expectResult,orgResult + resultDelta,expectResult*0.000001) <<
+							EXPECT_NEAR (expectResult,orgResult + resultDelta,fabs(expectResult*0.000001f)) <<
 									" groundSpeedE delta = " << deltaValue <<
 									" resultDelta = " << resultDelta;
 							st1.groundSpeedEast = speedGroundE;
@@ -264,7 +264,7 @@ TEST_F(TransitionMatrixTest, Longitude) {
 									transMatrix.getTransitionMatrix()
 									.coeff(GliderVarioStatus::STATUS_IND_LONGITUDE,GliderVarioStatus::STATUS_IND_ACC_HEADING);
 
-							EXPECT_NEAR (expectResult,orgResult + resultDelta,expectResult*0.000001) <<
+							EXPECT_NEAR (expectResult,orgResult + resultDelta,fabs(expectResult*0.000001f)) <<
 									" accelHeading delta = " << deltaValue <<
 									" resultDelta = " << resultDelta;
 							st1.accelHeading = accel;
@@ -282,7 +282,7 @@ TEST_F(TransitionMatrixTest, Longitude) {
 									transMatrix.getTransitionMatrix()
 									.coeff(GliderVarioStatus::STATUS_IND_LONGITUDE,GliderVarioStatus::STATUS_IND_HEADING);
 
-							EXPECT_NEAR (expectResult,orgResult + resultDelta,expectResult*0.000001) <<
+							EXPECT_NEAR (expectResult,orgResult + resultDelta,fabs(expectResult*0.000001f)) <<
 									" heading delta = " << deltaValue <<
 									" resultDelta = " << resultDelta <<
 									" heading = " << st1.heading <<
@@ -306,7 +306,7 @@ TEST_F(TransitionMatrixTest, AltMSL) {
 
 	// Test the result for a given combination of input values
 	// and a number of time differences
-	// input values are: Gravity
+	// input values are: altitude MSL, vertical speed, vertical acceleration
 	for (FloatType t = 0.01f; t<=1.3f; t+=0.23f  ) {
 		for (FloatType alt = 20.0; alt < 1000.0; alt += 123.45) {
 			for (FloatType vertSpeed = -3.0f ; vertSpeed <= 3.0f; vertSpeed += 0.83) {
@@ -323,7 +323,7 @@ TEST_F(TransitionMatrixTest, AltMSL) {
 									- vertAcc *t*t/2
 									;
 
-							EXPECT_NEAR (st2.altMSL,expectResult,expectResult*0.000001) <<
+							EXPECT_NEAR (st2.altMSL,expectResult,fabs(expectResult*0.000001f)) <<
 									" at alt = " << alt << " vertSpeed = " << vertSpeed << " vertAcc = " << vertAcc <<
 									" time = " << t;
 
@@ -346,7 +346,7 @@ TEST_F(TransitionMatrixTest, AltMSL) {
 									transMatrix.getTransitionMatrix()
 									.coeff(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ALT_MSL);
 
-							EXPECT_NEAR (expectResult,orgResult + resultDelta,expectResult*0.000001) << " Altitude delta = " << deltaValue;
+							EXPECT_NEAR (expectResult,orgResult + resultDelta,fabs(expectResult*0.000001f)) << " Altitude delta = " << deltaValue;
 							st1.altMSL = alt;
 
 							// Modify the vertical speed
@@ -362,7 +362,7 @@ TEST_F(TransitionMatrixTest, AltMSL) {
 									transMatrix.getTransitionMatrix()
 									.coeff(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_VERTICAL_SPEED);
 
-							EXPECT_NEAR (expectResult,orgResult + resultDelta,expectResult*0.000001) << " vertical speed delta = " << deltaValue;
+							EXPECT_NEAR (expectResult,orgResult + resultDelta,fabs(expectResult*0.000001f)) << " vertical speed delta = " << deltaValue;
 							st1.verticalSpeed = vertSpeed;
 
 							// Modify the vertical acceleration
@@ -378,7 +378,7 @@ TEST_F(TransitionMatrixTest, AltMSL) {
 									transMatrix.getTransitionMatrix()
 									.coeff(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ACC_VERTICAL);
 
-							EXPECT_NEAR (expectResult,orgResult + resultDelta,expectResult*0.000001) << " vertical acceleration delta = " << deltaValue;
+							EXPECT_NEAR (expectResult,orgResult + resultDelta,fabs(expectResult*0.000001f)) << " vertical acceleration delta = " << deltaValue;
 							st1.accelVertical = vertAcc;
 
 				}
@@ -387,3 +387,282 @@ TEST_F(TransitionMatrixTest, AltMSL) {
 	}
 }
 
+
+TEST_F(TransitionMatrixTest, Pitch) {
+
+	// Test the result for a given combination of input values
+	// and a number of time differences
+	// input values are: Pitch angle, pitch rate around the y axis
+	for (FloatType t = 0.01f; t<=1.3f; t+=0.23f  ) {
+		for (FloatType pitch = -90.0f; pitch <= 90.0f; pitch += 13.33f) {
+			for (FloatType pitchRate = -20.0f ; pitchRate <= 20.0f; pitchRate += 6.67f) {
+				st1.pitchAngle = pitch;
+				st1.pitchRateY = pitchRate;
+
+				transMatrix.updateStatus(st1,st2,t);
+
+				FloatType expectResult =
+						pitch
+						+ pitchRate * t
+						;
+
+				if (expectResult < -90.0f) {
+					expectResult = -180.0f - expectResult;
+				} else if (expectResult > 90.0f) {
+					expectResult = 180.0f - expectResult;
+				}
+
+				EXPECT_NEAR (st2.pitchAngle,expectResult,fabs(expectResult*0.00001f)) <<
+						" at pitch = " << pitch << " pitchRate = " << pitchRate <<
+						" time = " << t;
+
+				// Test the coefficients in the matrix as derivatives.
+				FloatType orgResult = expectResult;
+				FloatType resultDelta;
+				FloatType deltaValue;
+
+
+				// Modify the pitch
+				deltaValue = 1.0f;
+				st1.pitchAngle = pitch + deltaValue;
+				transMatrix.updateStatus(st1,st2,t);
+				expectResult =
+						(pitch + deltaValue)
+						+ pitchRate * t
+						;
+				if (expectResult < -90.0f) {
+					expectResult = -180.0f - expectResult;
+				} else if (expectResult > 90.0f) {
+					expectResult = 180.0f - expectResult;
+				}
+				resultDelta = deltaValue *
+						transMatrix.getTransitionMatrix()
+						.coeff(GliderVarioStatus::STATUS_IND_PITCH,GliderVarioStatus::STATUS_IND_PITCH);
+
+				FloatType deltaResult;
+				deltaResult = orgResult + resultDelta;
+				if (deltaResult < -90.0f) {
+					deltaResult = -180.0f - deltaResult;
+				} else if (deltaResult > 90.0f) {
+					deltaResult = 180.0f - deltaResult;
+				}
+
+				EXPECT_NEAR (expectResult,deltaResult,fabs(expectResult*0.00001f)) << " Pitch delta = " << deltaValue;
+				st1.pitchAngle = pitch;
+
+				// Modify the pitch rate
+				deltaValue = 1.0f;
+				st1.pitchRateY = pitchRate + deltaValue;
+				transMatrix.updateStatus(st1,st2,t);
+				expectResult =
+						pitch
+						+ (pitchRate + deltaValue) * t
+						;
+				if (expectResult < -90.0f) {
+					expectResult = -180.0f - expectResult;
+				} else if (expectResult > 90.0f) {
+					expectResult = 180.0f - expectResult;
+				}
+				resultDelta = deltaValue *
+						transMatrix.getTransitionMatrix()
+						.coeff(GliderVarioStatus::STATUS_IND_PITCH,GliderVarioStatus::STATUS_IND_ROTATION_Y);
+				deltaResult = orgResult + resultDelta;
+				if (deltaResult < -90.0f) {
+					deltaResult = -180.0f - deltaResult;
+				} else if (deltaResult > 90.0f) {
+					deltaResult = 180.0f - deltaResult;
+				}
+
+				EXPECT_NEAR (expectResult,deltaResult,fabs(expectResult*0.00001f)) << " Pitch delta = " << deltaValue;
+				st1.pitchRateY = pitchRate;
+			}
+		}
+	}
+
+}
+
+
+TEST_F(TransitionMatrixTest, Roll) {
+
+	// Test the result for a given combination of input values
+	// and a number of time differences
+	// input values are: Roll angle, roll rate around the x axis
+	for (FloatType t = 0.01f; t<=1.3f; t+=0.23f  ) {
+		for (FloatType roll = -180.0f; roll <= 180.0f; roll += 23.33f) {
+			for (FloatType rollRate = -20.0f ; rollRate <= 20.0f; rollRate += 6.67f) {
+				st1.rollAngle = roll;
+				st1.rollRateX = rollRate;
+
+				transMatrix.updateStatus(st1,st2,t);
+
+				FloatType expectResult =
+						roll
+						+ rollRate * t
+						;
+
+				if (expectResult < -180.0f) {
+					expectResult += 360.0f;
+				} else if (expectResult > 180.0f) {
+					expectResult -= 360.0f;
+				}
+
+				EXPECT_NEAR (st2.rollAngle,expectResult,fabs(expectResult*0.00001f)) <<
+						" at roll = " << roll << " rollRate = " << rollRate <<
+						" time = " << t;
+
+				// Test the coefficients in the matrix as derivatives.
+				FloatType orgResult = expectResult;
+				FloatType resultDelta;
+				FloatType deltaValue;
+
+
+				// Modify the roll
+				deltaValue = 1.0f;
+				st1.rollAngle = roll + deltaValue;
+				transMatrix.updateStatus(st1,st2,t);
+				expectResult =
+						(roll + deltaValue)
+						+ rollRate * t
+						;
+				if (expectResult < -180.0f) {
+					expectResult += 360.0f;
+				} else if (expectResult > 180.0f) {
+					expectResult -= 360.0f;
+				}
+				resultDelta = deltaValue *
+						transMatrix.getTransitionMatrix()
+						.coeff(GliderVarioStatus::STATUS_IND_ROLL,GliderVarioStatus::STATUS_IND_ROLL);
+				FloatType deltaResult;
+				deltaResult = orgResult + resultDelta;
+				if (deltaResult < -180.0f) {
+					deltaResult += 360.0f;
+				} else if (expectResult > 180.0f) {
+					deltaResult -= 360.0f;
+				}
+
+				EXPECT_NEAR (expectResult,deltaResult,fabs(expectResult*0.00001f)) << " Roll delta = " << deltaValue;
+				st1.rollAngle = roll;
+
+				// Modify the roll rate
+				deltaValue = 1.0f;
+				st1.rollRateX = rollRate + deltaValue;
+				transMatrix.updateStatus(st1,st2,t);
+				expectResult =
+						roll
+						+ (rollRate + deltaValue) * t
+						;
+				if (expectResult < -180.0f) {
+					expectResult += 360.0f;
+				} else if (expectResult > 180.0f) {
+					expectResult -= 360.0f;
+				}
+				resultDelta = deltaValue *
+						transMatrix.getTransitionMatrix()
+						.coeff(GliderVarioStatus::STATUS_IND_ROLL,GliderVarioStatus::STATUS_IND_ROTATION_X);
+				deltaResult = orgResult + resultDelta;
+				if (deltaResult < -180.0f) {
+					deltaResult += 360.0f;
+				} else if (expectResult > 180.0f) {
+					deltaResult -= 360.0f;
+				}
+
+				EXPECT_NEAR (expectResult,deltaResult,fabs(expectResult*0.00001f)) << " Roll delta = " << deltaValue;
+				st1.rollRateX = rollRate;
+			}
+		}
+	}
+}
+
+TEST_F(TransitionMatrixTest, Heading) {
+
+	// Test the result for a given combination of input values
+	// and a number of time differences
+	// input values are: Heading, yaw rate around the z axis
+	for (FloatType t = 0.01f; t<=1.3f; t+=0.23f  ) {
+		for (FloatType heading = 0.0f; heading <= 360.0f; heading += 32.33f) {
+			for (FloatType yawRate = -20.0f ; yawRate <= 20.0f; yawRate += 6.67f) {
+				st1.heading = heading;
+				st1.yawRateZ = yawRate;
+
+				transMatrix.updateStatus(st1,st2,t);
+
+				FloatType expectResult =
+						heading
+						+ yawRate * t
+						;
+
+				if (expectResult < 0.0f) {
+					expectResult += 360.0f;
+				} else if (expectResult > 360.0f) {
+					expectResult -= 360.0f;
+				}
+
+				EXPECT_NEAR (st2.heading,expectResult,fabs(expectResult*0.00001f)) <<
+						" at heading = " << heading << " yawRate = " << yawRate <<
+						" time = " << t;
+
+				// Test the coefficients in the matrix as derivatives.
+				FloatType orgResult = expectResult;
+				FloatType resultDelta;
+				FloatType deltaValue;
+
+
+				// Modify the roll
+				deltaValue = 1.0f;
+				st1.heading = heading + deltaValue;
+				transMatrix.updateStatus(st1,st2,t);
+				expectResult =
+						(heading + deltaValue)
+						+ yawRate * t
+						;
+				if (expectResult < 0.0f) {
+					expectResult += 360.0f;
+				} else if (expectResult > 360.0f) {
+					expectResult -= 360.0f;
+				}
+				resultDelta = deltaValue *
+						transMatrix.getTransitionMatrix()
+						.coeff(GliderVarioStatus::STATUS_IND_HEADING,GliderVarioStatus::STATUS_IND_HEADING);
+				FloatType deltaResult;
+				deltaResult = orgResult + resultDelta;
+				if (deltaResult < 0.0f) {
+					deltaResult += 360.0f;
+				} else if (deltaResult > 360.0f) {
+					deltaResult -= 360.0f;
+				}
+
+				EXPECT_NEAR (expectResult,deltaResult,fabs(expectResult*0.00001f)) << " Heading delta = " << deltaValue
+						<< " Heading = " << heading << " yawRate = " << yawRate << " time = " << t;
+				st1.heading = heading;
+
+				// Modify the roll rate
+				deltaValue = 1.0f;
+				st1.yawRateZ = yawRate + deltaValue;
+				transMatrix.updateStatus(st1,st2,t);
+				expectResult =
+						heading
+						+ (yawRate + deltaValue) * t
+						;
+				if (expectResult < 0.0f) {
+					expectResult += 360.0f;
+				} else if (expectResult > 360.0f) {
+					expectResult -= 360.0f;
+				}
+				resultDelta = deltaValue *
+						transMatrix.getTransitionMatrix()
+						.coeff(GliderVarioStatus::STATUS_IND_HEADING,GliderVarioStatus::STATUS_IND_ROTATION_Z);
+				deltaResult = orgResult + resultDelta;
+				if (deltaResult < 0.0f) {
+					deltaResult += 360.0f;
+				} else if (expectResult > 360.0f) {
+					deltaResult -= 360.0f;
+				}
+
+				EXPECT_NEAR (expectResult,deltaResult,fabs(expectResult*0.00001f)) << " Yaw delta = " << deltaValue
+						<< " Heading = " << heading << " yawRate = " << yawRate << " time = " << t;
+				st1.yawRateZ = yawRate;
+			}
+		}
+	}
+
+}
