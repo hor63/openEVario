@@ -406,18 +406,21 @@ TEST_F(TransitionMatrixTest, Pitch) {
 						+ pitchRate * t
 						;
 
+				// For derivates test I need the raw result without normalization.
+				FloatType orgResult = expectResult;
+
+
 				if (expectResult < -90.0f) {
 					expectResult = -180.0f - expectResult;
 				} else if (expectResult > 90.0f) {
 					expectResult = 180.0f - expectResult;
 				}
 
-				EXPECT_NEAR (st2.pitchAngle,expectResult,fabs(expectResult*0.00001f)) <<
+				EXPECT_NEAR (st2.pitchAngle,expectResult,0.000001f) <<
 						" at pitch = " << pitch << " pitchRate = " << pitchRate <<
 						" time = " << t;
 
 				// Test the coefficients in the matrix as derivatives.
-				FloatType orgResult = expectResult;
 				FloatType resultDelta;
 				FloatType deltaValue;
 
@@ -447,7 +450,10 @@ TEST_F(TransitionMatrixTest, Pitch) {
 					deltaResult = 180.0f - deltaResult;
 				}
 
-				EXPECT_NEAR (expectResult,deltaResult,fabs(expectResult*0.00001f)) << " Pitch delta = " << deltaValue;
+				EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " Pitch delta = " << deltaValue
+						<< " pitch = " << pitch << " pitch rate = " << pitchRate << " t = " << t
+						<< " resultDelta = " << resultDelta << " orgResult = " << orgResult
+						<< " st2.pitchAngle = " << st2.pitchAngle;
 				st1.pitchAngle = pitch;
 
 				// Modify the pitch rate
@@ -473,7 +479,8 @@ TEST_F(TransitionMatrixTest, Pitch) {
 					deltaResult = 180.0f - deltaResult;
 				}
 
-				EXPECT_NEAR (expectResult,deltaResult,fabs(expectResult*0.00001f)) << " Pitch delta = " << deltaValue;
+				EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " pitchRate delta = " << deltaValue
+						<< " pitch = " << pitch << " pitch rate = " << pitchRate << " t = " << t;
 				st1.pitchRateY = pitchRate;
 			}
 		}
@@ -500,6 +507,9 @@ TEST_F(TransitionMatrixTest, Roll) {
 						+ rollRate * t
 						;
 
+				// For derivates test I need the raw result without normalization.
+				FloatType orgResult = expectResult;
+
 				if (expectResult < -180.0f) {
 					expectResult += 360.0f;
 				} else if (expectResult > 180.0f) {
@@ -511,7 +521,6 @@ TEST_F(TransitionMatrixTest, Roll) {
 						" time = " << t;
 
 				// Test the coefficients in the matrix as derivatives.
-				FloatType orgResult = expectResult;
 				FloatType resultDelta;
 				FloatType deltaValue;
 
@@ -536,7 +545,7 @@ TEST_F(TransitionMatrixTest, Roll) {
 				deltaResult = orgResult + resultDelta;
 				if (deltaResult < -180.0f) {
 					deltaResult += 360.0f;
-				} else if (expectResult > 180.0f) {
+				} else if (deltaResult > 180.0f) {
 					deltaResult -= 360.0f;
 				}
 
@@ -562,11 +571,11 @@ TEST_F(TransitionMatrixTest, Roll) {
 				deltaResult = orgResult + resultDelta;
 				if (deltaResult < -180.0f) {
 					deltaResult += 360.0f;
-				} else if (expectResult > 180.0f) {
+				} else if (deltaResult > 180.0f) {
 					deltaResult -= 360.0f;
 				}
 
-				EXPECT_NEAR (expectResult,deltaResult,fabs(expectResult*0.00001f)) << " Roll delta = " << deltaValue;
+				EXPECT_NEAR (expectResult,deltaResult,fabs(expectResult*0.00001f)) << " Roll rate delta = " << deltaValue;
 				st1.rollRateX = rollRate;
 			}
 		}
@@ -590,6 +599,8 @@ TEST_F(TransitionMatrixTest, Heading) {
 						heading
 						+ yawRate * t
 						;
+				// For derivates test I need the raw result without normalization.
+				FloatType orgResult = expectResult;
 
 				if (expectResult < 0.0f) {
 					expectResult += 360.0f;
@@ -602,7 +613,6 @@ TEST_F(TransitionMatrixTest, Heading) {
 						" time = " << t;
 
 				// Test the coefficients in the matrix as derivatives.
-				FloatType orgResult = expectResult;
 				FloatType resultDelta;
 				FloatType deltaValue;
 
@@ -654,12 +664,12 @@ TEST_F(TransitionMatrixTest, Heading) {
 				deltaResult = orgResult + resultDelta;
 				if (deltaResult < 0.0f) {
 					deltaResult += 360.0f;
-				} else if (expectResult > 360.0f) {
+				} else if (deltaResult > 360.0f) {
 					deltaResult -= 360.0f;
 				}
 
-				EXPECT_NEAR (expectResult,deltaResult,fabs(expectResult*0.00001f)) << " Yaw delta = " << deltaValue
-						<< " Heading = " << heading << " yawRate = " << yawRate << " time = " << t;
+				EXPECT_NEAR (expectResult,deltaResult,fabs(expectResult*0.00001f)) << " Yaw rate delta = " << deltaValue
+						<< " Heading = " << heading << " heading = " << yawRate << " time = " << t;
 				st1.yawRateZ = yawRate;
 			}
 		}
