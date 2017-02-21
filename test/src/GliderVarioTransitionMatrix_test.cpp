@@ -416,7 +416,7 @@ TEST_F(TransitionMatrixTest, Pitch) {
 					expectResult = 180.0f - expectResult;
 				}
 
-				EXPECT_NEAR (st2.pitchAngle,expectResult,0.000001f) <<
+				EXPECT_NEAR (st2.pitchAngle,expectResult,0.00001f) <<
 						" at pitch = " << pitch << " pitchRate = " << pitchRate <<
 						" time = " << t;
 
