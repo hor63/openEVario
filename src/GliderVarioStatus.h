@@ -163,7 +163,7 @@ public:
     /// Speeds
     STATUS_IND_SPEED_GROUND_N	,  ///< Ground speed component North in m/s
     STATUS_IND_SPEED_GROUND_E	,  ///< Ground speed component East in m/s
-    STATUS_IND_TAS			,  ///< True air speed absolute value. Needed to calculate the bank angle with #STATUS_IND_ROTATION_GLO_Z.
+    STATUS_IND_TAS			,  ///< True air speed horizontally in direction of heading
     STATUS_IND_RATE_OF_SINK	, ///< Rate of sink in m/s relative to the surrounding air. Sink because the Z axis points downward
     STATUS_IND_VERTICAL_SPEED	, ///< Absolute vertical speed in m/s downward. Z axis is direction down.
     STATUS_IND_THERMAL_SPEED	, ///< The true reason for the whole exercise! :). As always in Z axis direction downward.
@@ -282,7 +282,7 @@ public:
   /// Speeds
   FloatType& groundSpeedNorth = statusVector_x[ STATUS_IND_SPEED_GROUND_N	];  ///< Ground speed component North in m/s
   FloatType& groundSpeedEast = statusVector_x[ STATUS_IND_SPEED_GROUND_E	];  ///< Ground speed component East in m/s
-  FloatType& trueAirSpeed = statusVector_x[ STATUS_IND_TAS		            ];  ///< True air speed absolute value. Needed to calculate the bank angle with #STATUS_IND_ROTATION_GLO_Z.
+  FloatType& trueAirSpeed = statusVector_x[ STATUS_IND_TAS		            ];  ///< True air speed horizontally in direction of heading
   FloatType& rateOfSink = statusVector_x[ STATUS_IND_RATE_OF_SINK	        ]; ///< Rate of sink in m/s relative to the surrounding air. Sink because the Z axis points downward.
   FloatType& verticalSpeed = statusVector_x[ STATUS_IND_VERTICAL_SPEED	    ]; ///< Absolute vertical speed in m/s downward. Z axis is downward.
   FloatType& thermalSpeed = statusVector_x[ STATUS_IND_THERMAL_SPEED	    ]; ///< The true reason for the whole exercise! :)
