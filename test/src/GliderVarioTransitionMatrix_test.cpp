@@ -676,3 +676,104 @@ TEST_F(TransitionMatrixTest, Heading) {
 	}
 
 }
+
+TEST_F(TransitionMatrixTest, GroundSpeedNorth) {
+
+	// Test the result for a given combination of input values
+	// and a number of time differences
+	// input values are: Heading, yaw rate around the z axis
+	for (FloatType t = 0.01f; t<=1.3f; t+=0.23f  ) {
+		for (FloatType heading = 10.0f; heading <= 350.0f; heading += 32.33f) {
+			for (FloatType trueAirSpeed = 0.0f ; trueAirSpeed <= 50.0f; trueAirSpeed += 6.67f) {
+				for (FloatType accelHeading = 0.0f; accelHeading <= 2.0f; accelHeading += 0.37f) {
+					for (FloatType windSpeedN = -10.0f; windSpeedN <= 12.0f; windSpeedN += 4.69f) {
+
+						st1.heading = heading;
+						st1.yawRateZ = yawRate;
+
+						transMatrix.updateStatus(st1,st2,t);
+
+						FloatType expectResult =
+								heading
+								+ yawRate * t
+								;
+						// For derivates test I need the raw result without normalization.
+						FloatType orgResult = expectResult;
+
+						if (expectResult < 0.0f) {
+							expectResult += 360.0f;
+						} else if (expectResult > 360.0f) {
+							expectResult -= 360.0f;
+						}
+
+						EXPECT_NEAR (st2.heading,expectResult,fabs(expectResult*0.00001f)) <<
+								" at heading = " << heading << " yawRate = " << yawRate <<
+								" time = " << t;
+
+						// Test the coefficients in the matrix as derivatives.
+						FloatType resultDelta;
+						FloatType deltaValue;
+
+
+						// Modify the roll
+						deltaValue = 1.0f;
+						st1.heading = heading + deltaValue;
+						transMatrix.updateStatus(st1,st2,t);
+						expectResult =
+								(heading + deltaValue)
+								+ yawRate * t
+								;
+						if (expectResult < 0.0f) {
+							expectResult += 360.0f;
+						} else if (expectResult > 360.0f) {
+							expectResult -= 360.0f;
+						}
+						resultDelta = deltaValue *
+								transMatrix.getTransitionMatrix()
+								.coeff(GliderVarioStatus::STATUS_IND_HEADING,GliderVarioStatus::STATUS_IND_HEADING);
+						FloatType deltaResult;
+						deltaResult = orgResult + resultDelta;
+						if (deltaResult < 0.0f) {
+							deltaResult += 360.0f;
+						} else if (deltaResult > 360.0f) {
+							deltaResult -= 360.0f;
+						}
+
+						EXPECT_NEAR (expectResult,deltaResult,fabs(expectResult*0.00001f)) << " Heading delta = " << deltaValue
+								<< " Heading = " << heading << " yawRate = " << yawRate << " time = " << t;
+						st1.heading = heading;
+
+						// Modify the roll rate
+						deltaValue = 1.0f;
+						st1.yawRateZ = yawRate + deltaValue;
+						transMatrix.updateStatus(st1,st2,t);
+						expectResult =
+								heading
+								+ (yawRate + deltaValue) * t
+								;
+						if (expectResult < 0.0f) {
+							expectResult += 360.0f;
+						} else if (expectResult > 360.0f) {
+							expectResult -= 360.0f;
+						}
+						resultDelta = deltaValue *
+								transMatrix.getTransitionMatrix()
+								.coeff(GliderVarioStatus::STATUS_IND_HEADING,GliderVarioStatus::STATUS_IND_ROTATION_Z);
+						deltaResult = orgResult + resultDelta;
+						if (deltaResult < 0.0f) {
+							deltaResult += 360.0f;
+						} else if (deltaResult > 360.0f) {
+							deltaResult -= 360.0f;
+						}
+
+						EXPECT_NEAR (expectResult,deltaResult,fabs(expectResult*0.00001f)) << " Yaw rate delta = " << deltaValue
+								<< " Heading = " << heading << " heading = " << yawRate << " time = " << t;
+						st1.yawRateZ = yawRate;
+					}
+
+				}
+			}
+		}
+	}
+
+}
