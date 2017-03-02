@@ -100,7 +100,7 @@ TEST_F(TransitionMatrixTest, Latitude) {
 						// Modify the latitude
 						deltaValue = 10.0f;
 						st1.latitude = lat * 3600.0f + deltaValue;
-						transMatrix.updateStatus(st1,st2,t);
+						// transMatrix.updateStatus(st1,st2,t);
 						expectResult =
 								(lat * 3600.0f + deltaValue)
 								+ arcSecPerM * t*speedGroundN
@@ -116,7 +116,7 @@ TEST_F(TransitionMatrixTest, Latitude) {
 						// Modify groundSpeedN
 						deltaValue = 1.0f;
 						st1.groundSpeedNorth = speedGroundN + deltaValue;
-						transMatrix.updateStatus(st1,st2,t);
+						// transMatrix.updateStatus(st1,st2,t);
 						expectResult =
 								lat * 3600.0f
 								+ arcSecPerM * t* (speedGroundN + deltaValue)
@@ -134,7 +134,7 @@ TEST_F(TransitionMatrixTest, Latitude) {
 						// Modify the acceleration
 						deltaValue = 1.0f;
 						st1.accelHeading = accel + deltaValue;
-						transMatrix.updateStatus(st1,st2,t);
+						// transMatrix.updateStatus(st1,st2,t);
 						expectResult =
 								lat * 3600.0f
 								+ arcSecPerM * t* speedGroundN
@@ -152,7 +152,7 @@ TEST_F(TransitionMatrixTest, Latitude) {
 						// Modify the heading
 						deltaValue = 1.0f;
 						st1.heading = heading + deltaValue;
-						transMatrix.updateStatus(st1,st2,t);
+						// transMatrix.updateStatus(st1,st2,t);
 						expectResult =
 								lat * 3600.0f
 								+ arcSecPerM * t*speedGroundN
@@ -220,7 +220,7 @@ TEST_F(TransitionMatrixTest, Longitude) {
 							// Modify the longitude
 							deltaValue = 10.0f;
 							st1.longitude = lon * 3600.0f + deltaValue;
-							transMatrix.updateStatus(st1,st2,t);
+							// transMatrix.updateStatus(st1,st2,t);
 							expectResult =
 									(lon * 3600.0f + deltaValue)
 									+ arcSecPerM * t*speedGroundE
@@ -236,7 +236,7 @@ TEST_F(TransitionMatrixTest, Longitude) {
 							// Modify groundSpeedE
 							deltaValue = 1.0f;
 							st1.groundSpeedEast = speedGroundE + deltaValue;
-							transMatrix.updateStatus(st1,st2,t);
+							// transMatrix.updateStatus(st1,st2,t);
 							expectResult =
 									lon * 3600.0f
 									+ arcSecPerM * t* (speedGroundE + deltaValue)
@@ -254,7 +254,7 @@ TEST_F(TransitionMatrixTest, Longitude) {
 							// Modify the acceleration
 							deltaValue = 1.0f;
 							st1.accelHeading = accel + deltaValue;
-							transMatrix.updateStatus(st1,st2,t);
+							// transMatrix.updateStatus(st1,st2,t);
 							expectResult =
 									lon * 3600.0f
 									+ arcSecPerM * t* speedGroundE
@@ -272,7 +272,7 @@ TEST_F(TransitionMatrixTest, Longitude) {
 							// Modify the heading
 							deltaValue = 1.0f;
 							st1.heading = heading + deltaValue;
-							transMatrix.updateStatus(st1,st2,t);
+							// transMatrix.updateStatus(st1,st2,t);
 							expectResult =
 									lon * 3600.0f
 									+ arcSecPerM * t*speedGroundE
@@ -336,7 +336,7 @@ TEST_F(TransitionMatrixTest, AltMSL) {
 							// Modify the altitude
 							deltaValue = 3.33f;
 							st1.altMSL = alt + deltaValue;
-							transMatrix.updateStatus(st1,st2,t);
+							// transMatrix.updateStatus(st1,st2,t);
 							expectResult =
 									(alt + deltaValue)
 									- vertSpeed * t
@@ -352,7 +352,7 @@ TEST_F(TransitionMatrixTest, AltMSL) {
 							// Modify the vertical speed
 							deltaValue = 1.33f;
 							st1.verticalSpeed = vertSpeed + deltaValue;
-							transMatrix.updateStatus(st1,st2,t);
+							// transMatrix.updateStatus(st1,st2,t);
 							expectResult =
 									alt
 									- (vertSpeed + deltaValue) * t
@@ -368,7 +368,7 @@ TEST_F(TransitionMatrixTest, AltMSL) {
 							// Modify the vertical acceleration
 							deltaValue = 0.133f;
 							st1.accelVertical = vertAcc + deltaValue;
-							transMatrix.updateStatus(st1,st2,t);
+							// transMatrix.updateStatus(st1,st2,t);
 							expectResult =
 									alt
 									- vertSpeed * t
@@ -428,7 +428,7 @@ TEST_F(TransitionMatrixTest, Pitch) {
 				// Modify the pitch
 				deltaValue = 1.0f;
 				st1.pitchAngle = pitch + deltaValue;
-				transMatrix.updateStatus(st1,st2,t);
+				// transMatrix.updateStatus(st1,st2,t);
 				expectResult =
 						(pitch + deltaValue)
 						+ pitchRate * t
@@ -459,7 +459,7 @@ TEST_F(TransitionMatrixTest, Pitch) {
 				// Modify the pitch rate
 				deltaValue = 1.0f;
 				st1.pitchRateY = pitchRate + deltaValue;
-				transMatrix.updateStatus(st1,st2,t);
+				// transMatrix.updateStatus(st1,st2,t);
 				expectResult =
 						pitch
 						+ (pitchRate + deltaValue) * t
@@ -528,7 +528,7 @@ TEST_F(TransitionMatrixTest, Roll) {
 				// Modify the roll
 				deltaValue = 1.0f;
 				st1.rollAngle = roll + deltaValue;
-				transMatrix.updateStatus(st1,st2,t);
+				// transMatrix.updateStatus(st1,st2,t);
 				expectResult =
 						(roll + deltaValue)
 						+ rollRate * t
@@ -555,7 +555,7 @@ TEST_F(TransitionMatrixTest, Roll) {
 				// Modify the roll rate
 				deltaValue = 1.0f;
 				st1.rollRateX = rollRate + deltaValue;
-				transMatrix.updateStatus(st1,st2,t);
+				// transMatrix.updateStatus(st1,st2,t);
 				expectResult =
 						roll
 						+ (rollRate + deltaValue) * t
@@ -617,10 +617,10 @@ TEST_F(TransitionMatrixTest, Heading) {
 				FloatType deltaValue;
 
 
-				// Modify the roll
+				// Modify the heading
 				deltaValue = 1.0f;
 				st1.heading = heading + deltaValue;
-				transMatrix.updateStatus(st1,st2,t);
+				// transMatrix.updateStatus(st1,st2,t);
 				expectResult =
 						(heading + deltaValue)
 						+ yawRate * t
@@ -645,10 +645,10 @@ TEST_F(TransitionMatrixTest, Heading) {
 						<< " Heading = " << heading << " yawRate = " << yawRate << " time = " << t;
 				st1.heading = heading;
 
-				// Modify the roll rate
+				// Modify the yaw rate
 				deltaValue = 1.0f;
 				st1.yawRateZ = yawRate + deltaValue;
-				transMatrix.updateStatus(st1,st2,t);
+				// transMatrix.updateStatus(st1,st2,t);
 				expectResult =
 						heading
 						+ (yawRate + deltaValue) * t
@@ -682,93 +682,131 @@ TEST_F(TransitionMatrixTest, GroundSpeedNorth) {
 	// Test the result for a given combination of input values
 	// and a number of time differences
 	// input values are: Heading, yaw rate around the z axis
-	for (FloatType t = 0.01f; t<=1.3f; t+=0.23f  ) {
-		for (FloatType heading = 10.0f; heading <= 350.0f; heading += 32.33f) {
-			for (FloatType trueAirSpeed = 0.0f ; trueAirSpeed <= 50.0f; trueAirSpeed += 6.67f) {
-				for (FloatType accelHeading = 0.0f; accelHeading <= 2.0f; accelHeading += 0.37f) {
+	for (FloatType t = 0.01f; t<=1.3f; t+=0.34f  ) {
+		for (FloatType heading = 10.0f; heading <= 350.0f; heading += 52.33f) {
+			for (FloatType trueAirSpeed = 0.0f ; trueAirSpeed <= 50.0f; trueAirSpeed += 8.67f) {
+				for (FloatType accelHeading = 0.0f; accelHeading <= 2.0f; accelHeading += 0.67f) {
 					for (FloatType windSpeedN = -10.0f; windSpeedN <= 12.0f; windSpeedN += 4.69f) {
 
 						st1.heading = heading;
-						st1.yawRateZ = yawRate;
+						st1.trueAirSpeed = trueAirSpeed;
+						st1.accelHeading = accelHeading;
+						st1.windSpeedNorth = windSpeedN;
 
 						transMatrix.updateStatus(st1,st2,t);
 
 						FloatType expectResult =
-								heading
-								+ yawRate * t
+								FastMath::fastCos(heading) * (trueAirSpeed + accelHeading*t)
+								+ windSpeedN
 								;
-						// For derivates test I need the raw result without normalization.
-						FloatType orgResult = expectResult;
 
-						if (expectResult < 0.0f) {
-							expectResult += 360.0f;
-						} else if (expectResult > 360.0f) {
-							expectResult -= 360.0f;
-						}
-
-						EXPECT_NEAR (st2.heading,expectResult,fabs(expectResult*0.00001f)) <<
-								" at heading = " << heading << " yawRate = " << yawRate <<
+						EXPECT_NEAR (st2.groundSpeedNorth,expectResult,0.00001f) <<
+								" at heading   = " << heading <<
+								" trueAirSpeed = " << trueAirSpeed <<
+								" accelHeading = " << accelHeading <<
+								" windSpeedN   = " << windSpeedN <<
 								" time = " << t;
 
 						// Test the coefficients in the matrix as derivatives.
+						FloatType orgResult = expectResult;
 						FloatType resultDelta;
+						FloatType deltaResult;
 						FloatType deltaValue;
 
 
-						// Modify the roll
+						// Modify the heading
 						deltaValue = 1.0f;
 						st1.heading = heading + deltaValue;
-						transMatrix.updateStatus(st1,st2,t);
+						// transMatrix.updateStatus(st1,st2,t);
 						expectResult =
-								(heading + deltaValue)
-								+ yawRate * t
+								FastMath::fastCos(heading + deltaValue) * (trueAirSpeed + accelHeading*t)
+								+ windSpeedN
 								;
-						if (expectResult < 0.0f) {
-							expectResult += 360.0f;
-						} else if (expectResult > 360.0f) {
-							expectResult -= 360.0f;
-						}
+
 						resultDelta = deltaValue *
 								transMatrix.getTransitionMatrix()
-								.coeff(GliderVarioStatus::STATUS_IND_HEADING,GliderVarioStatus::STATUS_IND_HEADING);
-						FloatType deltaResult;
+								.coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_HEADING);
 						deltaResult = orgResult + resultDelta;
-						if (deltaResult < 0.0f) {
-							deltaResult += 360.0f;
-						} else if (deltaResult > 360.0f) {
-							deltaResult -= 360.0f;
-						}
 
-						EXPECT_NEAR (expectResult,deltaResult,fabs(expectResult*0.00001f)) << " Heading delta = " << deltaValue
-								<< " Heading = " << heading << " yawRate = " << yawRate << " time = " << t;
+						EXPECT_NEAR (expectResult,deltaResult,0.001f) << " Heading delta = " << deltaValue <<
+								" at heading   = " << heading <<
+								" trueAirSpeed = " << trueAirSpeed <<
+								" accelHeading = " << accelHeading <<
+								" windSpeedN   = " << windSpeedN <<
+								" time = " << t
+								<< std::endl <<
+								"   resultDelta = " << resultDelta <<
+								" Coefficient = " << transMatrix.getTransitionMatrix()
+								.coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_HEADING) <<
+								" expected coefficient = " << FastMath::degToRad*(-FastMath::fastSin(heading)*(trueAirSpeed + accelHeading*t));
 						st1.heading = heading;
 
-						// Modify the roll rate
+						// Modify the TAS
 						deltaValue = 1.0f;
-						st1.yawRateZ = yawRate + deltaValue;
-						transMatrix.updateStatus(st1,st2,t);
+						st1.trueAirSpeed = trueAirSpeed + deltaValue;
+						// transMatrix.updateStatus(st1,st2,t);
 						expectResult =
-								heading
-								+ (yawRate + deltaValue) * t
+								FastMath::fastCos(heading ) * ((trueAirSpeed+ deltaValue) + accelHeading*t)
+								+ windSpeedN
 								;
-						if (expectResult < 0.0f) {
-							expectResult += 360.0f;
-						} else if (expectResult > 360.0f) {
-							expectResult -= 360.0f;
-						}
+
 						resultDelta = deltaValue *
 								transMatrix.getTransitionMatrix()
-								.coeff(GliderVarioStatus::STATUS_IND_HEADING,GliderVarioStatus::STATUS_IND_ROTATION_Z);
+								.coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_TAS);
 						deltaResult = orgResult + resultDelta;
-						if (deltaResult < 0.0f) {
-							deltaResult += 360.0f;
-						} else if (deltaResult > 360.0f) {
-							deltaResult -= 360.0f;
-						}
 
-						EXPECT_NEAR (expectResult,deltaResult,fabs(expectResult*0.00001f)) << " Yaw rate delta = " << deltaValue
-								<< " Heading = " << heading << " heading = " << yawRate << " time = " << t;
-						st1.yawRateZ = yawRate;
+						EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " TAS delta = " << deltaValue <<
+								" at heading   = " << heading <<
+								" trueAirSpeed = " << trueAirSpeed <<
+								" accelHeading = " << accelHeading <<
+								" windSpeedN   = " << windSpeedN <<
+								" time = " << t;
+						st1.trueAirSpeed = trueAirSpeed;
+
+						// Modify the acceleration
+						deltaValue = 1.0f;
+						st1.accelHeading = accelHeading + deltaValue;
+						// transMatrix.updateStatus(st1,st2,t);
+						expectResult =
+								FastMath::fastCos(heading) * (trueAirSpeed + (accelHeading + deltaValue)*t)
+								+ windSpeedN
+								;
+
+						resultDelta = deltaValue *
+								transMatrix.getTransitionMatrix()
+								.coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_ACC_HEADING);
+						deltaResult = orgResult + resultDelta;
+
+						EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " aceleration delta = " << deltaValue <<
+								" at heading   = " << heading <<
+								" trueAirSpeed = " << trueAirSpeed <<
+								" accelHeading = " << accelHeading <<
+								" windSpeedN   = " << windSpeedN <<
+								" time = " << t;
+						st1.accelHeading = accelHeading;
+
+						// Modify the Northern wind component
+						deltaValue = 1.0f;
+						st1.windSpeedNorth = windSpeedN + deltaValue;
+						// transMatrix.updateStatus(st1,st2,t);
+						expectResult =
+								FastMath::fastCos(heading) * (trueAirSpeed + accelHeading*t)
+								+ (windSpeedN + deltaValue)
+								;
+
+						resultDelta = deltaValue *
+								transMatrix.getTransitionMatrix()
+								.coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_WIND_SPEED_N);
+						deltaResult = orgResult + resultDelta;
+
+						EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " windSpeedN delta = " << deltaValue <<
+								" at heading   = " << heading <<
+								" trueAirSpeed = " << trueAirSpeed <<
+								" accelHeading = " << accelHeading <<
+								" windSpeedN   = " << windSpeedN <<
+								" time = " << t;
+						st1.windSpeedNorth = windSpeedN;
+
 					}
 
 				}
