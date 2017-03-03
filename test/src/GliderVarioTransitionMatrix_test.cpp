@@ -728,7 +728,9 @@ TEST_F(TransitionMatrixTest, GroundSpeedNorth) {
 								.coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_HEADING);
 						deltaResult = orgResult + resultDelta;
 
-						EXPECT_NEAR (expectResult,deltaResult,0.001f) << " Heading delta = " << deltaValue <<
+
+						// Well, we are entering non-linear territory. The accuracy goes pretty much down the drain here.
+						EXPECT_NEAR (expectResult,deltaResult,0.007f) << " Heading delta = " << deltaValue <<
 								" at heading   = " << heading <<
 								" trueAirSpeed = " << trueAirSpeed <<
 								" accelHeading = " << accelHeading <<
@@ -739,6 +741,7 @@ TEST_F(TransitionMatrixTest, GroundSpeedNorth) {
 								" Coefficient = " << transMatrix.getTransitionMatrix()
 								.coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_HEADING) <<
 								" expected coefficient = " << FastMath::degToRad*(-FastMath::fastSin(heading)*(trueAirSpeed + accelHeading*t));
+
 						st1.heading = heading;
 
 						// Modify the TAS
@@ -806,6 +809,148 @@ TEST_F(TransitionMatrixTest, GroundSpeedNorth) {
 								" windSpeedN   = " << windSpeedN <<
 								" time = " << t;
 						st1.windSpeedNorth = windSpeedN;
+
+					}
+
+				}
+			}
+		}
+	}
+
+}
+
+TEST_F(TransitionMatrixTest, GroundSpeedEast) {
+
+	// Test the result for a given combination of input values
+	// and a number of time differences
+	// input values are: Heading, yaw rate around the z axis
+	for (FloatType t = 0.01f; t<=1.3f; t+=0.34f  ) {
+		for (FloatType heading = 10.0f; heading <= 350.0f; heading += 52.33f) {
+			for (FloatType trueAirSpeed = 0.0f ; trueAirSpeed <= 50.0f; trueAirSpeed += 8.67f) {
+				for (FloatType accelHeading = 0.0f; accelHeading <= 2.0f; accelHeading += 0.67f) {
+					for (FloatType windSpeedE = -10.0f; windSpeedE <= 12.0f; windSpeedE += 4.69f) {
+
+						st1.heading = heading;
+						st1.trueAirSpeed = trueAirSpeed;
+						st1.accelHeading = accelHeading;
+						st1.windSpeedEast = windSpeedE;
+
+						transMatrix.updateStatus(st1,st2,t);
+
+						FloatType expectResult =
+								FastMath::fastSin(heading) * (trueAirSpeed + accelHeading*t)
+								+ windSpeedE
+								;
+
+						EXPECT_NEAR (st2.groundSpeedEast,expectResult,0.00001f) <<
+								" at heading   = " << heading <<
+								" trueAirSpeed = " << trueAirSpeed <<
+								" accelHeading = " << accelHeading <<
+								" windSpeedE   = " << windSpeedE <<
+								" time = " << t;
+
+						// Test the coefficients in the matrix as derivatives.
+						FloatType orgResult = expectResult;
+						FloatType resultDelta;
+						FloatType deltaResult;
+						FloatType deltaValue;
+
+
+						// Modify the heading
+						deltaValue = 1.0f;
+						st1.heading = heading + deltaValue;
+						// transMatrix.updateStatus(st1,st2,t);
+						expectResult =
+								FastMath::fastSin(heading + deltaValue) * (trueAirSpeed + accelHeading*t)
+								+ windSpeedE
+								;
+
+						resultDelta = deltaValue *
+								transMatrix.getTransitionMatrix()
+								.coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_HEADING);
+						deltaResult = orgResult + resultDelta;
+
+
+						// Well, we are entering non-linear territory. The accuracy goes pretty much down the drain here.
+						EXPECT_NEAR (expectResult,deltaResult,0.007f) << " Heading delta = " << deltaValue <<
+								" at heading   = " << heading <<
+								" trueAirSpeed = " << trueAirSpeed <<
+								" accelHeading = " << accelHeading <<
+								" windSpeedE   = " << windSpeedE <<
+								" time = " << t
+								<< std::endl <<
+								"   resultDelta = " << resultDelta <<
+								" Coefficient = " << transMatrix.getTransitionMatrix()
+								.coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_HEADING) <<
+								" expected coefficient = " << FastMath::degToRad*(-FastMath::fastSin(heading)*(trueAirSpeed + accelHeading*t));
+
+						st1.heading = heading;
+
+						// Modify the TAS
+						deltaValue = 1.0f;
+						st1.trueAirSpeed = trueAirSpeed + deltaValue;
+						// transMatrix.updateStatus(st1,st2,t);
+						expectResult =
+								FastMath::fastSin(heading ) * ((trueAirSpeed+ deltaValue) + accelHeading*t)
+								+ windSpeedE
+								;
+
+						resultDelta = deltaValue *
+								transMatrix.getTransitionMatrix()
+								.coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_TAS);
+						deltaResult = orgResult + resultDelta;
+
+						EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " TAS delta = " << deltaValue <<
+								" at heading   = " << heading <<
+								" trueAirSpeed = " << trueAirSpeed <<
+								" accelHeading = " << accelHeading <<
+								" windSpeedE   = " << windSpeedE <<
+								" time = " << t;
+						st1.trueAirSpeed = trueAirSpeed;
+
+						// Modify the acceleration
+						deltaValue = 1.0f;
+						st1.accelHeading = accelHeading + deltaValue;
+						// transMatrix.updateStatus(st1,st2,t);
+						expectResult =
+								FastMath::fastSin(heading) * (trueAirSpeed + (accelHeading + deltaValue)*t)
+								+ windSpeedE
+								;
+
+						resultDelta = deltaValue *
+								transMatrix.getTransitionMatrix()
+								.coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_ACC_HEADING);
+						deltaResult = orgResult + resultDelta;
+
+						EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " aceleration delta = " << deltaValue <<
+								" at heading   = " << heading <<
+								" trueAirSpeed = " << trueAirSpeed <<
+								" accelHeading = " << accelHeading <<
+								" windSpeedE   = " << windSpeedE <<
+								" time = " << t;
+						st1.accelHeading = accelHeading;
+
+						// Modify the Eastern wind component
+						deltaValue = 1.0f;
+						st1.windSpeedEast = windSpeedE + deltaValue;
+						// transMatrix.updateStatus(st1,st2,t);
+						expectResult =
+								FastMath::fastSin(heading) * (trueAirSpeed + accelHeading*t)
+								+ (windSpeedE + deltaValue)
+								;
+
+						resultDelta = deltaValue *
+								transMatrix.getTransitionMatrix()
+								.coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_WIND_SPEED_E);
+						deltaResult = orgResult + resultDelta;
+
+						EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " windSpeedN delta = " << deltaValue <<
+								" at heading   = " << heading <<
+								" trueAirSpeed = " << trueAirSpeed <<
+								" accelHeading = " << accelHeading <<
+								" windSpeedE   = " << windSpeedE <<
+								" time = " << t;
+						st1.windSpeedEast = windSpeedE;
 
 					}
 
