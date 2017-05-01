@@ -258,10 +258,10 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
             (lastStatus.trueAirSpeed + lastStatus.accelHeading * timeDiff)
             * FastMath::fastCos(lastStatus.heading) * FastMath::degToRad;
 
-	newStatus.groundSpeedEast =
-			lastStatus.trueAirSpeed * temp1
-			+ lastStatus.accelHeading * temp2
-			+ lastStatus.windSpeedEast;
+    newStatus.groundSpeedEast =
+            lastStatus.trueAirSpeed * temp1
+            + lastStatus.accelHeading * temp2
+            + lastStatus.windSpeedEast;
 
     // STATUS_IND_TAS
 
