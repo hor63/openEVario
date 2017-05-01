@@ -28,15 +28,15 @@
 namespace openEV
 {
 
-  MeasureMatrix::MeasureMatrix ()
-  {
+MeasureMatrix::MeasureMatrix ()
+{
 
 
-  }
+}
 
-  MeasureMatrix::~MeasureMatrix ()
-  {
+MeasureMatrix::~MeasureMatrix ()
+{
 
-  }
+}
 
 } /* namespace openEV */

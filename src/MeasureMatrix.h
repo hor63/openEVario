@@ -29,13 +29,13 @@
 namespace openEV
 {
 
-  class MeasureMatrix
-  {
-  public:
+class MeasureMatrix
+{
+public:
     MeasureMatrix ();
     virtual
     ~MeasureMatrix ();
-  };
+};
 
 } /* namespace openEV */
 

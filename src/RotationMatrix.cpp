@@ -39,33 +39,33 @@ void
 RotationMatrix::calculateRotationMatrixGloToPlane ()
 {
 
-  if (matrixGloToPlaneIsValid) {
-      return;
-  }
+    if (matrixGloToPlaneIsValid) {
+        return;
+    }
 
-  // Calculate the sin and cos values from the angles beforehand because they occur multiple times in the matrix.
-  FloatType sinYaw	= FastMath::fastSin(yaw);
-  FloatType cosYaw	= FastMath::fastCos(yaw);
-  FloatType sinPitch	= FastMath::fastSin(pitch);
-  FloatType cosPitch	= FastMath::fastCos(pitch);
-  FloatType sinRoll	= FastMath::fastSin(roll);
-  FloatType cosRoll	= FastMath::fastCos(roll);
+    // Calculate the sin and cos values from the angles beforehand because they occur multiple times in the matrix.
+    FloatType sinYaw	= FastMath::fastSin(yaw);
+    FloatType cosYaw	= FastMath::fastCos(yaw);
+    FloatType sinPitch	= FastMath::fastSin(pitch);
+    FloatType cosPitch	= FastMath::fastCos(pitch);
+    FloatType sinRoll	= FastMath::fastSin(roll);
+    FloatType cosRoll	= FastMath::fastCos(roll);
 
 
-  matrixGloToPlane(0,0) = cosPitch * cosYaw;
-  matrixGloToPlane(0,1) = cosPitch * sinYaw;
-  matrixGloToPlane(0,2) = -sinPitch;
+    matrixGloToPlane(0,0) = cosPitch * cosYaw;
+    matrixGloToPlane(0,1) = cosPitch * sinYaw;
+    matrixGloToPlane(0,2) = -sinPitch;
 
-  matrixGloToPlane(1,0) = sinRoll * sinPitch * cosYaw - cosRoll * sinYaw;
-  matrixGloToPlane(1,1) = sinRoll * sinPitch * sinYaw + cosRoll * cosYaw;
-  matrixGloToPlane(1,2) = sinRoll * cosPitch;
+    matrixGloToPlane(1,0) = sinRoll * sinPitch * cosYaw - cosRoll * sinYaw;
+    matrixGloToPlane(1,1) = sinRoll * sinPitch * sinYaw + cosRoll * cosYaw;
+    matrixGloToPlane(1,2) = sinRoll * cosPitch;
 
-  matrixGloToPlane(2,0) = cosRoll * sinPitch * cosYaw + sinRoll * sinYaw;
-  matrixGloToPlane(2,1) = cosRoll * sinPitch * sinYaw - sinRoll * cosYaw;
-  matrixGloToPlane(2,2) = cosRoll * cosPitch;
+    matrixGloToPlane(2,0) = cosRoll * sinPitch * cosYaw + sinRoll * sinYaw;
+    matrixGloToPlane(2,1) = cosRoll * sinPitch * sinYaw - sinRoll * cosYaw;
+    matrixGloToPlane(2,2) = cosRoll * cosPitch;
 
-  matrixGloToPlaneIsValid = true;
-  matrixPlaneToGloIsValid = false;
+    matrixGloToPlaneIsValid = true;
+    matrixPlaneToGloIsValid = false;
 
 }
 

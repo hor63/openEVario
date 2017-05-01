@@ -47,53 +47,53 @@ TEST(FastMath, Conversion_radToDeg) {
 
 TEST(FastMath, fastSin) {
 
-	for (double i = -36000.0; i <= 36000.0 ; i++) {
-		EXPECT_LT(sin(i/10.0*FastMath::degToRad) - FastMath::fastSin(i/10.0),0.00001);
-		EXPECT_GT(sin(i/10.0*FastMath::degToRad) - FastMath::fastSin(i/10.0),-0.00001);
-	}
+    for (double i = -36000.0; i <= 36000.0 ; i++) {
+        EXPECT_LT(sin(i/10.0*FastMath::degToRad) - FastMath::fastSin(i/10.0),0.00001);
+        EXPECT_GT(sin(i/10.0*FastMath::degToRad) - FastMath::fastSin(i/10.0),-0.00001);
+    }
 }
 
 TEST(FastMath, fastCos) {
 
-	for (double i = -36000.0; i <= 36000.0 ; i++) {
-		EXPECT_LT(cos(i/10.0*FastMath::degToRad) - FastMath::fastCos(i/10.0),0.00001);
-		EXPECT_GT(cos(i/10.0*FastMath::degToRad) - FastMath::fastCos(i/10.0),-0.00001);
-	}
+    for (double i = -36000.0; i <= 36000.0 ; i++) {
+        EXPECT_LT(cos(i/10.0*FastMath::degToRad) - FastMath::fastCos(i/10.0),0.00001);
+        EXPECT_GT(cos(i/10.0*FastMath::degToRad) - FastMath::fastCos(i/10.0),-0.00001);
+    }
 }
 
 TEST(FastMath, fastASin) {
-double constexpr numSteps = 100.0;
+    double constexpr numSteps = 100.0;
 
-	for (double i = -numSteps; i <= numSteps ; i++) {
-		EXPECT_LT(asin(i/numSteps)*FastMath::radToDeg - FastMath::fastASin(i/numSteps),0.004);
-		EXPECT_GT(asin(i/numSteps)*FastMath::radToDeg - FastMath::fastASin(i/numSteps),-0.004);
-	}
+    for (double i = -numSteps; i <= numSteps ; i++) {
+        EXPECT_LT(asin(i/numSteps)*FastMath::radToDeg - FastMath::fastASin(i/numSteps),0.004);
+        EXPECT_GT(asin(i/numSteps)*FastMath::radToDeg - FastMath::fastASin(i/numSteps),-0.004);
+    }
 }
 
 
 TEST(FastMath, fastACos) {
-	double constexpr numSteps = 100.0;
+    double constexpr numSteps = 100.0;
 
-	for (double i = -numSteps; i <= numSteps ; i++) {
-		EXPECT_LT(acos(i/numSteps)*FastMath::radToDeg - FastMath::fastACos(i/numSteps),0.004);
-		EXPECT_GT(acos(i/numSteps)*FastMath::radToDeg - FastMath::fastACos(i/numSteps),-0.004);
-	}
+    for (double i = -numSteps; i <= numSteps ; i++) {
+        EXPECT_LT(acos(i/numSteps)*FastMath::radToDeg - FastMath::fastACos(i/numSteps),0.004);
+        EXPECT_GT(acos(i/numSteps)*FastMath::radToDeg - FastMath::fastACos(i/numSteps),-0.004);
+    }
 }
 
 TEST(FastMath, fastATan2) {
-	double constexpr numSteps = 100.0;
+    double constexpr numSteps = 100.0;
 
-	for (double i = -numSteps; i <= numSteps ; i++) {
-		for (double k = -numSteps; k <= numSteps ; k++) {
-			double temp = atan2(i/numSteps,k/numSteps)*FastMath::radToDeg;
-			// Standard atan2 returns a negative angle in the 3rd and 4th quadrant. FastMath return 0-360 deg.
-			if (temp < 0.0) {
-				temp += 360.0;
-			}
-			ASSERT_LT(temp - FastMath::fastATan2(i/numSteps,k/numSteps),0.001);
-			ASSERT_GT(temp - FastMath::fastATan2(i/numSteps,k/numSteps),-0.001);
-		}
-	}
+    for (double i = -numSteps; i <= numSteps ; i++) {
+        for (double k = -numSteps; k <= numSteps ; k++) {
+            double temp = atan2(i/numSteps,k/numSteps)*FastMath::radToDeg;
+            // Standard atan2 returns a negative angle in the 3rd and 4th quadrant. FastMath return 0-360 deg.
+            if (temp < 0.0) {
+                temp += 360.0;
+            }
+            ASSERT_LT(temp - FastMath::fastATan2(i/numSteps,k/numSteps),0.001);
+            ASSERT_GT(temp - FastMath::fastATan2(i/numSteps,k/numSteps),-0.001);
+        }
+    }
 }
 
 } // namespace openEV {
