@@ -281,6 +281,7 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
     /// \todo Calculation of Rate of Sink: Refine the vario compensation by considering the decrease of drag based on the polar.
 
     transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_RATE_OF_SINK,GliderVarioStatus::STATUS_IND_ACC_HEADING) = temp1 = lastStatus.trueAirSpeed/GRAVITY;
+    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_RATE_OF_SINK,GliderVarioStatus::STATUS_IND_TAS) = lastStatus.accelHeading/GRAVITY;
 
     newStatus.rateOfSink =
             temp1 * lastStatus.accelHeading;
