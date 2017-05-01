@@ -960,3 +960,146 @@ TEST_F(TransitionMatrixTest, GroundSpeedEast) {
     }
 
 }
+
+TEST_F(TransitionMatrixTest, TrueAirSpeed) {
+
+    // Test the result for a given combination of input values
+    // and a number of time differences
+    // input values are: Heading, yaw rate around the z axis
+    for (FloatType t = 0.01f; t<=1.3f; t+=0.34f  ) {
+        for (FloatType trueAirSpeed = 0.0f ; trueAirSpeed <= 50.0f; trueAirSpeed += 8.67f) {
+            for (FloatType accelHeading = 0.0f; accelHeading <= 2.0f; accelHeading += 0.67f) {
+
+                st1.trueAirSpeed = trueAirSpeed;
+                st1.accelHeading = accelHeading;
+
+                transMatrix.updateStatus(st1,st2,t);
+
+                FloatType expectResult =
+                        trueAirSpeed + accelHeading*t
+                        ;
+
+                EXPECT_NEAR (st2.trueAirSpeed,expectResult,0.00001f) <<
+                        " at trueAirSpeed = " << trueAirSpeed <<
+                        " accelHeading = " << accelHeading <<
+                        " time = " << t;
+
+                // Test the coefficients in the matrix as derivatives.
+                FloatType orgResult = expectResult;
+                FloatType resultDelta;
+                FloatType deltaResult;
+                FloatType deltaValue;
+
+                // Modify the TAS
+                deltaValue = 1.0f;
+                st1.trueAirSpeed = trueAirSpeed + deltaValue;
+                // transMatrix.updateStatus(st1,st2,t);
+                expectResult =
+                        (trueAirSpeed+ deltaValue) + accelHeading*t
+                        ;
+
+                resultDelta = deltaValue *
+                        transMatrix.getTransitionMatrix()
+                        .coeff(GliderVarioStatus::STATUS_IND_TAS,GliderVarioStatus::STATUS_IND_TAS);
+                deltaResult = orgResult + resultDelta;
+
+                EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " TAS delta = " << deltaValue <<
+                        " at trueAirSpeed = " << trueAirSpeed <<
+                        " accelHeading = " << accelHeading <<
+                        " time = " << t;
+                st1.trueAirSpeed = trueAirSpeed;
+
+                // Modify the acceleration
+                deltaValue = 1.0f;
+                st1.accelHeading = accelHeading + deltaValue;
+                // transMatrix.updateStatus(st1,st2,t);
+                expectResult =
+                        trueAirSpeed + (accelHeading + deltaValue)*t
+                        ;
+
+                resultDelta = deltaValue *
+                        transMatrix.getTransitionMatrix()
+                        .coeff(GliderVarioStatus::STATUS_IND_TAS,GliderVarioStatus::STATUS_IND_ACC_HEADING);
+                deltaResult = orgResult + resultDelta;
+
+                EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " aceleration delta = " << deltaValue <<
+                        " at trueAirSpeed = " << trueAirSpeed <<
+                        " accelHeading = " << accelHeading <<
+                        " time = " << t;
+                st1.accelHeading = accelHeading;
+
+            }
+
+        }
+    }
+
+}
+
+TEST_F(TransitionMatrixTest, RateOfSink) {
+
+    // Test the result for a given combination of input values
+    // and a number of time differences
+    // input values are: Heading, yaw rate around the z axis
+        for (FloatType trueAirSpeed = 10.0f ; trueAirSpeed <= 50.0f; trueAirSpeed += 8.67f) {
+            for (FloatType accelHeading = -1.0f; accelHeading <= 1.0f; accelHeading += 0.27f) {
+
+                st1.trueAirSpeed = trueAirSpeed;
+                st1.accelHeading = accelHeading;
+
+                transMatrix.updateStatus(st1,st2,0.1f);
+
+                FloatType expectResult =
+                        trueAirSpeed * accelHeading / GRAVITY;
+                        ;
+
+                EXPECT_NEAR (st2.rateOfSink,expectResult,0.00001f) <<
+                        " at trueAirSpeed = " << trueAirSpeed <<
+                        " accelHeading = " << accelHeading ;
+
+                // Test the coefficients in the matrix as derivatives.
+                FloatType orgResult = expectResult;
+                FloatType resultDelta;
+                FloatType deltaResult;
+                FloatType deltaValue;
+
+                // Modify the TAS
+                deltaValue = 1.0f;
+                st1.trueAirSpeed = trueAirSpeed + deltaValue;
+                // transMatrix.updateStatus(st1,st2,t);
+                expectResult =
+                        (trueAirSpeed + deltaValue) * accelHeading / GRAVITY
+                        ;
+
+                resultDelta = deltaValue *
+                        transMatrix.getTransitionMatrix()
+                        .coeff(GliderVarioStatus::STATUS_IND_RATE_OF_SINK,GliderVarioStatus::STATUS_IND_TAS);
+                deltaResult = orgResult + resultDelta;
+
+                EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " TAS delta = " << deltaValue <<
+                        " at trueAirSpeed = " << trueAirSpeed <<
+                        " accelHeading = " << accelHeading ;
+                st1.trueAirSpeed = trueAirSpeed;
+
+                // Modify the acceleration
+                deltaValue = 1.0f;
+                st1.accelHeading = accelHeading + deltaValue;
+                // transMatrix.updateStatus(st1,st2,t);
+                expectResult =
+                        trueAirSpeed * (accelHeading + deltaValue) / GRAVITY
+                        ;
+
+                resultDelta = deltaValue *
+                        transMatrix.getTransitionMatrix()
+                        .coeff(GliderVarioStatus::STATUS_IND_RATE_OF_SINK,GliderVarioStatus::STATUS_IND_ACC_HEADING);
+                deltaResult = orgResult + resultDelta;
+
+                EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " aceleration delta = " << deltaValue <<
+                        " at trueAirSpeed = " << trueAirSpeed <<
+                        " accelHeading = " << accelHeading;
+                st1.accelHeading = accelHeading;
+
+            }
+    }
+
+}
+
