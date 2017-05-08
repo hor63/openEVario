@@ -1103,3 +1103,542 @@ TEST_F(TransitionMatrixTest, RateOfSink) {
 
 }
 
+TEST_F(TransitionMatrixTest, VerticalSpeed) {
+
+    // Test the result for a given combination of input values
+    // and a number of time differences
+    // input values are: Heading, yaw rate around the z axis
+    for (FloatType t = 0.01f; t<=1.3f; t+=0.34f  ) {
+        for (FloatType verticalSpeed = -10.0f ; verticalSpeed <= 10.0f; verticalSpeed += 1.67f) {
+            for (FloatType accelVertical = -2.0f; accelVertical <= 2.0f; accelVertical += 0.67f) {
+
+                st1.verticalSpeed = verticalSpeed;
+                st1.accelVertical = accelVertical;
+
+                transMatrix.updateStatus(st1,st2,t);
+
+                FloatType expectResult =
+                        verticalSpeed + accelVertical*t
+                        ;
+
+                EXPECT_NEAR (st2.verticalSpeed,expectResult,0.00001f) <<
+                        " at verticalSpeed = " << verticalSpeed <<
+                        " accelVertical = " << accelVertical <<
+                        " time = " << t;
+
+                // Test the coefficients in the matrix as derivatives.
+                FloatType orgResult = expectResult;
+                FloatType resultDelta;
+                FloatType deltaResult;
+                FloatType deltaValue;
+
+                // Modify the Vertical Speed
+                deltaValue = 1.0f;
+                st1.verticalSpeed = verticalSpeed + deltaValue;
+                // transMatrix.updateStatus(st1,st2,t);
+                expectResult =
+                        (verticalSpeed+ deltaValue) + accelVertical*t
+                        ;
+
+                resultDelta = deltaValue *
+                        transMatrix.getTransitionMatrix()
+                        .coeff(GliderVarioStatus::STATUS_IND_VERTICAL_SPEED,GliderVarioStatus::STATUS_IND_VERTICAL_SPEED);
+                deltaResult = orgResult + resultDelta;
+
+                EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " Vertical speed delta = " << deltaValue <<
+                        " at verticalSpeed = " << verticalSpeed <<
+                        " accelVertical = " << accelVertical <<
+                        " time = " << t;
+                st1.verticalSpeed = verticalSpeed;
+
+                // Modify the acceleration
+                deltaValue = 1.0f;
+                st1.accelVertical = accelVertical + deltaValue;
+                // transMatrix.updateStatus(st1,st2,t);
+                expectResult =
+                        verticalSpeed + (accelVertical + deltaValue)*t
+                        ;
+
+                resultDelta = deltaValue *
+                        transMatrix.getTransitionMatrix()
+                        .coeff(GliderVarioStatus::STATUS_IND_VERTICAL_SPEED,GliderVarioStatus::STATUS_IND_ACC_VERTICAL);
+                deltaResult = orgResult + resultDelta;
+
+                EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " aceleration delta = " << deltaValue <<
+                        " at verticalSpeed = " << verticalSpeed <<
+                        " accelVertical = " << accelVertical <<
+                        " time = " << t;
+                st1.accelVertical = accelVertical;
+
+            }
+
+        }
+    }
+
+}
+
+TEST_F(TransitionMatrixTest, ThermalSpeed) {
+
+    // Test the result for a given combination of input values
+    // and a number of time differences
+    // input values are: Heading, yaw rate around the z axis
+    for (FloatType verticalSpeed = -10.0f ; verticalSpeed <= 10.0f; verticalSpeed += 1.67f) {
+        for (FloatType rateOfSink = -10.0f; rateOfSink <= 10.0f; rateOfSink += 1.59f) {
+
+            st1.verticalSpeed = verticalSpeed;
+            st1.rateOfSink = rateOfSink;
+
+            transMatrix.updateStatus(st1,st2,0.1f);
+
+            FloatType expectResult =
+                    verticalSpeed - rateOfSink;
+                    ;
+
+            EXPECT_NEAR (st2.thermalSpeed,expectResult,0.00001f) <<
+                    " at verticalSpeed = " << verticalSpeed <<
+                    " rateOfSink = " << rateOfSink ;
+
+            // Test the coefficients in the matrix as derivatives.
+            FloatType orgResult = expectResult;
+            FloatType resultDelta;
+            FloatType deltaResult;
+            FloatType deltaValue;
+
+            // Modify the Vertical Speed
+            deltaValue = 1.0f;
+            st1.verticalSpeed = verticalSpeed + deltaValue;
+            // transMatrix.updateStatus(st1,st2,t);
+            expectResult =
+                    (verticalSpeed+ deltaValue) - rateOfSink
+                    ;
+
+            resultDelta = deltaValue *
+                    transMatrix.getTransitionMatrix()
+                    .coeff(GliderVarioStatus::STATUS_IND_THERMAL_SPEED,GliderVarioStatus::STATUS_IND_VERTICAL_SPEED);
+            deltaResult = orgResult + resultDelta;
+
+            EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " Vertical speed delta = " << deltaValue <<
+                    " at verticalSpeed = " << verticalSpeed <<
+                    " rateOfSink = " << rateOfSink;
+            st1.verticalSpeed = verticalSpeed;
+
+            // Modify the rate of sink
+            deltaValue = 1.0f;
+            st1.rateOfSink = rateOfSink + deltaValue;
+            // transMatrix.updateStatus(st1,st2,t);
+            expectResult =
+                    verticalSpeed - (rateOfSink + deltaValue)
+                    ;
+
+            resultDelta = deltaValue *
+                    transMatrix.getTransitionMatrix()
+                    .coeff(GliderVarioStatus::STATUS_IND_THERMAL_SPEED,GliderVarioStatus::STATUS_IND_RATE_OF_SINK);
+            deltaResult = orgResult + resultDelta;
+
+            EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " rateOfSink delta = " << deltaValue <<
+                    " at verticalSpeed = " << verticalSpeed <<
+                    " rateOfSink = " << rateOfSink;
+            st1.rateOfSink = rateOfSink;
+
+        }
+
+    }
+
+}
+
+TEST_F(TransitionMatrixTest, AccHeading) {
+
+    // Test the result for a given combination of input values
+    // and a number of time differences
+    // input values are: Heading, yaw rate around the z axis
+    for (FloatType accHeading = -10.0f ; accHeading <= 10.0f; accHeading += 1.67f) {
+
+            st1.accelHeading = accHeading;
+
+            transMatrix.updateStatus(st1,st2,0.1f);
+
+            FloatType expectResult =
+                    accHeading;
+
+            EXPECT_NEAR (st2.accelHeading,expectResult,0.00001f) <<
+                    " at accHeading = " << accHeading;
+
+            // Test the coefficients in the matrix as derivatives.
+            FloatType orgResult = expectResult;
+            FloatType resultDelta;
+            FloatType deltaResult;
+            FloatType deltaValue;
+
+            // Modify the Vertical Speed
+            deltaValue = 1.0f;
+            st1.accelHeading = accHeading + deltaValue;
+            // transMatrix.updateStatus(st1,st2,t);
+            expectResult =
+                    (accHeading+ deltaValue)
+                    ;
+
+            resultDelta = deltaValue *
+                    transMatrix.getTransitionMatrix()
+                    .coeff(GliderVarioStatus::STATUS_IND_ACC_HEADING,GliderVarioStatus::STATUS_IND_ACC_HEADING);
+            deltaResult = orgResult + resultDelta;
+
+            EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " acceleration delta = " << deltaValue <<
+                    " at accHeading = " << accHeading;
+            st1.accelHeading = accHeading;
+
+        }
+
+}
+
+TEST_F(TransitionMatrixTest, AccCross) {
+
+    // Test the result for a given combination of input values
+    // and a number of time differences
+    // input values are: Heading, yaw rate around the z axis
+    for (FloatType accCross = -10.0f ; accCross <= 10.0f; accCross += 1.67f) {
+
+            st1.accelCross = accCross;
+
+            transMatrix.updateStatus(st1,st2,0.1f);
+
+            FloatType expectResult =
+                    accCross;
+
+            EXPECT_NEAR (st2.accelCross,expectResult,0.00001f) <<
+                    " at accCross = " << accCross;
+
+            // Test the coefficients in the matrix as derivatives.
+            FloatType orgResult = expectResult;
+            FloatType resultDelta;
+            FloatType deltaResult;
+            FloatType deltaValue;
+
+            // Modify the Vertical Speed
+            deltaValue = 1.0f;
+            st1.accelCross = accCross + deltaValue;
+            // transMatrix.updateStatus(st1,st2,t);
+            expectResult =
+                    (accCross+ deltaValue)
+                    ;
+
+            resultDelta = deltaValue *
+                    transMatrix.getTransitionMatrix()
+                    .coeff(GliderVarioStatus::STATUS_IND_ACC_CROSS,GliderVarioStatus::STATUS_IND_ACC_CROSS);
+            deltaResult = orgResult + resultDelta;
+
+            EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " acceleration delta = " << deltaValue <<
+                    " at accCross = " << accCross;
+            st1.accelCross = accCross;
+
+        }
+
+}
+
+TEST_F(TransitionMatrixTest, AccVertical) {
+
+    // Test the result for a given combination of input values
+    // and a number of time differences
+    // input values are: Heading, yaw rate around the z axis
+    for (FloatType accVertical = -10.0f ; accVertical <= 10.0f; accVertical += 1.67f) {
+
+            st1.accelVertical = accVertical;
+
+            transMatrix.updateStatus(st1,st2,0.1f);
+
+            FloatType expectResult =
+                    accVertical;
+
+            EXPECT_NEAR (st2.accelVertical,expectResult,0.00001f) <<
+                    " at accVertical = " << accVertical;
+
+            // Test the coefficients in the matrix as derivatives.
+            FloatType orgResult = expectResult;
+            FloatType resultDelta;
+            FloatType deltaResult;
+            FloatType deltaValue;
+
+            // Modify the Vertical Speed
+            deltaValue = 1.0f;
+            st1.accelCross = accVertical + deltaValue;
+            // transMatrix.updateStatus(st1,st2,t);
+            expectResult =
+                    (accVertical+ deltaValue)
+                    ;
+
+            resultDelta = deltaValue *
+                    transMatrix.getTransitionMatrix()
+                    .coeff(GliderVarioStatus::STATUS_IND_ACC_VERTICAL,GliderVarioStatus::STATUS_IND_ACC_VERTICAL);
+            deltaResult = orgResult + resultDelta;
+
+            EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " acceleration delta = " << deltaValue <<
+                    " at accVertical = " << accVertical;
+            st1.accelVertical = accVertical;
+
+        }
+
+}
+
+TEST_F(TransitionMatrixTest, RotationX) {
+
+    // Test the result for a given combination of input values
+    // and a number of time differences
+    // input values are: Heading, yaw rate around the z axis
+    for (FloatType rotationX = -10.0f ; rotationX <= 10.0f; rotationX += 1.67f) {
+
+            st1.rollRateX = rotationX;
+
+            transMatrix.updateStatus(st1,st2,0.1f);
+
+            FloatType expectResult =
+                    rotationX;
+
+            EXPECT_NEAR (st2.rollRateX,expectResult,0.00001f) <<
+                    " at rotationX = " << rotationX;
+
+            // Test the coefficients in the matrix as derivatives.
+            FloatType orgResult = expectResult;
+            FloatType resultDelta;
+            FloatType deltaResult;
+            FloatType deltaValue;
+
+            // Modify the Vertical Speed
+            deltaValue = 1.0f;
+            st1.rollRateX = rotationX + deltaValue;
+            // transMatrix.updateStatus(st1,st2,t);
+            expectResult =
+                    (rotationX+ deltaValue)
+                    ;
+
+            resultDelta = deltaValue *
+                    transMatrix.getTransitionMatrix()
+                    .coeff(GliderVarioStatus::STATUS_IND_ROTATION_X,GliderVarioStatus::STATUS_IND_ROTATION_X);
+            deltaResult = orgResult + resultDelta;
+
+            EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " roll rate delta = " << deltaValue <<
+                    " at rotationX = " << rotationX;
+            st1.rollRateX = rotationX;
+
+        }
+
+}
+
+TEST_F(TransitionMatrixTest, RotationY) {
+
+    // Test the result for a given combination of input values
+    // and a number of time differences
+    // input values are: Heading, yaw rate around the z axis
+    for (FloatType rotationY = -10.0f ; rotationY <= 10.0f; rotationY += 1.67f) {
+
+            st1.pitchRateY = rotationY;
+
+            transMatrix.updateStatus(st1,st2,0.1f);
+
+            FloatType expectResult =
+                    rotationY;
+
+            EXPECT_NEAR (st2.pitchRateY,expectResult,0.00001f) <<
+                    " at rotationY = " << rotationY;
+
+            // Test the coefficients in the matrix as derivatives.
+            FloatType orgResult = expectResult;
+            FloatType resultDelta;
+            FloatType deltaResult;
+            FloatType deltaValue;
+
+            // Modify the Vertical Speed
+            deltaValue = 1.0f;
+            st1.pitchRateY = rotationY + deltaValue;
+            // transMatrix.updateStatus(st1,st2,t);
+            expectResult =
+                    (rotationY+ deltaValue)
+                    ;
+
+            resultDelta = deltaValue *
+                    transMatrix.getTransitionMatrix()
+                    .coeff(GliderVarioStatus::STATUS_IND_ROTATION_Y,GliderVarioStatus::STATUS_IND_ROTATION_Y);
+            deltaResult = orgResult + resultDelta;
+
+            EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " pitch rate delta = " << deltaValue <<
+                    " at rotationY = " << rotationY;
+            st1.pitchRateY = rotationY;
+
+        }
+
+}
+
+TEST_F(TransitionMatrixTest, RotationZ) {
+
+    // Test the result for a given combination of input values
+    // and a number of time differences
+    // input values are: Heading, yaw rate around the z axis
+    for (FloatType rotationZ = -10.0f ; rotationZ <= 10.0f; rotationZ += 1.67f) {
+
+            st1.yawRateZ = rotationZ;
+
+            transMatrix.updateStatus(st1,st2,0.1f);
+
+            FloatType expectResult =
+                    rotationZ;
+
+            EXPECT_NEAR (st2.yawRateZ,expectResult,0.00001f) <<
+                    " at rotationZ = " << rotationZ;
+
+            // Test the coefficients in the matrix as derivatives.
+            FloatType orgResult = expectResult;
+            FloatType resultDelta;
+            FloatType deltaResult;
+            FloatType deltaValue;
+
+            // Modify the Vertical Speed
+            deltaValue = 1.0f;
+            st1.yawRateZ = rotationZ + deltaValue;
+            // transMatrix.updateStatus(st1,st2,t);
+            expectResult =
+                    (rotationZ+ deltaValue)
+                    ;
+
+            resultDelta = deltaValue *
+                    transMatrix.getTransitionMatrix()
+                    .coeff(GliderVarioStatus::STATUS_IND_ROTATION_Z,GliderVarioStatus::STATUS_IND_ROTATION_Z);
+            deltaResult = orgResult + resultDelta;
+
+            EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " yaw rate delta = " << deltaValue <<
+                    " at rotationZ = " << rotationZ;
+            st1.yawRateZ = rotationZ;
+
+        }
+
+}
+
+TEST_F(TransitionMatrixTest, GyroBiasX) {
+
+    // Test the result for a given combination of input values
+    // and a number of time differences
+    // input values are: Heading, yaw rate around the z axis
+    for (FloatType gyroBiasX = -10.0f ; gyroBiasX <= 10.0f; gyroBiasX += 1.67f) {
+
+            st1.gyroBiasX = gyroBiasX;
+
+            transMatrix.updateStatus(st1,st2,0.1f);
+
+            FloatType expectResult =
+                    gyroBiasX;
+
+            EXPECT_NEAR (st2.gyroBiasX,expectResult,0.00001f) <<
+                    " at gyroBiasX = " << gyroBiasX;
+
+            // Test the coefficients in the matrix as derivatives.
+            FloatType orgResult = expectResult;
+            FloatType resultDelta;
+            FloatType deltaResult;
+            FloatType deltaValue;
+
+            // Modify the Vertical Speed
+            deltaValue = 1.0f;
+            st1.gyroBiasX = gyroBiasX + deltaValue;
+            // transMatrix.updateStatus(st1,st2,t);
+            expectResult =
+                    (gyroBiasX+ deltaValue)
+                    ;
+
+            resultDelta = deltaValue *
+                    transMatrix.getTransitionMatrix()
+                    .coeff(GliderVarioStatus::STATUS_IND_GYRO_BIAS_X,GliderVarioStatus::STATUS_IND_GYRO_BIAS_X);
+            deltaResult = orgResult + resultDelta;
+
+            EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " gyro bias delta = " << deltaValue <<
+                    " at gyroBiasX = " << gyroBiasX;
+            st1.gyroBiasX = gyroBiasX;
+
+        }
+
+}
+
+TEST_F(TransitionMatrixTest, GyroBiasY) {
+
+    // Test the result for a given combination of input values
+    // and a number of time differences
+    // input values are: Heading, yaw rate around the z axis
+    for (FloatType gyroBiasY = -10.0f ; gyroBiasY <= 10.0f; gyroBiasY += 1.67f) {
+
+            st1.gyroBiasY = gyroBiasY;
+
+            transMatrix.updateStatus(st1,st2,0.1f);
+
+            FloatType expectResult =
+                    gyroBiasY;
+
+            EXPECT_NEAR (st2.gyroBiasY,expectResult,0.00001f) <<
+                    " at gyroBiasY = " << gyroBiasY;
+
+            // Test the coefficients in the matrix as derivatives.
+            FloatType orgResult = expectResult;
+            FloatType resultDelta;
+            FloatType deltaResult;
+            FloatType deltaValue;
+
+            // Modify the Vertical Speed
+            deltaValue = 1.0f;
+            st1.gyroBiasY = gyroBiasY + deltaValue;
+            // transMatrix.updateStatus(st1,st2,t);
+            expectResult =
+                    (gyroBiasY+ deltaValue)
+                    ;
+
+            resultDelta = deltaValue *
+                    transMatrix.getTransitionMatrix()
+                    .coeff(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Y,GliderVarioStatus::STATUS_IND_GYRO_BIAS_Y);
+            deltaResult = orgResult + resultDelta;
+
+            EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " gyro bias delta = " << deltaValue <<
+                    " at gyroBiasY = " << gyroBiasY;
+            st1.gyroBiasY = gyroBiasY;
+
+        }
+
+}
+
+TEST_F(TransitionMatrixTest, GyroBiasZ) {
+
+    // Test the result for a given combination of input values
+    // and a number of time differences
+    // input values are: Heading, yaw rate around the z axis
+    for (FloatType gyroBiasZ = -10.0f ; gyroBiasZ <= 10.0f; gyroBiasZ += 1.67f) {
+
+            st1.gyroBiasZ = gyroBiasZ;
+
+            transMatrix.updateStatus(st1,st2,0.1f);
+
+            FloatType expectResult =
+                    gyroBiasZ;
+
+            EXPECT_NEAR (st2.gyroBiasZ,expectResult,0.00001f) <<
+                    " at gyroBiasZ = " << gyroBiasZ;
+
+            // Test the coefficients in the matrix as derivatives.
+            FloatType orgResult = expectResult;
+            FloatType resultDelta;
+            FloatType deltaResult;
+            FloatType deltaValue;
+
+            // Modify the Vertical Speed
+            deltaValue = 1.0f;
+            st1.gyroBiasZ = gyroBiasZ + deltaValue;
+            // transMatrix.updateStatus(st1,st2,t);
+            expectResult =
+                    (gyroBiasZ+ deltaValue)
+                    ;
+
+            resultDelta = deltaValue *
+                    transMatrix.getTransitionMatrix()
+                    .coeff(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Z,GliderVarioStatus::STATUS_IND_GYRO_BIAS_Z);
+            deltaResult = orgResult + resultDelta;
+
+            EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " gyro bias delta = " << deltaValue <<
+                    " at gyroBiasZ = " << gyroBiasZ;
+            st1.gyroBiasZ = gyroBiasZ;
+
+        }
+
+}
+
