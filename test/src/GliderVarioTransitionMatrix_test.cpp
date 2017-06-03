@@ -1862,3 +1862,91 @@ TEST_F(TransitionMatrixTest, CompassDeviationZ) {
 
 }
 
+TEST_F(TransitionMatrixTest, WindSpeedN) {
+
+    // Test the result for a given combination of input values
+    // and a number of time differences
+    // input values are: wind speed North
+    for (FloatType windSpeedNorth = -10.0f ; windSpeedNorth <= 10.0f; windSpeedNorth += 1.67f) {
+
+            st1.windSpeedNorth = windSpeedNorth;
+
+            transMatrix.updateStatus(st1,st2,0.1f);
+
+            FloatType expectResult =
+                    windSpeedNorth;
+
+            EXPECT_NEAR (st2.windSpeedNorth,expectResult,0.0000001f) <<
+                    " at windSpeedNorth = " << windSpeedNorth;
+
+            // Test the coefficients in the matrix as derivatives.
+            FloatType orgResult = expectResult;
+            FloatType resultDelta;
+            FloatType deltaResult;
+            FloatType deltaValue;
+
+            // Modify the deviation
+            deltaValue = 1.0f;
+            st1.windSpeedNorth = windSpeedNorth + deltaValue;
+            // transMatrix.updateStatus(st1,st2,t);
+            expectResult =
+                    (windSpeedNorth + deltaValue)
+                    ;
+
+            resultDelta = deltaValue *
+                    transMatrix.getTransitionMatrix()
+                    .coeff(GliderVarioStatus::STATUS_IND_WIND_SPEED_N,GliderVarioStatus::STATUS_IND_WIND_SPEED_N);
+            deltaResult = orgResult + resultDelta;
+
+            EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " deviation delta = " << deltaValue <<
+                    " at windSpeedNorth = " << windSpeedNorth;
+            st1.windSpeedNorth = windSpeedNorth;
+
+        }
+
+}
+
+TEST_F(TransitionMatrixTest, WindSpeedE) {
+
+    // Test the result for a given combination of input values
+    // and a number of time differences
+    // input values are: wind speed North
+    for (FloatType windSpeedEast = -10.0f ; windSpeedEast <= 10.0f; windSpeedEast += 1.67f) {
+
+            st1.windSpeedEast = windSpeedEast;
+
+            transMatrix.updateStatus(st1,st2,0.1f);
+
+            FloatType expectResult =
+                    windSpeedEast;
+
+            EXPECT_NEAR (st2.windSpeedEast,expectResult,0.0000001f) <<
+                    " at windSpeedEast = " << windSpeedEast;
+
+            // Test the coefficients in the matrix as derivatives.
+            FloatType orgResult = expectResult;
+            FloatType resultDelta;
+            FloatType deltaResult;
+            FloatType deltaValue;
+
+            // Modify the deviation
+            deltaValue = 1.0f;
+            st1.windSpeedEast = windSpeedEast + deltaValue;
+            // transMatrix.updateStatus(st1,st2,t);
+            expectResult =
+                    (windSpeedEast + deltaValue)
+                    ;
+
+            resultDelta = deltaValue *
+                    transMatrix.getTransitionMatrix()
+                    .coeff(GliderVarioStatus::STATUS_IND_WIND_SPEED_E,GliderVarioStatus::STATUS_IND_WIND_SPEED_E);
+            deltaResult = orgResult + resultDelta;
+
+            EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " deviation delta = " << deltaValue <<
+                    " at windSpeedEast = " << windSpeedEast;
+            st1.windSpeedEast = windSpeedEast;
+
+        }
+
+}
+
