@@ -1730,3 +1730,135 @@ TEST_F(TransitionMatrixTest, MagneticInclination) {
 
 }
 
+TEST_F(TransitionMatrixTest, CompassDeviationX) {
+
+    // Test the result for a given combination of input values
+    // and a number of time differences
+    // input values are: Heading, yaw rate around the z axis
+    for (FloatType compassDeviationX = -10.0f ; compassDeviationX <= 10.0f; compassDeviationX += 1.67f) {
+
+            st1.compassDeviationX = compassDeviationX;
+
+            transMatrix.updateStatus(st1,st2,0.1f);
+
+            FloatType expectResult =
+                    compassDeviationX;
+
+            EXPECT_NEAR (st2.compassDeviationX,expectResult,0.0000001f) <<
+                    " at compassDeviationX = " << compassDeviationX;
+
+            // Test the coefficients in the matrix as derivatives.
+            FloatType orgResult = expectResult;
+            FloatType resultDelta;
+            FloatType deltaResult;
+            FloatType deltaValue;
+
+            // Modify the deviation
+            deltaValue = 1.0f;
+            st1.compassDeviationX = compassDeviationX + deltaValue;
+            // transMatrix.updateStatus(st1,st2,t);
+            expectResult =
+                    (compassDeviationX + deltaValue)
+                    ;
+
+            resultDelta = deltaValue *
+                    transMatrix.getTransitionMatrix()
+                    .coeff(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_X,GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_X);
+            deltaResult = orgResult + resultDelta;
+
+            EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " deviation delta = " << deltaValue <<
+                    " at compassDeviationX = " << compassDeviationX;
+            st1.compassDeviationX = compassDeviationX;
+
+        }
+
+}
+
+TEST_F(TransitionMatrixTest, CompassDeviationY) {
+
+    // Test the result for a given combination of input values
+    // and a number of time differences
+    // input values are: Heading, yaw rate around the z axis
+    for (FloatType compassDeviationY = -10.0f ; compassDeviationY <= 10.0f; compassDeviationY += 1.67f) {
+
+            st1.compassDeviationY = compassDeviationY;
+
+            transMatrix.updateStatus(st1,st2,0.1f);
+
+            FloatType expectResult =
+                    compassDeviationY;
+
+            EXPECT_NEAR (st2.compassDeviationY,expectResult,0.0000001f) <<
+                    " at compassDeviationY = " << compassDeviationY;
+
+            // Test the coefficients in the matrix as derivatives.
+            FloatType orgResult = expectResult;
+            FloatType resultDelta;
+            FloatType deltaResult;
+            FloatType deltaValue;
+
+            // Modify the deviation
+            deltaValue = 1.0f;
+            st1.compassDeviationY = compassDeviationY + deltaValue;
+            // transMatrix.updateStatus(st1,st2,t);
+            expectResult =
+                    (compassDeviationY + deltaValue)
+                    ;
+
+            resultDelta = deltaValue *
+                    transMatrix.getTransitionMatrix()
+                    .coeff(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Y,GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Y);
+            deltaResult = orgResult + resultDelta;
+
+            EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " deviation delta = " << deltaValue <<
+                    " at compassDeviationY = " << compassDeviationY;
+            st1.compassDeviationX = compassDeviationY;
+
+        }
+
+}
+
+TEST_F(TransitionMatrixTest, CompassDeviationZ) {
+
+    // Test the result for a given combination of input values
+    // and a number of time differences
+    // input values are: Heading, yaw rate around the z axis
+    for (FloatType compassDeviationZ = -10.0f ; compassDeviationZ <= 10.0f; compassDeviationZ += 1.67f) {
+
+            st1.compassDeviationZ = compassDeviationZ;
+
+            transMatrix.updateStatus(st1,st2,0.1f);
+
+            FloatType expectResult =
+                    compassDeviationZ;
+
+            EXPECT_NEAR (st2.compassDeviationZ,expectResult,0.0000001f) <<
+                    " at compassDeviationZ = " << compassDeviationZ;
+
+            // Test the coefficients in the matrix as derivatives.
+            FloatType orgResult = expectResult;
+            FloatType resultDelta;
+            FloatType deltaResult;
+            FloatType deltaValue;
+
+            // Modify the deviation
+            deltaValue = 1.0f;
+            st1.compassDeviationZ = compassDeviationZ + deltaValue;
+            // transMatrix.updateStatus(st1,st2,t);
+            expectResult =
+                    (compassDeviationZ + deltaValue)
+                    ;
+
+            resultDelta = deltaValue *
+                    transMatrix.getTransitionMatrix()
+                    .coeff(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Z,GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Z);
+            deltaResult = orgResult + resultDelta;
+
+            EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " deviation delta = " << deltaValue <<
+                    " at compassDeviationZ = " << compassDeviationZ;
+            st1.compassDeviationX = compassDeviationZ;
+
+        }
+
+}
+
