@@ -1621,7 +1621,7 @@ TEST_F(TransitionMatrixTest, GyroBiasZ) {
             FloatType deltaResult;
             FloatType deltaValue;
 
-            // Modify the Vgyro bias
+            // Modify the gyro bias
             deltaValue = 1.0f;
             st1.gyroBiasZ = gyroBiasZ + deltaValue;
             // transMatrix.updateStatus(st1,st2,t);
@@ -1642,4 +1642,91 @@ TEST_F(TransitionMatrixTest, GyroBiasZ) {
 
 }
 
+TEST_F(TransitionMatrixTest, MagneticDeclination) {
+
+    // Test the result for a given combination of input values
+    // and a number of time differences
+    // input values are: Heading, yaw rate around the z axis
+    for (FloatType magneticDeclination = -10.0f ; magneticDeclination <= 10.0f; magneticDeclination += 1.67f) {
+
+            st1.magneticDeclination = magneticDeclination;
+
+            transMatrix.updateStatus(st1,st2,0.1f);
+
+            FloatType expectResult =
+                    magneticDeclination;
+
+            EXPECT_NEAR (st2.magneticDeclination,expectResult,0.000001f) <<
+                    " at magneticDeclination = " << magneticDeclination;
+
+            // Test the coefficients in the matrix as derivatives.
+            FloatType orgResult = expectResult;
+            FloatType resultDelta;
+            FloatType deltaResult;
+            FloatType deltaValue;
+
+            // Modify the declination
+            deltaValue = 1.0f;
+            st1.magneticDeclination = magneticDeclination + deltaValue;
+            // transMatrix.updateStatus(st1,st2,t);
+            expectResult =
+                    (magneticDeclination+ deltaValue)
+                    ;
+
+            resultDelta = deltaValue *
+                    transMatrix.getTransitionMatrix()
+                    .coeff(GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION,GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION);
+            deltaResult = orgResult + resultDelta;
+
+            EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " declination delta = " << deltaValue <<
+                    " at magneticDeclination = " << magneticDeclination;
+            st1.magneticDeclination = magneticDeclination;
+
+        }
+
+}
+
+TEST_F(TransitionMatrixTest, MagneticInclination) {
+
+    // Test the result for a given combination of input values
+    // and a number of time differences
+    // input values are: Heading, yaw rate around the z axis
+    for (FloatType magneticInclination = -10.0f ; magneticInclination <= 10.0f; magneticInclination += 1.67f) {
+
+            st1.magneticInclination = magneticInclination;
+
+            transMatrix.updateStatus(st1,st2,0.1f);
+
+            FloatType expectResult =
+                    magneticInclination;
+
+            EXPECT_NEAR (st2.magneticInclination,expectResult,0.000001f) <<
+                    " at magneticInclination = " << magneticInclination;
+
+            // Test the coefficients in the matrix as derivatives.
+            FloatType orgResult = expectResult;
+            FloatType resultDelta;
+            FloatType deltaResult;
+            FloatType deltaValue;
+
+            // Modify the declination
+            deltaValue = 1.0f;
+            st1.magneticDeclination = magneticInclination + deltaValue;
+            // transMatrix.updateStatus(st1,st2,t);
+            expectResult =
+                    (magneticInclination + deltaValue)
+                    ;
+
+            resultDelta = deltaValue *
+                    transMatrix.getTransitionMatrix()
+                    .coeff(GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION,GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION);
+            deltaResult = orgResult + resultDelta;
+
+            EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " declination delta = " << deltaValue <<
+                    " at magneticInclination = " << magneticInclination;
+            st1.magneticInclination = magneticInclination;
+
+        }
+
+}
 
