@@ -1269,7 +1269,7 @@ TEST_F(TransitionMatrixTest, AccHeading) {
             FloatType deltaResult;
             FloatType deltaValue;
 
-            // Modify the Vertical Speed
+            // Modify the acceleration
             deltaValue = 1.0f;
             st1.accelHeading = accHeading + deltaValue;
             // transMatrix.updateStatus(st1,st2,t);
@@ -1313,7 +1313,7 @@ TEST_F(TransitionMatrixTest, AccCross) {
             FloatType deltaResult;
             FloatType deltaValue;
 
-            // Modify the Vertical Speed
+            // Modify the acceleration
             deltaValue = 1.0f;
             st1.accelCross = accCross + deltaValue;
             // transMatrix.updateStatus(st1,st2,t);
@@ -1357,7 +1357,7 @@ TEST_F(TransitionMatrixTest, AccVertical) {
             FloatType deltaResult;
             FloatType deltaValue;
 
-            // Modify the Vertical Speed
+            // Modify the
             deltaValue = 1.0f;
             st1.accelCross = accVertical + deltaValue;
             // transMatrix.updateStatus(st1,st2,t);
@@ -1401,7 +1401,7 @@ TEST_F(TransitionMatrixTest, RotationX) {
             FloatType deltaResult;
             FloatType deltaValue;
 
-            // Modify the Vertical Speed
+            // Modify the rotation rate
             deltaValue = 1.0f;
             st1.rollRateX = rotationX + deltaValue;
             // transMatrix.updateStatus(st1,st2,t);
@@ -1445,7 +1445,7 @@ TEST_F(TransitionMatrixTest, RotationY) {
             FloatType deltaResult;
             FloatType deltaValue;
 
-            // Modify the Vertical Speed
+            // Modify the rotation rate
             deltaValue = 1.0f;
             st1.pitchRateY = rotationY + deltaValue;
             // transMatrix.updateStatus(st1,st2,t);
@@ -1489,7 +1489,7 @@ TEST_F(TransitionMatrixTest, RotationZ) {
             FloatType deltaResult;
             FloatType deltaValue;
 
-            // Modify the Vertical Speed
+            // Modify the rotation rate
             deltaValue = 1.0f;
             st1.yawRateZ = rotationZ + deltaValue;
             // transMatrix.updateStatus(st1,st2,t);
@@ -1533,7 +1533,7 @@ TEST_F(TransitionMatrixTest, GyroBiasX) {
             FloatType deltaResult;
             FloatType deltaValue;
 
-            // Modify the Vertical Speed
+            // Modify the gyro bias
             deltaValue = 1.0f;
             st1.gyroBiasX = gyroBiasX + deltaValue;
             // transMatrix.updateStatus(st1,st2,t);
@@ -1577,7 +1577,7 @@ TEST_F(TransitionMatrixTest, GyroBiasY) {
             FloatType deltaResult;
             FloatType deltaValue;
 
-            // Modify the Vertical Speed
+            // Modify the gyro bias
             deltaValue = 1.0f;
             st1.gyroBiasY = gyroBiasY + deltaValue;
             // transMatrix.updateStatus(st1,st2,t);
@@ -1621,7 +1621,7 @@ TEST_F(TransitionMatrixTest, GyroBiasZ) {
             FloatType deltaResult;
             FloatType deltaValue;
 
-            // Modify the Vertical Speed
+            // Modify the Vgyro bias
             deltaValue = 1.0f;
             st1.gyroBiasZ = gyroBiasZ + deltaValue;
             // transMatrix.updateStatus(st1,st2,t);
@@ -1641,4 +1641,5 @@ TEST_F(TransitionMatrixTest, GyroBiasZ) {
         }
 
 }
+
 
