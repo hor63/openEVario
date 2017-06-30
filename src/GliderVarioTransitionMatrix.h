@@ -99,6 +99,8 @@ public:
         newStatus.getErrorCovariance_P() = transitionMatrix * oldStatus.getErrorCovariance_P() * transitionMatrix.transpose()
 			          + oldStatus.getSystemNoiseCovariance_Q();
 
+        newStatus.getSystemNoiseCovariance_Q() = oldStatus.getSystemNoiseCovariance_Q();
+
         newStatus.normalizeAngles();
     }
 
