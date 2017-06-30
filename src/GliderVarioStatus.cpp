@@ -37,6 +37,10 @@ GliderVarioStatus::GliderVarioStatus ()
  errorCovariance_P{STATUS_NUM_ROWS,STATUS_NUM_ROWS}
 {
     statusVector_x.setZero();
+
+    // Changed to sparse matrixes which start empty by default
+    // they are initialized to their dimensions in the initialization section of the constructor
+    // above.
     //systemNoiseCovariance_Q.setZero();
     //errorCovariance_P.setZero();
 
