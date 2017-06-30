@@ -1,38 +1,35 @@
 2017-06-30  Kai Horstmann  <horstmannkai@hotmail.com>
 
-	* .cproject: 
-	* doxygen.cfg: 
-	* src/GliderVarioMeasurementUpdater.cpp (GPSLatitudeUpd): 
-	* src/GliderVarioMeasurementUpdater.h (GliderVarioMeasurementUpdater): 
-	(GliderVarioMeasurementUpdater::calculatedValueTst1): 
-	(GliderVarioMeasurementUpdater::measRowTTst1): 
-	(GliderVarioMeasurementUpdater::calculatedValueTst2): 
-	(GliderVarioMeasurementUpdater::measRowTTst2): 
-	(GliderVarioMeasurementUpdater::calculatedValueTst3): 
-	(GliderVarioMeasurementUpdater::measRowTTst3): 
-	(GliderVarioMeasurementUpdater::GPSLatitudeUpd): 
-	(GPSLongitudeUpd): 
-	(GliderVarioMeasurementUpdater::GPSLongitudeUpd): 
-	(GPSAltitudeUpd): 
-	(GliderVarioMeasurementUpdater::GPSAltitudeUpd): 
-	(GPSHeadingUpd): 
-	(GliderVarioMeasurementUpdater::GPSHeadingUpd): 
-	(GPSSpeedUpd): 
-	(GliderVarioMeasurementUpdater::GPSSpeedUpd): 
-	(accelUpd): 
-	(GliderVarioMeasurementUpdater::accelUpd): 
-	(gyroUpd): 
-	(GliderVarioMeasurementUpdater::gyroUpd): 
-	(compassUpd): 
-	(GliderVarioMeasurementUpdater::compassUpd): 
-	(dynamicPressureUpd): 
-	(GliderVarioMeasurementUpdater::dynamicPressureUpd): 
-	* test/src/Makefile.am: 
-	* test/src/Makefile.in: 
+	* src/GliderVarioStatus.cpp (GliderVarioStatus):
+	(GliderVarioStatus::GliderVarioStatus):
+	  Improve comments in constructor
+	(operator <<): 
+	  Extend width from 13 to 15 characters per element
+	 
+	* src/GliderVarioTransitionMatrix.h (updateStatus): 
+	  Copy the noise covariance from old status to new status.
+	
+	* test/src/GliderVarioMeasurementUpdater_test.cpp (MeasurementUpdaterTest): 
+	(MeasurementUpdaterTest.MeasurementUpdaterTest): 
+	(MeasurementUpdaterTest_Gravity_Test.MeasurementUpdaterTest_Gravity_Test): 
+	(MeasurementUpdaterTest_Gravity_Test::TestBody): 
+	(getStaticRollTimeConstant): 
+	
+	* src/GliderVarioMeasurementUpdater.cpp 
+	* src/GliderVarioMeasurementUpdater.h 
 	  Implement the measurement update functions for the Kalman filter.
+
 	  Implement unit test specific code that allows unit tests looking into the inner
 	  statuses of the measurement update routines. This is not active in production code.
-	   
+	  Add preprocessor variable ENABLE_UNIT_TESTS.
+	
+	* doxygen.cfg: 
+	* test/src/Makefile.am: 
+	* test/src/Makefile.in: 
+	  Implement unit test specific code that allows unit tests looking into the inner
+	  statuses of the measurement update routines. This is not active in production code.
+	  Add preprocessor variable ENABLE_UNIT_TESTS
+
 2016-10-01  Kai Horstmann  <horstmannkai@hotmail.com>
 
 	* src/GliderVarioStatus.cpp (operator <<): 
