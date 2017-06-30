@@ -153,74 +153,74 @@ void GliderVarioStatus::normalizeAngles() {
 std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 
     o <<
-            " gravity     "
-            " longitude   "
-            " latitude    "
-            " altMSL      "
-            " heading     "
-            " pitchAngle  "
-            " rollAngle   "
-            " groundSpeedN"
-            " groundSpeedE"
-            " trueAirSpeed"
-            " rateOfSink  "
-            " verticalSpd "
-            " thermalSpeed"
-            " accelHeading"
-            " accelCross  "
-            " accelVertica"
-            " rollRateX   "
-            " pitchRateY  "
-            " yawRateZ    "
-            " gyroBiasX   "
-            " gyroBiasY   "
-            " gyroBiasZ   "
-            " magDeclinati"
-            " magInclinati"
-            " compDeviatiX"
-            " compDeviatiY"
-            " compDeviatiZ"
-            " windSpeedNor"
-            " windSpeedEas"
-            " QFF         "
-            " lastPressure"
+            " gravity       "
+            " longitude     "
+            " latitude      "
+            " altMSL        "
+            " heading       "
+            " pitchAngle    "
+            " rollAngle     "
+            " groundSpeedN  "
+            " groundSpeedE  "
+            " trueAirSpeed  "
+            " rateOfSink    "
+            " verticalSpeed "
+            " thermalSpeed  "
+            " accelHeading  "
+            " accelCross    "
+            " accelVertical "
+            " rollRateX     "
+            " pitchRateY    "
+            " yawRateZ      "
+            " gyroBiasX     "
+            " gyroBiasY     "
+            " gyroBiasZ     "
+            " magDeclination"
+            " magInclination"
+            " compDeviatiX  "
+            " compDeviatiY  "
+            " compDeviatiZ  "
+            " windSpeedNorth"
+            " windSpeedEast "
+            " QFF           "
+            " lastPressure  "
             << std::endl;
 
     o << std::fixed;
     o.precision(7);
     o.fill('_');
 
-    o.precision(7); o.width(13); o << s.gravity     ;
-    o.precision(7); o.width(13); o << s.longitude   ;
-    o.precision(7); o.width(13); o << s.latitude    ;
-    o.precision(7); o.width(13); o << s.altMSL      ;
-    o.precision(7); o.width(13); o << s.heading     ;
-    o.precision(7); o.width(13); o << s.pitchAngle  ;
-    o.precision(7); o.width(13); o << s.rollAngle   ;
-    o.precision(7); o.width(13); o << s.groundSpeedNorth;
-    o.precision(7); o.width(13); o << s.groundSpeedEast;
-    o.precision(7); o.width(13); o << s.trueAirSpeed;
-    o.precision(7); o.width(13); o << s.rateOfSink  ;
-    o.precision(7); o.width(13); o << s.verticalSpeed;
-    o.precision(7); o.width(13); o << s.thermalSpeed;
-    o.precision(7); o.width(13); o << s.accelHeading      ;
-    o.precision(7); o.width(13); o << s.accelCross      ;
-    o.precision(7); o.width(13); o << s.accelVertical      ;
-    o.precision(7); o.width(13); o << s.rollRateX   ;
-    o.precision(7); o.width(13); o << s.pitchRateY  ;
-    o.precision(7); o.width(13); o << s.yawRateZ ;
-    o.precision(7); o.width(13); o << s.gyroBiasX   ;
-    o.precision(7); o.width(13); o << s.gyroBiasY   ;
-    o.precision(7); o.width(13); o << s.gyroBiasZ   ;
-    o.precision(7); o.width(13); o << s.magneticDeclination;
-    o.precision(7); o.width(13); o << s.magneticInclination;
-    o.precision(7); o.width(13); o << s.compassDeviationX;
-    o.precision(7); o.width(13); o << s.compassDeviationY;
-    o.precision(7); o.width(13); o << s.compassDeviationZ;
-    o.precision(7); o.width(13); o << s.windSpeedNorth;
-    o.precision(7); o.width(13); o << s.windSpeedEast;
-    o.precision(7); o.width(13); o << s.qff;
-    o.precision(7); o.width(13); o << s.lastPressure;
+    o.precision(7); o.width(15); o << s.gravity     ;
+    o.precision(7); o.width(15); o << s.longitude   ;
+    o.precision(7); o.width(15); o << s.latitude    ;
+    o.precision(7); o.width(15); o << s.altMSL      ;
+    o.precision(7); o.width(15); o << s.heading     ;
+    o.precision(7); o.width(15); o << s.pitchAngle  ;
+    o.precision(7); o.width(15); o << s.rollAngle   ;
+    o.precision(7); o.width(15); o << s.groundSpeedNorth;
+    o.precision(7); o.width(15); o << s.groundSpeedEast;
+    o.precision(7); o.width(15); o << s.trueAirSpeed;
+    o.precision(7); o.width(15); o << s.rateOfSink  ;
+    o.precision(7); o.width(15); o << s.verticalSpeed;
+    o.precision(7); o.width(15); o << s.thermalSpeed;
+    o.precision(7); o.width(15); o << s.accelHeading      ;
+    o.precision(7); o.width(15); o << s.accelCross      ;
+    o.precision(7); o.width(15); o << s.accelVertical      ;
+    o.precision(7); o.width(15); o << s.rollRateX   ;
+    o.precision(7); o.width(15); o << s.pitchRateY  ;
+    o.precision(7); o.width(15); o << s.yawRateZ ;
+    o.precision(7); o.width(15); o << s.gyroBiasX   ;
+    o.precision(7); o.width(15); o << s.gyroBiasY   ;
+    o.precision(7); o.width(15); o << s.gyroBiasZ   ;
+    o.precision(7); o.width(15); o << s.magneticDeclination;
+    o.precision(7); o.width(15); o << s.magneticInclination;
+    o.precision(7); o.width(15); o << s.compassDeviationX;
+    o.precision(7); o.width(15); o << s.compassDeviationY;
+    o.precision(7); o.width(15); o << s.compassDeviationZ;
+    o.precision(7); o.width(15); o << s.windSpeedNorth;
+    o.precision(7); o.width(15); o << s.windSpeedEast;
+    o.precision(7); o.width(15); o << s.qff;
+    o.precision(7); o.width(15); o << s.lastPressure;
 
     o << std::endl;
 
