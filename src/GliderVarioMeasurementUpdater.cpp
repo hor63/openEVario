@@ -29,6 +29,21 @@
 
 namespace openEV {
 
+// This stuff is used only for unit tests.
+// These variables contain copies of the local variables used for the measurement updates.
+// These variables are not declared and used in production code.
+#if  ENABLE_UNIT_TESTS == 1
+FloatType GliderVarioMeasurementUpdater::calculatedValueTst1 = 0.0f;
+Eigen::SparseMatrix<FloatType> GliderVarioMeasurementUpdater::measRowTTst1;
+
+FloatType GliderVarioMeasurementUpdater::calculatedValueTst2 = 0.0f;
+Eigen::SparseMatrix<FloatType> GliderVarioMeasurementUpdater::measRowTTst2;
+
+FloatType GliderVarioMeasurementUpdater::calculatedValueTst3 = 0.0f;
+Eigen::SparseMatrix<FloatType> GliderVarioMeasurementUpdater::measRowTTst3;
+#endif
+
+
 void
 GliderVarioMeasurementUpdater::GPSLatitudeUpd (
         FloatType measuredLatitude,
@@ -47,6 +62,13 @@ GliderVarioMeasurementUpdater::GPSLatitudeUpd (
     measurementVector.gpsLatitude = measuredLatitude;
     measRowT.insert(GliderVarioStatus::STATUS_IND_LATITUDE,0) = 1.0f;
     calculatedValue = varioStatus.latitude;
+
+#if  ENABLE_UNIT_TESTS == 1
+    // Save internal statuses for unit tests
+    calculatedValueTst1 = calculatedValue;
+    measRowTTst1 = measRowT;
+#endif
+
 
     calcSingleMeasureUpdate (
             measuredLatitude,
@@ -76,6 +98,12 @@ GliderVarioMeasurementUpdater::GPSLongitudeUpd (
     measRowT.insert(GliderVarioStatus::STATUS_IND_LONGITUDE,0) = 1.0f;
     calculatedValue = varioStatus.longitude;
 
+#if  ENABLE_UNIT_TESTS == 1
+    // Save internal statuses for unit tests
+    calculatedValueTst1 = calculatedValue;
+    measRowTTst1 = measRowT;
+#endif
+
     calcSingleMeasureUpdate (
             measuredLongitude,
             calculatedValue,
@@ -100,6 +128,12 @@ GliderVarioMeasurementUpdater::GPSAltitudeUpd (
     // calculate and fill in local variables here.
     measurementVector.gpsMSL = measuredAltitudeMSL;
     measRowT.insert(GliderVarioStatus::STATUS_IND_ALT_MSL,0) = 1.0f;
+
+#if  ENABLE_UNIT_TESTS == 1
+    // Save internal statuses for unit tests
+    calculatedValueTst1 = calculatedValue;
+    measRowTTst1 = measRowT;
+#endif
 
     calcSingleMeasureUpdate (
             measuredAltitudeMSL,
@@ -135,6 +169,12 @@ GliderVarioMeasurementUpdater::GPSHeadingUpd (
             FastMath::fastATan2(varioStatus.groundSpeedEast,varioStatus.groundSpeedNorth + temp1) / temp1;
     measRowT.insert(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,0) =
             FastMath::fastATan2(varioStatus.groundSpeedEast + temp1,varioStatus.groundSpeedNorth) / temp1;
+
+#if  ENABLE_UNIT_TESTS == 1
+    // Save internal statuses for unit tests
+    calculatedValueTst1 = calculatedValue;
+    measRowTTst1 = measRowT;
+#endif
 
     calcSingleMeasureUpdate (
             measuredCourseOverGround,
@@ -177,6 +217,12 @@ GliderVarioMeasurementUpdater::GPSSpeedUpd (
     temp2 = sqrt(groundSpeedNSquare + temp1 * temp1);
     measRowT.insert(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,0) = (temp2-calculatedValue) / temp3;
 
+
+#if  ENABLE_UNIT_TESTS == 1
+    // Save internal statuses for unit tests
+    calculatedValueTst1 = calculatedValue;
+    measRowTTst1 = measRowT;
+#endif
 
     calcSingleMeasureUpdate (
             measuredSpeedOverGround,
@@ -256,6 +302,12 @@ GliderVarioMeasurementUpdater::accelUpd (
     // measRowT.insert(GliderVarioStatus::STATUS_IND_HEADING,0) = calcAccelVectorIncZ(0) - calcAccelVector(0);
 
 
+#if  ENABLE_UNIT_TESTS == 1
+    // Save internal statuses for unit tests
+    calculatedValueTst1 = measuredAccelX;
+    measRowTTst1 = measRowT;
+#endif
+
     calcSingleMeasureUpdate (
             measuredAccelX,
             calcAccel,
@@ -283,6 +335,12 @@ GliderVarioMeasurementUpdater::accelUpd (
     // measRowT.insert(GliderVarioStatus::STATUS_IND_HEADING,0) = calcAccelVectorIncZ(1) - calcAccel;
 
 
+#if  ENABLE_UNIT_TESTS == 1
+    // Save internal statuses for unit tests
+    calculatedValueTst2 = measuredAccelY;
+    measRowTTst2 = measRowT;
+#endif
+
     calcSingleMeasureUpdate (
             measuredAccelY,
             calcAccel,
@@ -309,6 +367,12 @@ GliderVarioMeasurementUpdater::accelUpd (
     // Change of heading does not affect the accelerometer readings. The derivation of cos(0) is -sin(0) = 0 anyway.
     // measRowT.insert(GliderVarioStatus::STATUS_IND_HEADING,0) = calcAccelVectorIncZ(2) - calcAccel;
 
+
+#if  ENABLE_UNIT_TESTS == 1
+    // Save internal statuses for unit tests
+    calculatedValueTst3 = measuredAccelZ;
+    measRowTTst3 = measRowT;
+#endif
 
     calcSingleMeasureUpdate (
             measuredAccelZ,
@@ -382,6 +446,12 @@ GliderVarioMeasurementUpdater::gyroUpd (
     // Change of heading does not affect the accelerometer readings. The derivation of cos(0) is -sin(0) = 0 anyway.
     // measRowT.insert(GliderVarioStatus::STATUS_IND_HEADING,0) = calcAccelVectorIncZ(0) - calcAccelVector(0);
 
+#if  ENABLE_UNIT_TESTS == 1
+    // Save internal statuses for unit tests
+    calculatedValueTst1 = measuredRollRateX;
+    measRowTTst1 = measRowT;
+#endif
+
     calcSingleMeasureUpdate (
             measuredRollRateX,
             calcRotation,
@@ -406,6 +476,12 @@ GliderVarioMeasurementUpdater::gyroUpd (
     // Change of heading does not affect the accelerometer readings. The derivation of cos(0) is -sin(0) = 0 anyway.
     // measRowT.insert(GliderVarioStatus::STATUS_IND_HEADING) = calcAccelVectorIncZ(0) - calcAccelVector(0);
 
+#if  ENABLE_UNIT_TESTS == 1
+    // Save internal statuses for unit tests
+    calculatedValueTst2 = measuredPitchRateY;
+    measRowTTst2 = measRowT;
+#endif
+
     calcSingleMeasureUpdate (
             measuredPitchRateY,
             calcRotation,
@@ -429,6 +505,12 @@ GliderVarioMeasurementUpdater::gyroUpd (
 
     // Change of heading does not affect the accelerometer readings. The derivation of cos(0) is -sin(0) = 0 anyway.
     // measRowT.insert(GliderVarioStatus::STATUS_IND_HEADING,0) = calcAccelVectorIncZ(0) - calcAccelVector(0);
+
+#if  ENABLE_UNIT_TESTS == 1
+    // Save internal statuses for unit tests
+    calculatedValueTst3 = measuredYawRateZ;
+    measRowTTst3 = measRowT;
+#endif
 
     calcSingleMeasureUpdate (
             measuredYawRateZ,
@@ -517,6 +599,12 @@ GliderVarioMeasurementUpdater::compassUpd (
     measRowT.insert(GliderVarioStatus::STATUS_IND_PITCH,0)                = compassVectorIncPitch(0)       - temp;
     measRowT.insert(GliderVarioStatus::STATUS_IND_ROLL,0)                 = compassVectorIncRoll(0)        - temp;
 
+#if  ENABLE_UNIT_TESTS == 1
+    // Save internal statuses for unit tests
+    calculatedValueTst1 = measuredMagFlowX;
+    measRowTTst1 = measRowT;
+#endif
+
     calcSingleMeasureUpdate (
             measuredMagFlowX,
             calculatedValue,
@@ -538,6 +626,12 @@ GliderVarioMeasurementUpdater::compassUpd (
     measRowT.coeffRef(GliderVarioStatus::STATUS_IND_PITCH,0)                = compassVectorIncPitch(1)       - temp;
     measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROLL,0)                 = compassVectorIncRoll(1)        - temp;
 
+#if  ENABLE_UNIT_TESTS == 1
+    // Save internal statuses for unit tests
+    calculatedValueTst2 = measuredMagFlowY;
+    measRowTTst2 = measRowT;
+#endif
+
     calcSingleMeasureUpdate (
             measuredMagFlowY,
             calculatedValue,
@@ -558,6 +652,12 @@ GliderVarioMeasurementUpdater::compassUpd (
     measRowT.coeffRef(GliderVarioStatus::STATUS_IND_HEADING,0)              = compassVectorIncYaw(2)         - temp;
     measRowT.coeffRef(GliderVarioStatus::STATUS_IND_PITCH,0)                = compassVectorIncPitch(2)       - temp;
     measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROLL,0)                 = compassVectorIncRoll(2)        - temp;
+
+#if  ENABLE_UNIT_TESTS == 1
+    // Save internal statuses for unit tests
+    calculatedValueTst3 = measuredMagFlowZ;
+    measRowTTst3 = measRowT;
+#endif
 
     calcSingleMeasureUpdate (
             measuredMagFlowZ,
@@ -643,6 +743,12 @@ GliderVarioMeasurementUpdater::dynamicPressureUpd (
     // True derivate
     measRowT.insert(GliderVarioStatus::STATUS_IND_TAS,0) = tmp1 * 0.5f;
 
+
+#if  ENABLE_UNIT_TESTS == 1
+    // Save internal statuses for unit tests
+    calculatedValueTst1 = measuredDynamicPressure;
+    measRowTTst1 = measRowT;
+#endif
 
     calcSingleMeasureUpdate (
             measuredDynamicPressure,

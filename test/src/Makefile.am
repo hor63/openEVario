@@ -44,6 +44,7 @@ genSineTables_sources=../../src/genSineTables.cpp
 AM_CXXFLAGS = -isystem $(top_srcdir)/3rdParty/googletest/googletest/include \
 	-I$(top_srcdir)/3rdParty/eigen/Eigen \
 	-I$(top_srcdir)/src \
+	-DENABLE_UNIT_TESTS=1 \
 	$(PTHREAD_CFLAGS) 
 
 # compiling googletest itself requires PTHRED options, and the googletest source directory as include path.

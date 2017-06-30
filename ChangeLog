@@ -1,3 +1,38 @@
+2017-06-30  Kai Horstmann  <horstmannkai@hotmail.com>
+
+	* .cproject: 
+	* doxygen.cfg: 
+	* src/GliderVarioMeasurementUpdater.cpp (GPSLatitudeUpd): 
+	* src/GliderVarioMeasurementUpdater.h (GliderVarioMeasurementUpdater): 
+	(GliderVarioMeasurementUpdater::calculatedValueTst1): 
+	(GliderVarioMeasurementUpdater::measRowTTst1): 
+	(GliderVarioMeasurementUpdater::calculatedValueTst2): 
+	(GliderVarioMeasurementUpdater::measRowTTst2): 
+	(GliderVarioMeasurementUpdater::calculatedValueTst3): 
+	(GliderVarioMeasurementUpdater::measRowTTst3): 
+	(GliderVarioMeasurementUpdater::GPSLatitudeUpd): 
+	(GPSLongitudeUpd): 
+	(GliderVarioMeasurementUpdater::GPSLongitudeUpd): 
+	(GPSAltitudeUpd): 
+	(GliderVarioMeasurementUpdater::GPSAltitudeUpd): 
+	(GPSHeadingUpd): 
+	(GliderVarioMeasurementUpdater::GPSHeadingUpd): 
+	(GPSSpeedUpd): 
+	(GliderVarioMeasurementUpdater::GPSSpeedUpd): 
+	(accelUpd): 
+	(GliderVarioMeasurementUpdater::accelUpd): 
+	(gyroUpd): 
+	(GliderVarioMeasurementUpdater::gyroUpd): 
+	(compassUpd): 
+	(GliderVarioMeasurementUpdater::compassUpd): 
+	(dynamicPressureUpd): 
+	(GliderVarioMeasurementUpdater::dynamicPressureUpd): 
+	* test/src/Makefile.am: 
+	* test/src/Makefile.in: 
+	  Implement the measurement update functions for the Kalman filter.
+	  Implement unit test specific code that allows unit tests looking into the inner
+	  statuses of the measurement update routines. This is not active in production code.
+	   
 2016-10-01  Kai Horstmann  <horstmannkai@hotmail.com>
 
 	* src/GliderVarioStatus.cpp (operator <<): 

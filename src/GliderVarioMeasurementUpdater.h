@@ -248,6 +248,19 @@ public:
             GliderVarioStatus &varioStatus
     );
 
+    // This stuff is used only for unit tests.
+    // These variables contain copies of the local variables used for the measurement updates.
+    // These variables are not declared and used in production code.
+#if  ENABLE_UNIT_TESTS == 1
+    static FloatType calculatedValueTst1;
+    static Eigen::SparseMatrix<FloatType> measRowTTst1;
+
+    static FloatType calculatedValueTst2;
+    static Eigen::SparseMatrix<FloatType> measRowTTst2;
+
+    static FloatType calculatedValueTst3;
+    static Eigen::SparseMatrix<FloatType> measRowTTst3;
+#endif
 
 protected:
 
