@@ -35,8 +35,9 @@ class MeasurementUpdaterTest :public ::testing::Test {
 public:
 
 
-    openEV::GliderVarioTransitionMatrix transMatrix;
-    openEV::GliderVarioStatus st1,st2;
+    GliderVarioTransitionMatrix transMatrix;
+    GliderVarioStatus st1,st2;
+    GliderVarioMeasurementVector measVect;
 
     MeasurementUpdaterTest () {
         GliderVarioStatus::StatusCoVarianceType &errCov   = st1.getErrorCovariance_P();
@@ -197,30 +198,43 @@ public:
         noiseCov.coeffRef(st1.STATUS_IND_LAST_PRESSURE,st1.STATUS_IND_LAST_PRESSURE) = 0.0f;
 
 
-        std::cout << "st1 after Initialization" << std::endl;
-        std::cout << st1 << std::endl;
-        std::cout << std::endl << "The convariance:" << std::endl;
-        std::cout << st1.getErrorCovariance_P() << std::endl;
-
         // Now run this initial model for 10 sec. at 0.1 sec. interval.
         for (int i = 0; i<50; i++) {
             transMatrix.updateStatus(st1,st2,0.1f);
             transMatrix.updateStatus(st2,st1,0.1f);
         }
 
-        std::cout << "st1 after 100 iterations is" << std::endl;
-        std::cout << st1 << std::endl;
-        std::cout << std::endl << "The convariance:" << std::endl;
-        std::cout << st1.getErrorCovariance_P() << std::endl;
     }
 };
 
-TEST_F(MeasurementUpdaterTest, Gravity) {
+TEST_F(MeasurementUpdaterTest, Latitude) {
 
     // Test the result for a given combination of input values
     // and a number of time differences
 
-    EXPECT_EQ (st1.lastPressure,st2.lastPressure);
+    FloatType measLat = st1.latitude/FloatType(3600.0) + FloatType(5/3600.0); // Increase by 5 arc seconds.
+                                                                                //Remember measurement is in degrees, status in arc seconds
+    FloatType expectResult = st1.latitude;
+
+    GliderVarioMeasurementUpdater::GPSLatitudeUpd(measLat,15.0*15.0/3600.0/3600.0,measVect,st1);
+
+    EXPECT_EQ (GliderVarioMeasurementUpdater::calculatedValueTst1,expectResult);
+
+
+}
+
+TEST_F(MeasurementUpdaterTest, Longitude) {
+
+    // Test the result for a given combination of input values
+    // and a number of time differences
+
+    FloatType measLon = st1.longitude/FloatType(3600.0) + FloatType(5/3600.0); // Increase by 5 arc seconds.
+                                                                                //Remember measurement is in degrees, status in arc seconds
+    FloatType expectResult = st1.longitude;
+
+    GliderVarioMeasurementUpdater::GPSLongitudeUpd(measLon,15.0*15.0/3600.0/3600.0,measVect,st1);
+
+    EXPECT_EQ (GliderVarioMeasurementUpdater::calculatedValueTst1,expectResult);
 
 
 }
