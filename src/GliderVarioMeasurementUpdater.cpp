@@ -58,7 +58,7 @@ GliderVarioMeasurementUpdater::GPSLatitudeUpd (
 
     // calculate and fill in local variables here.
     measuredLatitude *= 3600.0f; // to arc seconds
-    latitudeVariance *= 3600.0f; // to arc seconds
+    latitudeVariance *= 3600.0f * 3600.0f; // to arc seconds
     measurementVector.gpsLatitude = measuredLatitude;
     measRowT.insert(GliderVarioStatus::STATUS_IND_LATITUDE,0) = 1.0f;
     calculatedValue = varioStatus.latitude;
@@ -93,7 +93,7 @@ GliderVarioMeasurementUpdater::GPSLongitudeUpd (
 
     // calculate and fill in local variables here.
     measuredLongitude *= 3600.0f; // to arc seconds
-    longitudeVariance *= 3600.0f; // to arc seconds
+    longitudeVariance *= 3600.0f * 3600.0f; // to arc seconds
     measurementVector.gpsLongitude = measuredLongitude;
     measRowT.insert(GliderVarioStatus::STATUS_IND_LONGITUDE,0) = 1.0f;
     calculatedValue = varioStatus.longitude;
@@ -788,20 +788,17 @@ GliderVarioMeasurementUpdater::calcSingleMeasureUpdate (
     kalmanGain_K = coVariance_P * measRowT;
     kalmanGain_K /= denominator;
 
-    // Use a temporary variable to avoid side effects when calculating the state based on the previous status.
-    //newState = statusVector_x + kalmanGain_K * (measuredValue - calculatedValue);
     // substitute direct assignment by iterating over the sparse kalman gain vector, and perform the correct element wise.
     // Eigen does not take mixing dense and sparse matrixes lightly.
-    //int index;
-    //FloatType kalmanGain;
-    //FloatType val;
+    GliderVarioStatus::StatusComponentIndex index;
+    FloatType kalmanGain;
+    FloatType val;
     for (Eigen::SparseMatrix<FloatType>::InnerIterator iter(kalmanGain_K,0); iter ; ++iter){
-        //index=iter.row();
-        //kalmanGain = iter.value();
-        //kalmanGain *= valueDiff;
-        //val = statusVector_x(index);
-        statusVector_x(iter.row()) += iter.value() * valueDiff;
-        //val = statusVector_x(index);
+        index = GliderVarioStatus::StatusComponentIndex(iter.row());
+        kalmanGain = iter.value();
+        kalmanGain *= valueDiff;
+        val = statusVector_x(index);
+        statusVector_x(index) = val + kalmanGain;
     }
 
     coVariance_P -=  (kalmanGain_K * hTimesP);
