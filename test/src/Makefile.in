@@ -230,8 +230,10 @@ CXXCPP = @CXXCPP@
 CXXCPPFLAGS_FOR_BUILD = @CXXCPPFLAGS_FOR_BUILD@
 CXXCPP_FOR_BUILD = @CXXCPP_FOR_BUILD@
 CXXDEPMODE = @CXXDEPMODE@
-CXXFLAGS = @CXXFLAGS@
-CXXFLAGS_FOR_BUILD = @CXXFLAGS_FOR_BUILD@
+
+# disable optimizer to make debugging easier
+CXXFLAGS = @CXXFLAGS@ -g -O0
+CXXFLAGS_FOR_BUILD = @CXXFLAGS_FOR_BUILD@ -g -O0
 CXX_FOR_BUILD = @CXX_FOR_BUILD@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
@@ -383,7 +385,7 @@ AM_CXXFLAGS = -isystem $(top_srcdir)/3rdParty/googletest/googletest/include \
 	-I$(top_srcdir)/3rdParty/eigen/Eigen \
 	-I$(top_srcdir)/src \
 	-DENABLE_UNIT_TESTS=1 \
-	$(PTHREAD_CFLAGS) 
+	$(PTHREAD_CFLAGS)
 
 
 # compiling googletest itself requires PTHRED options, and the googletest source directory as include path.
