@@ -1,3 +1,9 @@
+2017-07-21  Kai Horstmann  <horstmannkai@hotmail.com>
+
+	* test/src/GliderVarioMeasurementUpdater_test.cpp (MeasurementUpdaterTest_Latitude_Test::TestBody): 
+	(MeasurementUpdaterTest_Longitude_Test::TestBody):
+	  Implement unit tests on Ladtitude and Longitude measurement updates.
+	   
 2017-06-30  Kai Horstmann  <horstmannkai@hotmail.com>
 
 	* src/GliderVarioStatus.cpp (GliderVarioStatus):

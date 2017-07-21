@@ -220,6 +220,19 @@ TEST_F(MeasurementUpdaterTest, Latitude) {
 
     EXPECT_EQ (GliderVarioMeasurementUpdater::calculatedValueTst1,expectResult);
 
+    for (int i = 0; i < GliderVarioStatus::STATUS_NUM_ROWS; i++) {
+        switch (i) {
+
+        case GliderVarioStatus::STATUS_IND_LATITUDE:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),1.0f);
+            break;
+
+        default:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),0.0f);
+
+        }
+    }
+
 
 }
 
@@ -235,6 +248,19 @@ TEST_F(MeasurementUpdaterTest, Longitude) {
     GliderVarioMeasurementUpdater::GPSLongitudeUpd(measLon,15.0*15.0/3600.0/3600.0,measVect,st1);
 
     EXPECT_EQ (GliderVarioMeasurementUpdater::calculatedValueTst1,expectResult);
+
+    for (int i = 0; i < GliderVarioStatus::STATUS_NUM_ROWS; i++) {
+        switch (i) {
+
+        case GliderVarioStatus::STATUS_IND_LONGITUDE:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),1.0f);
+            break;
+
+        default:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),0.0f);
+
+        }
+    }
 
 
 }
