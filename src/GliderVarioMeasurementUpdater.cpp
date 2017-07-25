@@ -128,6 +128,7 @@ GliderVarioMeasurementUpdater::GPSAltitudeUpd (
     // calculate and fill in local variables here.
     measurementVector.gpsMSL = measuredAltitudeMSL;
     measRowT.insert(GliderVarioStatus::STATUS_IND_ALT_MSL,0) = 1.0f;
+    calculatedValue = varioStatus.altMSL;
 
 #if  ENABLE_UNIT_TESTS == 1
     // Save internal statuses for unit tests
@@ -163,12 +164,12 @@ GliderVarioMeasurementUpdater::GPSHeadingUpd (
 
     // approximate the derivates
     // to avoid numeric issues use the same increment for both directions
-    temp1 = (varioStatus.groundSpeedNorth + varioStatus.groundSpeedEast) / 100.0f;
+    temp1 = (fabs(varioStatus.groundSpeedNorth) + fabs(varioStatus.groundSpeedEast)) / 100.0f;
 
     measRowT.insert(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,0) =
-            FastMath::fastATan2(varioStatus.groundSpeedEast,varioStatus.groundSpeedNorth + temp1) / temp1;
+            (FastMath::fastATan2(varioStatus.groundSpeedEast,varioStatus.groundSpeedNorth + temp1) - calculatedValue) / temp1;
     measRowT.insert(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,0) =
-            FastMath::fastATan2(varioStatus.groundSpeedEast + temp1,varioStatus.groundSpeedNorth) / temp1;
+            (FastMath::fastATan2(varioStatus.groundSpeedEast + temp1,varioStatus.groundSpeedNorth) - calculatedValue) / temp1;
 
 #if  ENABLE_UNIT_TESTS == 1
     // Save internal statuses for unit tests
@@ -203,18 +204,18 @@ GliderVarioMeasurementUpdater::GPSSpeedUpd (
     // calculate and fill in local variables here.
     measuredSpeedOverGround *= NM_TO_M / 3600.0f;
     measurementVector.gpsSpeed = measuredSpeedOverGround;
-    calculatedValue = sqrt(groundSpeedNSquare + groundSpeedESquare);
+    calculatedValue = sqrtf(groundSpeedNSquare + groundSpeedESquare);
 
     // approximate the derivates
     // use the same increment for both directions to avoid numerical resolution problems
     temp3 = calculatedValue / 100.0f;
 
     temp1 = varioStatus.groundSpeedNorth + temp3;
-    temp2 = sqrt(temp1 * temp1 + groundSpeedESquare);
+    temp2 = sqrtf(temp1 * temp1 + groundSpeedESquare);
     measRowT.insert(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,0) = (temp2-calculatedValue) / temp3;
 
     temp1 = varioStatus.groundSpeedEast + temp3;
-    temp2 = sqrt(groundSpeedNSquare + temp1 * temp1);
+    temp2 = sqrtf(groundSpeedNSquare + temp1 * temp1);
     measRowT.insert(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,0) = (temp2-calculatedValue) / temp3;
 
 
