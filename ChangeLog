@@ -1,3 +1,17 @@
+2017-07-26  Kai Horstmann  <horstmannkai@hotmail.com>
+
+	* test/src/GliderVarioMeasurementUpdater_test.cpp (MeasurementUpdaterTest_GPSAltitude_Test.MeasurementUpdaterTest_GPSAltitude_Test): 
+	(MeasurementUpdaterTest_GPSAltitude_Test::TestBody): 
+	(MeasurementUpdaterTest_GPSHeading_Test.MeasurementUpdaterTest_GPSHeading_Test): 
+	(MeasurementUpdaterTest_GPSHeading_Test::TestBody): 
+	(MeasurementUpdaterTest_GPSSpeed_Test.MeasurementUpdaterTest_GPSSpeed_Test): 
+	(MeasurementUpdaterTest_GPSSpeed_Test::TestBody):
+	  Implement tests for GPS altitude, GPS heading and GPS Speed 
+	* src/GliderVarioMeasurementUpdater.cpp (GliderVarioMeasurementUpdater::GPSAltitudeUpd): 
+	(GliderVarioMeasurementUpdater::GPSHeadingUpd): 
+	(GliderVarioMeasurementUpdater::GPSSpeedUpd): 
+	  Correct bugs in the tested functions on the way
+	  
 2017-07-21  Kai Horstmann  <horstmannkai@hotmail.com>
 
 	* test/src/GliderVarioMeasurementUpdater_test.cpp (MeasurementUpdaterTest_Latitude_Test::TestBody): 

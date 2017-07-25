@@ -265,3 +265,110 @@ TEST_F(MeasurementUpdaterTest, Longitude) {
 
 }
 
+TEST_F(MeasurementUpdaterTest, GPSAltitude) {
+
+    // Test the result for a given combination of input values
+    // and a number of time differences
+
+    FloatType measAlt = st1.altMSL + 10; // Increase by 10 m.
+
+    FloatType expectResult = st1.altMSL;
+
+    GliderVarioMeasurementUpdater::GPSAltitudeUpd(measAlt,25.0*25.0,measVect,st1);
+
+    EXPECT_EQ (GliderVarioMeasurementUpdater::calculatedValueTst1,expectResult);
+
+    for (int i = 0; i < GliderVarioStatus::STATUS_NUM_ROWS; i++) {
+        switch (i) {
+
+        case GliderVarioStatus::STATUS_IND_ALT_MSL:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),1.0f);
+            break;
+
+        default:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),0.0f);
+
+        }
+    }
+
+
+}
+
+TEST_F(MeasurementUpdaterTest, GPSHeading) {
+
+    // Test the result for a given combination of input values
+    // and a number of time differences
+
+    FloatType expectResult = FastMath::fastATan2(st1.groundSpeedEast,st1.groundSpeedNorth);
+
+    FloatType measHeadingGrnd = expectResult + 10.0; // Increase by 10 degrees.
+
+    // approximate derivatives
+    FloatType delta = (fabs(st1.groundSpeedEast) + fabs(st1.groundSpeedNorth)) / 100.0;
+    FloatType expectDiffNorth = (FastMath::fastATan2(st1.groundSpeedEast        ,st1.groundSpeedNorth + delta) - expectResult ) / delta;
+    FloatType expectDiffEast  = (FastMath::fastATan2(st1.groundSpeedEast + delta,st1.groundSpeedNorth        ) - expectResult ) / delta;
+
+    GliderVarioMeasurementUpdater::GPSHeadingUpd(measHeadingGrnd,10.0*10.0,measVect,st1);
+
+    EXPECT_EQ (GliderVarioMeasurementUpdater::calculatedValueTst1,expectResult);
+
+    for (int i = 0; i < GliderVarioStatus::STATUS_NUM_ROWS; i++) {
+        switch (i) {
+
+        case GliderVarioStatus::STATUS_IND_SPEED_GROUND_N:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),expectDiffNorth);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_SPEED_GROUND_E:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),expectDiffEast);
+            break;
+
+        default:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),0.0f);
+
+        }
+    }
+
+
+}
+
+TEST_F(MeasurementUpdaterTest, GPSSpeed) {
+
+    // Test the result for a given combination of input values
+    // and a number of time differences
+
+    FloatType expectResult = sqrtf(st1.groundSpeedEast * st1.groundSpeedEast + st1.groundSpeedNorth * st1.groundSpeedNorth);
+
+    FloatType measSpeedGrnd = expectResult + 10.0; // Increase by 10 m/s.
+
+    // approximate derivatives
+    FloatType delta = expectResult / 100.0;
+    FloatType temp1 =  st1.groundSpeedNorth + delta;
+    FloatType expectDiffNorth = (sqrtf(st1.groundSpeedEast * st1.groundSpeedEast + temp1 * temp1) - expectResult ) / delta;
+    temp1 =  st1.groundSpeedEast + delta;
+    FloatType expectDiffEast = (sqrtf(temp1 * temp1 + st1.groundSpeedNorth * st1.groundSpeedNorth) - expectResult ) / delta;
+
+    GliderVarioMeasurementUpdater::GPSSpeedUpd(measSpeedGrnd,5.0*5.0,measVect,st1);
+
+    EXPECT_EQ (GliderVarioMeasurementUpdater::calculatedValueTst1,expectResult);
+
+    for (int i = 0; i < GliderVarioStatus::STATUS_NUM_ROWS; i++) {
+        switch (i) {
+
+        case GliderVarioStatus::STATUS_IND_SPEED_GROUND_N:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),expectDiffNorth);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_SPEED_GROUND_E:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),expectDiffEast);
+            break;
+
+        default:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),0.0f);
+
+        }
+    }
+
+
+}
+
