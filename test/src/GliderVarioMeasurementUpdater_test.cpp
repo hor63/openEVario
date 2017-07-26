@@ -73,12 +73,12 @@ public:
         // 30 deg per minute
         noiseCov.coeffRef(st1.STATUS_IND_HEADING,st1.STATUS_IND_HEADING) = (20.0 * 20.0) / 600.0;
 
-        st1.pitchAngle = 0.0;
+        st1.pitchAngle = 5.0;
         errCov.coeffRef(st1.STATUS_IND_PITCH,st1.STATUS_IND_PITCH) = 10.0 * 10.0;
         // Pitch does not change so uncontrolled. The consequences would be quite noticeable otherwise :)
         noiseCov.coeffRef(st1.STATUS_IND_PITCH,st1.STATUS_IND_PITCH) = (5.0 * 5.0) / 600;
 
-        st1.rollAngle = 0.0;
+        st1.rollAngle = 20.0;
         errCov.coeffRef(st1.STATUS_IND_ROLL,st1.STATUS_IND_ROLL) = 10.0 * 10.0;
         // Same with the roll angle
         noiseCov.coeffRef(st1.STATUS_IND_ROLL,st1.STATUS_IND_ROLL) = (10.0 * 10.0) / 600;
@@ -130,7 +130,7 @@ public:
         noiseCov.coeffRef(st1.STATUS_IND_ROTATION_Y,st1.STATUS_IND_ROTATION_Y) = 10.0 * 10.0 / 600.0;
 
         // turning 1deg/s clock wise
-        st1.yawRateZ = 1.0;
+        st1.yawRateZ = 15.0;
         errCov.coeffRef(st1.STATUS_IND_ROTATION_Z,st1.STATUS_IND_ROTATION_Z) = 20.0 * 20.0;
         noiseCov.coeffRef(st1.STATUS_IND_ROTATION_Z,st1.STATUS_IND_ROTATION_Z) = 20 * 20 / 600.0;
 
@@ -361,6 +361,95 @@ TEST_F(MeasurementUpdaterTest, GPSSpeed) {
 
         case GliderVarioStatus::STATUS_IND_SPEED_GROUND_E:
             EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),expectDiffEast);
+            break;
+
+        default:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),0.0f);
+
+        }
+    }
+
+
+}
+
+
+TEST_F(MeasurementUpdaterTest, AccelerationX) {
+
+    // Test the result for a given combination of input values
+    // and a number of time differences
+
+    // the plane coordinate system is in direction of the heading. Yaw angle is therefore 0
+    RotationMatrix rotMat(0.0f,st1.pitchAngle,st1.rollAngle);
+    RotationMatrix3DType& rotMat3D = rotMat.getMatrixGloToPlane();
+    // The calculated accelation measuremants include in addition to the actual accelerations of the plane the force of gravity and the
+    // centrifugal force of the plane when turning.
+    Vector3DType accelVect(
+            st1.accelHeading,
+            st1.accelCross + st1.trueAirSpeed * st1.yawRateZ * FastMath::degToRad,
+            st1.accelVertical - st1.gravity);
+    Vector3DType calcAccelVect, calcAccelVectIncX, calcAccelVectIncY;
+    RotationMatrix rotMatIncX (0.0f,st1.pitchAngle       ,st1.rollAngle + 1.0f);
+    RotationMatrix rotMatIncY (0.0f,st1.pitchAngle + 1.0f,st1.rollAngle       );
+    // The derivative of cos(0) is 0. Small increments in heading have no effect
+    // RotationMatrix rotMatIncZ (1.0f,st1.pitchAngle       ,st1.rollAngle       );
+
+    rotMat.calcWorldVectorToPlaneVector(accelVect,calcAccelVect);
+    rotMatIncX.calcWorldVectorToPlaneVector(accelVect,calcAccelVectIncX);
+    rotMatIncY.calcWorldVectorToPlaneVector(accelVect,calcAccelVectIncY);
+
+    FloatType expectResultX = calcAccelVect(0);
+    FloatType expectResultY = calcAccelVect(1);
+    FloatType expectResultZ = calcAccelVect(2);
+
+    FloatType measAccelX = expectResultX + 0.15f; // Increase by 0.1 m/s^2.
+    FloatType measAccelY = expectResultY + 0.05f; // Increase by 0.1 m/s^2.
+    FloatType measAccelZ = expectResultZ + 0.2f; // Increase by 0.1 m/s^2.
+
+    // Calculate derivatives
+    FloatType diffAccelXX = rotMat3D(0,0);
+    FloatType diffAccelYX = rotMat3D(1,0);
+    FloatType diffAccelZX = rotMat3D(2,0);
+
+    FloatType diffAccelXY = rotMat3D(0,1);
+    FloatType diffAccelYY = rotMat3D(1,1);
+    FloatType diffAccelZY = rotMat3D(2,1);
+    FloatType diffAccelXTAS = rotMat3D(0,1) * st1.yawRateZ * FastMath::degToRad;
+    FloatType diffAccelYTAS = rotMat3D(1,1) * st1.yawRateZ * FastMath::degToRad;
+    FloatType diffAccelZTAS = rotMat3D(2,1) * st1.yawRateZ * FastMath::degToRad;
+    FloatType diffAccelXyawRate = rotMat3D(0,1) * st1.trueAirSpeed * FastMath::degToRad;
+    FloatType diffAccelYyawRate = rotMat3D(1,1) * st1.trueAirSpeed * FastMath::degToRad;
+    FloatType diffAccelZyawRate = rotMat3D(2,1) * st1.trueAirSpeed * FastMath::degToRad;
+
+    FloatType diffAccelXZ = rotMat3D(0,2);
+    FloatType diffAccelYZ = rotMat3D(1,2);
+    FloatType diffAccelZZ = rotMat3D(2,2);
+    FloatType diffAccelXGravity = -rotMat3D(0,2);
+    FloatType diffAccelYGravity = -rotMat3D(1,2);
+    FloatType diffAccelZGravity = -rotMat3D(2,2);
+
+    // approximate derivatives
+    FloatType diffRollX = calcAccelVectIncX(0) - expectResultX;
+    FloatType diffPitchX = calcAccelVectIncY(0) - expectResultX;
+    // There is no diffYawX because the derivative of 0 deg (remember, acceleration X is along the heading direction, i.e. 0 deg releative to the plane!
+
+    GliderVarioMeasurementUpdater::accelUpd(measAccelX,0.02f*0.02f, measAccelY,0.02f*0.02f, measAccelZ,0.02f*0.02f ,measVect,st1);
+
+    EXPECT_EQ (GliderVarioMeasurementUpdater::calculatedValueTst1,expectResultX);
+
+    ///TODO: Complete the tests of the measurement matrix.
+    for (int i = 0; i < GliderVarioStatus::STATUS_NUM_ROWS; i++) {
+        switch (i) {
+
+        case GliderVarioStatus::STATUS_IND_ACC_HEADING:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),diffAccelXX);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_ACC_CROSS:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),diffAccelXY);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_ACC_VERTICAL:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),diffAccelXZ);
             break;
 
         default:
