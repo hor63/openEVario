@@ -248,8 +248,8 @@ GliderVarioMeasurementUpdater::accelUpd (
 ) {
     FloatType turnRateRad;
     Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,1);
-    RotationMatrix rotMat, rotMatIncX, rotMatIncY,rotMatIncZ;
-    Vector3DType modelAccelVector,calcAccelVector,calcAccelVectorIncX,calcAccelVectorIncY,calcAccelVectorIncZ;
+    RotationMatrix rotMat, rotMatIncX, rotMatIncY; // rotMatIncZ;
+    Vector3DType modelAccelVector,calcAccelVector,calcAccelVectorIncX,calcAccelVectorIncY; // calcAccelVectorIncZ;
     FloatType calcAccel;
 
     // measRowT.setZero();
@@ -268,9 +268,9 @@ GliderVarioMeasurementUpdater::accelUpd (
     rotMatIncY.setYaw(0.0f);
     rotMatIncY.setPitch(varioStatus.pitchAngle + 1.0f);
     rotMatIncY.setRoll(varioStatus.rollAngle);
-    rotMatIncZ.setYaw(1.0f);
-    rotMatIncZ.setPitch(varioStatus.pitchAngle);
-    rotMatIncZ.setRoll(varioStatus.rollAngle);
+    // rotMatIncZ.setYaw(1.0f);
+    // rotMatIncZ.setPitch(varioStatus.pitchAngle);
+    // rotMatIncZ.setRoll(varioStatus.rollAngle);
 
     turnRateRad = varioStatus.yawRateZ * FastMath::degToRad;
 
@@ -282,7 +282,7 @@ GliderVarioMeasurementUpdater::accelUpd (
     rotMat.calcWorldVectorToPlaneVector(modelAccelVector,calcAccelVector);
     rotMatIncX.calcWorldVectorToPlaneVector(modelAccelVector,calcAccelVectorIncX);
     rotMatIncY.calcWorldVectorToPlaneVector(modelAccelVector,calcAccelVectorIncY);
-    rotMatIncZ.calcWorldVectorToPlaneVector(modelAccelVector,calcAccelVectorIncZ);
+//    rotMatIncZ.calcWorldVectorToPlaneVector(modelAccelVector,calcAccelVectorIncZ);
 
     // Now the update for the X-Axis measurement
     calcAccel = calcAccelVector(0);
