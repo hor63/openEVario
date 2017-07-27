@@ -305,7 +305,7 @@ GliderVarioMeasurementUpdater::accelUpd (
 
 #if  ENABLE_UNIT_TESTS == 1
     // Save internal statuses for unit tests
-    calculatedValueTst1 = measuredAccelX;
+    calculatedValueTst1 = calcAccel;
     measRowTTst1 = measRowT;
 #endif
 
@@ -338,7 +338,7 @@ GliderVarioMeasurementUpdater::accelUpd (
 
 #if  ENABLE_UNIT_TESTS == 1
     // Save internal statuses for unit tests
-    calculatedValueTst2 = measuredAccelY;
+    calculatedValueTst2 = calcAccel;
     measRowTTst2 = measRowT;
 #endif
 
@@ -371,7 +371,7 @@ GliderVarioMeasurementUpdater::accelUpd (
 
 #if  ENABLE_UNIT_TESTS == 1
     // Save internal statuses for unit tests
-    calculatedValueTst3 = measuredAccelZ;
+    calculatedValueTst3 = calcAccel;
     measRowTTst3 = measRowT;
 #endif
 
