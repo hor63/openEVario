@@ -1,3 +1,11 @@
+2017-07-28  Kai Horstmann  <horstmannkai@hotmail.com>
+
+	* test/src/GliderVarioMeasurementUpdater_test.cpp (MeasurementUpdaterTest_Acceleration.MeasurementUpdaterTest_Acceleration): 
+	(MeasurementUpdaterTest_Acceleration::TestBody): 
+	  Implement tests for Accelerations in all three dimensions 
+	* src/GliderVarioMeasurementUpdater.cpp (GliderVarioMeasurementUpdater::accelUpd)
+	  Adjust the acceleration update routine and correct bugs with the unit testing
+	
 2017-07-26  Kai Horstmann  <horstmannkai@hotmail.com>
 
 	* test/src/GliderVarioMeasurementUpdater_test.cpp (MeasurementUpdaterTest_GPSAltitude_Test.MeasurementUpdaterTest_GPSAltitude_Test): 
