@@ -110,16 +110,16 @@ public:
         noiseCov.coeffRef(st1.STATUS_IND_THERMAL_SPEED,st1.STATUS_IND_THERMAL_SPEED) = (2.0 * 2.0) / 600.0;
 
         st1.accelHeading = 0.0;
-        errCov.coeffRef(st1.STATUS_IND_ACC_HEADING,st1.STATUS_IND_ACC_HEADING) = 1.0;
-        noiseCov.coeffRef(st1.STATUS_IND_ACC_HEADING,st1.STATUS_IND_ACC_HEADING) = 1.0 / 600.0;
+        errCov.coeffRef(st1.STATUS_IND_ACC_HEADING,st1.STATUS_IND_ACC_HEADING) = 100.0;
+        noiseCov.coeffRef(st1.STATUS_IND_ACC_HEADING,st1.STATUS_IND_ACC_HEADING) = 1.0 / 60.0;
 
         st1.accelCross = 0.0;
-        errCov.coeffRef(st1.STATUS_IND_ACC_CROSS,st1.STATUS_IND_ACC_CROSS) = 1.0;
-        noiseCov.coeffRef(st1.STATUS_IND_ACC_CROSS,st1.STATUS_IND_ACC_CROSS) = 1.0 / 600;
+        errCov.coeffRef(st1.STATUS_IND_ACC_CROSS,st1.STATUS_IND_ACC_CROSS) = 100.0;
+        noiseCov.coeffRef(st1.STATUS_IND_ACC_CROSS,st1.STATUS_IND_ACC_CROSS) = 1.0 / 60.0;
 
         st1.accelVertical = 0.0;
-        errCov.coeffRef(st1.STATUS_IND_ACC_VERTICAL,st1.STATUS_IND_ACC_VERTICAL) = 1.0;
-        noiseCov.coeffRef(st1.STATUS_IND_ACC_VERTICAL,st1.STATUS_IND_ACC_VERTICAL) = 1.0 / 600.0;
+        errCov.coeffRef(st1.STATUS_IND_ACC_VERTICAL,st1.STATUS_IND_ACC_VERTICAL) = 100.0;
+        noiseCov.coeffRef(st1.STATUS_IND_ACC_VERTICAL,st1.STATUS_IND_ACC_VERTICAL) = 1.0 / 60.0;
 
         st1.rollRateX = 0.0;
         errCov.coeffRef(st1.STATUS_IND_ROTATION_X,st1.STATUS_IND_ROTATION_X) = 20.0 * 20.0;
@@ -373,7 +373,7 @@ TEST_F(MeasurementUpdaterTest, GPSSpeed) {
 }
 
 
-TEST_F(MeasurementUpdaterTest, AccelerationX) {
+TEST_F(MeasurementUpdaterTest, Acceleration) {
 
     // Test the result for a given combination of input values
     // and a number of time differences
@@ -432,7 +432,7 @@ TEST_F(MeasurementUpdaterTest, AccelerationX) {
     FloatType diffPitchX = calcAccelVectIncY(0) - expectResultX;
     // There is no diffYawX because the derivative of 0 deg (remember, acceleration X is along the heading direction, i.e. 0 deg releative to the plane!
 
-    GliderVarioMeasurementUpdater::accelUpd(measAccelX,0.02f*0.02f, measAccelY,0.02f*0.02f, measAccelZ,0.02f*0.02f ,measVect,st1);
+    GliderVarioMeasurementUpdater::accelUpd(measAccelX,0.2f*0.2f, measAccelY,0.2f*0.2f, measAccelZ,0.2f*0.2f ,measVect,st1);
 
     EXPECT_EQ (GliderVarioMeasurementUpdater::calculatedValueTst1,expectResultX);
 
@@ -452,8 +452,30 @@ TEST_F(MeasurementUpdaterTest, AccelerationX) {
             EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),diffAccelXZ);
             break;
 
+        case GliderVarioStatus::STATUS_IND_TAS:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),diffAccelXTAS);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_ROTATION_Y:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),diffAccelXyawRate);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_GRAVITY:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),diffAccelXGravity);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_ROLL:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),diffRollX);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_PITCH:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),diffPitchX);
+            break;
+
         default:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),0.0f);
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),0.0f)
+			  << " Coefficient with index " << i << " is expected 0.0 but actuallz is "
+			  <<  GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0);
 
         }
     }
