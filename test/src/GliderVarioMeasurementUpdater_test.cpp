@@ -383,15 +383,19 @@ TEST_F(MeasurementUpdaterTest, Acceleration) {
     RotationMatrix3DType& rotMat3D = rotMat.getMatrixGloToPlane();
     // The calculated accelation measuremants include in addition to the actual accelerations of the plane the force of gravity and the
     // centrifugal force of the plane when turning.
+
+    FloatType turnRateRad = st1.yawRateZ * FastMath::degToRad;
+
     Vector3DType accelVect(
             st1.accelHeading,
-            st1.accelCross + st1.trueAirSpeed * st1.yawRateZ * FastMath::degToRad,
+            turnRateRad * st1.trueAirSpeed + st1.accelCross,
             st1.accelVertical - st1.gravity);
     Vector3DType calcAccelVect, calcAccelVectIncX, calcAccelVectIncY;
     RotationMatrix rotMatIncX (0.0f,st1.pitchAngle       ,st1.rollAngle + 1.0f);
     RotationMatrix rotMatIncY (0.0f,st1.pitchAngle + 1.0f,st1.rollAngle       );
     // The derivative of cos(0) is 0. Small increments in heading have no effect
     // RotationMatrix rotMatIncZ (1.0f,st1.pitchAngle       ,st1.rollAngle       );
+
 
     rotMat.calcWorldVectorToPlaneVector(accelVect,calcAccelVect);
     rotMatIncX.calcWorldVectorToPlaneVector(accelVect,calcAccelVectIncX);
@@ -430,13 +434,18 @@ TEST_F(MeasurementUpdaterTest, Acceleration) {
     // approximate derivatives
     FloatType diffRollX = calcAccelVectIncX(0) - expectResultX;
     FloatType diffPitchX = calcAccelVectIncY(0) - expectResultX;
+
+    FloatType diffRollY = calcAccelVectIncX(1) - expectResultY;
+    FloatType diffPitchY = calcAccelVectIncY(1) - expectResultY;
+
+    FloatType diffRollZ = calcAccelVectIncX(2) - expectResultZ;
+    FloatType diffPitchZ = calcAccelVectIncY(2) - expectResultZ;
     // There is no diffYawX because the derivative of 0 deg (remember, acceleration X is along the heading direction, i.e. 0 deg releative to the plane!
 
     GliderVarioMeasurementUpdater::accelUpd(measAccelX,0.2f*0.2f, measAccelY,0.2f*0.2f, measAccelZ,0.2f*0.2f ,measVect,st1);
 
     EXPECT_EQ (GliderVarioMeasurementUpdater::calculatedValueTst1,expectResultX);
 
-    ///TODO: Complete the tests of the measurement matrix.
     for (int i = 0; i < GliderVarioStatus::STATUS_NUM_ROWS; i++) {
         switch (i) {
 
@@ -456,7 +465,7 @@ TEST_F(MeasurementUpdaterTest, Acceleration) {
             EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),diffAccelXTAS);
             break;
 
-        case GliderVarioStatus::STATUS_IND_ROTATION_Y:
+        case GliderVarioStatus::STATUS_IND_ROTATION_Z:
             EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),diffAccelXyawRate);
             break;
 
@@ -480,6 +489,97 @@ TEST_F(MeasurementUpdaterTest, Acceleration) {
         }
     }
 
+    EXPECT_EQ (GliderVarioMeasurementUpdater::calculatedValueTst2,expectResultY);
+
+    ///TODO: Complete the tests of the measurement matrix.
+    for (int i = 0; i < GliderVarioStatus::STATUS_NUM_ROWS; i++) {
+        switch (i) {
+
+        case GliderVarioStatus::STATUS_IND_ACC_HEADING:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),diffAccelYX);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_ACC_CROSS:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),diffAccelYY);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_ACC_VERTICAL:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),diffAccelYZ);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_TAS:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),diffAccelYTAS);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_ROTATION_Z:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),diffAccelYyawRate);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_GRAVITY:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),diffAccelYGravity);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_ROLL:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),diffRollY);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_PITCH:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),diffPitchY);
+            break;
+
+        default:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),0.0f)
+              << " Coefficient with index " << i << " is expected 0.0 but actually is "
+              <<  GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0);
+
+        }
+    }
+
+    EXPECT_EQ (GliderVarioMeasurementUpdater::calculatedValueTst3,expectResultZ);
+
+    ///TODO: Complete the tests of the measurement matrix.
+    for (int i = 0; i < GliderVarioStatus::STATUS_NUM_ROWS; i++) {
+        switch (i) {
+
+        case GliderVarioStatus::STATUS_IND_ACC_HEADING:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),diffAccelZX);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_ACC_CROSS:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),diffAccelZY);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_ACC_VERTICAL:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),diffAccelZZ);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_TAS:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),diffAccelZTAS);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_ROTATION_Z:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),diffAccelZyawRate);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_GRAVITY:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),diffAccelZGravity);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_ROLL:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),diffRollZ);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_PITCH:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),diffPitchZ);
+            break;
+
+        default:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),0.0f)
+              << " Coefficient with index " << i << " is expected 0.0 but actually is "
+              <<  GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0);
+
+        }
+    }
 
 }
 
