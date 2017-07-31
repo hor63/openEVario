@@ -1,3 +1,15 @@
+2017-08-01  Kai Horstmann  <horstmannkai@hotmail.com>
+
+	* test/src/GliderVarioMeasurementUpdater_test.cpp (MeasurementUpdaterTest): 
+	(MeasurementUpdaterTest.MeasurementUpdaterTest): 
+	(MeasurementUpdaterTest_Gyro_Test.MeasurementUpdaterTest_Gyro_Test): 
+	(MeasurementUpdaterTest_Gyro_Test::TestBody):
+	  Implement unit test for gyro update
+	 
+	* src/GliderVarioMeasurementUpdater.cpp (gyroUpd): 
+	(GliderVarioMeasurementUpdater::gyroUpd):
+	  Adjust the gyro update routine to unit test and correct bugs found by unit testing.
+	   
 2017-07-28  Kai Horstmann  <horstmannkai@hotmail.com>
 
 	* test/src/GliderVarioMeasurementUpdater_test.cpp (MeasurementUpdaterTest_Acceleration.MeasurementUpdaterTest_Acceleration): 

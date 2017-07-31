@@ -134,17 +134,17 @@ public:
         errCov.coeffRef(st1.STATUS_IND_ROTATION_Z,st1.STATUS_IND_ROTATION_Z) = 20.0 * 20.0;
         noiseCov.coeffRef(st1.STATUS_IND_ROTATION_Z,st1.STATUS_IND_ROTATION_Z) = 20 * 20 / 600.0;
 
-        st1.gyroBiasX = 0.0;
+        st1.gyroBiasX = 2.0;
         errCov.coeffRef(st1.STATUS_IND_GYRO_BIAS_X,st1.STATUS_IND_GYRO_BIAS_X) = 10.0 * 10.0;
         // Gyro bias should drift rather slow
         noiseCov.coeffRef(st1.STATUS_IND_GYRO_BIAS_X,st1.STATUS_IND_GYRO_BIAS_X) = 1.0 / 600.0f;
 
-        st1.gyroBiasY = 0.0;
+        st1.gyroBiasY = -3.0;
         errCov.coeffRef(st1.STATUS_IND_GYRO_BIAS_Y,st1.STATUS_IND_GYRO_BIAS_Y) = 10.0 * 10.0;
         // Gyro bias should drift rather slow
         noiseCov.coeffRef(st1.STATUS_IND_GYRO_BIAS_Y,st1.STATUS_IND_GYRO_BIAS_Y) = 1.0 / 600.0f;
 
-        st1.gyroBiasZ = 0.0;
+        st1.gyroBiasZ = 4.5;
         errCov.coeffRef(st1.STATUS_IND_GYRO_BIAS_Z,st1.STATUS_IND_GYRO_BIAS_Z) = 10.0 * 10.0;
         // Gyro bias should drift rather slow
         noiseCov.coeffRef(st1.STATUS_IND_GYRO_BIAS_Z,st1.STATUS_IND_GYRO_BIAS_Z) = 1.0 / 600.0f;
@@ -373,7 +373,7 @@ TEST_F(MeasurementUpdaterTest, GPSSpeed) {
 }
 
 
-TEST_F(MeasurementUpdaterTest, Acceleration) {
+TEST_F(MeasurementUpdaterTest, Accelerometer) {
 
     // Test the result for a given combination of input values
     // and a number of time differences
@@ -491,7 +491,6 @@ TEST_F(MeasurementUpdaterTest, Acceleration) {
 
     EXPECT_EQ (GliderVarioMeasurementUpdater::calculatedValueTst2,expectResultY);
 
-    ///TODO: Complete the tests of the measurement matrix.
     for (int i = 0; i < GliderVarioStatus::STATUS_NUM_ROWS; i++) {
         switch (i) {
 
@@ -537,7 +536,6 @@ TEST_F(MeasurementUpdaterTest, Acceleration) {
 
     EXPECT_EQ (GliderVarioMeasurementUpdater::calculatedValueTst3,expectResultZ);
 
-    ///TODO: Complete the tests of the measurement matrix.
     for (int i = 0; i < GliderVarioStatus::STATUS_NUM_ROWS; i++) {
         switch (i) {
 
@@ -583,3 +581,174 @@ TEST_F(MeasurementUpdaterTest, Acceleration) {
 
 }
 
+TEST_F(MeasurementUpdaterTest, Gyro) {
+
+    // Test the result for a given combination of input values
+    // and a number of time differences
+
+    // the plane coordinate system is in direction of the heading. Yaw angle is therefore 0
+    RotationMatrix rotMat(0.0f,st1.pitchAngle,st1.rollAngle);
+    RotationMatrix rotMatIncX (0.0f,st1.pitchAngle       ,st1.rollAngle + 1.0f);
+    RotationMatrix rotMatIncY (0.0f,st1.pitchAngle + 1.0f,st1.rollAngle       );
+    // The derivative of cos(0) is 0. Small increments in heading have no effect
+    // RotationMatrix rotMatIncZ (1.0f,st1.pitchAngle       ,st1.rollAngle       );
+    RotationMatrix3DType rotMat3D = rotMat.getMatrixGloToPlane();
+
+    Vector3DType const rotVectWorld (st1.rollRateX,st1.pitchRateY,st1.yawRateZ);
+    Vector3DType rotVectPlane;
+    Vector3DType rotVectPlaneIncX;
+    Vector3DType rotVectPlaneIncY;
+
+    FloatType calcRotRateX, calcRotRateY, calcRotRateZ;
+
+    FloatType diffRotX, diffRotY, diffRotZ, diffRollAngle, diffPitchAngle;
+
+    // The expected/calculated values
+    // first the world rotation rates to the view of the plane
+    rotMat.calcWorldVectorToPlaneVector(rotVectWorld,rotVectPlane);
+    rotMatIncX.calcWorldVectorToPlaneVector(rotVectWorld,rotVectPlaneIncX);
+    rotMatIncY.calcWorldVectorToPlaneVector(rotVectWorld,rotVectPlaneIncY);
+
+    calcRotRateX = rotVectPlane(0) + st1.gyroBiasX;
+    calcRotRateY = rotVectPlane(1) + st1.gyroBiasY;
+    calcRotRateZ = rotVectPlane(2) + st1.gyroBiasZ;
+
+    FloatType measRotRateX = calcRotRateX + 2.5f;
+    FloatType measRotRateY = calcRotRateY + 2.5f;
+    FloatType measRotRateZ = calcRotRateZ + 2.5f;
+
+    GliderVarioMeasurementUpdater::gyroUpd(measRotRateX,5*5 ,measRotRateY,5*5 ,measRotRateZ,5*5 ,measVect,st1);
+
+    // test of the X gyro
+    diffRotX = rotMat3D(0,0);
+    diffRotY = rotMat3D(0,1);
+    diffRotZ = rotMat3D(0,2);
+    diffRollAngle  = rotVectPlaneIncX(0) - rotVectPlane(0);
+    diffPitchAngle = rotVectPlaneIncY(0) - rotVectPlane(0);
+
+    EXPECT_EQ (GliderVarioMeasurementUpdater::calculatedValueTst1,calcRotRateX);
+
+    for (int i = 0; i < GliderVarioStatus::STATUS_NUM_ROWS; i++) {
+        switch (i) {
+
+        case GliderVarioStatus::STATUS_IND_ROTATION_X:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),diffRotX);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_ROTATION_Y:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),diffRotY);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_ROTATION_Z:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),diffRotZ);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_GYRO_BIAS_X:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),1.0f);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_ROLL:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),diffRollAngle);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_PITCH:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),diffPitchAngle);
+            break;
+
+        default:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),0.0f)
+              << " Coefficient with index " << i << " is expected 0.0 but actuallz is "
+              <<  GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0);
+
+        }
+    }
+
+    // test of the Y gyro
+    diffRotX = rotMat3D(1,0);
+    diffRotY = rotMat3D(1,1);
+    diffRotZ = rotMat3D(1,2);
+    diffRollAngle  = rotVectPlaneIncX(1) - rotVectPlane(1);
+    diffPitchAngle = rotVectPlaneIncY(1) - rotVectPlane(1);
+
+    EXPECT_EQ (GliderVarioMeasurementUpdater::calculatedValueTst2,calcRotRateY);
+
+    for (int i = 0; i < GliderVarioStatus::STATUS_NUM_ROWS; i++) {
+        switch (i) {
+
+        case GliderVarioStatus::STATUS_IND_ROTATION_X:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),diffRotX);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_ROTATION_Y:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),diffRotY);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_ROTATION_Z:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),diffRotZ);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_GYRO_BIAS_Y:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),1.0f);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_ROLL:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),diffRollAngle);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_PITCH:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),diffPitchAngle);
+            break;
+
+        default:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),0.0f)
+              << " Coefficient with index " << i << " is expected 0.0 but actuallz is "
+              <<  GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0);
+
+        }
+    }
+
+    // test of the Z gyro
+    diffRotX = rotMat3D(2,0);
+    diffRotY = rotMat3D(2,1);
+    diffRotZ = rotMat3D(2,2);
+    diffRollAngle  = rotVectPlaneIncX(2) - rotVectPlane(2);
+    diffPitchAngle = rotVectPlaneIncY(2) - rotVectPlane(2);
+
+    EXPECT_EQ (GliderVarioMeasurementUpdater::calculatedValueTst3,calcRotRateZ);
+
+    for (int i = 0; i < GliderVarioStatus::STATUS_NUM_ROWS; i++) {
+        switch (i) {
+
+        case GliderVarioStatus::STATUS_IND_ROTATION_X:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),diffRotX);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_ROTATION_Y:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),diffRotY);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_ROTATION_Z:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),diffRotZ);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_GYRO_BIAS_Z:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),1.0f);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_ROLL:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),diffRollAngle);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_PITCH:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),diffPitchAngle);
+            break;
+
+        default:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),0.0f)
+              << " Coefficient with index " << i << " is expected 0.0 but actuallz is "
+              <<  GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0);
+
+        }
+    }
+
+}

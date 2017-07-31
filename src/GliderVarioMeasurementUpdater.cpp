@@ -401,7 +401,7 @@ GliderVarioMeasurementUpdater::gyroUpd (
     Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,1);
     RotationMatrix rotMat, rotMatIncX, rotMatIncY,rotMatIncZ;
     Vector3DType modelRotVector,calcRotVector,calcRotVectorIncX,calcRotVectorIncY,calcRotVectorIncZ;
-    FloatType calcRotation;
+    FloatType calcRotationX,calcRotationY,calcRotationZ;
 
     // measRowT.setZero();
 
@@ -433,8 +433,12 @@ GliderVarioMeasurementUpdater::gyroUpd (
     rotMatIncY.calcWorldVectorToPlaneVector(modelRotVector,calcRotVectorIncY);
     rotMatIncZ.calcWorldVectorToPlaneVector(modelRotVector,calcRotVectorIncZ);
 
+    calcRotationX = calcRotVector(0) + varioStatus.gyroBiasX;
+    calcRotationY = calcRotVector(1) + varioStatus.gyroBiasY;
+    calcRotationZ = calcRotVector(2) + varioStatus.gyroBiasZ;
+
+
     // Now the update for the X-Axis measurement
-    calcRotation = calcRotVector(0) + varioStatus.gyroBiasX;
 
     // The linear factors
     measRowT.insert(GliderVarioStatus::STATUS_IND_GYRO_BIAS_X,0)    = 1.0f;
@@ -443,81 +447,81 @@ GliderVarioMeasurementUpdater::gyroUpd (
     measRowT.insert(GliderVarioStatus::STATUS_IND_ROTATION_Z,0) = rotMatGloToPlane(0,2);
 
     // Now the non-linear factors by approximation (the attitude angles)
-    measRowT.insert(GliderVarioStatus::STATUS_IND_ROLL,0) = calcRotVectorIncX(0) - calcRotation;
-    measRowT.insert(GliderVarioStatus::STATUS_IND_PITCH,0) = calcRotVectorIncY(0) - calcRotation;
+    measRowT.insert(GliderVarioStatus::STATUS_IND_ROLL,0) = calcRotVectorIncX(0) - calcRotVector(0);
+    measRowT.insert(GliderVarioStatus::STATUS_IND_PITCH,0) = calcRotVectorIncY(0) - calcRotVector(0);
 
     // Change of heading does not affect the accelerometer readings. The derivation of cos(0) is -sin(0) = 0 anyway.
     // measRowT.insert(GliderVarioStatus::STATUS_IND_HEADING,0) = calcAccelVectorIncZ(0) - calcAccelVector(0);
 
 #if  ENABLE_UNIT_TESTS == 1
     // Save internal statuses for unit tests
-    calculatedValueTst1 = measuredRollRateX;
+    calculatedValueTst1 = calcRotationX;
     measRowTTst1 = measRowT;
 #endif
 
     calcSingleMeasureUpdate (
             measuredRollRateX,
-            calcRotation,
+            calcRotationX,
             rollRateXVariance,
             measRowT,
             varioStatus
     );
 
     // Now the update for the Y-Axis measurement
-    calcRotation = calcRotVector(1) + varioStatus.gyroBiasY;
 
     // The linear factors
-    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Y,0)    = 1.0f;
+    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_GYRO_BIAS_X,0)    = 0.0f;
+    measRowT.insert(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Y,0)    = 1.0f;
     measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROTATION_X,0)     = rotMatGloToPlane(1,0);
     measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROTATION_Y,0)     = rotMatGloToPlane(1,1);
     measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROTATION_Z,0) = rotMatGloToPlane(1,2);
 
     // Now the non-linear factors by approximation (the attitude angles)
-    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROLL,0) = calcRotVectorIncX(1) - calcRotation;
-    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_PITCH,0) = calcRotVectorIncY(1) - calcRotation;
+    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROLL,0) = calcRotVectorIncX(1) - calcRotVector(1);
+    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_PITCH,0) = calcRotVectorIncY(1) - calcRotVector(1);
 
     // Change of heading does not affect the accelerometer readings. The derivation of cos(0) is -sin(0) = 0 anyway.
     // measRowT.insert(GliderVarioStatus::STATUS_IND_HEADING) = calcAccelVectorIncZ(0) - calcAccelVector(0);
 
 #if  ENABLE_UNIT_TESTS == 1
     // Save internal statuses for unit tests
-    calculatedValueTst2 = measuredPitchRateY;
+    calculatedValueTst2 = calcRotationY;
     measRowTTst2 = measRowT;
 #endif
 
     calcSingleMeasureUpdate (
             measuredPitchRateY,
-            calcRotation,
+            calcRotationY,
             pitchRateYVariance,
             measRowT,
             varioStatus
     );
 
     // Now the update for the Z-Axis measurement
-    calcRotation = calcRotVector(2) + varioStatus.gyroBiasZ;
 
     // The linear factors
-    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Z,0)    = 1.0f;
+    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Y,0)    = 0.0f;
+    measRowT.insert(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Z,0)    = 1.0f;
     measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROTATION_X,0)     = rotMatGloToPlane(2,0);
     measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROTATION_Y,0)     = rotMatGloToPlane(2,1);
     measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROTATION_Z,0) = rotMatGloToPlane(2,2);
 
     // Now the non-linear factors by approximation (the attitude angles)
-    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROLL,0) = calcRotVectorIncX(2) - calcRotation;
-    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_PITCH,0) = calcRotVectorIncY(2) - calcRotation;
+    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROLL,0) = calcRotVectorIncX(2) - calcRotVector(2);
+    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_PITCH,0) = calcRotVectorIncY(2) - calcRotVector(2);
 
     // Change of heading does not affect the accelerometer readings. The derivation of cos(0) is -sin(0) = 0 anyway.
     // measRowT.insert(GliderVarioStatus::STATUS_IND_HEADING,0) = calcAccelVectorIncZ(0) - calcAccelVector(0);
 
 #if  ENABLE_UNIT_TESTS == 1
     // Save internal statuses for unit tests
-    calculatedValueTst3 = measuredYawRateZ;
+    calculatedValueTst3 = calcRotationZ;
     measRowTTst3 = measRowT;
 #endif
 
     calcSingleMeasureUpdate (
             measuredYawRateZ,
-            calcRotation,
+            calcRotationZ,
             rollRateXVariance,
             measRowT,
             varioStatus
