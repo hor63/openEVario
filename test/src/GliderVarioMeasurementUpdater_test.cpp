@@ -157,30 +157,30 @@ public:
         errCov.coeffRef(st1.STATUS_IND_MAGNETIC_INCLINATION,st1.STATUS_IND_MAGNETIC_INCLINATION) = 4.0f;
         noiseCov.coeffRef(st1.STATUS_IND_MAGNETIC_INCLINATION,st1.STATUS_IND_MAGNETIC_INCLINATION) = 0.2*0.2 / 600.0;
 
-        st1.compassDeviationX = 0.0;
+        st1.compassDeviationX = 5.0;
         // Assume Micro-Tesla, and a max. strength in the magnitute od=f the Earth magnet field
         errCov.coeffRef(st1.STATUS_IND_COMPASS_DEVIATION_X,st1.STATUS_IND_COMPASS_DEVIATION_X) = 50.0*50.0;
         // The deviation should fluctuate sloooowly.
         noiseCov.coeffRef(st1.STATUS_IND_COMPASS_DEVIATION_X,st1.STATUS_IND_COMPASS_DEVIATION_X) = 0.5*0.5 / 600.0f;
 
-        st1.compassDeviationY = 0.0;
+        st1.compassDeviationY = 7.0;
         // Assume Micro-Tesla, and a max. strength in the magnitute od=f the Earth magnet field
         errCov.coeffRef(st1.STATUS_IND_COMPASS_DEVIATION_Y,st1.STATUS_IND_COMPASS_DEVIATION_Y) = 50.0*50.0;
         // The deviation should fluctuate sloooowly.
         noiseCov.coeffRef(st1.STATUS_IND_COMPASS_DEVIATION_Y,st1.STATUS_IND_COMPASS_DEVIATION_Y) = 0.5*0.5 / 600.0f;
 
-        st1.compassDeviationZ = 0.0;
+        st1.compassDeviationZ = 13.0;
         // Assume Micro-Tesla, and a max. strength in the magnitute od=f the Earth magnet field
         errCov.coeffRef(st1.STATUS_IND_COMPASS_DEVIATION_Z,st1.STATUS_IND_COMPASS_DEVIATION_Z) = 50.0*50.0;
         // The deviation should fluctuate sloooowly.
         noiseCov.coeffRef(st1.STATUS_IND_COMPASS_DEVIATION_Z,st1.STATUS_IND_COMPASS_DEVIATION_Z) = 0.5*0.5 / 600.0f;
 
-        st1.windSpeedNorth = 0.0;
+        st1.windSpeedNorth = 4.8;
         errCov.coeffRef(st1.STATUS_IND_WIND_SPEED_N,st1.STATUS_IND_WIND_SPEED_N) = 20.0*20.0;
         // I am not aiming to capture the slightest gusts, but be responsive, 1 m/s per 10sec
         noiseCov.coeffRef(st1.STATUS_IND_WIND_SPEED_N,st1.STATUS_IND_WIND_SPEED_N) = 2.0*2.0 / 100.0;
 
-        st1.windSpeedEast = 0.0;
+        st1.windSpeedEast = 2.5;
         errCov.coeffRef(st1.STATUS_IND_WIND_SPEED_E,st1.STATUS_IND_WIND_SPEED_E) = 20.0*20.0;
         // I am not aiming to capture the slightest gusts, but be responsive, 1 m/s per 10sec
         noiseCov.coeffRef(st1.STATUS_IND_WIND_SPEED_E,st1.STATUS_IND_WIND_SPEED_E) = 2.0*2.0 / 100.0;
@@ -483,7 +483,7 @@ TEST_F(MeasurementUpdaterTest, Accelerometer) {
 
         default:
             EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),0.0f)
-			  << " Coefficient with index " << i << " is expected 0.0 but actuallz is "
+			  << " Coefficient with index " << i << " is expected 0.0 but actually is "
 			  <<  GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0);
 
         }
@@ -657,7 +657,7 @@ TEST_F(MeasurementUpdaterTest, Gyro) {
 
         default:
             EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),0.0f)
-              << " Coefficient with index " << i << " is expected 0.0 but actuallz is "
+              << " Coefficient with index " << i << " is expected 0.0 but actually is "
               <<  GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0);
 
         }
@@ -701,7 +701,7 @@ TEST_F(MeasurementUpdaterTest, Gyro) {
 
         default:
             EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),0.0f)
-              << " Coefficient with index " << i << " is expected 0.0 but actuallz is "
+              << " Coefficient with index " << i << " is expected 0.0 but actually is "
               <<  GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0);
 
         }
@@ -745,7 +745,151 @@ TEST_F(MeasurementUpdaterTest, Gyro) {
 
         default:
             EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),0.0f)
-              << " Coefficient with index " << i << " is expected 0.0 but actuallz is "
+              << " Coefficient with index " << i << " is expected 0.0 but actually is "
+              <<  GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0);
+
+        }
+    }
+
+}
+
+TEST_F(MeasurementUpdaterTest, Magnetometer) {
+
+    // Test the result for a given combination of input values
+    // and a number of time differences
+
+    // the plane coordinate system is in direction of the heading. Yaw angle is therefore 0
+    RotationMatrix rotMat     (st1.heading       ,st1.pitchAngle       ,st1.rollAngle);
+    RotationMatrix rotMatIncX (st1.heading       ,st1.pitchAngle       ,st1.rollAngle + 1.0f);
+    RotationMatrix rotMatIncY (st1.heading       ,st1.pitchAngle + 1.0f,st1.rollAngle       );
+    RotationMatrix rotMatIncZ (st1.heading + 1.0f,st1.pitchAngle       ,st1.rollAngle       );
+
+    RotationMatrix rotMatMagVect        (st1.magneticDeclination       ,st1.magneticInclination       ,0.0f);
+    RotationMatrix rotMatMagVectIncDecl (st1.magneticDeclination + 1.0f,st1.magneticInclination       ,0.0f);
+    RotationMatrix rotMatMagVectIncIncl (st1.magneticDeclination       ,st1.magneticInclination + 1.0f,0.0f);
+
+    Vector3DType magVectUnit (48.0f,0.0f,0.0f);
+
+    Vector3DType magVect        = (rotMatMagVect.getMatrixPlaneToGlo()        * rotMat.getMatrixGloToPlane()    ) * magVectUnit;
+    Vector3DType magVectIncX    = (rotMatMagVect.getMatrixPlaneToGlo()        * rotMatIncX.getMatrixGloToPlane()) * magVectUnit;
+    Vector3DType magVectIncY    = (rotMatMagVect.getMatrixPlaneToGlo()        * rotMatIncY.getMatrixGloToPlane()) * magVectUnit;
+    Vector3DType magVectIncZ    = (rotMatMagVect.getMatrixPlaneToGlo()        * rotMatIncZ.getMatrixGloToPlane()) * magVectUnit;
+    Vector3DType magVectIncDecl = (rotMatMagVectIncDecl.getMatrixPlaneToGlo() * rotMat.getMatrixGloToPlane()    ) * magVectUnit;
+    Vector3DType magVectIncIncl = (rotMatMagVectIncIncl.getMatrixPlaneToGlo() * rotMat.getMatrixGloToPlane()    ) * magVectUnit;
+
+    FloatType calcMagX = magVect(0) + st1.compassDeviationX;
+    FloatType calcMagY = magVect(1) + st1.compassDeviationY;
+    FloatType calcMagZ = magVect(2) + st1.compassDeviationZ;
+
+    // Calculation without difference between calculated and measured values. Otherwise the vector length slightly differs, and expected results slightly differ.
+    GliderVarioMeasurementUpdater::compassUpd(calcMagX,calcMagY,calcMagZ,0.5f*0.5f,0.5f*0.5f,0.5f*0.5f,measVect,st1);
+
+    EXPECT_NEAR (GliderVarioMeasurementUpdater::calculatedValueTst1,calcMagX,0.00001f);
+
+    for (int i = 0; i < GliderVarioStatus::STATUS_NUM_ROWS; i++) {
+        switch (i) {
+
+        case GliderVarioStatus::STATUS_IND_ROLL:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),magVectIncX(0) - magVect(0));
+            break;
+
+        case GliderVarioStatus::STATUS_IND_PITCH:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),magVectIncY(0) - magVect(0));
+            break;
+
+        case GliderVarioStatus::STATUS_IND_HEADING:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),magVectIncZ(0) - magVect(0));
+            break;
+
+        case GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),magVectIncDecl(0) - magVect(0));
+            break;
+
+        case GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),magVectIncIncl(0) - magVect(0));
+            break;
+
+        case GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_X:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),1.0f);
+            break;
+
+        default:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),0.0f)
+              << " Coefficient with index " << i << " is expected 0.0 but actually is "
+              <<  GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0);
+
+        }
+    }
+
+    EXPECT_NEAR (GliderVarioMeasurementUpdater::calculatedValueTst2,calcMagY,0.00001f);
+
+    for (int i = 0; i < GliderVarioStatus::STATUS_NUM_ROWS; i++) {
+        switch (i) {
+
+        case GliderVarioStatus::STATUS_IND_ROLL:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),magVectIncX(1) - magVect(1));
+            break;
+
+        case GliderVarioStatus::STATUS_IND_PITCH:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),magVectIncY(1) - magVect(1));
+            break;
+
+        case GliderVarioStatus::STATUS_IND_HEADING:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),magVectIncZ(1) - magVect(1));
+            break;
+
+        case GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),magVectIncDecl(1) - magVect(1));
+            break;
+
+        case GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION:
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),magVectIncIncl(1) - magVect(1),0.00001f);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Y:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),1.0f);
+            break;
+
+        default:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),0.0f)
+              << " Coefficient with index " << i << " is expected 0.0 but actually is "
+              <<  GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0);
+
+        }
+    }
+
+    EXPECT_NEAR (GliderVarioMeasurementUpdater::calculatedValueTst3,calcMagZ,0.00001f);
+
+    for (int i = 0; i < GliderVarioStatus::STATUS_NUM_ROWS; i++) {
+        switch (i) {
+
+        case GliderVarioStatus::STATUS_IND_ROLL:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncX(2) - magVect(2));
+            break;
+
+        case GliderVarioStatus::STATUS_IND_PITCH:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncY(2) - magVect(2));
+            break;
+
+        case GliderVarioStatus::STATUS_IND_HEADING:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncZ(2) - magVect(2));
+            break;
+
+        case GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncDecl(2) - magVect(2));
+            break;
+
+        case GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncIncl(2) - magVect(2));
+            break;
+
+        case GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Z:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),1.0f);
+            break;
+
+        default:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),0.0f)
+              << " Coefficient with index " << i << " is expected 0.0 but actually is "
               <<  GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0);
 
         }

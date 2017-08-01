@@ -1,3 +1,14 @@
+2017-08-02  Kai Horstmann  <horstmannkai@hotmail.com>
+
+	* src/GliderVarioMeasurementUpdater.cpp (compassUpd): 
+	* test/src/GliderVarioMeasurementUpdater_test.cpp (MeasurementUpdaterTest): 
+	(MeasurementUpdaterTest.MeasurementUpdaterTest): 
+	(MeasurementUpdaterTest_Magnetometer_Test.MeasurementUpdaterTest_Magnetometer_Test): 
+	(MeasurementUpdaterTest_Magnetometer_Test::TestBody): 
+	(GliderVarioMeasurementUpdater::compassUpd): 
+	  Implement unit tests for compass update.
+	
+	
 2017-08-01  Kai Horstmann  <horstmannkai@hotmail.com>
 
 	* test/src/GliderVarioMeasurementUpdater_test.cpp (MeasurementUpdaterTest): 

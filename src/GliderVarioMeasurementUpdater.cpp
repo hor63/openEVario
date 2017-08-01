@@ -539,9 +539,9 @@ GliderVarioMeasurementUpdater::compassUpd (
         GliderVarioMeasurementVector &measurementVector,
         GliderVarioStatus &varioStatus
 ) {
-    FloatType calculatedValue;
+    FloatType calculatedValueX,calculatedValueY, calculatedValueZ;
     Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,1);
-    FloatType temp;
+    FloatType tempX, tempY, tempZ;
 
     // Compensated magnetic flow, i.e. measurement - deviation flow vector
     FloatType magFlowCompensatedX = measuredMagFlowX - varioStatus.compassDeviationX;
@@ -594,27 +594,35 @@ GliderVarioMeasurementUpdater::compassUpd (
     measurementVector.magY = measuredMagFlowY;
     measurementVector.magZ = measuredMagFlowZ;
 
+    tempX = compassVector(0);
+    calculatedValueX = tempX + varioStatus.compassDeviationX;
+
+    tempY = compassVector(1);
+    calculatedValueY = tempY + varioStatus.compassDeviationY;
+
+    tempZ = compassVector(2);
+    calculatedValueZ = tempZ + varioStatus.compassDeviationZ;
+
+
     // measRowT.setZero();
 
     // calculate and fill in local variables here.
-    temp = compassVector(0);
-    calculatedValue = temp + varioStatus.compassDeviationX;
     measRowT.insert(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_X,0)  =  1.0f;
-    measRowT.insert(GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION,0) = compassVectorIncDeclination(0) - temp;
-    measRowT.insert(GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION,0) = compassVectorIncInclination(0) - temp;
-    measRowT.insert(GliderVarioStatus::STATUS_IND_HEADING,0)              = compassVectorIncYaw(0)         - temp;
-    measRowT.insert(GliderVarioStatus::STATUS_IND_PITCH,0)                = compassVectorIncPitch(0)       - temp;
-    measRowT.insert(GliderVarioStatus::STATUS_IND_ROLL,0)                 = compassVectorIncRoll(0)        - temp;
+    measRowT.insert(GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION,0) = compassVectorIncDeclination(0) - tempX;
+    measRowT.insert(GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION,0) = compassVectorIncInclination(0) - tempX;
+    measRowT.insert(GliderVarioStatus::STATUS_IND_HEADING,0)              = compassVectorIncYaw(0)         - tempX;
+    measRowT.insert(GliderVarioStatus::STATUS_IND_PITCH,0)                = compassVectorIncPitch(0)       - tempX;
+    measRowT.insert(GliderVarioStatus::STATUS_IND_ROLL,0)                 = compassVectorIncRoll(0)        - tempX;
 
 #if  ENABLE_UNIT_TESTS == 1
     // Save internal statuses for unit tests
-    calculatedValueTst1 = measuredMagFlowX;
+    calculatedValueTst1 = calculatedValueX;
     measRowTTst1 = measRowT;
 #endif
 
     calcSingleMeasureUpdate (
             measuredMagFlowX,
-            calculatedValue,
+            calculatedValueX,
             magFlowXVariance,
             measRowT,
             varioStatus
@@ -623,25 +631,23 @@ GliderVarioMeasurementUpdater::compassUpd (
     // // measRowT.setZero(); Just reset the previous deviation factor. All others are re-used
 
     // calculate and fill in local variables here.
-    temp = compassVector(1);
-    calculatedValue = temp + varioStatus.compassDeviationY;
     measRowT.coeffRef(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_X,0)  =  0.0f;
-    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Y,0)  =  1.0f;
-    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION,0) = compassVectorIncDeclination(1) - temp;
-    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION,0) = compassVectorIncInclination(1) - temp;
-    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_HEADING,0)              = compassVectorIncYaw(1)         - temp;
-    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_PITCH,0)                = compassVectorIncPitch(1)       - temp;
-    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROLL,0)                 = compassVectorIncRoll(1)        - temp;
+    measRowT.insert  (GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Y,0)  =  1.0f;
+    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION,0) = compassVectorIncDeclination(1) - tempY;
+    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION,0) = compassVectorIncInclination(1) - tempY;
+    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_HEADING,0)              = compassVectorIncYaw(1)         - tempY;
+    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_PITCH,0)                = compassVectorIncPitch(1)       - tempY;
+    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROLL,0)                 = compassVectorIncRoll(1)        - tempY;
 
 #if  ENABLE_UNIT_TESTS == 1
     // Save internal statuses for unit tests
-    calculatedValueTst2 = measuredMagFlowY;
+    calculatedValueTst2 = calculatedValueY;
     measRowTTst2 = measRowT;
 #endif
 
     calcSingleMeasureUpdate (
             measuredMagFlowY,
-            calculatedValue,
+            calculatedValueY,
             magFlowYVariance,
             measRowT,
             varioStatus
@@ -650,25 +656,23 @@ GliderVarioMeasurementUpdater::compassUpd (
     // // measRowT.setZero(); Just reset the previous deviation factor. All others are re-used
 
     // calculate and fill in local variables here.
-    temp = compassVector(2);
-    calculatedValue = temp + varioStatus.compassDeviationZ;
     measRowT.coeffRef(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Y,0)  =  0.0f;
-    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Z,0)  =  1.0f;
-    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION,0) = compassVectorIncDeclination(2) - temp;
-    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION,0) = compassVectorIncInclination(2) - temp;
-    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_HEADING,0)              = compassVectorIncYaw(2)         - temp;
-    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_PITCH,0)                = compassVectorIncPitch(2)       - temp;
-    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROLL,0)                 = compassVectorIncRoll(2)        - temp;
+    measRowT.insert  (GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Z,0)  =  1.0f;
+    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION,0) = compassVectorIncDeclination(2) - tempZ;
+    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION,0) = compassVectorIncInclination(2) - tempZ;
+    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_HEADING,0)              = compassVectorIncYaw(2)         - tempZ;
+    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_PITCH,0)                = compassVectorIncPitch(2)       - tempZ;
+    measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ROLL,0)                 = compassVectorIncRoll(2)        - tempZ;
 
 #if  ENABLE_UNIT_TESTS == 1
     // Save internal statuses for unit tests
-    calculatedValueTst3 = measuredMagFlowZ;
+    calculatedValueTst3 = calculatedValueZ;
     measRowTTst3 = measRowT;
 #endif
 
     calcSingleMeasureUpdate (
             measuredMagFlowZ,
-            calculatedValue,
+            calculatedValueZ,
             magFlowYVariance,
             measRowT,
             varioStatus
