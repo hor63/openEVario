@@ -1,3 +1,14 @@
+2017-08-03  Kai Horstmann  <horstmannkai@hotmail.com>
+
+	* src/GliderVarioStatus.cpp (operator <<): 
+	* src/GliderVarioStatus.h: 
+	  Rewrite output operator of status vector
+	  Implement output operator for covariance and transition matrix types
+	* test/src/GliderVarioMeasurementUpdater_test.cpp (MeasurementUpdaterTest): 
+	(MeasurementUpdaterTest.MeasurementUpdaterTest): 
+	(MeasurementUpdaterTest_Magnetometer_Test::TestBody): 
+	  Adjust initial variances, and increments of variance over time for test.
+	  
 2017-08-02  Kai Horstmann  <horstmannkai@hotmail.com>
 
 	* src/GliderVarioMeasurementUpdater.cpp (compassUpd): 
