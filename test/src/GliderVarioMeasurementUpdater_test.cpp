@@ -102,37 +102,37 @@ public:
         noiseCov.coeffRef(st1.STATUS_IND_RATE_OF_SINK,st1.STATUS_IND_RATE_OF_SINK) = (2.0 * 2.0) / 600.0;
 
         st1.verticalSpeed = -1.2;
-        errCov.coeffRef(st1.STATUS_IND_VERTICAL_SPEED,st1.STATUS_IND_VERTICAL_SPEED) = 2.0 * 2.0;
+        errCov.coeffRef(st1.STATUS_IND_VERTICAL_SPEED,st1.STATUS_IND_VERTICAL_SPEED) = 5.0 * 5.0;
         noiseCov.coeffRef(st1.STATUS_IND_VERTICAL_SPEED,st1.STATUS_IND_VERTICAL_SPEED) = (2.0 * 2.0) / 600.0;
 
         st1.thermalSpeed = -1.2;
-        errCov.coeffRef(st1.STATUS_IND_THERMAL_SPEED,st1.STATUS_IND_THERMAL_SPEED) = 2.0 * 2.0;
+        errCov.coeffRef(st1.STATUS_IND_THERMAL_SPEED,st1.STATUS_IND_THERMAL_SPEED) = 5.0 * 5.0;
         noiseCov.coeffRef(st1.STATUS_IND_THERMAL_SPEED,st1.STATUS_IND_THERMAL_SPEED) = (2.0 * 2.0) / 600.0;
 
         st1.accelHeading = 0.0;
-        errCov.coeffRef(st1.STATUS_IND_ACC_HEADING,st1.STATUS_IND_ACC_HEADING) = 100.0;
-        noiseCov.coeffRef(st1.STATUS_IND_ACC_HEADING,st1.STATUS_IND_ACC_HEADING) = 1.0 / 60.0;
+        errCov.coeffRef(st1.STATUS_IND_ACC_HEADING,st1.STATUS_IND_ACC_HEADING) = 1.0;
+        noiseCov.coeffRef(st1.STATUS_IND_ACC_HEADING,st1.STATUS_IND_ACC_HEADING) = 1.0 / 10.0;
 
         st1.accelCross = 0.0;
-        errCov.coeffRef(st1.STATUS_IND_ACC_CROSS,st1.STATUS_IND_ACC_CROSS) = 100.0;
-        noiseCov.coeffRef(st1.STATUS_IND_ACC_CROSS,st1.STATUS_IND_ACC_CROSS) = 1.0 / 60.0;
+        errCov.coeffRef(st1.STATUS_IND_ACC_CROSS,st1.STATUS_IND_ACC_CROSS) = 1.0;
+        noiseCov.coeffRef(st1.STATUS_IND_ACC_CROSS,st1.STATUS_IND_ACC_CROSS) = 1.0 / 10.0;
 
         st1.accelVertical = 0.0;
-        errCov.coeffRef(st1.STATUS_IND_ACC_VERTICAL,st1.STATUS_IND_ACC_VERTICAL) = 100.0;
-        noiseCov.coeffRef(st1.STATUS_IND_ACC_VERTICAL,st1.STATUS_IND_ACC_VERTICAL) = 1.0 / 60.0;
+        errCov.coeffRef(st1.STATUS_IND_ACC_VERTICAL,st1.STATUS_IND_ACC_VERTICAL) = 1.0;
+        noiseCov.coeffRef(st1.STATUS_IND_ACC_VERTICAL,st1.STATUS_IND_ACC_VERTICAL) = 1.0 / 10.0;
 
         st1.rollRateX = 0.0;
-        errCov.coeffRef(st1.STATUS_IND_ROTATION_X,st1.STATUS_IND_ROTATION_X) = 20.0 * 20.0;
-        noiseCov.coeffRef(st1.STATUS_IND_ROTATION_X,st1.STATUS_IND_ROTATION_X) = 20.0 * 20.0 / 600.0;
+        errCov.coeffRef(st1.STATUS_IND_ROTATION_X,st1.STATUS_IND_ROTATION_X) = 10.0 * 10.0;
+        noiseCov.coeffRef(st1.STATUS_IND_ROTATION_X,st1.STATUS_IND_ROTATION_X) = 20.0 * 20.0 / 10.0;
 
         st1.pitchRateY = 0.0;
         errCov.coeffRef(st1.STATUS_IND_ROTATION_Y,st1.STATUS_IND_ROTATION_Y) = 10.0 * 10;
-        noiseCov.coeffRef(st1.STATUS_IND_ROTATION_Y,st1.STATUS_IND_ROTATION_Y) = 10.0 * 10.0 / 600.0;
+        noiseCov.coeffRef(st1.STATUS_IND_ROTATION_Y,st1.STATUS_IND_ROTATION_Y) = 20.0 * 20.0 / 10.0;
 
         // turning 1deg/s clock wise
         st1.yawRateZ = 15.0;
-        errCov.coeffRef(st1.STATUS_IND_ROTATION_Z,st1.STATUS_IND_ROTATION_Z) = 20.0 * 20.0;
-        noiseCov.coeffRef(st1.STATUS_IND_ROTATION_Z,st1.STATUS_IND_ROTATION_Z) = 20 * 20 / 600.0;
+        errCov.coeffRef(st1.STATUS_IND_ROTATION_Z,st1.STATUS_IND_ROTATION_Z) = 10.0 * 10.0;
+        noiseCov.coeffRef(st1.STATUS_IND_ROTATION_Z,st1.STATUS_IND_ROTATION_Z) = 20 * 20 / 10.0;
 
         st1.gyroBiasX = 2.0;
         errCov.coeffRef(st1.STATUS_IND_GYRO_BIAS_X,st1.STATUS_IND_GYRO_BIAS_X) = 10.0 * 10.0;
@@ -150,11 +150,11 @@ public:
         noiseCov.coeffRef(st1.STATUS_IND_GYRO_BIAS_Z,st1.STATUS_IND_GYRO_BIAS_Z) = 1.0 / 600.0f;
 
         st1.magneticDeclination = -2.0;
-        errCov.coeffRef(st1.STATUS_IND_MAGNETIC_DECLINATION,st1.STATUS_IND_MAGNETIC_DECLINATION) = 4.0;
+        errCov.coeffRef(st1.STATUS_IND_MAGNETIC_DECLINATION,st1.STATUS_IND_MAGNETIC_DECLINATION) = 100.0;
         noiseCov.coeffRef(st1.STATUS_IND_MAGNETIC_DECLINATION,st1.STATUS_IND_MAGNETIC_DECLINATION) = 0.2*0.2 / 600.0;
 
         st1.magneticInclination = MAG_INCLINATION;
-        errCov.coeffRef(st1.STATUS_IND_MAGNETIC_INCLINATION,st1.STATUS_IND_MAGNETIC_INCLINATION) = 4.0f;
+        errCov.coeffRef(st1.STATUS_IND_MAGNETIC_INCLINATION,st1.STATUS_IND_MAGNETIC_INCLINATION) = 100.0f;
         noiseCov.coeffRef(st1.STATUS_IND_MAGNETIC_INCLINATION,st1.STATUS_IND_MAGNETIC_INCLINATION) = 0.2*0.2 / 600.0;
 
         st1.compassDeviationX = 5.0;
@@ -182,13 +182,13 @@ public:
 
         st1.windSpeedEast = 2.5;
         errCov.coeffRef(st1.STATUS_IND_WIND_SPEED_E,st1.STATUS_IND_WIND_SPEED_E) = 20.0*20.0;
-        // I am not aiming to capture the slightest gusts, but be responsive, 1 m/s per 10sec
-        noiseCov.coeffRef(st1.STATUS_IND_WIND_SPEED_E,st1.STATUS_IND_WIND_SPEED_E) = 2.0*2.0 / 100.0;
+        // I am not aiming to capture the slightest gusts, but be responsive, 5 m/s per 10sec
+        noiseCov.coeffRef(st1.STATUS_IND_WIND_SPEED_E,st1.STATUS_IND_WIND_SPEED_E) = 5.0*5.0 / 100.0;
 
         st1.qff = 101000.0;
-        errCov.coeffRef(st1.STATUS_IND_QFF,st1.STATUS_IND_QFF) = 40.0*40.0;
+        errCov.coeffRef(st1.STATUS_IND_QFF,st1.STATUS_IND_QFF) = 100.0*100.0;
         // the pressure changes sloooowly
-        noiseCov.coeffRef(st1.STATUS_IND_QFF,st1.STATUS_IND_QFF) = 0.1*0.1 / 600.0f;
+        noiseCov.coeffRef(st1.STATUS_IND_QFF,st1.STATUS_IND_QFF) = 1 / 600.0f;
 
         st1.lastPressure = st1.qff - st1.altMSL / (8.0/100.0);
         // Variance remains constant. This is only a fudge variable which is not going into any other
@@ -782,6 +782,9 @@ TEST_F(MeasurementUpdaterTest, Magnetometer) {
     FloatType calcMagZ = magVect(2) + st1.compassDeviationZ;
 
     // Calculation without difference between calculated and measured values. Otherwise the vector length slightly differs, and expected results slightly differ.
+    std::cerr << "st1 = " << st1 << std::endl;
+    std::cerr << "Covariance of st1 = " << st1.getErrorCovariance_P() << std::endl;
+
     GliderVarioMeasurementUpdater::compassUpd(calcMagX,calcMagY,calcMagZ,0.5f*0.5f,0.5f*0.5f,0.5f*0.5f,measVect,st1);
 
     EXPECT_NEAR (GliderVarioMeasurementUpdater::calculatedValueTst1,calcMagX,0.00001f);
@@ -894,5 +897,9 @@ TEST_F(MeasurementUpdaterTest, Magnetometer) {
 
         }
     }
+
+    GliderVarioMeasurementUpdater::compassUpd(calcMagX+0.5f,calcMagY+0.5f,calcMagZ+0.5f,0.5f*0.5f,0.5f*0.5f,0.5f*0.5f,measVect,st1);
+    GliderVarioMeasurementUpdater::compassUpd(calcMagX+0.5f,calcMagY+0.5f,calcMagZ+0.5f,0.5f*0.5f,0.5f*0.5f,0.5f*0.5f,measVect,st1);
+    GliderVarioMeasurementUpdater::compassUpd(calcMagX+0.5f,calcMagY+0.5f,calcMagZ+0.5f,0.5f*0.5f,0.5f*0.5f,0.5f*0.5f,measVect,st1);
 
 }
