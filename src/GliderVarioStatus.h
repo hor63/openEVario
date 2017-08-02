@@ -327,5 +327,7 @@ protected:
 } // namespace openEV
 
 std::ostream& operator << (std::ostream& o ,openEV::GliderVarioStatus& s);
+std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus::StatusVectorType &v);
+std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus::StatusCoVarianceType &co);
 
 #endif /* GLIDERVARIOSTATUS_H_ */

@@ -150,77 +150,93 @@ void GliderVarioStatus::normalizeAngles() {
 
 } // namespace openEV
 
+
+static char const * const statusFieldNames [openEV::GliderVarioStatus::STATUS_NUM_ROWS] = {
+        " gravity       ",
+        " longitude     ",
+        " latitude      ",
+        " altMSL        ",
+        " heading       ",
+        " pitchAngle    ",
+        " rollAngle     ",
+        " groundSpeedN  ",
+        " groundSpeedE  ",
+        " trueAirSpeed  ",
+        " rateOfSink    ",
+        " verticalSpeed ",
+        " thermalSpeed  ",
+        " accelHeading  ",
+        " accelCross    ",
+        " accelVertical ",
+        " rollRateX     ",
+        " pitchRateY    ",
+        " yawRateZ      ",
+        " gyroBiasX     ",
+        " gyroBiasY     ",
+        " gyroBiasZ     ",
+        " magDeclination",
+        " magInclination",
+        " compDeviatiX  ",
+        " compDeviatiY  ",
+        " compDeviatiZ  ",
+        " windSpeedNorth",
+        " windSpeedEast ",
+        " QFF           ",
+        " lastPressure  ",
+};
+
 std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
 
-    o <<
-            " gravity       "
-            " longitude     "
-            " latitude      "
-            " altMSL        "
-            " heading       "
-            " pitchAngle    "
-            " rollAngle     "
-            " groundSpeedN  "
-            " groundSpeedE  "
-            " trueAirSpeed  "
-            " rateOfSink    "
-            " verticalSpeed "
-            " thermalSpeed  "
-            " accelHeading  "
-            " accelCross    "
-            " accelVertical "
-            " rollRateX     "
-            " pitchRateY    "
-            " yawRateZ      "
-            " gyroBiasX     "
-            " gyroBiasY     "
-            " gyroBiasZ     "
-            " magDeclination"
-            " magInclination"
-            " compDeviatiX  "
-            " compDeviatiY  "
-            " compDeviatiZ  "
-            " windSpeedNorth"
-            " windSpeedEast "
-            " QFF           "
-            " lastPressure  "
-            << std::endl;
+    o << s.getStatusVector_x();
 
-    o << std::fixed;
+    return o;
+}
+
+std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus::StatusVectorType &v) {
+
+    o << "\n";
+
+    for (int i = 0 ; i < openEV::GliderVarioStatus::STATUS_NUM_ROWS; i++) {
+        o << statusFieldNames[i];
+    }
+
+    o << "\n" << std::fixed;
     o.precision(7);
     o.fill('_');
 
-    o.precision(7); o.width(15); o << s.gravity     ;
-    o.precision(7); o.width(15); o << s.longitude   ;
-    o.precision(7); o.width(15); o << s.latitude    ;
-    o.precision(7); o.width(15); o << s.altMSL      ;
-    o.precision(7); o.width(15); o << s.heading     ;
-    o.precision(7); o.width(15); o << s.pitchAngle  ;
-    o.precision(7); o.width(15); o << s.rollAngle   ;
-    o.precision(7); o.width(15); o << s.groundSpeedNorth;
-    o.precision(7); o.width(15); o << s.groundSpeedEast;
-    o.precision(7); o.width(15); o << s.trueAirSpeed;
-    o.precision(7); o.width(15); o << s.rateOfSink  ;
-    o.precision(7); o.width(15); o << s.verticalSpeed;
-    o.precision(7); o.width(15); o << s.thermalSpeed;
-    o.precision(7); o.width(15); o << s.accelHeading      ;
-    o.precision(7); o.width(15); o << s.accelCross      ;
-    o.precision(7); o.width(15); o << s.accelVertical      ;
-    o.precision(7); o.width(15); o << s.rollRateX   ;
-    o.precision(7); o.width(15); o << s.pitchRateY  ;
-    o.precision(7); o.width(15); o << s.yawRateZ ;
-    o.precision(7); o.width(15); o << s.gyroBiasX   ;
-    o.precision(7); o.width(15); o << s.gyroBiasY   ;
-    o.precision(7); o.width(15); o << s.gyroBiasZ   ;
-    o.precision(7); o.width(15); o << s.magneticDeclination;
-    o.precision(7); o.width(15); o << s.magneticInclination;
-    o.precision(7); o.width(15); o << s.compassDeviationX;
-    o.precision(7); o.width(15); o << s.compassDeviationY;
-    o.precision(7); o.width(15); o << s.compassDeviationZ;
-    o.precision(7); o.width(15); o << s.windSpeedNorth;
-    o.precision(7); o.width(15); o << s.windSpeedEast;
-    o.precision(7); o.width(15); o << s.qff;
-    o.precision(7); o.width(15); o << s.lastPressure;
+    for (int i = 0 ; i < openEV::GliderVarioStatus::STATUS_NUM_ROWS; i++) {
+        o.precision(7);
+        o.width(15);
+        o << v(i,0)     ;
+    }
+
+    o << std::endl;
+
+    return o;
+}
+
+std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus::StatusCoVarianceType &co) {
+
+    o << "\n               ";
+
+    for (int i = 0 ; i < openEV::GliderVarioStatus::STATUS_NUM_ROWS; i++) {
+        o << statusFieldNames[i];
+    }
+
+    o << "\n" << std::fixed;
+    o.precision(7);
+    o.fill('_');
+
+    for (int i = 0 ; i < openEV::GliderVarioStatus::STATUS_NUM_ROWS; i++) {
+
+        o << "\n" << statusFieldNames[i];
+
+        for (int k = 0 ; k < openEV::GliderVarioStatus::STATUS_NUM_ROWS; k++) {
+            o.precision(7);
+            o.width(15);
+            o << co.coeff(i,k)     ;
+        }
+    }
 
     o << std::endl;
 
