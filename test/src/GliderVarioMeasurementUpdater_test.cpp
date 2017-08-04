@@ -702,7 +702,7 @@ TEST_F(MeasurementUpdaterTest, Gyro) {
         default:
             EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),0.0f)
               << " Coefficient with index " << i << " is expected 0.0 but actually is "
-              <<  GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0);
+              <<  GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0);
 
         }
     }
@@ -746,7 +746,7 @@ TEST_F(MeasurementUpdaterTest, Gyro) {
         default:
             EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),0.0f)
               << " Coefficient with index " << i << " is expected 0.0 but actually is "
-              <<  GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0);
+              <<  GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0);
 
         }
     }
@@ -856,7 +856,7 @@ TEST_F(MeasurementUpdaterTest, Magnetometer) {
         default:
             EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),0.0f)
               << " Coefficient with index " << i << " is expected 0.0 but actually is "
-              <<  GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0);
+              <<  GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0);
 
         }
     }
@@ -893,7 +893,7 @@ TEST_F(MeasurementUpdaterTest, Magnetometer) {
         default:
             EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),0.0f)
               << " Coefficient with index " << i << " is expected 0.0 but actually is "
-              <<  GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0);
+              <<  GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0);
 
         }
     }
@@ -901,5 +901,60 @@ TEST_F(MeasurementUpdaterTest, Magnetometer) {
     GliderVarioMeasurementUpdater::compassUpd(calcMagX+0.5f,calcMagY+0.5f,calcMagZ+0.5f,0.5f*0.5f,0.5f*0.5f,0.5f*0.5f,measVect,st1);
     GliderVarioMeasurementUpdater::compassUpd(calcMagX+0.5f,calcMagY+0.5f,calcMagZ+0.5f,0.5f*0.5f,0.5f*0.5f,0.5f*0.5f,measVect,st1);
     GliderVarioMeasurementUpdater::compassUpd(calcMagX+0.5f,calcMagY+0.5f,calcMagZ+0.5f,0.5f*0.5f,0.5f*0.5f,0.5f*0.5f,measVect,st1);
+
+}
+
+TEST_F(MeasurementUpdaterTest, StaticPressure) {
+
+	static FloatType constexpr tempLapse = -1.0/100.0;
+
+	static FloatType constexpr exponent = (GRAVITY * M) / (R * tempLapse);
+
+	FloatType tempSeaLevel = 20.0;
+	FloatType measuredTemp = tempSeaLevel + st1.altMSL * tempLapse;
+
+	FloatType tempSeaLeavelK = tempSeaLevel + KtoC;
+	FloatType measuredTempK = measuredTemp + KtoC;
+
+	FloatType base = tempSeaLeavelK / (tempSeaLeavelK + st1.altMSL * tempLapse);
+
+	FloatType factor = powf(base,exponent);
+
+	FloatType calculatedPressure = st1.qff * factor;
+
+	FloatType baseDiff = (measuredTempK - (st1.altMSL + 10.0) * tempLapse) / measuredTempK;
+
+	FloatType factorDiff = powf(baseDiff,exponent);
+
+	FloatType calculatedPressureDiff = st1.qff * factorDiff;
+
+	FloatType diffAltMSL = (calculatedPressureDiff - calculatedPressure) / 10.0;
+	FloatType diffPressure = 1.0/diffAltMSL;
+
+
+	GliderVarioMeasurementUpdater::staticPressureUpd(calculatedPressure + 0.2,measuredTemp,3*3,measVect,st1);
+
+	EXPECT_NEAR (GliderVarioMeasurementUpdater::calculatedValueTst1,calculatedPressure,0.00001);
+
+    for (int i = 0; i < GliderVarioStatus::STATUS_NUM_ROWS; i++) {
+        switch (i) {
+
+        case GliderVarioStatus::STATUS_IND_QFF:
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),factor,0.00001);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_ALT_MSL:
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),diffAltMSL,0.00001);
+            break;
+
+        default:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),0.0f)
+              << " Coefficient with index " << i << " is expected 0.0 but actually is "
+              <<  GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0);
+
+        }
+
+    }
+
 
 }

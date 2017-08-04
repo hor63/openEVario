@@ -706,14 +706,21 @@ GliderVarioMeasurementUpdater::staticPressureUpd (
     measuredTemperature += KtoC;
 
     // This is used to calculate the pressure and at the same time the derivate for Qff.
-    pFactor = powf ((measuredTemperature - (tempLapse * varioStatus.altMSL) / measuredTemperature),exponent);
+    pFactor = powf ((measuredTemperature - (tempLapse * varioStatus.altMSL)) / measuredTemperature,exponent);
     // The pressure at the height in the dry indifferent boundary layer.
     p = varioStatus.qff * pFactor;
     // The pressure 10m above to assess the derivate for altitude deviations
-    p1 = varioStatus.qff * powf ((measuredTemperature - (tempLapse * (varioStatus.altMSL + 10)) / measuredTemperature),exponent);
+    p1 = varioStatus.qff * powf ((measuredTemperature - (tempLapse * (varioStatus.altMSL + 10))) / measuredTemperature,exponent);
 
     measRowT.insert(GliderVarioStatus::STATUS_IND_QFF,0) = pFactor;
     measRowT.insert(GliderVarioStatus::STATUS_IND_ALT_MSL,0) = (p1 - p) / 10.0f;
+
+
+#if  ENABLE_UNIT_TESTS == 1
+    // Save internal statuses for unit tests
+    calculatedValueTst1 = p;
+    measRowTTst1 = measRowT;
+#endif
 
     calcSingleMeasureUpdate (
             measuredStaticPressure,
