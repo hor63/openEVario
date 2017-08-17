@@ -222,9 +222,6 @@ public:
 
     	FloatType calculatedPressure = qff * factor;
 
-    	std::cout << "base     = " << base     << std::endl;
-    	std::cout << "exponent = " << exponent << std::endl;
-
     	return calculatedPressure;
 
     }
@@ -806,8 +803,6 @@ TEST_F(MeasurementUpdaterTest, Magnetometer) {
     FloatType calcMagZ = magVect(2) + st1.compassDeviationZ;
 
     // Calculation without difference between calculated and measured values. Otherwise the vector length slightly differs, and expected results slightly differ.
-    std::cerr << "st1 = " << st1 << std::endl;
-    std::cerr << "Covariance of st1 = " << st1.getErrorCovariance_P() << std::endl;
 
     GliderVarioMeasurementUpdater::compassUpd(calcMagX,calcMagY,calcMagZ,0.5f*0.5f,0.5f*0.5f,0.5f*0.5f,measVect,st1);
 
@@ -947,8 +942,6 @@ TEST_F(MeasurementUpdaterTest, StaticPressure) {
 
 	FloatType const calculatedPressureDiff = calcPressure(st1.altMSL + 10.0,st1.qff,measuredTemp);
 	// FloatType const factorDiff = calculatedPressureDiff/st1.qff;
-	std::cout << "calculatedPressure     = " << calculatedPressure     << std::endl;
-	std::cout << "calculatedPressureDiff = " << calculatedPressureDiff << std::endl;
 
 	FloatType const diffAltMSL = (calculatedPressureDiff - calculatedPressure) / 10.0;
 
