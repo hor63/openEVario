@@ -205,6 +205,30 @@ public:
         }
 
     }
+
+    // Calculates the pressure at a given altitude based on the pressure at the base altitude QFF
+    FloatType calcPressure (FloatType altMSL, FloatType qff, FloatType measuredTemp) {
+
+    	static FloatType constexpr tempLapse = -1.0/100.0;
+
+    	static FloatType constexpr exponent = (GRAVITY * M) / (R * tempLapse);
+
+
+    	FloatType measuredTempK = measuredTemp + KtoC;
+
+    	FloatType base = (measuredTempK - altMSL * tempLapse) / measuredTempK;
+
+    	FloatType factor = powf(base,exponent);
+
+    	FloatType calculatedPressure = qff * factor;
+
+    	std::cout << "base     = " << base     << std::endl;
+    	std::cout << "exponent = " << exponent << std::endl;
+
+    	return calculatedPressure;
+
+    }
+
 };
 
 TEST_F(MeasurementUpdaterTest, Latitude) {
@@ -908,28 +932,28 @@ TEST_F(MeasurementUpdaterTest, StaticPressure) {
 
 	static FloatType constexpr tempLapse = -1.0/100.0;
 
-	static FloatType constexpr exponent = (GRAVITY * M) / (R * tempLapse);
+	// static FloatType constexpr exponent = (GRAVITY * M) / (R * tempLapse);
 
-	FloatType tempSeaLevel = 20.0;
-	FloatType measuredTemp = tempSeaLevel + st1.altMSL * tempLapse;
+	FloatType const tempSeaLevel = 20.0;
+	FloatType const measuredTemp = tempSeaLevel + st1.altMSL * tempLapse;
 
-	FloatType tempSeaLeavelK = tempSeaLevel + KtoC;
-	FloatType measuredTempK = measuredTemp + KtoC;
 
-	FloatType base = tempSeaLeavelK / (tempSeaLeavelK + st1.altMSL * tempLapse);
+	FloatType const calculatedPressure = calcPressure(st1.altMSL,st1.qff,measuredTemp);
 
-	FloatType factor = powf(base,exponent);
+	FloatType const factor = calculatedPressure / st1.qff;
 
-	FloatType calculatedPressure = st1.qff * factor;
+	// FloatType baseDiff = (measuredTempK - (st1.altMSL + 10.0) * tempLapse) / measuredTempK;
 
-	FloatType baseDiff = (measuredTempK - (st1.altMSL + 10.0) * tempLapse) / measuredTempK;
 
-	FloatType factorDiff = powf(baseDiff,exponent);
+	FloatType const calculatedPressureDiff = calcPressure(st1.altMSL + 10.0,st1.qff,measuredTemp);
+	// FloatType const factorDiff = calculatedPressureDiff/st1.qff;
+	std::cout << "calculatedPressure     = " << calculatedPressure     << std::endl;
+	std::cout << "calculatedPressureDiff = " << calculatedPressureDiff << std::endl;
 
-	FloatType calculatedPressureDiff = st1.qff * factorDiff;
+	FloatType const diffAltMSL = (calculatedPressureDiff - calculatedPressure) / 10.0;
 
-	FloatType diffAltMSL = (calculatedPressureDiff - calculatedPressure) / 10.0;
-	FloatType diffPressure = 1.0/diffAltMSL;
+	// this is for debugging only to check the altitude difference per hPa decrease (~8m/hPa or 20ft/hPa at MSL, double that at 5500 m altMSL)
+	FloatType const diffPressure = 1.0/diffAltMSL;
 
 
 	GliderVarioMeasurementUpdater::staticPressureUpd(calculatedPressure + 0.2,measuredTemp,3*3,measVect,st1);
