@@ -29,7 +29,13 @@
 #include <iostream>
 #include <random>
 #include <math.h>
+#include <time.h>
 #include <sys/time.h>
+
+#include <linux/i2c-dev.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/ioctl.h>
 
 #include "GliderVarioStatus.h"
 #include "GliderVarioTransitionMatrix.h"
@@ -69,12 +75,120 @@ int main (int argc, char *argv[]) {
     GliderVarioMeasurementVector::MeasureVectorType ovMeasureVector;
     GliderVarioMeasurementUpdater ovMeasureMatrix;
     int i;
+    struct timeval tv1,tv2,tv3,tv4;
 
 
+    // test of MS4515DO differential pressure sensor
+    // measurement range is -2.490889*20 to 2.490889*20 mb (measurement actually given as -20 to +20 in H2O)
+    // This is the B model with a range from -90% to +90% digital range.
+    const char* i2cBusName = "/dev/i2c-7";
+    int i2cBus = open(i2cBusName,O_RDWR);
+    uint8_t sensorReadBuf [2];
+    uint16_t sensorAddr = 0x46;
+    int rc = 0;
+
+    struct i2c_msg msg = {
+        sensorAddr, // u16 addr; /* slave address            */
+        I2C_M_RD,     // unsigned short flags;
+        sizeof (sensorReadBuf), // short len;      /* msg length               */
+        (char*)sensorReadBuf // char *buf;      /* pointer to msg data          */
+    };
+
+    struct i2c_rdwr_ioctl_data rdwrData = {
+        &msg, // struct i2c_msg *msgs;   /* pointers to i2c_msgs */
+        1U,   // __u32 nmsgs;            /* number of i2c_msgs */
+    };
+
+
+    if (i2cBus == -1) {
+        cerr << "Error while opening i2c bus \"" << i2cBusName << "\": " << strerror(errno) << endl;
+        exit (1);
+    }
+
+    // first a little performance test:
+    gettimeofday(&tv1,NULL);
+    // read 1 word of data from the sensor 100 times
+    for (i=0 ; i<100; i++) {
+       rc = ioctl (i2cBus,I2C_RDWR,&rdwrData);
+       if (rc == -1) {
+           cerr << "Error reading from sensor: " << strerror(errno) << endl;
+           exit (1);
+       }
+    }
+    gettimeofday(&tv2,NULL);
+    cout << " 100 I2C reads of 2 bytes took " << double(tv2.tv_sec-tv1.tv_sec)+double(tv2.tv_usec-tv1.tv_usec)/1000000 << endl;
+
+    // read the sensor readings for ever
+    while (1) {
+        uint16_t flags;
+        uint16_t sensor_reading;
+        double diffPressure;
+        struct timespec twoMS = {
+                0,2000000
+        };
+        double constexpr sensorRange = 2.490889 * 20;
+        double constexpr fact = 16383.0 * 0.9 / sensorRange / 2.0;
+        // nanosleep (&twoMS,NULL);
+
+
+
+        msg.addr  = sensorAddr;
+        msg.buf   = (char*)sensorReadBuf;
+        msg.flags = I2C_M_RD;
+        msg.len   = 2;
+
+        rdwrData.msgs  = &msg;
+        rdwrData.nmsgs = 1;
+
+        rc = ioctl (i2cBus,I2C_RDWR,&rdwrData);
+        if (rc == -1) {
+            cerr << "Error reading from sensor: " << strerror(errno) << endl;
+            exit (1);
+        }
+
+        if (msg.len != 2) {
+            cerr << "Length of data != 2. Length is " << msg.len << endl;
+            exit(1);
+        }
+
+        flags = sensorReadBuf[0] >> 6;
+        sensor_reading = (uint16_t(sensorReadBuf[0])&0b00111111) * 256 + uint16_t(sensorReadBuf[1]);
+        diffPressure = (sensor_reading - 16383.0*0.05 - fact * sensorRange) / fact;
+
+        cout <<
+                "flags = " << flags <<
+                ", sensorReading = " << sensor_reading <<
+                ", diffPressure = " << diffPressure << endl;
+
+        // when an error occurred or valid data were read
+        // initiate the next conversion immediately
+        // set the slave address
+
+        if (flags != 2) {
+            /*
+            rc = ioctl(i2cBus, I2C_SLAVE, long (sensorAddr));
+            if (rc == -1) {
+                cerr << "Error setting sensor address: " << strerror(errno) << endl;
+                exit (1);
+            }
+            rc = i2c_smbus_write_quick (i2cBus,I2C_SMBUS_READ);
+            cout << "i2c_smbus_write_quick returned " << rc << endl;
+            */
+            // issue a 1-byte length read command to initiate a measurement.
+            msg.len = 1;
+            rc = ioctl (i2cBus,I2C_RDWR,&rdwrData);
+            if (rc == -1) {
+                cerr << "Error reading from sensor: " << strerror(errno) << endl;
+                exit (1);
+            }
+        }
+
+    }
+
+    exit(0);
 
     // Test of fastMath.
     FloatType j;
-    struct timeval tv1,tv2,tv3,tv4;
 
     cout << "-----------------------" << endl;
     cout << "Test of fastMath." << endl;
