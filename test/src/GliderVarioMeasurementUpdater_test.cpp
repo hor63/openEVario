@@ -975,3 +975,47 @@ TEST_F(MeasurementUpdaterTest, StaticPressure) {
 
 
 }
+
+TEST_F(MeasurementUpdaterTest, DynamicPressure) {
+
+	static FloatType constexpr tempLapse = -1.0/100.0;
+
+	// static FloatType constexpr exponent = (GRAVITY * M) / (R * tempLapse);
+
+	FloatType const tempSeaLevel = 20.0;
+	FloatType const measuredTemp = tempSeaLevel + st1.altMSL * tempLapse;
+
+
+	FloatType const calculatedPressure = calcPressure(st1.altMSL,st1.qff,measuredTemp);
+
+	st1.lastPressure = calculatedPressure;
+
+	const FloatType density = calculatedPressure / Rspec / (measuredTemp + KtoC);
+
+	const FloatType dynPressure = density * st1.trueAirSpeed * st1.trueAirSpeed / 2.0f;
+
+	const FloatType diffDynPressure = density * st1.trueAirSpeed;
+
+
+	GliderVarioMeasurementUpdater::dynamicPressureUpd(dynPressure + 5.0f,measuredTemp,3*3,measVect,st1);
+
+	EXPECT_NEAR (GliderVarioMeasurementUpdater::calculatedValueTst1,dynPressure,0.00001);
+
+    for (int i = 0; i < GliderVarioStatus::STATUS_NUM_ROWS; i++) {
+        switch (i) {
+
+        case GliderVarioStatus::STATUS_IND_TAS:
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),diffDynPressure,0.00001);
+            break;
+
+        default:
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),0.0f)
+              << " Coefficient with index " << i << " is expected 0.0 but actually is "
+              <<  GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0);
+
+        }
+
+    }
+
+
+}

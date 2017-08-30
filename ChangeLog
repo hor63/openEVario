@@ -1,4 +1,13 @@
-2017-08-04  hor  <horstmannkai@hotmail.com>
+2017-08-30  Kai Horstmann  <horstmannkai@hotmail.com>
+
+	* src/GliderVarioMeasurementUpdater.cpp (dynamicPressureUpd): 
+	* test/src/GliderVarioMeasurementUpdater_test.cpp (MeasurementUpdaterTest_DynamicPressure_Test.MeasurementUpdaterTest_DynamicPressure_Test): 
+	(MeasurementUpdaterTest_DynamicPressure_Test::TestBody): 
+	(GliderVarioMeasurementUpdater::dynamicPressureUpd): 
+	  Added final unit test for dynamic pressure
+	  Made corrections to dynamic pressure updated based on unit test findings
+	
+2017-08-04  Kai Horstmann  <horstmannkai@hotmail.com>
 
 	* src/GliderVarioMeasurementUpdater.cpp (staticPressureUpd): 
 	* test/src/GliderVarioMeasurementUpdater_test.cpp  

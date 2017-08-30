@@ -742,7 +742,7 @@ GliderVarioMeasurementUpdater::dynamicPressureUpd (
         GliderVarioMeasurementVector &measurementVector,
         GliderVarioStatus &varioStatus
 ) {
-    static FloatType constexpr RspecTimes2     = R * 2.0f;     // Specific R for dry air
+    static FloatType constexpr RspecTimes2     = Rspec * 2.0f;     // Specific R for dry air
 
     // This term is used repeatedly
     FloatType pressRspecTemp = varioStatus.lastPressure / RspecTimes2 / (measuredTemperature + KtoC);
@@ -758,13 +758,14 @@ GliderVarioMeasurementUpdater::dynamicPressureUpd (
     // dyn pressure = 0.5 * (pressure / Rspec /temp) * speed * speed
     tmp1 = pressRspecTemp * varioStatus.trueAirSpeed;
     dynPressure = tmp1 * varioStatus.trueAirSpeed;
+
     // True derivate
-    measRowT.insert(GliderVarioStatus::STATUS_IND_TAS,0) = tmp1 * 0.5f;
+    measRowT.insert(GliderVarioStatus::STATUS_IND_TAS,0) = tmp1 * 2.0f;
 
 
 #if  ENABLE_UNIT_TESTS == 1
     // Save internal statuses for unit tests
-    calculatedValueTst1 = measuredDynamicPressure;
+    calculatedValueTst1 = dynPressure;
     measRowTTst1 = measRowT;
 #endif
 
