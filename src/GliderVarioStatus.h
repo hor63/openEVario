@@ -30,8 +30,8 @@
 #ifndef GLIDERVARIOSTATUS_H_
 #define GLIDERVARIOSTATUS_H_
 
-#include <Dense>
-#include <Sparse>
+#include <Eigen/Dense>
+#include <Eigen/Sparse>
 
 /**
  * This namespace includes a complex extended kalman filter (EKF) for implementing a complete electronic compensated variometer, and artificial horizon.
