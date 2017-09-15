@@ -23,6 +23,10 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
+
 #include "GliderVarioMeasurementUpdater.h"
 #include "FastMath.h"
 #include "RotationMatrix.h"

@@ -23,6 +23,10 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
+
 #include <iostream>
 #include <stdio.h>
 
@@ -58,6 +62,10 @@ static int printSineTable(const char* fileName){
  *   with this program; if not, write to the Free Software Foundation, Inc.,\n\
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.\n\
  */\n\
+\n\
+#ifdef HAVE_CONFIG_H\n\
+#  include <config.h>\n\
+#endif\n\
 \n\
 #include \"FastMath.h\" \n\
 \n\

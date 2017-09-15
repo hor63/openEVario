@@ -116,6 +116,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
+CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LIBRARIES = $(noinst_LIBRARIES)
@@ -157,7 +158,7 @@ AM_V_at = $(am__v_at_@AM_V@)
 am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
 am__v_at_0 = @
 am__v_at_1 = 
-DEFAULT_INCLUDES = -I.@am__isrc@
+DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 am__mv = mv -f
@@ -230,9 +231,7 @@ CXXCPP = @CXXCPP@
 CXXCPPFLAGS_FOR_BUILD = @CXXCPPFLAGS_FOR_BUILD@
 CXXCPP_FOR_BUILD = @CXXCPP_FOR_BUILD@
 CXXDEPMODE = @CXXDEPMODE@
-
-# disable optimizer to make debugging easier
-CXXFLAGS = @CXXFLAGS@ -g -O0
+CXXFLAGS = @CXXFLAGS@
 CXXFLAGS_FOR_BUILD = @CXXFLAGS_FOR_BUILD@ -g -O0
 CXX_FOR_BUILD = @CXX_FOR_BUILD@
 CYGPATH_W = @CYGPATH_W@
@@ -382,6 +381,7 @@ testOpenEVario_LDADD = ./libgoogletest.a $(PTHREAD_LIBS)
 # Build compiler sources are not well supported by autotools. Back to manual
 genSineTables_sources = ../../src/genSineTables.cpp
 AM_CXXFLAGS = -isystem $(top_srcdir)/3rdParty/googletest/googletest/include \
+	-I../.. \
 	-I$(top_srcdir)/3rdParty/eigen \
 	-I$(top_srcdir)/src \
 	-DENABLE_UNIT_TESTS=1 \
@@ -865,6 +865,9 @@ uninstall-am: uninstall-binPROGRAMS
 
 .PRECIOUS: Makefile
 
+
+# disable optimizer to make debugging easier
+CXXFLAGS ?= -g -O0
 
 # compile and link in one step. Saves me at least mainaining object and source file lists.
 genSineTables$(EXEEXT) : $(genSineTables_sources)
