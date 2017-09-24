@@ -2,11 +2,15 @@
 #Local Eclipse stuff
 .settings
 
-#Generated stuff
+#Generated stuff by configure and make
 Makefile
 *.log
 config.status
 autom4te.cache
+config.h
+libtool
+src/drivers/simul/.libs/
+stamp-h1
 
 # Compiled Object files
 *.slo

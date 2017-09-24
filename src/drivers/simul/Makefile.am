@@ -22,8 +22,6 @@ libopenEVSimul_la_SOURCES=simulMain.cpp
  
 libopenEVSimul_la_LIBADD = $(PTHREAD_LIBS)
 
-# Build compiler sources are not well supported by autotools. Back to manual
-
 AM_CXXFLAGS = -I../../.. -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen \
 	$(PTHREAD_CFLAGS)
 
