@@ -17,14 +17,16 @@
 
 dnl Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.59)
-AC_INIT(openEVario, 1.0)
+AC_PREREQ([2.69])
+AC_INIT([openEVario],[1.0])
 AC_CONFIG_HEADERS(config.h)
 
 
 AC_CONFIG_MACRO_DIRS([m4])
 
-AC_CANONICAL_SYSTEM
+
+
+AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE()
 
 
@@ -32,8 +34,8 @@ AC_PROG_CXX
 AX_PROG_CXX_FOR_BUILD
 AX_CXX_COMPILE_STDCXX_11(noext, mandatory)
 AX_CXX_COMPILE_BUILD_STDCXX_11(noext, mandatory)
-
 AX_PTHREAD()
+
 
 # get a suitable command like mkdir -p on LINUX systems use install if mkdir -p does not work.
 AC_PROG_INSTALL
@@ -41,7 +43,15 @@ AC_PROG_MKDIR_P
 
 # commands for the archiver
 AM_PROG_AR
-AC_PROG_RANLIB
+# obsoleted bz LT_INIT AC_PROG_RANLIB
+
+LT_INIT(win32-dll dlopen )
+AC_SUBST([LIBTOOL_DEPS])
+
+AC_LANG([C++])
+
+AC_CHECK_HEADER([confuse.h],[],[  AC_MSG_ERROR([unable to find the confuse.h system header file])])
+AC_SEARCH_LIBS([cfg_init],[confuse],[],[  AC_MSG_ERROR([unable to find the cfg_init function in libconfuse])])
 
 DX_DOXYGEN_FEATURE(ON)
 DX_DOT_FEATURE(ON)
@@ -50,7 +60,7 @@ DX_PDF_FEATURE(ON)
 DX_PS_FEATURE(OFF)
 DX_INIT_DOXYGEN(openEVario, $(srcdir)/doxygen.cfg, doc/doxygen)
 
-AC_CONFIG_FILES(Makefile src/Makefile test/src/Makefile)
+AC_CONFIG_FILES(Makefile src/Makefile src/drivers/simul/Makefile test/src/Makefile)
 
 AC_OUTPUT
 

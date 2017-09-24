@@ -16,15 +16,15 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-SUBDIRS= src src/drivers/simul test/src
+lib_LTLIBRARIES = libopenEVSimul.la
 
-MOSTLYCLEANFILES= $(DX_CLEANFILES)
+libopenEVSimul_la_SOURCES=simulMain.cpp
+ 
+libopenEVSimul_la_LIBADD = $(PTHREAD_LIBS)
 
-ACLOCAL_AMFLAGS= -I m4 
-        
-#doxygen: 
-#	$(DX_DOXYGEN)
-#	make -C doc/doxygen/latex
+# Build compiler sources are not well supported by autotools. Back to manual
 
-@DX_RULES@
+AM_CXXFLAGS = -I../../.. -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen \
+	$(PTHREAD_CFLAGS)
 
+	

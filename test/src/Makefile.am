@@ -50,7 +50,7 @@ AM_CXXFLAGS = -isystem $(top_srcdir)/3rdParty/googletest/googletest/include \
 
 # disable optimizer to make debugging easier
 CXXFLAGS ?= -g -O0
-CXXFLAGS_FOR_BUILD += -g -O0
+CXXFLAGS_FOR_BUILD ?= -g -O0
 
 # compiling googletest itself requires PTHRED options, and the googletest source directory as include path.
 libgoogletest_a_CXXFLAGS = -isystem $(top_srcdir)/3rdParty/googletest/googletest/include -I$(top_srcdir)/3rdParty/googletest/googletest
