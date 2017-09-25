@@ -2,6 +2,9 @@
 #Local Eclipse stuff
 .settings
 
+#Backup files
+*~
+
 #Generated stuff by configure and make
 Makefile
 *.log

@@ -122,37 +122,43 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-LIBRARIES = $(noinst_LIBRARIES)
-ARFLAGS = cru
-AM_V_AR = $(am__v_AR_@AM_V@)
-am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
-am__v_AR_0 = @echo "  AR      " $@;
-am__v_AR_1 = 
-libgoogletest_a_AR = $(AR) $(ARFLAGS)
-libgoogletest_a_LIBADD =
-am_libgoogletest_a_OBJECTS = libgoogletest_a-gtest-all.$(OBJEXT)
-libgoogletest_a_OBJECTS = $(am_libgoogletest_a_OBJECTS)
-am__installdirs = "$(DESTDIR)$(bindir)"
-PROGRAMS = $(bin_PROGRAMS)
-am_testOpenEVario_OBJECTS = testOpenEVario.$(OBJEXT) \
-	GliderVarioStatus.$(OBJEXT) \
-	GliderVarioTransitionMatrix.$(OBJEXT) RotationMatrix.$(OBJEXT) \
-	FastMath.$(OBJEXT) FastMathSineTable.$(OBJEXT) \
-	MeasureMatrix.$(OBJEXT) GliderVarioMeasurementVector.$(OBJEXT) \
-	GliderVarioMeasurementUpdater.$(OBJEXT) \
-	FastMath_test.$(OBJEXT) \
-	GliderVarioTransitionMatrix_test.$(OBJEXT) \
-	GliderVarioMeasurementUpdater_test.$(OBJEXT) \
-	GliderVarioMeasurementVector_test.$(OBJEXT) \
-	MeasureMatrix_test.$(OBJEXT) GliderVarioStatus_test.$(OBJEXT) \
-	RotationMatrix_test.$(OBJEXT)
-testOpenEVario_OBJECTS = $(am_testOpenEVario_OBJECTS)
-am__DEPENDENCIES_1 =
-testOpenEVario_DEPENDENCIES = ./libgoogletest.a $(am__DEPENDENCIES_1)
+LTLIBRARIES = $(noinst_LTLIBRARIES)
+libgoogletest_la_LIBADD =
+am_libgoogletest_la_OBJECTS = libgoogletest_la-gtest-all.lo
+libgoogletest_la_OBJECTS = $(am_libgoogletest_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
+libgoogletest_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(libgoogletest_la_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+	$(LDFLAGS) -o $@
+am__installdirs = "$(DESTDIR)$(bindir)"
+PROGRAMS = $(bin_PROGRAMS)
+am_testOpenEVario_OBJECTS = testOpenEVario-testOpenEVario.$(OBJEXT) \
+	testOpenEVario-GliderVarioStatus.$(OBJEXT) \
+	testOpenEVario-GliderVarioTransitionMatrix.$(OBJEXT) \
+	testOpenEVario-RotationMatrix.$(OBJEXT) \
+	testOpenEVario-FastMath.$(OBJEXT) \
+	testOpenEVario-FastMathSineTable.$(OBJEXT) \
+	testOpenEVario-MeasureMatrix.$(OBJEXT) \
+	testOpenEVario-GliderVarioMeasurementVector.$(OBJEXT) \
+	testOpenEVario-GliderVarioMeasurementUpdater.$(OBJEXT) \
+	testOpenEVario-FastMath_test.$(OBJEXT) \
+	testOpenEVario-GliderVarioTransitionMatrix_test.$(OBJEXT) \
+	testOpenEVario-GliderVarioMeasurementUpdater_test.$(OBJEXT) \
+	testOpenEVario-GliderVarioMeasurementVector_test.$(OBJEXT) \
+	testOpenEVario-MeasureMatrix_test.$(OBJEXT) \
+	testOpenEVario-GliderVarioStatus_test.$(OBJEXT) \
+	testOpenEVario-RotationMatrix_test.$(OBJEXT)
+testOpenEVario_OBJECTS = $(am_testOpenEVario_OBJECTS)
+am__DEPENDENCIES_1 =
+testOpenEVario_DEPENDENCIES = ./libgoogletest.la $(am__DEPENDENCIES_1)
+testOpenEVario_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(testOpenEVario_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+	$(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -187,8 +193,8 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(libgoogletest_a_SOURCES) $(testOpenEVario_SOURCES)
-DIST_SOURCES = $(libgoogletest_a_SOURCES) $(testOpenEVario_SOURCES)
+SOURCES = $(libgoogletest_la_SOURCES) $(testOpenEVario_SOURCES)
+DIST_SOURCES = $(libgoogletest_la_SOURCES) $(testOpenEVario_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -385,8 +391,8 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LIBRARIES = libgoogletest.a
-libgoogletest_a_SOURCES = $(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc
+noinst_LTLIBRARIES = libgoogletest.la
+libgoogletest_la_SOURCES = $(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc
 bin_PROGRAMS = testOpenEVario$(EXEEXT)
 testOpenEVario_SOURCES = testOpenEVario.cpp \
   $(top_srcdir)/src/GliderVarioStatus.cpp \
@@ -405,11 +411,11 @@ testOpenEVario_SOURCES = testOpenEVario.cpp \
   GliderVarioStatus_test.cpp \
   RotationMatrix_test.cpp
 
-testOpenEVario_LDADD = ./libgoogletest.a $(PTHREAD_LIBS)
+testOpenEVario_LDADD = ./libgoogletest.la $(PTHREAD_LIBS)
 
 # Build compiler sources are not well supported by autotools. Back to manual
 genSineTables_sources = ../../src/genSineTables.cpp
-AM_CXXFLAGS = -isystem $(top_srcdir)/3rdParty/googletest/googletest/include \
+testOpenEVario_CXXFLAGS = -isystem $(top_srcdir)/3rdParty/googletest/googletest/include \
 	-I../.. \
 	-I$(top_srcdir)/3rdParty/eigen \
 	-I$(top_srcdir)/src \
@@ -418,7 +424,10 @@ AM_CXXFLAGS = -isystem $(top_srcdir)/3rdParty/googletest/googletest/include \
 
 
 # compiling googletest itself requires PTHRED options, and the googletest source directory as include path.
-libgoogletest_a_CXXFLAGS = -isystem $(top_srcdir)/3rdParty/googletest/googletest/include -I$(top_srcdir)/3rdParty/googletest/googletest
+libgoogletest_la_CXXFLAGS = \
+	-isystem $(top_srcdir)/3rdParty/googletest/googletest/include \
+	-I$(top_srcdir)/3rdParty/googletest/googletest
+
 AM_CXXFLAGS_FOR_BUILD = "-I$(top_srcdir)/3rdParty/eigen/Eigen"
 LINK_FOR_BUILD.cpp = $(CXX_FOR_BUILD) $(CXXFLAGS_FOR_BUILD) $(CPPFLAGS_FOR_BUILD) $(AM_CXXFLAGS_FOR_BUILD) $(LDFLAGS_FOR_BUILD) $(TARGET_ARCH_FOR_BUILD)
 all: all-am
@@ -455,13 +464,19 @@ $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 
-clean-noinstLIBRARIES:
-	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
+clean-noinstLTLIBRARIES:
+	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
+	@list='$(noinst_LTLIBRARIES)'; \
+	locs=`for p in $$list; do echo $$p; done | \
+	      sed 's|^[^/]*$$|.|; s|/[^/]*$$||; s|$$|/so_locations|' | \
+	      sort -u`; \
+	test -z "$$locs" || { \
+	  echo rm -f $${locs}; \
+	  rm -f $${locs}; \
+	}
 
-libgoogletest.a: $(libgoogletest_a_OBJECTS) $(libgoogletest_a_DEPENDENCIES) $(EXTRA_libgoogletest_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libgoogletest.a
-	$(AM_V_AR)$(libgoogletest_a_AR) libgoogletest.a $(libgoogletest_a_OBJECTS) $(libgoogletest_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libgoogletest.a
+libgoogletest.la: $(libgoogletest_la_OBJECTS) $(libgoogletest_la_DEPENDENCIES) $(EXTRA_libgoogletest_la_DEPENDENCIES) 
+	$(AM_V_CXXLD)$(libgoogletest_la_LINK)  $(libgoogletest_la_OBJECTS) $(libgoogletest_la_LIBADD) $(LIBS)
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
 	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
@@ -514,7 +529,7 @@ clean-binPROGRAMS:
 
 testOpenEVario$(EXEEXT): $(testOpenEVario_OBJECTS) $(testOpenEVario_DEPENDENCIES) $(EXTRA_testOpenEVario_DEPENDENCIES) 
 	@rm -f testOpenEVario$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(testOpenEVario_OBJECTS) $(testOpenEVario_LDADD) $(LIBS)
+	$(AM_V_CXXLD)$(testOpenEVario_LINK) $(testOpenEVario_OBJECTS) $(testOpenEVario_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -522,23 +537,23 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FastMath.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FastMathSineTable.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FastMath_test.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GliderVarioMeasurementUpdater.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GliderVarioMeasurementUpdater_test.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GliderVarioMeasurementVector.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GliderVarioMeasurementVector_test.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GliderVarioStatus.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GliderVarioStatus_test.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GliderVarioTransitionMatrix.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GliderVarioTransitionMatrix_test.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MeasureMatrix.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MeasureMatrix_test.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RotationMatrix.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RotationMatrix_test.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgoogletest_a-gtest-all.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testOpenEVario.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgoogletest_la-gtest-all.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testOpenEVario-FastMath.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testOpenEVario-FastMathSineTable.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testOpenEVario-FastMath_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testOpenEVario-GliderVarioMeasurementUpdater.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testOpenEVario-GliderVarioMeasurementUpdater_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testOpenEVario-GliderVarioMeasurementVector.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testOpenEVario-GliderVarioMeasurementVector_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testOpenEVario-GliderVarioStatus.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testOpenEVario-GliderVarioStatus_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testOpenEVario-GliderVarioTransitionMatrix.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testOpenEVario-GliderVarioTransitionMatrix_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testOpenEVario-MeasureMatrix.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testOpenEVario-MeasureMatrix_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testOpenEVario-RotationMatrix.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testOpenEVario-RotationMatrix_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testOpenEVario-testOpenEVario.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -561,131 +576,236 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
 
-libgoogletest_a-gtest-all.o: $(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgoogletest_a_CXXFLAGS) $(CXXFLAGS) -MT libgoogletest_a-gtest-all.o -MD -MP -MF $(DEPDIR)/libgoogletest_a-gtest-all.Tpo -c -o libgoogletest_a-gtest-all.o `test -f '$(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc' || echo '$(srcdir)/'`$(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgoogletest_a-gtest-all.Tpo $(DEPDIR)/libgoogletest_a-gtest-all.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc' object='libgoogletest_a-gtest-all.o' libtool=no @AMDEPBACKSLASH@
+libgoogletest_la-gtest-all.lo: $(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgoogletest_la_CXXFLAGS) $(CXXFLAGS) -MT libgoogletest_la-gtest-all.lo -MD -MP -MF $(DEPDIR)/libgoogletest_la-gtest-all.Tpo -c -o libgoogletest_la-gtest-all.lo `test -f '$(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc' || echo '$(srcdir)/'`$(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgoogletest_la-gtest-all.Tpo $(DEPDIR)/libgoogletest_la-gtest-all.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc' object='libgoogletest_la-gtest-all.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgoogletest_a_CXXFLAGS) $(CXXFLAGS) -c -o libgoogletest_a-gtest-all.o `test -f '$(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc' || echo '$(srcdir)/'`$(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgoogletest_la_CXXFLAGS) $(CXXFLAGS) -c -o libgoogletest_la-gtest-all.lo `test -f '$(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc' || echo '$(srcdir)/'`$(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc
 
-libgoogletest_a-gtest-all.obj: $(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgoogletest_a_CXXFLAGS) $(CXXFLAGS) -MT libgoogletest_a-gtest-all.obj -MD -MP -MF $(DEPDIR)/libgoogletest_a-gtest-all.Tpo -c -o libgoogletest_a-gtest-all.obj `if test -f '$(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc'; then $(CYGPATH_W) '$(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgoogletest_a-gtest-all.Tpo $(DEPDIR)/libgoogletest_a-gtest-all.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc' object='libgoogletest_a-gtest-all.obj' libtool=no @AMDEPBACKSLASH@
+testOpenEVario-testOpenEVario.o: testOpenEVario.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-testOpenEVario.o -MD -MP -MF $(DEPDIR)/testOpenEVario-testOpenEVario.Tpo -c -o testOpenEVario-testOpenEVario.o `test -f 'testOpenEVario.cpp' || echo '$(srcdir)/'`testOpenEVario.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-testOpenEVario.Tpo $(DEPDIR)/testOpenEVario-testOpenEVario.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='testOpenEVario.cpp' object='testOpenEVario-testOpenEVario.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgoogletest_a_CXXFLAGS) $(CXXFLAGS) -c -o libgoogletest_a-gtest-all.obj `if test -f '$(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc'; then $(CYGPATH_W) '$(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-testOpenEVario.o `test -f 'testOpenEVario.cpp' || echo '$(srcdir)/'`testOpenEVario.cpp
 
-GliderVarioStatus.o: $(top_srcdir)/src/GliderVarioStatus.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GliderVarioStatus.o -MD -MP -MF $(DEPDIR)/GliderVarioStatus.Tpo -c -o GliderVarioStatus.o `test -f '$(top_srcdir)/src/GliderVarioStatus.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/GliderVarioStatus.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GliderVarioStatus.Tpo $(DEPDIR)/GliderVarioStatus.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/GliderVarioStatus.cpp' object='GliderVarioStatus.o' libtool=no @AMDEPBACKSLASH@
+testOpenEVario-testOpenEVario.obj: testOpenEVario.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-testOpenEVario.obj -MD -MP -MF $(DEPDIR)/testOpenEVario-testOpenEVario.Tpo -c -o testOpenEVario-testOpenEVario.obj `if test -f 'testOpenEVario.cpp'; then $(CYGPATH_W) 'testOpenEVario.cpp'; else $(CYGPATH_W) '$(srcdir)/testOpenEVario.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-testOpenEVario.Tpo $(DEPDIR)/testOpenEVario-testOpenEVario.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='testOpenEVario.cpp' object='testOpenEVario-testOpenEVario.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GliderVarioStatus.o `test -f '$(top_srcdir)/src/GliderVarioStatus.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/GliderVarioStatus.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-testOpenEVario.obj `if test -f 'testOpenEVario.cpp'; then $(CYGPATH_W) 'testOpenEVario.cpp'; else $(CYGPATH_W) '$(srcdir)/testOpenEVario.cpp'; fi`
 
-GliderVarioStatus.obj: $(top_srcdir)/src/GliderVarioStatus.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GliderVarioStatus.obj -MD -MP -MF $(DEPDIR)/GliderVarioStatus.Tpo -c -o GliderVarioStatus.obj `if test -f '$(top_srcdir)/src/GliderVarioStatus.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/GliderVarioStatus.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/GliderVarioStatus.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GliderVarioStatus.Tpo $(DEPDIR)/GliderVarioStatus.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/GliderVarioStatus.cpp' object='GliderVarioStatus.obj' libtool=no @AMDEPBACKSLASH@
+testOpenEVario-GliderVarioStatus.o: $(top_srcdir)/src/GliderVarioStatus.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-GliderVarioStatus.o -MD -MP -MF $(DEPDIR)/testOpenEVario-GliderVarioStatus.Tpo -c -o testOpenEVario-GliderVarioStatus.o `test -f '$(top_srcdir)/src/GliderVarioStatus.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/GliderVarioStatus.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-GliderVarioStatus.Tpo $(DEPDIR)/testOpenEVario-GliderVarioStatus.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/GliderVarioStatus.cpp' object='testOpenEVario-GliderVarioStatus.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GliderVarioStatus.obj `if test -f '$(top_srcdir)/src/GliderVarioStatus.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/GliderVarioStatus.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/GliderVarioStatus.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-GliderVarioStatus.o `test -f '$(top_srcdir)/src/GliderVarioStatus.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/GliderVarioStatus.cpp
 
-GliderVarioTransitionMatrix.o: $(top_srcdir)/src/GliderVarioTransitionMatrix.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GliderVarioTransitionMatrix.o -MD -MP -MF $(DEPDIR)/GliderVarioTransitionMatrix.Tpo -c -o GliderVarioTransitionMatrix.o `test -f '$(top_srcdir)/src/GliderVarioTransitionMatrix.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/GliderVarioTransitionMatrix.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GliderVarioTransitionMatrix.Tpo $(DEPDIR)/GliderVarioTransitionMatrix.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/GliderVarioTransitionMatrix.cpp' object='GliderVarioTransitionMatrix.o' libtool=no @AMDEPBACKSLASH@
+testOpenEVario-GliderVarioStatus.obj: $(top_srcdir)/src/GliderVarioStatus.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-GliderVarioStatus.obj -MD -MP -MF $(DEPDIR)/testOpenEVario-GliderVarioStatus.Tpo -c -o testOpenEVario-GliderVarioStatus.obj `if test -f '$(top_srcdir)/src/GliderVarioStatus.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/GliderVarioStatus.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/GliderVarioStatus.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-GliderVarioStatus.Tpo $(DEPDIR)/testOpenEVario-GliderVarioStatus.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/GliderVarioStatus.cpp' object='testOpenEVario-GliderVarioStatus.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GliderVarioTransitionMatrix.o `test -f '$(top_srcdir)/src/GliderVarioTransitionMatrix.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/GliderVarioTransitionMatrix.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-GliderVarioStatus.obj `if test -f '$(top_srcdir)/src/GliderVarioStatus.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/GliderVarioStatus.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/GliderVarioStatus.cpp'; fi`
 
-GliderVarioTransitionMatrix.obj: $(top_srcdir)/src/GliderVarioTransitionMatrix.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GliderVarioTransitionMatrix.obj -MD -MP -MF $(DEPDIR)/GliderVarioTransitionMatrix.Tpo -c -o GliderVarioTransitionMatrix.obj `if test -f '$(top_srcdir)/src/GliderVarioTransitionMatrix.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/GliderVarioTransitionMatrix.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/GliderVarioTransitionMatrix.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GliderVarioTransitionMatrix.Tpo $(DEPDIR)/GliderVarioTransitionMatrix.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/GliderVarioTransitionMatrix.cpp' object='GliderVarioTransitionMatrix.obj' libtool=no @AMDEPBACKSLASH@
+testOpenEVario-GliderVarioTransitionMatrix.o: $(top_srcdir)/src/GliderVarioTransitionMatrix.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-GliderVarioTransitionMatrix.o -MD -MP -MF $(DEPDIR)/testOpenEVario-GliderVarioTransitionMatrix.Tpo -c -o testOpenEVario-GliderVarioTransitionMatrix.o `test -f '$(top_srcdir)/src/GliderVarioTransitionMatrix.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/GliderVarioTransitionMatrix.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-GliderVarioTransitionMatrix.Tpo $(DEPDIR)/testOpenEVario-GliderVarioTransitionMatrix.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/GliderVarioTransitionMatrix.cpp' object='testOpenEVario-GliderVarioTransitionMatrix.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GliderVarioTransitionMatrix.obj `if test -f '$(top_srcdir)/src/GliderVarioTransitionMatrix.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/GliderVarioTransitionMatrix.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/GliderVarioTransitionMatrix.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-GliderVarioTransitionMatrix.o `test -f '$(top_srcdir)/src/GliderVarioTransitionMatrix.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/GliderVarioTransitionMatrix.cpp
 
-RotationMatrix.o: $(top_srcdir)/src/RotationMatrix.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RotationMatrix.o -MD -MP -MF $(DEPDIR)/RotationMatrix.Tpo -c -o RotationMatrix.o `test -f '$(top_srcdir)/src/RotationMatrix.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/RotationMatrix.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/RotationMatrix.Tpo $(DEPDIR)/RotationMatrix.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/RotationMatrix.cpp' object='RotationMatrix.o' libtool=no @AMDEPBACKSLASH@
+testOpenEVario-GliderVarioTransitionMatrix.obj: $(top_srcdir)/src/GliderVarioTransitionMatrix.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-GliderVarioTransitionMatrix.obj -MD -MP -MF $(DEPDIR)/testOpenEVario-GliderVarioTransitionMatrix.Tpo -c -o testOpenEVario-GliderVarioTransitionMatrix.obj `if test -f '$(top_srcdir)/src/GliderVarioTransitionMatrix.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/GliderVarioTransitionMatrix.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/GliderVarioTransitionMatrix.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-GliderVarioTransitionMatrix.Tpo $(DEPDIR)/testOpenEVario-GliderVarioTransitionMatrix.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/GliderVarioTransitionMatrix.cpp' object='testOpenEVario-GliderVarioTransitionMatrix.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RotationMatrix.o `test -f '$(top_srcdir)/src/RotationMatrix.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/RotationMatrix.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-GliderVarioTransitionMatrix.obj `if test -f '$(top_srcdir)/src/GliderVarioTransitionMatrix.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/GliderVarioTransitionMatrix.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/GliderVarioTransitionMatrix.cpp'; fi`
 
-RotationMatrix.obj: $(top_srcdir)/src/RotationMatrix.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RotationMatrix.obj -MD -MP -MF $(DEPDIR)/RotationMatrix.Tpo -c -o RotationMatrix.obj `if test -f '$(top_srcdir)/src/RotationMatrix.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/RotationMatrix.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/RotationMatrix.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/RotationMatrix.Tpo $(DEPDIR)/RotationMatrix.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/RotationMatrix.cpp' object='RotationMatrix.obj' libtool=no @AMDEPBACKSLASH@
+testOpenEVario-RotationMatrix.o: $(top_srcdir)/src/RotationMatrix.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-RotationMatrix.o -MD -MP -MF $(DEPDIR)/testOpenEVario-RotationMatrix.Tpo -c -o testOpenEVario-RotationMatrix.o `test -f '$(top_srcdir)/src/RotationMatrix.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/RotationMatrix.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-RotationMatrix.Tpo $(DEPDIR)/testOpenEVario-RotationMatrix.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/RotationMatrix.cpp' object='testOpenEVario-RotationMatrix.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RotationMatrix.obj `if test -f '$(top_srcdir)/src/RotationMatrix.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/RotationMatrix.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/RotationMatrix.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-RotationMatrix.o `test -f '$(top_srcdir)/src/RotationMatrix.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/RotationMatrix.cpp
 
-FastMath.o: $(top_srcdir)/src/FastMath.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FastMath.o -MD -MP -MF $(DEPDIR)/FastMath.Tpo -c -o FastMath.o `test -f '$(top_srcdir)/src/FastMath.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/FastMath.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/FastMath.Tpo $(DEPDIR)/FastMath.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/FastMath.cpp' object='FastMath.o' libtool=no @AMDEPBACKSLASH@
+testOpenEVario-RotationMatrix.obj: $(top_srcdir)/src/RotationMatrix.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-RotationMatrix.obj -MD -MP -MF $(DEPDIR)/testOpenEVario-RotationMatrix.Tpo -c -o testOpenEVario-RotationMatrix.obj `if test -f '$(top_srcdir)/src/RotationMatrix.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/RotationMatrix.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/RotationMatrix.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-RotationMatrix.Tpo $(DEPDIR)/testOpenEVario-RotationMatrix.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/RotationMatrix.cpp' object='testOpenEVario-RotationMatrix.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FastMath.o `test -f '$(top_srcdir)/src/FastMath.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/FastMath.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-RotationMatrix.obj `if test -f '$(top_srcdir)/src/RotationMatrix.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/RotationMatrix.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/RotationMatrix.cpp'; fi`
 
-FastMath.obj: $(top_srcdir)/src/FastMath.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FastMath.obj -MD -MP -MF $(DEPDIR)/FastMath.Tpo -c -o FastMath.obj `if test -f '$(top_srcdir)/src/FastMath.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/FastMath.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/FastMath.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/FastMath.Tpo $(DEPDIR)/FastMath.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/FastMath.cpp' object='FastMath.obj' libtool=no @AMDEPBACKSLASH@
+testOpenEVario-FastMath.o: $(top_srcdir)/src/FastMath.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-FastMath.o -MD -MP -MF $(DEPDIR)/testOpenEVario-FastMath.Tpo -c -o testOpenEVario-FastMath.o `test -f '$(top_srcdir)/src/FastMath.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/FastMath.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-FastMath.Tpo $(DEPDIR)/testOpenEVario-FastMath.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/FastMath.cpp' object='testOpenEVario-FastMath.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FastMath.obj `if test -f '$(top_srcdir)/src/FastMath.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/FastMath.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/FastMath.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-FastMath.o `test -f '$(top_srcdir)/src/FastMath.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/FastMath.cpp
 
-FastMathSineTable.o: $(top_srcdir)/src/FastMathSineTable.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FastMathSineTable.o -MD -MP -MF $(DEPDIR)/FastMathSineTable.Tpo -c -o FastMathSineTable.o `test -f '$(top_srcdir)/src/FastMathSineTable.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/FastMathSineTable.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/FastMathSineTable.Tpo $(DEPDIR)/FastMathSineTable.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/FastMathSineTable.cpp' object='FastMathSineTable.o' libtool=no @AMDEPBACKSLASH@
+testOpenEVario-FastMath.obj: $(top_srcdir)/src/FastMath.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-FastMath.obj -MD -MP -MF $(DEPDIR)/testOpenEVario-FastMath.Tpo -c -o testOpenEVario-FastMath.obj `if test -f '$(top_srcdir)/src/FastMath.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/FastMath.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/FastMath.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-FastMath.Tpo $(DEPDIR)/testOpenEVario-FastMath.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/FastMath.cpp' object='testOpenEVario-FastMath.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FastMathSineTable.o `test -f '$(top_srcdir)/src/FastMathSineTable.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/FastMathSineTable.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-FastMath.obj `if test -f '$(top_srcdir)/src/FastMath.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/FastMath.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/FastMath.cpp'; fi`
 
-FastMathSineTable.obj: $(top_srcdir)/src/FastMathSineTable.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FastMathSineTable.obj -MD -MP -MF $(DEPDIR)/FastMathSineTable.Tpo -c -o FastMathSineTable.obj `if test -f '$(top_srcdir)/src/FastMathSineTable.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/FastMathSineTable.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/FastMathSineTable.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/FastMathSineTable.Tpo $(DEPDIR)/FastMathSineTable.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/FastMathSineTable.cpp' object='FastMathSineTable.obj' libtool=no @AMDEPBACKSLASH@
+testOpenEVario-FastMathSineTable.o: $(top_srcdir)/src/FastMathSineTable.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-FastMathSineTable.o -MD -MP -MF $(DEPDIR)/testOpenEVario-FastMathSineTable.Tpo -c -o testOpenEVario-FastMathSineTable.o `test -f '$(top_srcdir)/src/FastMathSineTable.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/FastMathSineTable.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-FastMathSineTable.Tpo $(DEPDIR)/testOpenEVario-FastMathSineTable.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/FastMathSineTable.cpp' object='testOpenEVario-FastMathSineTable.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FastMathSineTable.obj `if test -f '$(top_srcdir)/src/FastMathSineTable.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/FastMathSineTable.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/FastMathSineTable.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-FastMathSineTable.o `test -f '$(top_srcdir)/src/FastMathSineTable.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/FastMathSineTable.cpp
 
-MeasureMatrix.o: $(top_srcdir)/src/MeasureMatrix.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MeasureMatrix.o -MD -MP -MF $(DEPDIR)/MeasureMatrix.Tpo -c -o MeasureMatrix.o `test -f '$(top_srcdir)/src/MeasureMatrix.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/MeasureMatrix.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/MeasureMatrix.Tpo $(DEPDIR)/MeasureMatrix.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/MeasureMatrix.cpp' object='MeasureMatrix.o' libtool=no @AMDEPBACKSLASH@
+testOpenEVario-FastMathSineTable.obj: $(top_srcdir)/src/FastMathSineTable.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-FastMathSineTable.obj -MD -MP -MF $(DEPDIR)/testOpenEVario-FastMathSineTable.Tpo -c -o testOpenEVario-FastMathSineTable.obj `if test -f '$(top_srcdir)/src/FastMathSineTable.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/FastMathSineTable.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/FastMathSineTable.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-FastMathSineTable.Tpo $(DEPDIR)/testOpenEVario-FastMathSineTable.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/FastMathSineTable.cpp' object='testOpenEVario-FastMathSineTable.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MeasureMatrix.o `test -f '$(top_srcdir)/src/MeasureMatrix.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/MeasureMatrix.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-FastMathSineTable.obj `if test -f '$(top_srcdir)/src/FastMathSineTable.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/FastMathSineTable.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/FastMathSineTable.cpp'; fi`
 
-MeasureMatrix.obj: $(top_srcdir)/src/MeasureMatrix.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MeasureMatrix.obj -MD -MP -MF $(DEPDIR)/MeasureMatrix.Tpo -c -o MeasureMatrix.obj `if test -f '$(top_srcdir)/src/MeasureMatrix.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/MeasureMatrix.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/MeasureMatrix.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/MeasureMatrix.Tpo $(DEPDIR)/MeasureMatrix.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/MeasureMatrix.cpp' object='MeasureMatrix.obj' libtool=no @AMDEPBACKSLASH@
+testOpenEVario-MeasureMatrix.o: $(top_srcdir)/src/MeasureMatrix.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-MeasureMatrix.o -MD -MP -MF $(DEPDIR)/testOpenEVario-MeasureMatrix.Tpo -c -o testOpenEVario-MeasureMatrix.o `test -f '$(top_srcdir)/src/MeasureMatrix.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/MeasureMatrix.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-MeasureMatrix.Tpo $(DEPDIR)/testOpenEVario-MeasureMatrix.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/MeasureMatrix.cpp' object='testOpenEVario-MeasureMatrix.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MeasureMatrix.obj `if test -f '$(top_srcdir)/src/MeasureMatrix.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/MeasureMatrix.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/MeasureMatrix.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-MeasureMatrix.o `test -f '$(top_srcdir)/src/MeasureMatrix.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/MeasureMatrix.cpp
 
-GliderVarioMeasurementVector.o: $(top_srcdir)/src/GliderVarioMeasurementVector.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GliderVarioMeasurementVector.o -MD -MP -MF $(DEPDIR)/GliderVarioMeasurementVector.Tpo -c -o GliderVarioMeasurementVector.o `test -f '$(top_srcdir)/src/GliderVarioMeasurementVector.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/GliderVarioMeasurementVector.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GliderVarioMeasurementVector.Tpo $(DEPDIR)/GliderVarioMeasurementVector.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/GliderVarioMeasurementVector.cpp' object='GliderVarioMeasurementVector.o' libtool=no @AMDEPBACKSLASH@
+testOpenEVario-MeasureMatrix.obj: $(top_srcdir)/src/MeasureMatrix.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-MeasureMatrix.obj -MD -MP -MF $(DEPDIR)/testOpenEVario-MeasureMatrix.Tpo -c -o testOpenEVario-MeasureMatrix.obj `if test -f '$(top_srcdir)/src/MeasureMatrix.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/MeasureMatrix.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/MeasureMatrix.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-MeasureMatrix.Tpo $(DEPDIR)/testOpenEVario-MeasureMatrix.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/MeasureMatrix.cpp' object='testOpenEVario-MeasureMatrix.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GliderVarioMeasurementVector.o `test -f '$(top_srcdir)/src/GliderVarioMeasurementVector.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/GliderVarioMeasurementVector.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-MeasureMatrix.obj `if test -f '$(top_srcdir)/src/MeasureMatrix.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/MeasureMatrix.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/MeasureMatrix.cpp'; fi`
 
-GliderVarioMeasurementVector.obj: $(top_srcdir)/src/GliderVarioMeasurementVector.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GliderVarioMeasurementVector.obj -MD -MP -MF $(DEPDIR)/GliderVarioMeasurementVector.Tpo -c -o GliderVarioMeasurementVector.obj `if test -f '$(top_srcdir)/src/GliderVarioMeasurementVector.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/GliderVarioMeasurementVector.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/GliderVarioMeasurementVector.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GliderVarioMeasurementVector.Tpo $(DEPDIR)/GliderVarioMeasurementVector.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/GliderVarioMeasurementVector.cpp' object='GliderVarioMeasurementVector.obj' libtool=no @AMDEPBACKSLASH@
+testOpenEVario-GliderVarioMeasurementVector.o: $(top_srcdir)/src/GliderVarioMeasurementVector.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-GliderVarioMeasurementVector.o -MD -MP -MF $(DEPDIR)/testOpenEVario-GliderVarioMeasurementVector.Tpo -c -o testOpenEVario-GliderVarioMeasurementVector.o `test -f '$(top_srcdir)/src/GliderVarioMeasurementVector.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/GliderVarioMeasurementVector.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-GliderVarioMeasurementVector.Tpo $(DEPDIR)/testOpenEVario-GliderVarioMeasurementVector.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/GliderVarioMeasurementVector.cpp' object='testOpenEVario-GliderVarioMeasurementVector.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GliderVarioMeasurementVector.obj `if test -f '$(top_srcdir)/src/GliderVarioMeasurementVector.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/GliderVarioMeasurementVector.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/GliderVarioMeasurementVector.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-GliderVarioMeasurementVector.o `test -f '$(top_srcdir)/src/GliderVarioMeasurementVector.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/GliderVarioMeasurementVector.cpp
 
-GliderVarioMeasurementUpdater.o: $(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GliderVarioMeasurementUpdater.o -MD -MP -MF $(DEPDIR)/GliderVarioMeasurementUpdater.Tpo -c -o GliderVarioMeasurementUpdater.o `test -f '$(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GliderVarioMeasurementUpdater.Tpo $(DEPDIR)/GliderVarioMeasurementUpdater.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp' object='GliderVarioMeasurementUpdater.o' libtool=no @AMDEPBACKSLASH@
+testOpenEVario-GliderVarioMeasurementVector.obj: $(top_srcdir)/src/GliderVarioMeasurementVector.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-GliderVarioMeasurementVector.obj -MD -MP -MF $(DEPDIR)/testOpenEVario-GliderVarioMeasurementVector.Tpo -c -o testOpenEVario-GliderVarioMeasurementVector.obj `if test -f '$(top_srcdir)/src/GliderVarioMeasurementVector.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/GliderVarioMeasurementVector.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/GliderVarioMeasurementVector.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-GliderVarioMeasurementVector.Tpo $(DEPDIR)/testOpenEVario-GliderVarioMeasurementVector.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/GliderVarioMeasurementVector.cpp' object='testOpenEVario-GliderVarioMeasurementVector.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GliderVarioMeasurementUpdater.o `test -f '$(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-GliderVarioMeasurementVector.obj `if test -f '$(top_srcdir)/src/GliderVarioMeasurementVector.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/GliderVarioMeasurementVector.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/GliderVarioMeasurementVector.cpp'; fi`
 
-GliderVarioMeasurementUpdater.obj: $(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GliderVarioMeasurementUpdater.obj -MD -MP -MF $(DEPDIR)/GliderVarioMeasurementUpdater.Tpo -c -o GliderVarioMeasurementUpdater.obj `if test -f '$(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/GliderVarioMeasurementUpdater.Tpo $(DEPDIR)/GliderVarioMeasurementUpdater.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp' object='GliderVarioMeasurementUpdater.obj' libtool=no @AMDEPBACKSLASH@
+testOpenEVario-GliderVarioMeasurementUpdater.o: $(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-GliderVarioMeasurementUpdater.o -MD -MP -MF $(DEPDIR)/testOpenEVario-GliderVarioMeasurementUpdater.Tpo -c -o testOpenEVario-GliderVarioMeasurementUpdater.o `test -f '$(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-GliderVarioMeasurementUpdater.Tpo $(DEPDIR)/testOpenEVario-GliderVarioMeasurementUpdater.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp' object='testOpenEVario-GliderVarioMeasurementUpdater.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GliderVarioMeasurementUpdater.obj `if test -f '$(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-GliderVarioMeasurementUpdater.o `test -f '$(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp
+
+testOpenEVario-GliderVarioMeasurementUpdater.obj: $(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-GliderVarioMeasurementUpdater.obj -MD -MP -MF $(DEPDIR)/testOpenEVario-GliderVarioMeasurementUpdater.Tpo -c -o testOpenEVario-GliderVarioMeasurementUpdater.obj `if test -f '$(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-GliderVarioMeasurementUpdater.Tpo $(DEPDIR)/testOpenEVario-GliderVarioMeasurementUpdater.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp' object='testOpenEVario-GliderVarioMeasurementUpdater.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-GliderVarioMeasurementUpdater.obj `if test -f '$(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp'; fi`
+
+testOpenEVario-FastMath_test.o: FastMath_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-FastMath_test.o -MD -MP -MF $(DEPDIR)/testOpenEVario-FastMath_test.Tpo -c -o testOpenEVario-FastMath_test.o `test -f 'FastMath_test.cpp' || echo '$(srcdir)/'`FastMath_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-FastMath_test.Tpo $(DEPDIR)/testOpenEVario-FastMath_test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='FastMath_test.cpp' object='testOpenEVario-FastMath_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-FastMath_test.o `test -f 'FastMath_test.cpp' || echo '$(srcdir)/'`FastMath_test.cpp
+
+testOpenEVario-FastMath_test.obj: FastMath_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-FastMath_test.obj -MD -MP -MF $(DEPDIR)/testOpenEVario-FastMath_test.Tpo -c -o testOpenEVario-FastMath_test.obj `if test -f 'FastMath_test.cpp'; then $(CYGPATH_W) 'FastMath_test.cpp'; else $(CYGPATH_W) '$(srcdir)/FastMath_test.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-FastMath_test.Tpo $(DEPDIR)/testOpenEVario-FastMath_test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='FastMath_test.cpp' object='testOpenEVario-FastMath_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-FastMath_test.obj `if test -f 'FastMath_test.cpp'; then $(CYGPATH_W) 'FastMath_test.cpp'; else $(CYGPATH_W) '$(srcdir)/FastMath_test.cpp'; fi`
+
+testOpenEVario-GliderVarioTransitionMatrix_test.o: GliderVarioTransitionMatrix_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-GliderVarioTransitionMatrix_test.o -MD -MP -MF $(DEPDIR)/testOpenEVario-GliderVarioTransitionMatrix_test.Tpo -c -o testOpenEVario-GliderVarioTransitionMatrix_test.o `test -f 'GliderVarioTransitionMatrix_test.cpp' || echo '$(srcdir)/'`GliderVarioTransitionMatrix_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-GliderVarioTransitionMatrix_test.Tpo $(DEPDIR)/testOpenEVario-GliderVarioTransitionMatrix_test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GliderVarioTransitionMatrix_test.cpp' object='testOpenEVario-GliderVarioTransitionMatrix_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-GliderVarioTransitionMatrix_test.o `test -f 'GliderVarioTransitionMatrix_test.cpp' || echo '$(srcdir)/'`GliderVarioTransitionMatrix_test.cpp
+
+testOpenEVario-GliderVarioTransitionMatrix_test.obj: GliderVarioTransitionMatrix_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-GliderVarioTransitionMatrix_test.obj -MD -MP -MF $(DEPDIR)/testOpenEVario-GliderVarioTransitionMatrix_test.Tpo -c -o testOpenEVario-GliderVarioTransitionMatrix_test.obj `if test -f 'GliderVarioTransitionMatrix_test.cpp'; then $(CYGPATH_W) 'GliderVarioTransitionMatrix_test.cpp'; else $(CYGPATH_W) '$(srcdir)/GliderVarioTransitionMatrix_test.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-GliderVarioTransitionMatrix_test.Tpo $(DEPDIR)/testOpenEVario-GliderVarioTransitionMatrix_test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GliderVarioTransitionMatrix_test.cpp' object='testOpenEVario-GliderVarioTransitionMatrix_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-GliderVarioTransitionMatrix_test.obj `if test -f 'GliderVarioTransitionMatrix_test.cpp'; then $(CYGPATH_W) 'GliderVarioTransitionMatrix_test.cpp'; else $(CYGPATH_W) '$(srcdir)/GliderVarioTransitionMatrix_test.cpp'; fi`
+
+testOpenEVario-GliderVarioMeasurementUpdater_test.o: GliderVarioMeasurementUpdater_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-GliderVarioMeasurementUpdater_test.o -MD -MP -MF $(DEPDIR)/testOpenEVario-GliderVarioMeasurementUpdater_test.Tpo -c -o testOpenEVario-GliderVarioMeasurementUpdater_test.o `test -f 'GliderVarioMeasurementUpdater_test.cpp' || echo '$(srcdir)/'`GliderVarioMeasurementUpdater_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-GliderVarioMeasurementUpdater_test.Tpo $(DEPDIR)/testOpenEVario-GliderVarioMeasurementUpdater_test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GliderVarioMeasurementUpdater_test.cpp' object='testOpenEVario-GliderVarioMeasurementUpdater_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-GliderVarioMeasurementUpdater_test.o `test -f 'GliderVarioMeasurementUpdater_test.cpp' || echo '$(srcdir)/'`GliderVarioMeasurementUpdater_test.cpp
+
+testOpenEVario-GliderVarioMeasurementUpdater_test.obj: GliderVarioMeasurementUpdater_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-GliderVarioMeasurementUpdater_test.obj -MD -MP -MF $(DEPDIR)/testOpenEVario-GliderVarioMeasurementUpdater_test.Tpo -c -o testOpenEVario-GliderVarioMeasurementUpdater_test.obj `if test -f 'GliderVarioMeasurementUpdater_test.cpp'; then $(CYGPATH_W) 'GliderVarioMeasurementUpdater_test.cpp'; else $(CYGPATH_W) '$(srcdir)/GliderVarioMeasurementUpdater_test.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-GliderVarioMeasurementUpdater_test.Tpo $(DEPDIR)/testOpenEVario-GliderVarioMeasurementUpdater_test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GliderVarioMeasurementUpdater_test.cpp' object='testOpenEVario-GliderVarioMeasurementUpdater_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-GliderVarioMeasurementUpdater_test.obj `if test -f 'GliderVarioMeasurementUpdater_test.cpp'; then $(CYGPATH_W) 'GliderVarioMeasurementUpdater_test.cpp'; else $(CYGPATH_W) '$(srcdir)/GliderVarioMeasurementUpdater_test.cpp'; fi`
+
+testOpenEVario-GliderVarioMeasurementVector_test.o: GliderVarioMeasurementVector_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-GliderVarioMeasurementVector_test.o -MD -MP -MF $(DEPDIR)/testOpenEVario-GliderVarioMeasurementVector_test.Tpo -c -o testOpenEVario-GliderVarioMeasurementVector_test.o `test -f 'GliderVarioMeasurementVector_test.cpp' || echo '$(srcdir)/'`GliderVarioMeasurementVector_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-GliderVarioMeasurementVector_test.Tpo $(DEPDIR)/testOpenEVario-GliderVarioMeasurementVector_test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GliderVarioMeasurementVector_test.cpp' object='testOpenEVario-GliderVarioMeasurementVector_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-GliderVarioMeasurementVector_test.o `test -f 'GliderVarioMeasurementVector_test.cpp' || echo '$(srcdir)/'`GliderVarioMeasurementVector_test.cpp
+
+testOpenEVario-GliderVarioMeasurementVector_test.obj: GliderVarioMeasurementVector_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-GliderVarioMeasurementVector_test.obj -MD -MP -MF $(DEPDIR)/testOpenEVario-GliderVarioMeasurementVector_test.Tpo -c -o testOpenEVario-GliderVarioMeasurementVector_test.obj `if test -f 'GliderVarioMeasurementVector_test.cpp'; then $(CYGPATH_W) 'GliderVarioMeasurementVector_test.cpp'; else $(CYGPATH_W) '$(srcdir)/GliderVarioMeasurementVector_test.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-GliderVarioMeasurementVector_test.Tpo $(DEPDIR)/testOpenEVario-GliderVarioMeasurementVector_test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GliderVarioMeasurementVector_test.cpp' object='testOpenEVario-GliderVarioMeasurementVector_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-GliderVarioMeasurementVector_test.obj `if test -f 'GliderVarioMeasurementVector_test.cpp'; then $(CYGPATH_W) 'GliderVarioMeasurementVector_test.cpp'; else $(CYGPATH_W) '$(srcdir)/GliderVarioMeasurementVector_test.cpp'; fi`
+
+testOpenEVario-MeasureMatrix_test.o: MeasureMatrix_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-MeasureMatrix_test.o -MD -MP -MF $(DEPDIR)/testOpenEVario-MeasureMatrix_test.Tpo -c -o testOpenEVario-MeasureMatrix_test.o `test -f 'MeasureMatrix_test.cpp' || echo '$(srcdir)/'`MeasureMatrix_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-MeasureMatrix_test.Tpo $(DEPDIR)/testOpenEVario-MeasureMatrix_test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='MeasureMatrix_test.cpp' object='testOpenEVario-MeasureMatrix_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-MeasureMatrix_test.o `test -f 'MeasureMatrix_test.cpp' || echo '$(srcdir)/'`MeasureMatrix_test.cpp
+
+testOpenEVario-MeasureMatrix_test.obj: MeasureMatrix_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-MeasureMatrix_test.obj -MD -MP -MF $(DEPDIR)/testOpenEVario-MeasureMatrix_test.Tpo -c -o testOpenEVario-MeasureMatrix_test.obj `if test -f 'MeasureMatrix_test.cpp'; then $(CYGPATH_W) 'MeasureMatrix_test.cpp'; else $(CYGPATH_W) '$(srcdir)/MeasureMatrix_test.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-MeasureMatrix_test.Tpo $(DEPDIR)/testOpenEVario-MeasureMatrix_test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='MeasureMatrix_test.cpp' object='testOpenEVario-MeasureMatrix_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-MeasureMatrix_test.obj `if test -f 'MeasureMatrix_test.cpp'; then $(CYGPATH_W) 'MeasureMatrix_test.cpp'; else $(CYGPATH_W) '$(srcdir)/MeasureMatrix_test.cpp'; fi`
+
+testOpenEVario-GliderVarioStatus_test.o: GliderVarioStatus_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-GliderVarioStatus_test.o -MD -MP -MF $(DEPDIR)/testOpenEVario-GliderVarioStatus_test.Tpo -c -o testOpenEVario-GliderVarioStatus_test.o `test -f 'GliderVarioStatus_test.cpp' || echo '$(srcdir)/'`GliderVarioStatus_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-GliderVarioStatus_test.Tpo $(DEPDIR)/testOpenEVario-GliderVarioStatus_test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GliderVarioStatus_test.cpp' object='testOpenEVario-GliderVarioStatus_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-GliderVarioStatus_test.o `test -f 'GliderVarioStatus_test.cpp' || echo '$(srcdir)/'`GliderVarioStatus_test.cpp
+
+testOpenEVario-GliderVarioStatus_test.obj: GliderVarioStatus_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-GliderVarioStatus_test.obj -MD -MP -MF $(DEPDIR)/testOpenEVario-GliderVarioStatus_test.Tpo -c -o testOpenEVario-GliderVarioStatus_test.obj `if test -f 'GliderVarioStatus_test.cpp'; then $(CYGPATH_W) 'GliderVarioStatus_test.cpp'; else $(CYGPATH_W) '$(srcdir)/GliderVarioStatus_test.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-GliderVarioStatus_test.Tpo $(DEPDIR)/testOpenEVario-GliderVarioStatus_test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GliderVarioStatus_test.cpp' object='testOpenEVario-GliderVarioStatus_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-GliderVarioStatus_test.obj `if test -f 'GliderVarioStatus_test.cpp'; then $(CYGPATH_W) 'GliderVarioStatus_test.cpp'; else $(CYGPATH_W) '$(srcdir)/GliderVarioStatus_test.cpp'; fi`
+
+testOpenEVario-RotationMatrix_test.o: RotationMatrix_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-RotationMatrix_test.o -MD -MP -MF $(DEPDIR)/testOpenEVario-RotationMatrix_test.Tpo -c -o testOpenEVario-RotationMatrix_test.o `test -f 'RotationMatrix_test.cpp' || echo '$(srcdir)/'`RotationMatrix_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-RotationMatrix_test.Tpo $(DEPDIR)/testOpenEVario-RotationMatrix_test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RotationMatrix_test.cpp' object='testOpenEVario-RotationMatrix_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-RotationMatrix_test.o `test -f 'RotationMatrix_test.cpp' || echo '$(srcdir)/'`RotationMatrix_test.cpp
+
+testOpenEVario-RotationMatrix_test.obj: RotationMatrix_test.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -MT testOpenEVario-RotationMatrix_test.obj -MD -MP -MF $(DEPDIR)/testOpenEVario-RotationMatrix_test.Tpo -c -o testOpenEVario-RotationMatrix_test.obj `if test -f 'RotationMatrix_test.cpp'; then $(CYGPATH_W) 'RotationMatrix_test.cpp'; else $(CYGPATH_W) '$(srcdir)/RotationMatrix_test.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/testOpenEVario-RotationMatrix_test.Tpo $(DEPDIR)/testOpenEVario-RotationMatrix_test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RotationMatrix_test.cpp' object='testOpenEVario-RotationMatrix_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(testOpenEVario_CXXFLAGS) $(CXXFLAGS) -c -o testOpenEVario-RotationMatrix_test.obj `if test -f 'RotationMatrix_test.cpp'; then $(CYGPATH_W) 'RotationMatrix_test.cpp'; else $(CYGPATH_W) '$(srcdir)/RotationMatrix_test.cpp'; fi`
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -798,7 +918,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LIBRARIES) $(PROGRAMS)
+all-am: Makefile $(LTLIBRARIES) $(PROGRAMS)
 installdirs:
 	for dir in "$(DESTDIR)$(bindir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
@@ -836,7 +956,7 @@ maintainer-clean-generic:
 clean: clean-am
 
 clean-am: clean-binPROGRAMS clean-generic clean-libtool \
-	clean-noinstLIBRARIES mostlyclean-am
+	clean-noinstLTLIBRARIES mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -908,7 +1028,7 @@ uninstall-am: uninstall-binPROGRAMS
 
 .PHONY: CTAGS GTAGS TAGS all all-am check check-am clean \
 	clean-binPROGRAMS clean-generic clean-libtool \
-	clean-noinstLIBRARIES cscopelist-am ctags ctags-am distclean \
+	clean-noinstLTLIBRARIES cscopelist-am ctags ctags-am distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-binPROGRAMS install-data \
@@ -923,10 +1043,6 @@ uninstall-am: uninstall-binPROGRAMS
 
 .PRECIOUS: Makefile
 
-
-# disable optimizer to make debugging easier
-CXXFLAGS ?= -g -O0
-CXXFLAGS_FOR_BUILD ?= -g -O0
 
 # compile and link in one step. Saves me at least mainaining object and source file lists.
 genSineTables$(EXEEXT) : $(genSineTables_sources)

@@ -15,8 +15,9 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-noinst_LIBRARIES = libgoogletest.a
-libgoogletest_a_SOURCES = $(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc
+
+noinst_LTLIBRARIES = libgoogletest.la
+libgoogletest_la_SOURCES = $(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc
 
 bin_PROGRAMS = testOpenEVario$(EXEEXT)
 testOpenEVario_SOURCES = testOpenEVario.cpp \
@@ -36,24 +37,22 @@ testOpenEVario_SOURCES = testOpenEVario.cpp \
   GliderVarioStatus_test.cpp \
   RotationMatrix_test.cpp
   
-testOpenEVario_LDADD = ./libgoogletest.a $(PTHREAD_LIBS)
+testOpenEVario_LDADD = ./libgoogletest.la $(PTHREAD_LIBS)
 
 # Build compiler sources are not well supported by autotools. Back to manual
 genSineTables_sources=../../src/genSineTables.cpp
 
-AM_CXXFLAGS = -isystem $(top_srcdir)/3rdParty/googletest/googletest/include \
+testOpenEVario_CXXFLAGS = -isystem $(top_srcdir)/3rdParty/googletest/googletest/include \
 	-I../.. \
 	-I$(top_srcdir)/3rdParty/eigen \
 	-I$(top_srcdir)/src \
 	-DENABLE_UNIT_TESTS=1 \
 	$(PTHREAD_CFLAGS)
 
-# disable optimizer to make debugging easier
-CXXFLAGS ?= -g -O0
-CXXFLAGS_FOR_BUILD ?= -g -O0
-
 # compiling googletest itself requires PTHRED options, and the googletest source directory as include path.
-libgoogletest_a_CXXFLAGS = -isystem $(top_srcdir)/3rdParty/googletest/googletest/include -I$(top_srcdir)/3rdParty/googletest/googletest
+libgoogletest_la_CXXFLAGS = \
+	-isystem $(top_srcdir)/3rdParty/googletest/googletest/include \
+	-I$(top_srcdir)/3rdParty/googletest/googletest
 
 AM_CXXFLAGS_FOR_BUILD="-I$(top_srcdir)/3rdParty/eigen/Eigen"
 
