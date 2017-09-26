@@ -252,6 +252,7 @@ CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
+DLL_VISIBLE_CFLAGS = @DLL_VISIBLE_CFLAGS@
 DOXYGEN_PAPER_SIZE = @DOXYGEN_PAPER_SIZE@
 DSYMUTIL = @DSYMUTIL@
 DUMPBIN = @DUMPBIN@
@@ -394,7 +395,8 @@ lib_LTLIBRARIES = libopenEVSimul.la
 libopenEVSimul_la_SOURCES = simulMain.cpp
 libopenEVSimul_la_LIBADD = $(PTHREAD_LIBS)
 AM_CXXFLAGS = -I../../.. -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen \
-	$(PTHREAD_CFLAGS)
+	$(PTHREAD_CFLAGS) \
+	$(DLL_VISIBLE_CFLAGS)
 
 all: all-am
 

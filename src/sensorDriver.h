@@ -1,12 +1,16 @@
-/* Simulation driver main module
+/*
+ * sensorDriver.h
  *
- * simulMain.cpp
- *
- *  Created on: Sep 24, 2017
+ *  Created on: Sep 29, 2017
  *      Author: hor
  *
+ *  Common definitions for building shared libraries
+ *
+ *
+ *  Definition of class FastMath
+ *
  *   This file is part of openEVario, an electronic variometer for glider planes
- *   Copyright (C) 2017  Kai Horstmann
+ *   Copyright (C) 2016  Kai Horstmann
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -24,15 +28,11 @@
  *
  */
 
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
+#ifndef SENSORDRIVER_H_
+#define SENSORDRIVER_H_
 
-#include "GliderVarioStatus.h"
-#include "sensorDriver.h"
+#include "dllCommon.h"
 
-using namespace openEV;
+int DLL_PUBLIC driverInit(void);
 
-int driverInit(void) {
-    return 0;
-}
+#endif /* FASTMATH_H_ */

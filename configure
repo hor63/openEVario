@@ -695,6 +695,7 @@ DLLTOOL
 AS
 ac_ct_AR
 AR
+DLL_VISIBLE_CFLAGS
 PTHREAD_CFLAGS
 PTHREAD_LIBS
 PTHREAD_CC
@@ -7089,6 +7090,44 @@ ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler accepts -fvisibility=internal" >&5
+$as_echo_n "checking whether C compiler accepts -fvisibility=internal... " >&6; }
+if ${ax_cv_check_cflags___fvisibility_internal+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  ax_check_save_flags=$CFLAGS
+  CFLAGS="$CFLAGS  -fvisibility=internal"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ax_cv_check_cflags___fvisibility_internal=yes
+else
+  ax_cv_check_cflags___fvisibility_internal=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  CFLAGS=$ax_check_save_flags
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_check_cflags___fvisibility_internal" >&5
+$as_echo "$ax_cv_check_cflags___fvisibility_internal" >&6; }
+if test "x$ax_cv_check_cflags___fvisibility_internal" = xyes; then :
+  DLL_VISIBLE_CFLAGS="-fvisibility=internal"
+else
+  :
+fi
+
 
 
 

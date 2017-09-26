@@ -36,6 +36,10 @@ AX_CXX_COMPILE_STDCXX_11(noext, mandatory)
 AX_CXX_COMPILE_BUILD_STDCXX_11(noext, mandatory)
 AX_PTHREAD()
 
+AX_CHECK_COMPILE_FLAG([-fvisibility=internal],[DLL_VISIBLE_CFLAGS="-fvisibility=internal"])
+
+AC_SUBST([DLL_VISIBLE_CFLAGS])
+
 
 # get a suitable command like mkdir -p on LINUX systems use install if mkdir -p does not work.
 AC_PROG_INSTALL
