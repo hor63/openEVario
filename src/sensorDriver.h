@@ -33,6 +33,15 @@
 
 #include "dllCommon.h"
 
-int DLL_PUBLIC driverInit(void);
+// If used stand-alone, and not within a driver
+#if !defined(DRIVER_PUBLIC)
+  #define DRIVER_PUBLIC DLL_IMPORT
+#endif
+
+#if !defined(DRIVER_LOCAL)
+  #define DRIVER_LOCAL  DLL_LOCAL
+#endif
+
+int DRIVER_PUBLIC driverInit(void);
 
 #endif /* FASTMATH_H_ */

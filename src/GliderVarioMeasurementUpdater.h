@@ -43,7 +43,7 @@ namespace openEV {
  * applicable to all measurements.
  * 
  */
-class GliderVarioMeasurementUpdater {
+class OEV_PUBLIC GliderVarioMeasurementUpdater {
 public:
 
     /**
@@ -251,7 +251,6 @@ public:
     // This stuff is used only for unit tests.
     // These variables contain copies of the local variables used for the measurement updates.
     // These variables are not declared and used in production code.
-#if  ENABLE_UNIT_TESTS == 1
     static FloatType calculatedValueTst1;
     static Eigen::SparseMatrix<FloatType> measRowTTst1;
 
@@ -260,7 +259,11 @@ public:
 
     static FloatType calculatedValueTst3;
     static Eigen::SparseMatrix<FloatType> measRowTTst3;
-#endif
+
+    /// Activate the unit test mode, i.e. copy the calculation results into calculatedValueTst1 and measRowTTst1 and so forth.
+    static void setUnitTestMode(bool unitTestMode );
+    /// Get the unit test mode, i.e. if the calculation results are copied into calculatedValueTst1 and measRowTTst1 and so forth.
+    static bool getUnitTestMode();
 
 protected:
 
@@ -284,13 +287,16 @@ protected:
      * @param[in,out] varioStatus The system status and covariance before and after the measurement update. The status and covariance are directly updated from the difference of the actually measured, and the
      * theoretical value.
      */
-    static void calcSingleMeasureUpdate (
+    OEV_LOCAL static void calcSingleMeasureUpdate (
             FloatType measuredValue,
             FloatType calculatedValue,
             FloatType measurementVariance,
             Eigen::SparseMatrix<FloatType> const &measRowT,
             GliderVarioStatus &varioStatus
     );
+
+    /// Indicator if calculation results are to be copied into global variables for comparison by unit tests.
+    OEV_LOCAL static bool unitTestMode;
 };
 
 } /* namespace openEV */

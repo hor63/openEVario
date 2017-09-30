@@ -33,6 +33,8 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
+#include "dllCommon.h"
+
 /**
  * This namespace includes a complex extended kalman filter (EKF) for implementing a complete electronic compensated variometer, and artificial horizon.
  *
@@ -91,7 +93,7 @@ static FloatType constexpr pressureStdMSL = 101325.0f;
  * \sa To calculate inclination and declination at any point on earth use <a href="http://www.gfz-potsdam.de/deklinationsrechner" >IGRF-Deklinationsrechner</a>
  * or <a href="http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html" >International Geomagnetic Reference Field</a> and <a href="http://www.ngdc.noaa.gov/geomag-web/?model=igrf" >NOAA Magnetic Field Calculators</a>
  */
-extern FloatType MAG_INCLINATION; // = -67.0f;
+extern OEV_PUBLIC FloatType MAG_INCLINATION; // = -67.0f;
 
 /**
  * Nautical mile to m
@@ -136,7 +138,7 @@ typedef Eigen::Matrix<FloatType, 3, 3> RotationMatrix3DType;
  * as well as the process error covariance #errorCovariance_P.
  *
  */
-class GliderVarioStatus
+class OEV_PUBLIC GliderVarioStatus
 {
 public:
 
@@ -326,8 +328,8 @@ protected:
 
 } // namespace openEV
 
-std::ostream& operator << (std::ostream& o ,openEV::GliderVarioStatus& s);
-std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus::StatusVectorType &v);
-std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus::StatusCoVarianceType &co);
+OEV_PUBLIC std::ostream& operator << (std::ostream& o ,openEV::GliderVarioStatus& s);
+OEV_PUBLIC std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus::StatusVectorType &v);
+OEV_PUBLIC std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus::StatusCoVarianceType &co);
 
 #endif /* GLIDERVARIOSTATUS_H_ */

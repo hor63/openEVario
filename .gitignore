@@ -12,7 +12,7 @@ config.status
 autom4te.cache
 config.h
 libtool
-src/drivers/simul/.libs/
+.libs/
 stamp-h1
 
 # Compiled Object files

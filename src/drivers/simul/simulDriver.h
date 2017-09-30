@@ -1,8 +1,10 @@
 /*
- * MeasureMatrix.h
+ * simulDriver.h
  *
- *  Created on: Dec 24, 2015
+ *  Created on: Sep 29, 2017
  *      Author: hor
+ *
+ *  Internal definitions of the simulation driver
  *
  *   This file is part of openEVario, an electronic variometer for glider planes
  *   Copyright (C) 2016  Kai Horstmann
@@ -23,22 +25,22 @@
  *
  */
 
-#ifndef MEASUREMATRIX_H_
-#define MEASUREMATRIX_H_
+#ifndef SIMULDRIVER_H_
+#define SIMULDRIVER_H_
 
 #include "dllCommon.h"
 
-namespace openEV
-{
 
-class OEV_PUBLIC MeasureMatrix
-{
-public:
-    MeasureMatrix ();
-    virtual
-    ~MeasureMatrix ();
-};
+#if defined (BUILDING_SIMUL_DRIVER)
+  #define DRIVER_PUBLIC DLL_EXPORT
+  #define DRIVER_LOCAL  DLL_LOCAL
+#else /* BUILDING_OEV_KALMAN */
+  #define DRIVER_PUBLIC DLL_IMPORT
+  #define DRIVER_LOCAL  DLL_LOCAL
+#endif /* BUILDING_OEV_KALMAN */
 
-} /* namespace openEV */
+// included here because the defined above are used in the include
+#include "sensorDriver.h"
 
-#endif /* MEASUREMATRIX_H_ */
+#endif /* SIMULDRIVER_H_ */
+

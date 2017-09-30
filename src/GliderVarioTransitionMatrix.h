@@ -38,7 +38,7 @@ namespace openEV
  * The transition matrix is re-calculated before every update step because it depends on the elapsed interval,
  * and on the current attitude (i.e. heading pitch and roll affect the TAS vs speed and course over ground).
  */
-class GliderVarioTransitionMatrix
+class OEV_PUBLIC GliderVarioTransitionMatrix
 {
 public:
     // typedef Eigen::Matrix<FloatType,GliderVarioStatus::STATUS_NUM_ROWS,GliderVarioStatus::STATUS_NUM_ROWS> TransitionMatrixType;

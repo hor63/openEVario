@@ -38,7 +38,7 @@ namespace openEV {
  * Otherwise all units are converted to ISO base units.
  * Absolute Magnetometer readings are irrelevant but their ratios are used to estimate the attitude.
  */
-class GliderVarioMeasurementVector {
+class OEV_PUBLIC GliderVarioMeasurementVector {
 public:
     GliderVarioMeasurementVector() {
         measureVector.setZero();

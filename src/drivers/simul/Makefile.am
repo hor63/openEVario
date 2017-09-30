@@ -22,10 +22,10 @@ libopenEVSimul_la_SOURCES=simulMain.cpp
  
 libopenEVSimul_la_LIBADD = $(PTHREAD_LIBS)
 
-# DLL_VISIBLE_CFLAGS=@DLL_VISIBLE_CFLAGS@
-
 AM_CXXFLAGS = -I../../.. -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen \
 	$(PTHREAD_CFLAGS) \
 	$(DLL_VISIBLE_CFLAGS)
+	
+libopenEVSimul_la_CXXFLAGS=$(AM_CXXFLAGS) -DBUILDING_SIMUL_DRIVER=1
 
 	

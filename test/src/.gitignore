@@ -2,3 +2,4 @@
 
 .deps
 testOpenEVario
+gtest-all.cc

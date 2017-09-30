@@ -17,27 +17,19 @@
 
 
 noinst_LTLIBRARIES = libgoogletest.la
-libgoogletest_la_SOURCES = $(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc
+libgoogletest_la_SOURCES = gtest-all.cc
+
+gtest-all.cc: $(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc
+	ln -s $(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc gtest-all.cc
 
 bin_PROGRAMS = testOpenEVario$(EXEEXT)
-testOpenEVario_SOURCES = testOpenEVario.cpp \
-  $(top_srcdir)/src/GliderVarioStatus.cpp \
-  $(top_srcdir)/src/GliderVarioTransitionMatrix.cpp \
-  $(top_srcdir)/src/RotationMatrix.cpp \
-  $(top_srcdir)/src/FastMath.cpp \
-  $(top_srcdir)/src/FastMathSineTable.cpp \
-  $(top_srcdir)/src/MeasureMatrix.cpp \
-  $(top_srcdir)/src/GliderVarioMeasurementVector.cpp \
-  $(top_srcdir)/src/GliderVarioMeasurementUpdater.cpp \
-  FastMath_test.cpp \
-  GliderVarioTransitionMatrix_test.cpp \
-  GliderVarioMeasurementUpdater_test.cpp \
-  GliderVarioMeasurementVector_test.cpp	\
-  MeasureMatrix_test.cpp \
-  GliderVarioStatus_test.cpp \
-  RotationMatrix_test.cpp
+testOpenEVario_SOURCES = testOpenEVario.cpp FastMath_test.cpp GliderVarioMeasurementUpdater_test.cpp GliderVarioMeasurementVector_test.cpp \
+	GliderVarioStatus_test.cpp GliderVarioTransitionMatrix_test.cpp MeasureMatrix_test.cpp RotationMatrix_test.cpp
   
-testOpenEVario_LDADD = ./libgoogletest.la $(PTHREAD_LIBS)
+testOpenEVario_LDADD = ./libgoogletest.la ../../src/libopenEVKalman.la $(PTHREAD_LIBS)
+
+../../src/libopenEVKalman.la:
+	cd ../../src ; make libopenEVKalman.la
 
 # Build compiler sources are not well supported by autotools. Back to manual
 genSineTables_sources=../../src/genSineTables.cpp

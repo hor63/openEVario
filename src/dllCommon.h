@@ -29,33 +29,39 @@
 #define DLL_COMMON_H_
 
 /**
- * Define DLL_PUBLIC and DLL_LOCAL for Windows and Linux (ELF) ports of gcc and non-gcc compilers
- * The macro definitions come verbatim from the <a href="https://gcc.gnu.org/wiki/Visibility">GCC Wiki: Visibility</a>
+ * Define DLL_IMPORT, DLL_EXPORT, and DLL_LOCAL for Windows and Linux (ELF) ports of gcc and non-gcc compilers
+ *
+ * The macro definitions are highly inspired from the <a href="https://gcc.gnu.org/wiki/Visibility">GCC Wiki: Visibility</a>
  */
 #if defined _WIN32 || defined __CYGWIN__
-  #ifdef BUILDING_DLL
     #ifdef __GNUC__
-      #define DLL_PUBLIC __attribute__ ((dllexport))
+      #define DLL_EXPORT __attribute__ ((dllexport))
+      #define DLL_IMPORT __attribute__ ((dllimport))
     #else
-      #define DLL_PUBLIC __declspec(dllexport) // Note: actually gcc seems to also supports this syntax.
+      #define DLL_EXPORT __declspec(dllexport) // Note: actually gcc seems to also supports this syntax.
+      #define DLL_IMPORT __declspec(dllimport) // Note: actually gcc seems to also supports this syntax.
     #endif
-  #else
     #ifdef __GNUC__
-      #define DLL_PUBLIC __attribute__ ((dllimport))
     #else
-      #define DLL_PUBLIC __declspec(dllimport) // Note: actually gcc seems to also supports this syntax.
     #endif
-  #endif
   #define DLL_LOCAL
 #else
   #if __GNUC__ >= 4
-    #define DLL_PUBLIC __attribute__ ((visibility ("default")))
+    #define DLL_EXPORT __attribute__ ((visibility ("default")))
     #define DLL_LOCAL  __attribute__ ((visibility ("hidden")))
   #else
-    #define DLL_PUBLIC
+    #define DLL_EXPORT
     #define DLL_LOCAL
   #endif
+  #define DLL_IMPORT
 #endif
 
+#if defined (BUILDING_OEV_KALMAN)
+  #define OEV_PUBLIC DLL_EXPORT
+  #define OEV_LOCAL  DLL_LOCAL
+#else /* BUILDING_OEV_KALMAN */
+  #define OEV_PUBLIC DLL_IMPORT
+  #define OEV_LOCAL  DLL_LOCAL
+#endif /* BUILDING_OEV_KALMAN */
 
 #endif /* DLL_COMMON_H_ */

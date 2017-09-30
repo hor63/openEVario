@@ -29,7 +29,7 @@
 #endif
 
 #include "GliderVarioStatus.h"
-#include "sensorDriver.h"
+#include "simulDriver.h"
 
 using namespace openEV;
 

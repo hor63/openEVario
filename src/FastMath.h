@@ -51,7 +51,7 @@ namespace openEV
  *
  * All trigonometric functions here are used in degrees (0-360 deg)!
  */
-class FastMath
+class OEV_PUBLIC  FastMath
 {
 public:
 
