@@ -47,8 +47,10 @@ public:
         GliderVarioStatus::StatusCoVarianceType &errCov   = st1.getErrorCovariance_P();
         GliderVarioStatus::StatusCoVarianceType &noiseCov = st1.getSystemNoiseCovariance_Q();
 
-        // Initialize the status and covariances
+        // Put the Glider VarioMeasureUpdater into test mode
+        GliderVarioMeasurementUpdater::setUnitTestMode(true);
 
+        // Initialize the status and covariances
 
         // The noise covariance is set under the assumption that I run the status propagation in 100ms intervals,
         // i.e. all values per second are divided by 10, and values per minute divided by 600.
