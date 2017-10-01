@@ -42,6 +42,7 @@
   #define DRIVER_LOCAL  DLL_LOCAL
 #endif
 
+extern "C"
 int DRIVER_PUBLIC driverInit(void);
 
 #endif /* FASTMATH_H_ */

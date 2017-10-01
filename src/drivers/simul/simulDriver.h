@@ -40,7 +40,7 @@
 #endif /* BUILDING_OEV_KALMAN */
 
 // included here because the defined above are used in the include
-#include "sensorDriver.h"
+#include "drivers/sensorDriver.h"
 
 #endif /* SIMULDRIVER_H_ */
 
