@@ -1,3 +1,16 @@
+2017-10-01  Kai Horstmann  <horstmannkai@hotmail.com>
+
+	* Configure.am
+	* Makefile.am **/Makefile.am
+	* src/*.h 
+	* dllCommon.h
+	  Move the Kalman filter into a shared library libopenEVKalman.so as preparation of the sensor driver framework.
+	  Define and use Macro OEV_PUBLIC and OEV_LOCAL for class, variable and member visibility out of the share library.
+	  
+	* src/drivers/*
+	  Start implement the sensor driver framework as loadable shared libraries.
+	  Rudimentary and incomplete. But a shared library for the simulation driver is already created.
+
 2017-08-30  Kai Horstmann  <horstmannkai@hotmail.com>
 
 	* src/GliderVarioMeasurementUpdater.cpp (dynamicPressureUpd): 
