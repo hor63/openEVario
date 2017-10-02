@@ -47,7 +47,8 @@ AC_PROG_MKDIR_P
 
 # commands for the archiver
 AM_PROG_AR
-# obsoleted bz LT_INIT AC_PROG_RANLIB
+# obsoleted by LT_INIT
+#AC_PROG_RANLIB
 
 LT_INIT(win32-dll dlopen )
 AC_SUBST([LIBTOOL_DEPS])
@@ -64,7 +65,7 @@ DX_PDF_FEATURE(ON)
 DX_PS_FEATURE(OFF)
 DX_INIT_DOXYGEN(openEVario, $(srcdir)/doxygen.cfg, doc/doxygen)
 
-AC_CONFIG_FILES(Makefile src/Makefile src/drivers/simul/Makefile test/src/Makefile)
+AC_CONFIG_FILES(Makefile src/util/Makefile src/kalman/Makefile src/Makefile src/drivers/simul/Makefile test/src/Makefile)
 
 AC_OUTPUT
 

@@ -27,7 +27,7 @@
 #  include <config.h>
 #endif
 
-#include "MeasureMatrix.h"
+#include "kalman/MeasureMatrix.h"
 
 namespace openEV
 {

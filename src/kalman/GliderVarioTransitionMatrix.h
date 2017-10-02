@@ -27,7 +27,7 @@
 #define GLIDERVARIOTRANSITIONMATRIX_H_
 
 #include "GliderVarioStatus.h"
-#include "FastMath.h"
+#include "util/FastMath.h"
 
 namespace openEV
 {

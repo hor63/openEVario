@@ -31,7 +31,8 @@
 #include <math.h>
 #include <assert.h>
 
-#include "GliderVarioStatus.h"
+// #include "GliderVarioStatus.h"
+#include "OEVCommon.h"
 
 // directly from GLIBC math.h ... just in case
 #if !defined(M_PI)
@@ -51,7 +52,7 @@ namespace openEV
  *
  * All trigonometric functions here are used in degrees (0-360 deg)!
  */
-class OEV_PUBLIC  FastMath
+class OEV_UTILS_PUBLIC  FastMath
 {
 public:
 

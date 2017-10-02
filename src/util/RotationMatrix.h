@@ -25,11 +25,22 @@
 #ifndef ROTATIONMATRIX_H_
 #define ROTATIONMATRIX_H_
 
-#include "GliderVarioStatus.h"
+// #include "GliderVarioStatus.h"
+#include "OEVCommon.h"
+
+#include <Eigen/Dense>
 
 
 namespace openEV
 {
+
+/**
+ * This vector type is used for all 3-dimensional representations of values in Cartesian coordinates
+ */
+typedef Eigen::Matrix<FloatType, 3, 1> Vector3DType;
+typedef Eigen::Matrix<FloatType, 3, 3> RotationMatrix3DType;
+
+
 
 /**
  * \brief Rotation matrix to transform the global coordinate system into the plane's coordinate system.
@@ -46,7 +57,7 @@ namespace openEV
  * - z = perpendicular *down*; moving up decreases z, but on the other hand earth gravity is +9.81m/s^2 in z direction.
  * I am using the common names of the angles. In the description you find the greek designations from DIN 9300 (see the German Wikipedia)
  */
-class OEV_PUBLIC RotationMatrix
+class OEV_UTILS_PUBLIC RotationMatrix
 {
 public:
 

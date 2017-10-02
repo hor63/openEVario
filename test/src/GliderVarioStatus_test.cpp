@@ -28,7 +28,7 @@
 #endif
 
 #include "gtest/gtest.h"
-#include "GliderVarioStatus.h"
+#include "kalman/GliderVarioStatus.h"
 
 
 using namespace openEV;

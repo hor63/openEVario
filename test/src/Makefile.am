@@ -26,7 +26,10 @@ bin_PROGRAMS = testOpenEVario$(EXEEXT)
 testOpenEVario_SOURCES = testOpenEVario.cpp FastMath_test.cpp GliderVarioMeasurementUpdater_test.cpp GliderVarioMeasurementVector_test.cpp \
 	GliderVarioStatus_test.cpp GliderVarioTransitionMatrix_test.cpp MeasureMatrix_test.cpp RotationMatrix_test.cpp
   
-testOpenEVario_LDADD = ./libgoogletest.la ../../src/libopenEVKalman.la $(PTHREAD_LIBS)
+testOpenEVario_LDADD = ./libgoogletest.la \
+	../../src/kalman/libopenEVKalman.la \
+	../../src/util/libopenEVUtil.la \
+	$(PTHREAD_LIBS)
 
 ../../src/libopenEVKalman.la:
 	cd ../../src ; make libopenEVKalman.la

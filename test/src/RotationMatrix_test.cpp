@@ -30,7 +30,7 @@
 
 #include <math.h>
 #include "gtest/gtest.h"
-#include "RotationMatrix.h"
+#include "util/RotationMatrix.h"
 
 using namespace openEV;
 

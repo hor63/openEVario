@@ -29,7 +29,7 @@
 
 #include <GliderVarioTransitionMatrix.h>
 #include "GliderVarioStatus.h"
-#include "RotationMatrix.h"
+#include "util/RotationMatrix.h"
 
 namespace openEV
 {

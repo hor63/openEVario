@@ -16,7 +16,7 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-SUBDIRS= src src/drivers/simul test/src
+SUBDIRS= src/util src/kalman src src/drivers/simul test/src
 
 MOSTLYCLEANFILES= $(DX_CLEANFILES)
 

@@ -28,10 +28,10 @@
 #endif
 
 #include "gtest/gtest.h"
-#include "GliderVarioMeasurementUpdater.h"
-#include "GliderVarioTransitionMatrix.h"
-#include "FastMath.h"
-#include "RotationMatrix.h"
+#include "kalman/GliderVarioMeasurementUpdater.h"
+#include "kalman/GliderVarioTransitionMatrix.h"
+#include "util/FastMath.h"
+#include "util/RotationMatrix.h"
 
 using namespace openEV;
 

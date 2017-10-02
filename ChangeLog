@@ -1,3 +1,16 @@
+2017-10-02  hor  <horstmannkai@hotmail.com>
+
+	  Move RotationMatric and FastMath and lookup table generator into subdirectory src/utils,
+	  and build library libopenEVUtil.la there.
+	  
+	  Move all Kalman filter sources and headers into subdirectory src/kalman
+	  and build libopenEVKalman.la there.
+	  
+	* OEVCommon.h
+	  Contains DLL export and import macros for utils and kalman shared library
+	  Definition of FloatType moved there.
+	   
+
 2017-10-01  Kai Horstmann  <horstmannkai@hotmail.com>
 
 	* Configure.am

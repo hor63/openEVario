@@ -28,8 +28,8 @@
 #endif
 
 #include "GliderVarioMeasurementUpdater.h"
-#include "FastMath.h"
-#include "RotationMatrix.h"
+#include "util/FastMath.h"
+#include "util/RotationMatrix.h"
 
 namespace openEV {
 

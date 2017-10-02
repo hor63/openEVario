@@ -31,7 +31,7 @@
 
 #include <math.h>
 #include <iostream>
-#include "FastMath.h"
+#include "util/FastMath.h"
 
 namespace openEV {
 

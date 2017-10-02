@@ -7308,7 +7308,8 @@ unknown)
   ;;
 esac
 
-# obsoleted bz LT_INIT AC_PROG_RANLIB
+# obsoleted by LT_INIT
+#AC_PROG_RANLIB
 
 case `pwd` in
   *\ * | *\	*)
@@ -20847,7 +20848,7 @@ DX_RULES="${DX_SNIPPET_doc}"
 #echo DX_ENV=$DX_ENV
 
 
-ac_config_files="$ac_config_files Makefile src/Makefile src/drivers/simul/Makefile test/src/Makefile"
+ac_config_files="$ac_config_files Makefile src/util/Makefile src/kalman/Makefile src/Makefile src/drivers/simul/Makefile test/src/Makefile"
 
 
 cat >confcache <<\_ACEOF
@@ -21974,6 +21975,8 @@ do
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+    "src/util/Makefile") CONFIG_FILES="$CONFIG_FILES src/util/Makefile" ;;
+    "src/kalman/Makefile") CONFIG_FILES="$CONFIG_FILES src/kalman/Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "src/drivers/simul/Makefile") CONFIG_FILES="$CONFIG_FILES src/drivers/simul/Makefile" ;;
     "test/src/Makefile") CONFIG_FILES="$CONFIG_FILES test/src/Makefile" ;;

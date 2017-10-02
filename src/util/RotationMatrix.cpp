@@ -27,8 +27,8 @@
 #  include <config.h>
 #endif
 
-#include "RotationMatrix.h"
-#include "FastMath.h"
+#include "util/RotationMatrix.h"
+#include "util/FastMath.h"
 
 namespace openEV
 {

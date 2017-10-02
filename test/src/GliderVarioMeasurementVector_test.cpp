@@ -29,7 +29,7 @@
 #endif
 
 #include "gtest/gtest.h"
-#include "GliderVarioMeasurementVector.h"
+#include "kalman/GliderVarioMeasurementVector.h"
 
 using namespace openEV;
 

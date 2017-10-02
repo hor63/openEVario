@@ -1,7 +1,7 @@
 /*
- * FastMath.cpp
+ * MeasureMatrix.h
  *
- *  Created on: Dec 23, 2015
+ *  Created on: Dec 24, 2015
  *      Author: hor
  *
  *   This file is part of openEVario, an electronic variometer for glider planes
@@ -23,23 +23,22 @@
  *
  */
 
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
+#ifndef MEASUREMATRIX_H_
+#define MEASUREMATRIX_H_
 
-#include "FastMath.h"
+#include "OEVCommon.h"
 
 namespace openEV
 {
 
-FastMath::FastMath ()
+class OEV_PUBLIC MeasureMatrix
 {
+public:
+    MeasureMatrix ();
+    virtual
+    ~MeasureMatrix ();
+};
 
-}
+} /* namespace openEV */
 
-FastMath::~FastMath ()
-{
-
-}
-
-} // namespace openEV
+#endif /* MEASUREMATRIX_H_ */

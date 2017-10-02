@@ -29,7 +29,6 @@
 #  include <config.h>
 #endif
 
-#include <GliderVarioMeasurementUpdater.h>
 #include <iostream>
 #include <random>
 #include <math.h>
@@ -41,12 +40,12 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 
-#include "GliderVarioStatus.h"
-#include "GliderVarioTransitionMatrix.h"
-#include "RotationMatrix.h"
-#include "FastMath.h"
-#include "GliderVarioMeasurementVector.h"
-#include "GliderVarioMeasurementUpdater.h"
+#include "kalman/GliderVarioStatus.h"
+#include "kalman/GliderVarioTransitionMatrix.h"
+#include "util/RotationMatrix.h"
+#include "util/FastMath.h"
+#include "kalman/GliderVarioMeasurementVector.h"
+#include "kalman/GliderVarioMeasurementUpdater.h"
 
 using namespace std;
 using namespace openEV;

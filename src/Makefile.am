@@ -20,32 +20,8 @@ bin_PROGRAMS=openEVario$(EXEEXT)
 
 openEVario_SOURCES=openEVario.cpp 
  
-openEVario_LDADD=libopenEVKalman.la $(PTHREAD_LIBS)
+openEVario_LDADD=kalman/libopenEVKalman.la util/libopenEVUtil.la $(PTHREAD_LIBS)
 
-lib_LTLIBRARIES=libopenEVKalman.la
-
-libopenEVKalman_la_SOURCES=GliderVarioStatus.cpp GliderVarioTransitionMatrix.cpp RotationMatrix.cpp FastMath.cpp FastMathSineTable.cpp MeasureMatrix.cpp \
- GliderVarioMeasurementVector.cpp GliderVarioMeasurementUpdater.cpp
- 
-libopenEVKalman_la_LIBADD=$(PTHREAD_LIBS)
-
-libopenEVKalman_la_CXXFLAGS=$(AM_CXXFLAGS) -DBUILDING_OEV_KALMAN=1 $(DLL_VISIBLE_CFLAGS)
-
-# Build compiler sources are not well supported by autotools. Back to manual
-genSineTables_sources=genSineTables.cpp
-
-AM_CXXFLAGS = -I.. -I$(top_srcdir)/3rdParty/eigen \
+AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen \
 	$(PTHREAD_CFLAGS)
 
-AM_CXXFLAGS_FOR_BUILD=-I.. -I$(top_srcdir)/3rdParty/eigen
-
-LINK_FOR_BUILD.cpp=$(CXX_FOR_BUILD) $(CXXFLAGS_FOR_BUILD) $(CPPFLAGS_FOR_BUILD) $(AM_CXXFLAGS_FOR_BUILD) $(LDFLAGS_FOR_BUILD) $(TARGET_ARCH_FOR_BUILD)
-
-# compile and link in one step. Saves me at least mainaining object and source file lists.
-genSineTables$(EXEEXT) : $(genSineTables_sources)
-	$(LINK_FOR_BUILD.cpp) $^ $(LOADLIBES_FOR_BUILD) $(LDLIBS_FOR_BUILD) -o $@
-
-# Generate the sinus and atan2 lookup tables for the FastMath class.
-FastMathSineTable.cpp: genSineTables$(EXEEXT)
-	./genSineTables$(EXEEXT) FastMathSineTable.cpp
-	

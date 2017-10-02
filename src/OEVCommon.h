@@ -25,8 +25,8 @@
  *
  */
 
-#ifndef DLL_COMMON_H_
-#define DLL_COMMON_H_
+#ifndef OEVCOMMON_H_
+#define OEVCOMMON_H_
 
 /**
  * Define DLL_IMPORT, DLL_EXPORT, and DLL_LOCAL for Windows and Linux (ELF) ports of gcc and non-gcc compilers
@@ -64,4 +64,23 @@
   #define OEV_LOCAL  DLL_LOCAL
 #endif /* BUILDING_OEV_KALMAN */
 
-#endif /* DLL_COMMON_H_ */
+
+#if defined (BUILDING_OEV_UTILS)
+  #define OEV_UTILS_PUBLIC DLL_EXPORT
+  #define OEV_UTILS_LOCAL  DLL_LOCAL
+#else /* BUILDING_OEV_KALMAN */
+  #define OEV_UTILS_PUBLIC DLL_IMPORT
+  #define OEV_UTILS_LOCAL  DLL_LOCAL
+#endif /* BUILDING_OEV_UTILS */
+
+namespace openEV {
+
+/**
+ * The global float type. Change this one to double, and the entire system will run in double.
+ * For optimal performance this should be *float*. Eigen can use the NEON unit for vectorized arithmetic on ARMV7 processors if available.
+ */
+	typedef float FloatType;
+
+}
+
+#endif /* OEVCOMMON_H_ */

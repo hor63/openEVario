@@ -28,7 +28,7 @@
 #endif
 
 #include "gtest/gtest.h"
-#include "GliderVarioTransitionMatrix.h"
+#include "kalman/GliderVarioTransitionMatrix.h"
 
 using namespace openEV;
 

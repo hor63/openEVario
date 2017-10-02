@@ -33,7 +33,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
-#include "dllCommon.h"
+#include "OEVCommon.h"
 
 /**
  * This namespace includes a complex extended kalman filter (EKF) for implementing a complete electronic compensated variometer, and artificial horizon.
@@ -54,12 +54,6 @@
  */
 namespace openEV
 {
-
-/**
- * The global float type. Change this one to double, and the entire system will run in double.
- * For optimal performance this should be *float*. Eigen can use the NEON unit for vectorized arithmetic.
- */
-typedef float FloatType;
 
 
 /**
@@ -115,12 +109,6 @@ static FloatType constexpr M         = 0.0289644f;
 /// \sa <a href="https://en.wikipedia.org/wiki/Gas_constant#Specific_gas_constant" >Specific Gas Constant for dry air</a>
 static FloatType constexpr Rspec     = R/M;
 
-
-/**
- * This vector type is used for all 3-dimensional representations of values in Cartesian coordinates
- */
-typedef Eigen::Matrix<FloatType, 3, 1> Vector3DType;
-typedef Eigen::Matrix<FloatType, 3, 3> RotationMatrix3DType;
 
 
 /**

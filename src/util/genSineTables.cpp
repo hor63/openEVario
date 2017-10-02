@@ -29,8 +29,9 @@
 
 #include <iostream>
 #include <stdio.h>
+#include <string.h>
 
-#include "FastMath.h"
+#include "util/FastMath.h"
 
 /// Print the sine table into a c++ source file "fileName".
 static int printSineTable(const char* fileName){
