@@ -109,9 +109,9 @@ TEST_F(RotationMatrixTest, VectorTest) {
                         glo2Plane(2,1) * orgVect(1) +
                         glo2Plane(2,2) * orgVect(2) ;
 
-                EXPECT_EQ (vect1(0),x);
-                EXPECT_EQ (vect1(1),y);
-                EXPECT_EQ (vect1(2),z);
+                EXPECT_NEAR (vect1(0),x,0.000001);
+                EXPECT_NEAR (vect1(1),y,0.000001);
+                EXPECT_NEAR (vect1(2),z,0.000001);
 
                 // convert the plane vector back to the world coordinates, and compare with the original
                 rotMatrix.calcPlaneVectorToWorldVector(vect1,vect2);
