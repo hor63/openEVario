@@ -35,7 +35,23 @@
 #include <time.h>
 #include <sys/time.h>
 
-#include <linux/i2c-dev.h>
+#if HAVE_I2C_DEV_H == 1
+    #include <linux/i2c-dev.h>
+#else /* HAVE_I2C_DEV_H */
+
+#   if HAVE_I2C_H == 1
+#       include <linux/i2c.h>
+#   endif
+#endif /* HAVE_I2C_DEV_H */
+
+#if HAVE_ARGP_H == 1
+    #include <argp.h>
+#endif
+
+#if HAVE_GETOPT_H == 1
+    #include <getopt.h>
+#endif
+
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
@@ -54,16 +70,62 @@ mt19937 randomGenerator;
 
 FloatType x = 0;
 
+
+#if HAVE_ARGP_PARSE == 1
+
+extern "C" {
+// Set global variables for options --help and --version
+const char* argp_program_version = PACKAGE_STRING;
+const char * argp_program_bug_address = PACKAGE_BUGREPORT;
+
+static const char* argpDoc= "Electronic variometer application using inertial and pressure sensors (typically I2C on ARM SoC) and GPS input.";
+} // extern "C"
+
+/**
+ *
+ * @param argc
+ * @param argv
+ * @return
+ */
+static int readOptions (int& argc, char*argv[]) {
+    int rc = 0;
+    static struct argp arrgp = {0, 0, 0, argpDoc};
+
+    rc = argp_parse (&arrgp, argc, argv, 0, 0, 0);
+
+    return rc;
+}
+
+#else /* HAVE_ARGP_PARSE == 1 */
+    #if HAVE_GETOPT_LONG == 1
+    #else /* HAVE_GETOPT_LONG == 1 */
+        #if HAVE_GETOPT_LONG == 1
+        #else /* HAVE_GETOPT_LONG == 1 */
+        #endif /* HAVE_GETOPT_LONG == 1 */
+    #endif /* HAVE_GETOPT_LONG == 1 */
+#endif /* HAVE_ARGP_PARSE == 1 */
+
+
+
 /**
  * \brief The one and only main() function
  * Startup and initialization. Demonization if required. Entry into the main processing loop.
  * @param argc
  * @param argv
- * @return
- *
- * TODO remove all the test code, and replace it by real application code.
+ * @return Return code of the program. 0 means without error.
  */
 int main (int argc, char *argv[]) {
+    int rc = 0;
+
+    rc = readOptions (argc,argv);
+
+
+    return rc;
+}
+/**
+ * TODO remove all the test code, and replace it by real application code.
+ */
+static int doInternalTests () {
     double U1,U2,V1,V2,S,polarFactor,X,Y,dummy = 0.0	;
     mt19937::result_type min;
     double x,y, res,fastRes,maxDev = 0.0,maxDevAt = -100.0;
