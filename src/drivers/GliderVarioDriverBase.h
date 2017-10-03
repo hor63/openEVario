@@ -30,6 +30,10 @@
 
 #include <cstdint>
 
+#if HAVE_CONFUSE_H == 1
+    #include <confuse.h>
+#endif
+
 #include "kalman/GliderVarioStatus.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
 
