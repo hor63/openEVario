@@ -1,3 +1,39 @@
+2017-10-03  Kai Horstmann  <horstmannkai@hotmail.com>
+
+	* src/util/.gitignore: New file.
+	* src/.gitignore:
+	  Move generated files to src/util/.gitignore
+	 
+	* config.h.in: 
+	* configure.ac: 
+	* Makefile.in:
+	  Check available command line parsers.
+	  Set version, URL and bug URL
+	  Set Makefile output to be less verbose.
+
+	* src/openEVario.cpp (readOptions): 
+	(main): 
+	  Start working on evaluating command line options.
+	(doInternalTests): 
+	  Move the internal ad-hoc tests here 
+
+	* src/drivers/GliderVarioDriverBase.h: 
+	* src/drivers/sensorDriver.h: 
+	* src/drivers/simul/simulDriver.h: 
+	* src/drivers/simul/simulMain.cpp: 
+	  Correct include names and paths
+
+	* 3rdParty/eigen/*
+	  Upgrade Eigen from 3.2.9 to 3.3.4
+	
+	* src/kalman/GliderVarioTransitionMatrix.cpp: 
+	* src/kalman/GliderVarioTransitionMatrix.h (GliderVarioTransitionMatrix.updateStatus):
+	  Split complex matrix multiplication and addition into separate multiplication and addition statements.
+	  
+	* test/src/RotationMatrix_test.cpp (RotationMatrixTest_VectorTest_Test::TestBody):
+	  Use EXPECT_NEAR instead of EXPECT_EQ because the current Eigen library calculates the rotation matrix slighty different
+	  than manually calculating it. Float inaccuracies. Sigh.
+
 2017-10-02  hor  <horstmannkai@hotmail.com>
 
 	  Move RotationMatric and FastMath and lookup table generator into subdirectory src/utils,

@@ -18,7 +18,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([openEVario],[1.0])
+AC_INIT([openEVario],[0.1],[https://github.com/hor63/openEVario/issues],[openEVario],https://github.com/hor63/openEVario)
 AC_CONFIG_HEADERS(config.h)
 
 
@@ -28,6 +28,7 @@ AC_CONFIG_MACRO_DIRS([m4])
 
 AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE()
+AM_DEFAULT_VERBOSITY=0
 
 
 AC_PROG_CXX
@@ -37,7 +38,6 @@ AX_CXX_COMPILE_BUILD_STDCXX_11(noext, mandatory)
 AX_PTHREAD()
 
 AX_CHECK_COMPILE_FLAG([-fvisibility=internal],[DLL_VISIBLE_CFLAGS="-fvisibility=internal"])
-
 AC_SUBST([DLL_VISIBLE_CFLAGS])
 
 
@@ -55,8 +55,17 @@ AC_SUBST([LIBTOOL_DEPS])
 
 AC_LANG([C++])
 
-AC_CHECK_HEADER([confuse.h],[],[  AC_MSG_ERROR([unable to find the confuse.h system header file])])
-AC_SEARCH_LIBS([cfg_init],[confuse],[],[  AC_MSG_ERROR([unable to find the cfg_init function in libconfuse])])
+AC_CHECK_HEADER([confuse.h],[AC_DEFINE([HAVE_CONFUSE_H],[1],[Define to 1 if you have the <confuse.h> header file.])],[])
+AC_SEARCH_LIBS([cfg_init],[confuse],[],[  AC_MSG_ERROR([Cannot find function cfg_init in libconfuse])])
+
+AC_CHECK_HEADER([linux/i2c-dev.h],[AC_DEFINE([HAVE_I2C_DEV_H],[1],[Define to 1 if you have the <linux/i2c-dev.h> header file.])],[])
+AC_CHECK_HEADER([linux/i2c.h],[AC_DEFINE([HAVE_I2C_H],[1],[Define to 1 if you have the <linux/i2c.h> header file.])],[])
+
+AC_CHECK_HEADER([argp.h],[AC_DEFINE([HAVE_ARGP_H],[1],[Define to 1 if you have the <argp.h> header file.])],[])
+AC_CHECK_HEADER([getopt.h],[AC_DEFINE([HAVE_GETOPT_H],[1],[Define to 1 if you have the <getopt.h> header file.])],[])
+AC_SEARCH_LIBS([argp_parse],[],[AC_DEFINE([HAVE_ARGP_PARSE],[1],[Define to 1 if the function argp_parse is available.])],[])
+AC_SEARCH_LIBS([getopt_long],[],[AC_DEFINE([HAVE_GETOPT_LONG],[1],[Define to 1 if the function getopt_long is available.])],[])
+AC_SEARCH_LIBS([getopt],[],[AC_DEFINE([HAVE_GETOPT],[1],[Define to 1 if the function getopt is available.])],[])
 
 DX_DOXYGEN_FEATURE(ON)
 DX_DOT_FEATURE(ON)

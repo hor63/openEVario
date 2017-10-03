@@ -1,13 +1,37 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Define to 1 if you have the <argp.h> header file. */
+#undef HAVE_ARGP_H
+
+/* Define to 1 if the function argp_parse is available. */
+#undef HAVE_ARGP_PARSE
+
 /* define if the compiler supports basic C++11 syntax */
 #undef HAVE_BUILD_CXX11
+
+/* Define to 1 if you have the <confuse.h> header file. */
+#undef HAVE_CONFUSE_H
 
 /* define if the compiler supports basic C++11 syntax */
 #undef HAVE_CXX11
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
+
+/* Define to 1 if the function getopt is available. */
+#undef HAVE_GETOPT
+
+/* Define to 1 if you have the <getopt.h> header file. */
+#undef HAVE_GETOPT_H
+
+/* Define to 1 if the function getopt_long is available. */
+#undef HAVE_GETOPT_LONG
+
+/* Define to 1 if you have the <linux/i2c-dev.h> header file. */
+#undef HAVE_I2C_DEV_H
+
+/* Define to 1 if you have the <linux/i2c.h> header file. */
+#undef HAVE_I2C_H
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
