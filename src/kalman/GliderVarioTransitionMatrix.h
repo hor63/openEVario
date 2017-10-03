@@ -97,7 +97,11 @@ public:
         calcTransitionMatrixAndStatus(timeDiff,oldStatus,newStatus);
 
         newStatus.getErrorCovariance_P() = transitionMatrix * oldStatus.getErrorCovariance_P() * transitionMatrix.transpose()
-			          + oldStatus.getSystemNoiseCovariance_Q();
+			          //+ oldStatus.getSystemNoiseCovariance_Q()
+			          ;
+
+        // Addition has to be added as a seperate statement. Eigen 3.3.4 did not like adding the noise covariance in the statement above.
+        newStatus.getErrorCovariance_P() += oldStatus.getSystemNoiseCovariance_Q();
 
         newStatus.getSystemNoiseCovariance_Q() = oldStatus.getSystemNoiseCovariance_Q();
 

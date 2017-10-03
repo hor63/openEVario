@@ -27,7 +27,7 @@
 #  include <config.h>
 #endif
 
-#include <GliderVarioTransitionMatrix.h>
+#include "GliderVarioTransitionMatrix.h"
 #include "GliderVarioStatus.h"
 #include "util/RotationMatrix.h"
 
