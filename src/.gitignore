@@ -1,5 +1,3 @@
 Makefile
 openEVario
-FastMathSineTable.cpp
-genSineTables
 .deps
