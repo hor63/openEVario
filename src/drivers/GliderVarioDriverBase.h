@@ -30,8 +30,8 @@
 
 #include <cstdint>
 
-#include "GliderVarioStatus.h"
-#include "GliderVarioMeasurementUpdater.h"
+#include "kalman/GliderVarioStatus.h"
+#include "kalman/GliderVarioMeasurementUpdater.h"
 
 namespace openEV {
 

@@ -28,7 +28,7 @@
 #  include <config.h>
 #endif
 
-#include "GliderVarioStatus.h"
+#include "kalman/GliderVarioStatus.h"
 #include "simulDriver.h"
 
 using namespace openEV;

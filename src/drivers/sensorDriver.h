@@ -31,7 +31,7 @@
 #ifndef SENSORDRIVER_H_
 #define SENSORDRIVER_H_
 
-#include "dllCommon.h"
+#include "OEVCommon.h"
 
 // If used stand-alone, and not within a driver
 #if !defined(DRIVER_PUBLIC)
