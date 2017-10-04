@@ -38,6 +38,9 @@ public:
 
     openEV::GliderVarioTransitionMatrix transMatrix;
     openEV::GliderVarioStatus st1,st2;
+    
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
 };
 
 TEST_F(TransitionMatrixTest, Gravity) {

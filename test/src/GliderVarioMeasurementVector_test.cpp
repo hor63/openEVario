@@ -38,6 +38,8 @@ public:
 
 
     openEV::GliderVarioMeasurementVector measVector;
+    
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 TEST_F(GliderVarioMeasurementVectorTest, InitTest) {

@@ -210,6 +210,7 @@ public:
             transMatrix.updateStatus(st2,st1,0.1f);
         }
 
+        
     }
 
     // Calculates the pressure at a given altitude based on the pressure at the base altitude QFF
@@ -232,6 +233,7 @@ public:
 
     }
 
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 TEST_F(MeasurementUpdaterTest, Latitude) {
@@ -957,17 +959,17 @@ TEST_F(MeasurementUpdaterTest, StaticPressure) {
 
 	GliderVarioMeasurementUpdater::staticPressureUpd(calculatedPressure + 0.2,measuredTemp,3*3,measVect,st1);
 
-	EXPECT_NEAR (GliderVarioMeasurementUpdater::calculatedValueTst1,calculatedPressure,0.00001);
+	EXPECT_NEAR (GliderVarioMeasurementUpdater::calculatedValueTst1,calculatedPressure,0.0001);
 
     for (int i = 0; i < GliderVarioStatus::STATUS_NUM_ROWS; i++) {
         switch (i) {
 
         case GliderVarioStatus::STATUS_IND_QFF:
-            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),factor,0.00001);
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),factor,0.0001);
             break;
 
         case GliderVarioStatus::STATUS_IND_ALT_MSL:
-            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),diffAltMSL,0.00001);
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),diffAltMSL,0.0001);
             break;
 
         default:

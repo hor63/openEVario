@@ -1,3 +1,20 @@
+2017-10-04  hor  <horstmannkai@hotmail.com>
+
+	* src/kalman/GliderVarioMeasurementVector.h: 
+	* src/kalman/GliderVarioStatus.h: 
+	* src/kalman/GliderVarioTransitionMatrix.h: 
+	* src/util/RotationMatrix.h: 
+	* test/src/GliderVarioMeasurementUpdater_test.cpp: 
+	* test/src/GliderVarioMeasurementVector_test.cpp: 
+	* test/src/GliderVarioStatus_test.cpp: 
+	* test/src/GliderVarioTransitionMatrix_test.cpp: 
+	* test/src/RotationMatrix_test.cpp:
+	
+		Add EIGEN_MAKE_ALIGNED_OPERATOR_NEW macro to all classes which have
+		Eigen matrix members, and may be dynamically allocated with 'new'.
+		This macro implements a new operator which enforces correct alignment to use
+		vector units like NEON on ARM.
+	 
 2017-10-03  Kai Horstmann  <horstmannkai@hotmail.com>
 
 	* src/util/.gitignore: New file.

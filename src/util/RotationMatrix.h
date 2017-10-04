@@ -160,6 +160,7 @@ public:
                 return matrixPlaneToGlo;
             }
 
+            EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 protected:
             /// The rotation matrix from the global(world) coordinate system to the plane coordinate system.

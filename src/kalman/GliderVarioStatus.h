@@ -305,7 +305,8 @@ public:
     ///< barometric formula multiple times. I am ignoring the error imposed by the
     ///< last altitude update :)
 
-
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    
 protected:
     StatusVectorType     statusVector_x;
     StatusCoVarianceType systemNoiseCovariance_Q;

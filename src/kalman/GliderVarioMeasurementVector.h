@@ -135,6 +135,7 @@ public:
         return measureError;
     }
 
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 protected:
     MeasureVectorType measureVector; ///< holder of the vector

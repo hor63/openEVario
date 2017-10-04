@@ -136,6 +136,7 @@ public:
         GliderVarioTransitionMatrix::dynamicRollTimeConstant = dynamicRollTimeConstant;
     }
 
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 protected:
     TransitionMatrixType transitionMatrix;

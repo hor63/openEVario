@@ -38,6 +38,8 @@ public:
 
 
     GliderVarioStatus statusVector;
+    
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 TEST_F(GliderVarioStatusTest, InitTest) {
