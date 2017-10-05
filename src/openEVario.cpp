@@ -31,6 +31,7 @@
 
 #include <iostream>
 #include <random>
+#include <string>
 #include <math.h>
 #include <time.h>
 #include <sys/time.h>
@@ -70,18 +71,75 @@ mt19937 randomGenerator;
 
 FloatType x = 0;
 
+#define defaultConfigFileName "./openEvario.cfg"
+#define defaultLoggerConfigFileName "./openEvarioLog.cfg"
+
+static struct {
+    string configFile       = defaultConfigFileName;
+    string loggerConfigFile = defaultLoggerConfigFileName;
+    /// logger level can be
+    /// 0: Quiet. No outpout at all
+    /// 1: Errors are reported
+    /// 2: Info. Major events and activities
+    /// 3: Debug. Be really chatty
+    int defaultLoggerLevel = 1;
+} programOptions;
+
+#define PROGRAM_DESCRIPTION "\n openEVario: Electronic variometer application using inertial and pressure sensors \n" \
+		"(typically I2C on ARM SoC) and GPS input."
 
 #if HAVE_ARGP_PARSE == 1
 
+// extern C to avoid C++ mangeling. Argp uses these variables when defined.
 extern "C" {
 // Set global variables for options --help and --version
-const char* argp_program_version = PACKAGE_STRING;
+const char * argp_program_version = PACKAGE_STRING;
 const char * argp_program_bug_address = PACKAGE_BUGREPORT;
 
-static const char* argpDoc= "Electronic variometer application using inertial and pressure sensors (typically I2C on ARM SoC) and GPS input.";
+static const char* argpDoc= PROGRAM_DESCRIPTION;
 } // extern "C"
 
+static struct argp_option options[] = {
+  {"configuration",        'c', "configFileName",   0,  "Name of the configuration file [" defaultConfigFileName "]"},
+  {"logger-configuration", 'l', "loggerConfigFile", 0, "Name of logger configuration file [" defaultLoggerConfigFileName "]"},
+  {"debug",                'd', 0,                  0, "Increase default logger level ([Error]-Info-Debug)"},
+  {"quiet",                'q', 0,                  0, "Shhhh. Be quiet. Suppress any logger output"},
+  {"silent",               's', 0,                  OPTION_ALIAS, 0 },
+  {0}
+};
+
+static error_t
+parse_opt (int key, char *arg, struct argp_state *state)
+{
+  /* Get the input argument from argp_parse, which we
+     know is a pointer to our arguments structure. */
+
+  switch (key)
+    {
+    case 'q': case 's':
+      programOptions.defaultLoggerLevel = 0;
+      break;
+    case 'd':
+      programOptions.defaultLoggerLevel ++;
+      if (programOptions.defaultLoggerLevel > 3) {programOptions.defaultLoggerLevel = 3;}
+      break;
+    case 'c':
+      programOptions.configFile = arg;
+      break;
+
+    case 'l':
+      programOptions.loggerConfigFile = arg;
+      break;
+
+    default:
+      return ARGP_ERR_UNKNOWN;
+    }
+  return 0;
+}
+
+
 /**
+ * Reads command line arguments and extracts options
  *
  * @param argc
  * @param argv
@@ -89,9 +147,16 @@ static const char* argpDoc= "Electronic variometer application using inertial an
  */
 static int readOptions (int& argc, char*argv[]) {
     int rc = 0;
-    static struct argp arrgp = {0, 0, 0, argpDoc};
+    static struct argp arrgp = {options, parse_opt, 0, argpDoc};
 
     rc = argp_parse (&arrgp, argc, argv, 0, 0, 0);
+
+    std::cout << "argp_parse returned " << rc << std::endl;
+
+    std::cout << "configFile         = " << programOptions.configFile << std::endl;
+    std::cout << "loggerConfigFile   = " << programOptions.loggerConfigFile << std::endl;
+    std::cout << "defaultLoggerLevel = " << programOptions.defaultLoggerLevel << std::endl;
+
 
     return rc;
 }

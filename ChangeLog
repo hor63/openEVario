@@ -1,3 +1,10 @@
+2017-10-06  Kai Horstmann  <horstmannkai@hotmail.com>
+
+	* src/openEVario.cpp 
+	(parse_opt): 
+	(readOptions):
+	  Parse options with the argp program option parser
+	
 2017-10-04  hor  <horstmannkai@hotmail.com>
 
 	* src/kalman/GliderVarioMeasurementVector.h: 
