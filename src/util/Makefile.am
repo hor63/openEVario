@@ -25,6 +25,8 @@ libopenEVUtil_la_LIBADD=$(PTHREAD_LIBS)
 
 libopenEVUtil_la_CXXFLAGS=$(AM_CXXFLAGS) -DBUILDING_OEV_UTILS=1 $(DLL_VISIBLE_CFLAGS)
 
+libopenEVUtil_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT)
+
 # Build compiler sources are not well supported by autotools. Back to manual
 genSineTables_sources=genSineTables.cpp
 

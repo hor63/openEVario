@@ -37,9 +37,6 @@ AX_CXX_COMPILE_STDCXX_11(noext, mandatory)
 AX_CXX_COMPILE_BUILD_STDCXX_11(noext, mandatory)
 AX_PTHREAD()
 
-AX_CHECK_COMPILE_FLAG([-fvisibility=internal],[DLL_VISIBLE_CFLAGS="-fvisibility=internal"])
-AC_SUBST([DLL_VISIBLE_CFLAGS])
-
 
 # get a suitable command like mkdir -p on LINUX systems use install if mkdir -p does not work.
 AC_PROG_INSTALL
@@ -66,6 +63,13 @@ AC_CHECK_HEADER([getopt.h],[AC_DEFINE([HAVE_GETOPT_H],[1],[Define to 1 if you ha
 AC_SEARCH_LIBS([argp_parse],[],[AC_DEFINE([HAVE_ARGP_PARSE],[1],[Define to 1 if the function argp_parse is available.])],[])
 AC_SEARCH_LIBS([getopt_long],[],[AC_DEFINE([HAVE_GETOPT_LONG],[1],[Define to 1 if the function getopt_long is available.])],[])
 AC_SEARCH_LIBS([getopt],[],[AC_DEFINE([HAVE_GETOPT],[1],[Define to 1 if the function getopt is available.])],[])
+
+AX_CHECK_COMPILE_FLAG([-fvisibility=internal],[DLL_VISIBLE_CFLAGS="-fvisibility=internal"])
+AC_SUBST([DLL_VISIBLE_CFLAGS])
+
+AX_CHECK_LINK_FLAG([-Wl,--no-undefined], [LD_NO_UNDEFINED_OPT=-no-undefined])
+AC_SUBST([LD_NO_UNDEFINED_OPT])
+
 
 DX_DOXYGEN_FEATURE(ON)
 DX_DOT_FEATURE(ON)

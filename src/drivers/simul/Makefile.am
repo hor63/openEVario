@@ -20,6 +20,7 @@ lib_LTLIBRARIES = libopenEVSimul.la
 
 libopenEVSimul_la_SOURCES=simulMain.cpp
  
+libopenEVSimul_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT)
 libopenEVSimul_la_LIBADD = $(PTHREAD_LIBS)
 
 AM_CXXFLAGS = -I../../.. -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen \
