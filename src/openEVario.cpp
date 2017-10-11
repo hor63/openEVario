@@ -100,10 +100,10 @@ static const char* argpDoc= PROGRAM_DESCRIPTION;
 } // extern "C"
 
 static struct argp_option options[] = {
-  {"configuration",        'c', "configFileName",   0,  "Name of the configuration file [" defaultConfigFileName "]"},
+  {"configuration",        'c', "configFileName",   0, "Name of the configuration file [" defaultConfigFileName "]"},
   {"logger-configuration", 'l', "loggerConfigFile", 0, "Name of logger configuration file [" defaultLoggerConfigFileName "]"},
-  {"debug",                'd', 0,                  0, "Increase default logger level ([Error]-Info-Debug)"},
-  {"quiet",                'q', 0,                  0, "Shhhh. Be quiet. Suppress any logger output"},
+  {"debug",                'd', 0,                  0, "Increase default logger level (Silent-[Error]-Info-Debug)"},
+  {"quiet",                'q', 0,                  0, "Shhhh. Be quiet. Suppress any logger output, i.e. set logger level to Silent (see -d)"},
   {"silent",               's', 0,                  OPTION_ALIAS, 0 },
   {0}
 };
@@ -114,29 +114,113 @@ parse_opt (int key, char *arg, struct argp_state *state)
   /* Get the input argument from argp_parse, which we
      know is a pointer to our arguments structure. */
 
-  switch (key)
-    {
-    case 'q': case 's':
-      programOptions.defaultLoggerLevel = 0;
-      break;
-    case 'd':
-      programOptions.defaultLoggerLevel ++;
-      if (programOptions.defaultLoggerLevel > 3) {programOptions.defaultLoggerLevel = 3;}
-      break;
-    case 'c':
-      programOptions.configFile = arg;
-      break;
+    switch (key)
+        {
+        case 'q': case 's':
+          programOptions.defaultLoggerLevel = 0;
+          break;
+        case 'd':
+          programOptions.defaultLoggerLevel ++;
+          if (programOptions.defaultLoggerLevel > 3) {programOptions.defaultLoggerLevel = 3;}
+          break;
+        case 'c':
+          programOptions.configFile = arg;
+          break;
 
-    case 'l':
-      programOptions.loggerConfigFile = arg;
-      break;
+        case 'l':
+          programOptions.loggerConfigFile = arg;
+          break;
 
-    default:
-      return ARGP_ERR_UNKNOWN;
-    }
-  return 0;
+        default:
+          return ARGP_ERR_UNKNOWN;
+        }
+    return 0;
 }
 
+
+#else /* HAVE_ARGP_PARSE == 1 */
+    #if HAVE_GETOPT_LONG == 1
+
+static struct option longOptions[] =
+  {
+          {"configuration"          ,  required_argument, 0, 'c'},
+          {"logger-configuration"   ,  required_argument, 0, 'l'},
+          {"debug"                  ,  no_argument      , 0, 'd'},
+          {"quiet"                  ,  no_argument      , 0, 'q'},
+          {"silent"                 ,  no_argument      , 0, 's'},
+          {"help"                   ,  no_argument      , 0, 'h'},
+          {"usage"                  ,  no_argument      , 0, 'h'},
+          {"version"                ,  no_argument      , 0, 'V'},
+
+          {0, 0, 0, 0}
+  };
+
+
+    #else /* HAVE_GETOPT_LONG == 1 */
+        #if HAVE_GETOPT_LONG == 1
+        #else /* HAVE_GETOPT_LONG == 1 */
+        #endif /* HAVE_GETOPT_LONG == 1 */
+    #endif /* HAVE_GETOPT_LONG == 1 */
+#endif /* HAVE_ARGP_PARSE == 1 */
+
+static void usage(std::ostream& outStr){
+    static char const * const usageText =
+
+#if HAVE_GETOPT_LONG == 1
+
+"            Usage: openEVario [OPTION...]\n"
+"\n"
+"             openEVario: Electronic variometer application using inertial and pressure sensors \n"
+"            (typically I2C on ARM SoC) and GPS input.\n"
+"\n"
+"              -c, --configuration=configFileName\n"
+"                                         Name of the configuration file [" defaultConfigFileName "]\n"
+"              -d, --debug                Increase default logger level\n"
+"                                         ([Error]-Info-Debug)\n"
+"              -l, --logger-configuration=loggerConfigFile\n"
+"                                         Name of logger configuration file\n"
+"                                         [" defaultLoggerConfigFileName "]\n"
+"              -q, -s, --quiet, --silent  Shhhh. Be quiet. Suppress any logger output,\n"
+"                                         i.e. set logger level to Silent (see -d)\n"
+"              -?, --help                 Give this help list\n"
+"                  --usage                Give a short usage message\n"
+"              -V, --version              Print program version\n"
+"\n"
+"            Mandatory or optional arguments to long options are also mandatory or optional\n"
+"            for any corresponding short options.\n"
+"\n"
+"            Report bugs to https://github.com/hor63/openEVario/issues."
+
+#else /* HAVE_GETOPT_LONG == 1 */
+
+"            Usage: openEVario [OPTION...]\n"
+"\n"
+"             openEVario: Electronic variometer application using inertial and pressure sensors \n"
+"            (typically I2C on ARM SoC) and GPS input.\n"
+"\n"
+"              -c configFileName\n"
+"                                         Name of the configuration file [./openEvario.cfg]\n"
+"              -d                         Increase default logger level\n"
+"                                         (Silent-[Error]-Info-Debug)\n"
+"              -l loggerConfigFile        Name of logger configuration file\n"
+"                                         [./openEvarioLog.cfg]\n"
+"              -q, -s                     Shhhh. Be quiet. Suppress any logger output,\n"
+"                                         i.e. set logger level to Silent (see -d)\n"
+"              -?                         Give this help list\n"
+"              -V                         Print program version\n"
+"\n"
+"            Mandatory or optional arguments to long options are also mandatory or optional\n"
+"            for any corresponding short options.\n"
+"\n"
+"            Report bugs to https://github.com/hor63/openEVario/issues.\n"
+
+
+#endif /* HAVE_ARGP_PARSE == 1 */
+;
+
+    outStr << usageText << std::endl;
+
+}
 
 /**
  * Reads command line arguments and extracts options
@@ -147,11 +231,74 @@ parse_opt (int key, char *arg, struct argp_state *state)
  */
 static int readOptions (int& argc, char*argv[]) {
     int rc = 0;
+
+#if HAVE_ARGP_PARSE == 1
+
     static struct argp arrgp = {options, parse_opt, 0, argpDoc};
 
     rc = argp_parse (&arrgp, argc, argv, 0, 0, 0);
 
     std::cout << "argp_parse returned " << rc << std::endl;
+
+#else /* HAVE_ARGP_PARSE == 1 */
+
+    int key;
+
+    do {
+        int optionIndex = 0;
+#if HAVE_GETOPT_LONG == 1
+
+         key = getopt_long (argc, argv, ":c:l:dqsh?",
+                          longOptions, &optionIndex);
+#else /* HAVE_GETOPT_LONG == 1 */
+         key = getopt (argc, argv, ":c:l:dqs?V");
+#endif /* HAVE_GETOPT_LONG == 1 */
+
+         /* Detect the end of the options. */
+         if (key == -1)
+           break;
+
+         switch (key)
+             {
+             case 'q': case 's':
+               programOptions.defaultLoggerLevel = 0;
+               break;
+             case 'd':
+               programOptions.defaultLoggerLevel ++;
+               if (programOptions.defaultLoggerLevel > 3) {programOptions.defaultLoggerLevel = 3;}
+               break;
+             case 'c':
+               programOptions.configFile = optarg;
+               break;
+
+             case 'l':
+               programOptions.loggerConfigFile = optarg;
+               break;
+
+             case '?':
+             case 'h':
+               usage(std::cout);
+               exit(0);
+               break;
+
+             case ':':
+                 if (argv[0]) {
+                     std::cerr << "Try `" << argv[0] << " --help' or `" << argv[0] << " --usage' for more information." << endl;
+                 }
+                 break;
+
+             default:
+                 if (argv[0]) {
+                     std::cerr << argv[0] << ": getopt_long returned unexpected value" << key <<". Program aborting" << endl;
+                 }
+              exit(1);
+             }
+
+
+    } while (key != -1);
+
+#endif /* HAVE_ARGP_PARSE == 1 */
+
 
     std::cout << "configFile         = " << programOptions.configFile << std::endl;
     std::cout << "loggerConfigFile   = " << programOptions.loggerConfigFile << std::endl;
@@ -160,16 +307,6 @@ static int readOptions (int& argc, char*argv[]) {
 
     return rc;
 }
-
-#else /* HAVE_ARGP_PARSE == 1 */
-    #if HAVE_GETOPT_LONG == 1
-    #else /* HAVE_GETOPT_LONG == 1 */
-        #if HAVE_GETOPT_LONG == 1
-        #else /* HAVE_GETOPT_LONG == 1 */
-        #endif /* HAVE_GETOPT_LONG == 1 */
-    #endif /* HAVE_GETOPT_LONG == 1 */
-#endif /* HAVE_ARGP_PARSE == 1 */
-
 
 
 /**
