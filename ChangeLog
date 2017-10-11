@@ -1,3 +1,23 @@
+2017-10-11  Kai Horstmann  <horstmannkai@hotmail.com>
+
+	* src/openEVario.cpp (parse_opt): 
+	(usage): 
+	(readOptions): 
+      Command line parsing complete. The build now supports arp, getopt_long and getopt
+      as command line parsers each with decreasing comfort of use. 
+
+	* .cproject: 
+	* aclocal.m4: 
+	* configure: 
+	* Makefile.in: 
+	* src/drivers/simul/Makefile.in: 
+	* src/drivers/simul/simulDriver.h: 
+	* src/kalman/Makefile.in: 
+	* src/Makefile.in: 
+	* src/util/Makefile.in: 
+	* test/src/Makefile.in:
+	  Re-generated with autoreconf after Ubuntu upgrade.
+	
 2017-10-06  Kai Horstmann  <horstmannkai@hotmail.com>
 
 	* src/openEVario.cpp 

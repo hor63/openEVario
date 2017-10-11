@@ -160,8 +160,8 @@ am__v_lt_0 = --silent
 am__v_lt_1 = 
 libopenEVSimul_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
-	$(libopenEVSimul_la_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
-	$(LDFLAGS) -o $@
+	$(libopenEVSimul_la_CXXFLAGS) $(CXXFLAGS) \
+	$(libopenEVSimul_la_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -300,6 +300,7 @@ INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
 LDFLAGS_FOR_BUILD = @LDFLAGS_FOR_BUILD@
+LD_NO_UNDEFINED_OPT = @LD_NO_UNDEFINED_OPT@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
@@ -397,6 +398,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LTLIBRARIES = libopenEVSimul.la
 libopenEVSimul_la_SOURCES = simulMain.cpp
+libopenEVSimul_la_LDFLAGS = $(LD_NO_UNDEFINED_OPT)
 libopenEVSimul_la_LIBADD = $(PTHREAD_LIBS)
 AM_CXXFLAGS = -I../../.. -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen \
 	$(PTHREAD_CFLAGS) \
