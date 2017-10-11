@@ -32,12 +32,12 @@
 
 
 #if defined (BUILDING_SIMUL_DRIVER)
-  #define DRIVER_PUBLIC DLL_EXPORT
-  #define DRIVER_LOCAL  DLL_LOCAL
-#else /* BUILDING_OEV_KALMAN */
-  #define DRIVER_PUBLIC DLL_IMPORT
-  #define DRIVER_LOCAL  DLL_LOCAL
-#endif /* BUILDING_OEV_KALMAN */
+  #define DRIVER_PUBLIC OV_DLL_EXPORT
+  #define DRIVER_LOCAL  OV_DLL_LOCAL
+#else /* BUILDING_SIMUL_DRIVER */
+  #define DRIVER_PUBLIC OV_DLL_IMPORT
+  #define DRIVER_LOCAL  OV_DLL_LOCAL
+#endif /* BUILDING_SIMUL_DRIVER */
 
 // included here because the defined above are used in the include
 #include "drivers/sensorDriver.h"
