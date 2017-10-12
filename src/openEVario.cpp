@@ -344,7 +344,7 @@ static int doInternalTests () {
     int i;
     struct timeval tv1,tv2,tv3,tv4;
 
-
+#if HAVE_I2C_DEV_H == 1 || HAVE_I2C_H == 1
     // test of MS4515DO differential pressure sensor
     // measurement range is -2.490889*20 to 2.490889*20 mb (measurement actually given as -20 to +20 in H2O)
     // This is the B model with a range from -90% to +90% digital range.
@@ -453,6 +453,7 @@ static int doInternalTests () {
     }
 
     exit(0);
+#endif /* HAVE_I2C_DEV_H == 1 || HAVE_I2C_H == 1 */
 
     // Test of fastMath.
     FloatType j;

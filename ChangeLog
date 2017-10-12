@@ -1,3 +1,8 @@
+2017-10-12  kai_horstmann  <kai_horstmann@werum1619>
+
+	* src\openEVario.cpp (doInternalTests):
+	  Enable I2C tests only if the required Linux headers are available
+	
 2017-10-11  Kai Horstmann  <horstmannkai@hotmail.com>
 
 	* src/openEVario.cpp (parse_opt): 
