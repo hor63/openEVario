@@ -21,10 +21,9 @@ AC_PREREQ([2.69])
 AC_INIT([openEVario],[0.1],[https://github.com/hor63/openEVario/issues],[openEVario],https://github.com/hor63/openEVario)
 AC_CONFIG_HEADERS(config.h)
 
-
 AC_CONFIG_MACRO_DIRS([m4])
 
-
+AC_CONFIG_SUBDIRS ([3rdParty/apache/apr] [3rdParty/apache/apr-util] [3rdParty/apache/log4cxx])
 
 AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE()
@@ -78,7 +77,12 @@ DX_PDF_FEATURE(ON)
 DX_PS_FEATURE(OFF)
 DX_INIT_DOXYGEN(openEVario, $(srcdir)/doxygen.cfg, doc/doxygen)
 
-AC_CONFIG_FILES(Makefile src/util/Makefile src/kalman/Makefile src/Makefile src/drivers/simul/Makefile test/src/Makefile)
+AC_CONFIG_FILES(Makefile
+                src/util/Makefile
+                src/kalman/Makefile
+                src/Makefile
+                src/drivers/simul/Makefile
+                test/src/Makefile)
 
 AC_OUTPUT
 

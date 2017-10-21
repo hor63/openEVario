@@ -16,7 +16,8 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-SUBDIRS= src/util src/kalman src src/drivers/simul test/src
+SUBDIRS= src/util src/kalman src src/drivers/simul test/src \
+	3rdParty/apache/apr 3rdParty/apache/apr-util 3rdParty/apache/log4cxx
 
 MOSTLYCLEANFILES= $(DX_CLEANFILES)
 
