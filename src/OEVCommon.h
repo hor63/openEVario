@@ -34,7 +34,7 @@
 #include <string>
 #include <unordered_map>
 #include <stdlib.h>
-
+#include <cstdlib>
 
 /**
  * Define OV_DLL_IMPORT, OV_DLL_EXPORT, and OV_DLL_LOCAL for Windows and Linux (ELF) ports of gcc and non-gcc compilers
@@ -76,9 +76,17 @@
 #if defined (BUILDING_OEV_UTILS)
   #define OEV_UTILS_PUBLIC OV_DLL_EXPORT
   #define OEV_UTILS_LOCAL  OV_DLL_LOCAL
-#else /* BUILDING_OEV_KALMAN */
+#else /* BUILDING_OEV_UTILS */
   #define OEV_UTILS_PUBLIC OV_DLL_IMPORT
   #define OEV_UTILS_LOCAL  OV_DLL_LOCAL
+#endif /* BUILDING_OEV_UTILS */
+
+#if defined (BUILDING_OEV_DRIVER)
+  #define OEV_DRIVER_PUBLIC OV_DLL_EXPORT
+  #define OEV_DRIVER_LOCAL  OV_DLL_LOCAL
+#else /* BUILDING_OEV_UTILS */
+  #define OEV_DRIVER_PUBLIC OV_DLL_IMPORT
+  #define OEV_DRIVER_LOCAL  OV_DLL_LOCAL
 #endif /* BUILDING_OEV_UTILS */
 
 namespace openEV {
@@ -101,6 +109,7 @@ namespace openEV {
  *       #include <unordered_map>
  *       #include <stdlib.h>
  *       #include <sstream>
+ *       #include <cstdlib>
  *
  * Use it as follows:
  *
@@ -112,12 +121,12 @@ namespace openEV {
  *
  *       OEV_ENUM ( foo,  bar, moose, clam);
  *
- * Please note that this macro will not** work for enumeration with valued enumerations!
+ * Please note that this macro will also work for enumeration with valued enumerations.
  * something like
  *
  *       enum xx {a=2, b=4, c=5}
  *
- * will not yield an error but will return no or (worse) wrong text representations
+ * will return the right representation for values 2, 4, and 5. Any value n between will be printed as unknown value.
  *
  * It implements the enum foo with its members,
  * an output operator
@@ -135,11 +144,13 @@ namespace openEV {
 	enum enumName { __VA_ARGS__ }; \
 	/* helper class in the same scope */ \
 	class enumName##HelperClass { \
-		static std::unordered_map<int,std::string> enumStrings; \
+		std::unordered_map<int,std::string> enumStrings; \
 	public: \
 		enumName##HelperClass() { \
 			int enumVal = 0; \
+			std::string enumValStr; \
 			std::string enumStr; \
+			bool addToEnumStr = true; \
 			char const* nameList = #__VA_ARGS__; \
 			while (*nameList != '\0') { \
 				char c= *nameList; \
@@ -150,26 +161,47 @@ namespace openEV {
 				case '\n': \
 					/* Ignore whitespaces */ \
 					break; \
-					 \
+				case '=': \
+					addToEnumStr = false; \
+					break; \
 				case ',': /* The previous enumName is finished and will be stored. */ \
 					if (enumStr.length() > 0) { \
-						int enumInt = int(enumVal); \
-						std::pair<int,std::string> p (int(enumVal),enumStr); \
+						if (enumValStr.length() > 0) { \
+							long tmp = strtol(enumValStr.c_str(),0,0); \
+							if (tmp != LONG_MAX && tmp != LONG_MIN) { \
+								enumVal = int(tmp); \
+							} \
+						} \
+						std::pair<int,std::string> p (enumVal,enumStr); \
 						enumStrings.insert(p); \
 						enumStr.clear(); \
+						enumValStr.clear(); \
+						addToEnumStr = true; \
 						enumVal++; \
+					} \
+					break; \
+				default: \
+					if (addToEnumStr) { \
+						enumStr += c; \
+					} else { \
+						enumValStr += c; \
 					} \
 				}  \
 				nameList ++; \
 			}  \
 			if (enumStr.length() > 0) { \
-				int enumInt = int(enumVal); \
-				std::pair<int,std::string> p (int(enumVal),enumStr); \
+				if (enumValStr.length() > 0) { \
+					long tmp = strtol(enumValStr.c_str(),0,0); \
+					if (tmp != LONG_MAX && tmp != LONG_MIN) { \
+						enumVal = int(tmp); \
+					} \
+				} \
+				std::pair<int,std::string> p (enumVal,enumStr); \
 				enumStrings.insert(p); \
 			}  \
 		} \
 		 \
-		static std::string getString (enumName en) { \
+		std::string getString (enumName en) { \
 			std::unordered_map<int,std::string>::iterator it =  enumStrings.find(int(en)); \
 			if (it == enumStrings.end()) { \
 				std::ostringstream os; \

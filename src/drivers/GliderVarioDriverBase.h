@@ -34,6 +34,7 @@
     #include <confuse.h>
 #endif
 
+#include "OEVCommon.h"
 #include "kalman/GliderVarioStatus.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
 
@@ -45,7 +46,7 @@ namespace openEV {
  * The actual driver implementation is never exposed to the main program but hidden in the shared library which
  * implements the driver
  */
-class GliderVarioDriverBase {
+class OEV_DRIVER_PUBLIC GliderVarioDriverBase {
 
 public:
 
@@ -59,7 +60,8 @@ public:
 
     /// The list of sensor capabilities. Each one is a position in an integer.
     /// The capabilities are ORed into the capabilities of the driver in #sensorCapabilities.
-    enum SensorCapability {
+    //enum SensorCapability {
+    OEV_ENUM (SensorCapability,
         GPS_LATITUDE = 0,
         GPS_LONGITUDE = 1,
         GPS_ALTITUDE_MSL = 2,
@@ -76,7 +78,8 @@ public:
         COMPASS_Z = 13,
         STATIC_PRESSURE = 14,
         DYNAMIC_PRESSURE = 15,
-    };
+     );
+//    };
 
     /// Get the capabilities of the sensor defined in #sensorCapabilities.
     inline uint32_t getSensorCapabilities () {
@@ -116,6 +119,8 @@ protected:
 }; // class GliderVarioDriverBase
 
 }
+
+OEV_DRIVER_PUBLIC std::ostream& operator << (std::ostream &o,openEV::GliderVarioDriverBase::SensorCapability ind);
 
 #endif /* GLIDERVARIODRIVERBASE_H_ */
 

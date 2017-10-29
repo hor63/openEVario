@@ -63,6 +63,8 @@
 #include "util/FastMath.h"
 #include "kalman/GliderVarioMeasurementVector.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
+#include "drivers/GliderVarioDriverBase.h"
+#include "drivers/sensorDriver.h"
 
 using namespace std;
 using namespace openEV;
@@ -304,6 +306,11 @@ static int readOptions (int& argc, char*argv[]) {
     std::cout << "loggerConfigFile   = " << programOptions.loggerConfigFile << std::endl;
     std::cout << "defaultLoggerLevel = " << programOptions.defaultLoggerLevel << std::endl;
 
+    std::cout << "GliderVarioStatus::STATUS_IND_ACC_HEADING is " << GliderVarioStatus::STATUS_IND_ACC_HEADING << std::endl;
+    std::cout << "GliderVarioDriverBase::DYNAMIC_PRESSURE   is " << GliderVarioDriverBase::DYNAMIC_PRESSURE << std::endl;
+    std::cout << "GliderVarioDriverBase::ACCEL_X            is " << GliderVarioDriverBase::ACCEL_X << std::endl;
+    std::cout << "GliderVarioDriverBase::ACCEL_Y            is " << GliderVarioDriverBase::ACCEL_Y << std::endl;
+    std::cout << "GliderVarioDriverBase::ACCEL_Z            is " << GliderVarioDriverBase::ACCEL_Z << std::endl;
 
     return rc;
 }

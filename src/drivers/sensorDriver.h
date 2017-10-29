@@ -36,15 +36,6 @@
 #include "OEVCommon.h"
 #include "drivers/GliderVarioDriverBase.h"
 
-// If used stand-alone, and not within a driver
-#if !defined(DRIVER_PUBLIC)
-  #define DRIVER_PUBLIC DLL_IMPORT
-#endif
-
-#if !defined(DRIVER_LOCAL)
-  #define DRIVER_LOCAL  DLL_LOCAL
-#endif
-
 namespace openEV {
 
 /// Define a shared pointer to the driver object which keeps a reference count
@@ -55,11 +46,11 @@ typedef std::shared_ptr<openEV::GliderVarioDriverBase> GliderVarioDriverBasePtr;
 
 extern "C" {
 /// Do whatever initialization is required
-int DRIVER_PUBLIC driverInit(void);
+int OEV_DRIVER_PUBLIC driverInit(void);
 
 
 /// Return a pointer to a driver object. The object must be created with the operator 'new'.
-openEV::GliderVarioDriverBasePtr getDriver();
+openEV::GliderVarioDriverBasePtr OEV_DRIVER_PUBLIC getDriver();
 
 
 }

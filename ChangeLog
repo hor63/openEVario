@@ -1,3 +1,25 @@
+2017-10-30  kai_horstmann  <kai_horstmann@werum1619>
+
+	* Makefile.am: 
+	* src\Makefile.am:
+	  utils kalman and driver subdirectories are now subdirs in src/Makefile.am
+	 
+	* src\util\Makefile.am: 
+	* src\util\GliderVarioDriverBase.cpp: New file.
+	  declaration of the GliderVarioDriverBase::SensorCapabilityHelperObj object.
+
+	* src\OEVCommon.h:
+	  Macro OEV_ENUM now deals correctly with explicit numbered enums. 
+	  
+	* src\drivers\simul\Makefile.am: 
+	* src\drivers\GliderVarioDriverBase.h 
+	* src\drivers\sensorDriver.h: 
+	* src\kalman\GliderVarioStatus.cpp 
+	   Cleanup the DLL export/import handling for sensor drivers.
+	   
+	* src\openEVario.cpp
+	   Test streaming explicitly numbered SensorCapability enums 
+	   
 2017-10-29  kai_horstmann  <kai_horstmann@werum1619>
 
 	* src\drivers\GliderVarioDriverBase.h (GliderVarioDriverBase): 

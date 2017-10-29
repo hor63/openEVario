@@ -36,7 +36,7 @@ namespace openEV
 
 FloatType MAG_INCLINATION = 67.0f;
 
-std::unordered_map<int,std::string> openEV::GliderVarioStatus::StatusComponentIndexHelperClass::enumStrings;
+GliderVarioStatus::StatusComponentIndexHelperClass GliderVarioStatus::StatusComponentIndexHelperObj;
 
 GliderVarioStatus::GliderVarioStatus ()
 :systemNoiseCovariance_Q{STATUS_NUM_ROWS,STATUS_NUM_ROWS},
@@ -250,7 +250,7 @@ std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus::StatusCoV
 }
 
 std::ostream& operator << (std::ostream &o,openEV::GliderVarioStatus::StatusComponentIndex ind) {
-	o << openEV::GliderVarioStatus::StatusComponentIndexHelperClass::getString(ind);
+	o << openEV::GliderVarioStatus::StatusComponentIndexHelperObj.getString(ind);
 	return o;
 }
 
