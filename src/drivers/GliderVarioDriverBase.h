@@ -39,6 +39,12 @@
 
 namespace openEV {
 
+/** \brief Abstract base class for sensor drivers.
+ *
+ * Abstract base class of sensor drivers. Most methods are pure virtual, and must be implemented by the driver class
+ * The actual driver implementation is never exposed to the main program but hidden in the shared library which
+ * implements the driver
+ */
 class GliderVarioDriverBase {
 
 public:
@@ -49,7 +55,7 @@ public:
         ;
     }
 
-    ~GliderVarioDriverBase () = 0;
+    virtual ~GliderVarioDriverBase () {}
 
     /// The list of sensor capabilities. Each one is a position in an integer.
     /// The capabilities are ORed into the capabilities of the driver in #sensorCapabilities.
@@ -72,14 +78,9 @@ public:
         DYNAMIC_PRESSURE = 15,
     };
 
-    /// Get the capabilities of the sensor \see #sensorCapabilities.
+    /// Get the capabilities of the sensor defined in #sensorCapabilities.
     inline uint32_t getSensorCapabilities () {
         return sensorCapabilities;
-    }
-
-    /// Set the capabilities of the sensor \see #sensorCapabilities.
-    inline void setSensorCapabilities (uint32_t sensorCapabilities) {
-        this->sensorCapabilities = sensorCapabilities;
     }
 
     /// Check if the driver implements a capability defined in #SensorCapability.
@@ -97,10 +98,17 @@ public:
         sensorCapabilities &= ~(1UL<<capability);
     }
 
-    void driverInit() = 0;
-    void applyMeasurement (GliderVarioStatus& varioStatus,GliderVarioMeasurementUpdater& measurementVector) = 0;
+    virtual void driverInit() = 0;
+    virtual void applyMeasurement (GliderVarioStatus& varioStatus,GliderVarioMeasurementUpdater& measurementVector) = 0;
 
 protected:
+
+    /// Set the capabilities of the sensor in #sensorCapabilities.
+    /// To be set by the implementing class
+    inline void setSensorCapabilities (uint32_t sensorCapabilities) {
+        this->sensorCapabilities = sensorCapabilities;
+    }
+
 
     /// Bit list of capabilities. The bit positions are defined in the enum #SensorCapability.
     uint32_t sensorCapabilities;

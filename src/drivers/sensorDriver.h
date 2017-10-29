@@ -31,7 +31,10 @@
 #ifndef SENSORDRIVER_H_
 #define SENSORDRIVER_H_
 
+#include <memory>
+
 #include "OEVCommon.h"
+#include "drivers/GliderVarioDriverBase.h"
 
 // If used stand-alone, and not within a driver
 #if !defined(DRIVER_PUBLIC)
@@ -42,7 +45,23 @@
   #define DRIVER_LOCAL  DLL_LOCAL
 #endif
 
-extern "C"
+namespace openEV {
+
+/// Define a shared pointer to the driver object which keeps a reference count
+typedef std::shared_ptr<openEV::GliderVarioDriverBase> GliderVarioDriverBasePtr;
+
+}
+
+
+extern "C" {
+/// Do whatever initialization is required
 int DRIVER_PUBLIC driverInit(void);
 
-#endif /* FASTMATH_H_ */
+
+/// Return a pointer to a driver object. The object must be created with the operator 'new'.
+openEV::GliderVarioDriverBasePtr getDriver();
+
+
+}
+
+#endif /* SENSORDRIVER_H_ */
