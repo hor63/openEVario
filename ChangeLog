@@ -1,3 +1,21 @@
+2017-10-29  kai_horstmann  <kai_horstmann@werum1619>
+
+	* src\drivers\GliderVarioDriverBase.h (GliderVarioDriverBase): 
+	(getSensorCapabilities): 
+	(setSensorCapabilities): 
+	(hasSensorCapability): 
+	(GliderVarioDriverBase.setSensorCapabilities):
+	  Add common functions to sensor driver base. Primarily setting and inquiring driver capabilities 
+	
+	* src\OEVCommon.h: 
+	* src\kalman\GliderVarioStatus.cpp (GliderVarioStatus): 
+	* src\kalman\GliderVarioStatus.h (GliderVarioStatus): 
+	(openEV::GliderVarioStatus::StatusComponentIndexHelperClass::enumStrings): 
+	(GliderVarioStatus::GliderVarioStatus): 
+	(operator <<):
+	  Add macro to define enums which at the same time also provides functionality to get the name
+	  of an enum value as string, and stream an enum value
+	  
 2017-10-12  kai_horstmann  <kai_horstmann@werum1619>
 
 	* src\openEVario.cpp (doInternalTests):

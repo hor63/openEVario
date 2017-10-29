@@ -5,6 +5,7 @@
  *      Author: hor
  *
  *  Common definitions for building shared libraries
+ *  and other helpers
  *
  *   This file is part of openEVario, an electronic variometer for glider planes
  *   Copyright (C) 2016  Kai Horstmann
@@ -27,6 +28,13 @@
 
 #ifndef OEVCOMMON_H_
 #define OEVCOMMON_H_
+
+#include <ostream>
+#include <sstream>
+#include <string>
+#include <unordered_map>
+#include <stdlib.h>
+
 
 /**
  * Define OV_DLL_IMPORT, OV_DLL_EXPORT, and OV_DLL_LOCAL for Windows and Linux (ELF) ports of gcc and non-gcc compilers
@@ -82,5 +90,97 @@ namespace openEV {
 	typedef float FloatType;
 
 }
+
+/** \brief Macro to define enums, which a facility to directly stream the Enum name, or to retrieve a string
+ * Macro to define enums, which a facility to directly stream the Enum name, or to retrieve a string
+ *
+ * The macro requires:
+ *
+ *       #include <ostream>
+ *       #include <string>
+ *       #include <unordered_map>
+ *       #include <stdlib.h>
+ *       #include <sstream>
+ *
+ * Use it as follows:
+ *
+ * Instead of
+ *
+ *       enum foo { bar, moose, clam};
+ *
+ * write
+ *
+ *       OEV_ENUM ( foo,  bar, moose, clam);
+ *
+ * Please note that this macro will not** work for enumeration with valued enumerations!
+ * something like
+ *
+ *       enum xx {a=2, b=4, c=5}
+ *
+ * will not yield an error but will return no or (worse) wrong text representations
+ *
+ * It implements the enum foo with its members,
+ * an output operator
+ *
+ *       ostream& operator << (ostream&,foo)
+ *
+ *
+ * and cast operators
+ *
+ *       operator std::string (foo)
+ *
+ */
+
+#define OEV_ENUM(enumName, ...) \
+	enum enumName { __VA_ARGS__ }; \
+	/* helper class in the same scope */ \
+	class enumName##HelperClass { \
+		static std::unordered_map<int,std::string> enumStrings; \
+	public: \
+		enumName##HelperClass() { \
+			int enumVal = 0; \
+			std::string enumStr; \
+			char const* nameList = #__VA_ARGS__; \
+			while (*nameList != '\0') { \
+				char c= *nameList; \
+				switch (c) { \
+				case ' ': \
+				case '\t': \
+				case '\r': \
+				case '\n': \
+					/* Ignore whitespaces */ \
+					break; \
+					 \
+				case ',': /* The previous enumName is finished and will be stored. */ \
+					if (enumStr.length() > 0) { \
+						int enumInt = int(enumVal); \
+						std::pair<int,std::string> p (int(enumVal),enumStr); \
+						enumStrings.insert(p); \
+						enumStr.clear(); \
+						enumVal++; \
+					} \
+				}  \
+				nameList ++; \
+			}  \
+			if (enumStr.length() > 0) { \
+				int enumInt = int(enumVal); \
+				std::pair<int,std::string> p (int(enumVal),enumStr); \
+				enumStrings.insert(p); \
+			}  \
+		} \
+		 \
+		static std::string getString (enumName en) { \
+			std::unordered_map<int,std::string>::iterator it =  enumStrings.find(int(en)); \
+			if (it == enumStrings.end()) { \
+				std::ostringstream os; \
+				os << "<Unknown " #enumName " value" << int(en) << ">"; \
+				return os.str(); \
+			} \
+			 \
+			return it->second; \
+		} \
+	};  \
+	static enumName##HelperClass enumName##HelperObj;
+
 
 #endif /* OEVCOMMON_H_ */
