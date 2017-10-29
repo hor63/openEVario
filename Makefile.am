@@ -17,7 +17,7 @@
 
 
 SUBDIRS=3rdParty/apache/apr 3rdParty/apache/apr-util 3rdParty/apache/log4cxx \
-	src/util src/kalman src src/drivers/simul test/src
+	src test/src
 
 MOSTLYCLEANFILES= $(DX_CLEANFILES)
 

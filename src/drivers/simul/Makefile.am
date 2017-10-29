@@ -27,6 +27,6 @@ AM_CXXFLAGS = -I../../.. -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen \
 	$(PTHREAD_CFLAGS) \
 	$(DLL_VISIBLE_CFLAGS)
 	
-libopenEVSimul_la_CXXFLAGS=$(AM_CXXFLAGS) -DBUILDING_SIMUL_DRIVER=1
+libopenEVSimul_la_CXXFLAGS=$(AM_CXXFLAGS) -DBUILDING_OEV_DRIVER=1
 
 	
