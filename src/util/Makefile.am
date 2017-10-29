@@ -19,7 +19,8 @@
 
 lib_LTLIBRARIES=libopenEVUtil.la
 
-libopenEVUtil_la_SOURCES=RotationMatrix.cpp FastMath.cpp FastMathSineTable.cpp 
+libopenEVUtil_la_SOURCES=RotationMatrix.cpp FastMath.cpp FastMathSineTable.cpp \
+	GliderVarioDriverBase.cpp 
  
 libopenEVUtil_la_LIBADD=$(PTHREAD_LIBS)
 
