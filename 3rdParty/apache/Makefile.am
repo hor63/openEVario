@@ -16,18 +16,5 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-lib_LTLIBRARIES = libopenEVSimul.la
+SUBDIRS=$(LOG4CXX_MAKE_SUBDIRS)
 
-libopenEVSimul_la_SOURCES=simulMain.cpp
- 
-libopenEVSimul_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT) $(LOG4CXX_LDFLAGS)
-libopenEVSimul_la_LIBADD = $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
-
-AM_CXXFLAGS = -I../../.. -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen \
-	$(LOG4CXX_CXXFLAGS) \
-	$(PTHREAD_CFLAGS) \
-	$(DLL_VISIBLE_CFLAGS)
-	
-libopenEVSimul_la_CXXFLAGS=$(AM_CXXFLAGS) -DBUILDING_OEV_DRIVER=1
-
-	

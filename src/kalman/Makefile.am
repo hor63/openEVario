@@ -22,8 +22,8 @@ lib_LTLIBRARIES=libopenEVKalman.la
 libopenEVKalman_la_SOURCES=GliderVarioStatus.cpp GliderVarioTransitionMatrix.cpp MeasureMatrix.cpp \
  GliderVarioMeasurementVector.cpp GliderVarioMeasurementUpdater.cpp
  
-libopenEVKalman_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT)
-libopenEVKalman_la_LIBADD=../util/libopenEVUtil.la $(PTHREAD_LIBS)
+libopenEVKalman_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT) $(LOG4CXX_LDFLAGS)
+libopenEVKalman_la_LIBADD=../util/libopenEVUtil.la $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
 
 libopenEVKalman_la_CXXFLAGS=$(AM_CXXFLAGS) -DBUILDING_OEV_KALMAN=1 $(DLL_VISIBLE_CFLAGS)
 
@@ -31,17 +31,6 @@ libopenEVKalman_la_CXXFLAGS=$(AM_CXXFLAGS) -DBUILDING_OEV_KALMAN=1 $(DLL_VISIBLE
 genSineTables_sources=genSineTables.cpp
 
 AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen \
+	$(LOG4CXX_CXXFLAGS) \
 	$(PTHREAD_CFLAGS)
 
-AM_CXXFLAGS_FOR_BUILD=-I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen
-
-LINK_FOR_BUILD.cpp=$(CXX_FOR_BUILD) $(CXXFLAGS_FOR_BUILD) $(CPPFLAGS_FOR_BUILD) $(AM_CXXFLAGS_FOR_BUILD) $(LDFLAGS_FOR_BUILD) $(TARGET_ARCH_FOR_BUILD)
-
-# compile and link in one step. Saves me at least mainaining object and source file lists.
-genSineTables$(EXEEXT) : $(genSineTables_sources)
-	$(LINK_FOR_BUILD.cpp) $^ $(LOADLIBES_FOR_BUILD) $(LDLIBS_FOR_BUILD) -o $@
-
-# Generate the sinus and atan2 lookup tables for the FastMath class.
-FastMathSineTable.cpp: genSineTables$(EXEEXT)
-	./genSineTables$(EXEEXT) FastMathSineTable.cpp
-	

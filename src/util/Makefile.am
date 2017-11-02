@@ -22,16 +22,16 @@ lib_LTLIBRARIES=libopenEVUtil.la
 libopenEVUtil_la_SOURCES=RotationMatrix.cpp FastMath.cpp FastMathSineTable.cpp \
 	GliderVarioDriverBase.cpp 
  
-libopenEVUtil_la_LIBADD=$(PTHREAD_LIBS)
+libopenEVUtil_la_LIBADD=$(LOG4CXX_LIBS) $(PTHREAD_LIBS)
 
 libopenEVUtil_la_CXXFLAGS=$(AM_CXXFLAGS) -DBUILDING_OEV_UTILS=1 $(DLL_VISIBLE_CFLAGS)
 
-libopenEVUtil_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT)
+libopenEVUtil_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT) $(LOG4CXX_LDFLAGS)
 
 # Build compiler sources are not well supported by autotools. Back to manual
 genSineTables_sources=genSineTables.cpp
 
-AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen \
+AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen $(LOG4CXXFLAGS) \
 	$(PTHREAD_CFLAGS)
 
 AM_CXXFLAGS_FOR_BUILD=-I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen

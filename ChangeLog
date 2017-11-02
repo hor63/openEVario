@@ -1,3 +1,17 @@
+2017-11-03  kai_horstmann  <kai_horstmann@werum1619>
+
+	* 3rdParty\apache\Makefile.am: New file.
+	* configure.ac: 
+	* Makefile.am: 
+	* src\drivers\simul\Makefile.am: 
+	* src\kalman\Makefile.am: 
+	* src\Makefile.am: 
+	* src\util\Makefile.am:
+	  Finally integrated log4cxx into autotools with --with-log4cxx option
+	  --with-log4cxx=build will force building from the embedded sources.
+	  omitting the option will look for a system installation of log4cxx, and if cannot find one
+	  build from the embedded sources
+	 
 2017-10-30  kai_horstmann  <kai_horstmann@werum1619>
 
 	* Makefile.am: 

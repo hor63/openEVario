@@ -16,8 +16,7 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-SUBDIRS=3rdParty/apache/apr 3rdParty/apache/apr-util 3rdParty/apache/log4cxx \
-	src test/src
+SUBDIRS=3rdParty/apache src test/src
 
 MOSTLYCLEANFILES= $(DX_CLEANFILES)
 
