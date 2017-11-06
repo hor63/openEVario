@@ -36,6 +36,16 @@
 #include <stdlib.h>
 #include <cstdlib>
 
+#if defined HAVE_CONFIG_H
+#	include "config.h"
+#endif
+
+#if defined HAVE_LOG4CXX_H
+#	include <log4cxx/logger.h>
+#	include "log4cxx/basicconfigurator.h"
+#	include "log4cxx/propertyconfigurator.h"
+#endif /* #if defined HAVE_LOG4CXX_H */
+
 /**
  * Define OV_DLL_IMPORT, OV_DLL_EXPORT, and OV_DLL_LOCAL for Windows and Linux (ELF) ports of gcc and non-gcc compilers
  *

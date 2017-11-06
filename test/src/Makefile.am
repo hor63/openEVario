@@ -29,6 +29,7 @@ testOpenEVario_SOURCES = testOpenEVario.cpp FastMath_test.cpp GliderVarioMeasure
 testOpenEVario_LDADD = ./libgoogletest.la \
 	../../src/kalman/libopenEVKalman.la \
 	../../src/util/libopenEVUtil.la \
+	$(LOG4CXX_LIBS) \
 	$(PTHREAD_LIBS)
 
 ../../src/libopenEVKalman.la:
