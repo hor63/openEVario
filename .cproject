@@ -4,7 +4,7 @@
 		<cconfiguration id="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.660473769">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.660473769" moduleId="org.eclipse.cdt.core.settings" name="Build (GNU)">
 				<macros>
-					<stringMacro name="CXXFLAGS" type="VALUE_TEXT" value="-g"/>
+					<stringMacro name="CXXFLAGS" type="VALUE_TEXT" value="-g -Og"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -35,7 +35,7 @@
 							</tool>
 							<tool id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.autogen.89559791" name="autogen.sh" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.autogen"/>
 							<tool id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gcc.1857753075" name="GCC C Compiler" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gcc">
-								<option id="gnu.c.compiler.option.include.paths.2023803021" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+								<option id="gnu.c.compiler.option.include.paths.2023803021" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/openEVario/src}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1461490169" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
@@ -46,6 +46,7 @@
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.212670976" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="ENABLE_UNIT_TESTS=1"/>
+									<listOptionValue builtIn="false" value="HAVE_CONFIG_H=1"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1746784870" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
