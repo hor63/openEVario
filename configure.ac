@@ -97,7 +97,7 @@ AC_DEFINE([HAVE_LOG4CXX_H], [1], [Determine if the log4cxx header is present and
 AS_IF(
 [test "x$with_log4cxx" = xauto -o "x$with_log4cxx" = x ],
 [
-	LOG4CXX_PREFIX_LIST="/opt/log4cxx /opt /usr/local/log4cxx /usr/local none"
+	LOG4CXX_PREFIX_LIST="none /opt/log4cxx /opt /usr/local/log4cxx /usr/local"
 ],
 
 [test "x$with_log4cxx" = xno ],
