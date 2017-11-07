@@ -90,8 +90,7 @@ auto		: (default) when an installation is detected it is used, else build from s
 # default is to use the embedded sources if an installation cannot be found
 USE_EMBEDDED_LOG4CXX_SOURCES=yes
 # By default use the logger
-AC_DEFINE([HAVE_LOG4CXX_H], [1], [Determine if the log4cxx header is present and usable,
-	and if log4cxx is to be used at all])
+HAVE_LOG4CXX_H=1
 
 # Check for options given
 AS_IF(
@@ -203,6 +202,13 @@ else # if test x"$USE_EMBEDDED_LOG4CXX_SOURCES" = xyes
 		fi # if test "x$with_log4cxx" = xyes -o "x$with_log4cxx" = x
 	fi # if test x"$HAVE_LOG4CXX_H" != x1
 fi
+
+if test x"$HAVE_LOG4CXX_H" = x1
+then
+	AC_DEFINE([HAVE_LOG4CXX_H], [1], [Determine if the log4cxx header is present and usable,
+		and if log4cxx is to be used at all])
+fi
+
 
 AC_SUBST([LOG4CXX_LIBS])
 AC_SUBST([LOG4CXX_LDFLAGS])
