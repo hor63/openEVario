@@ -20,7 +20,8 @@
 lib_LTLIBRARIES=libopenEVKalman.la
 
 libopenEVKalman_la_SOURCES=GliderVarioStatus.cpp GliderVarioTransitionMatrix.cpp MeasureMatrix.cpp \
- GliderVarioMeasurementVector.cpp GliderVarioMeasurementUpdater.cpp
+ GliderVarioMeasurementVector.cpp GliderVarioMeasurementUpdater.cpp \
+ GliderVarioDriverBase.cpp 
  
 libopenEVKalman_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT) $(LOG4CXX_LDFLAGS)
 libopenEVKalman_la_LIBADD=../util/libopenEVUtil.la $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
