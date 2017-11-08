@@ -301,32 +301,6 @@ static int readOptions (int& argc, char*argv[]) {
 
 #endif /* HAVE_ARGP_PARSE == 1 */
 
-#if defined HAVE_LOG4CXX_H
-    log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("openEV");
-    logger->setLevel(log4cxx::Level::getInfo());
-    log4cxx::BasicConfigurator::configure();
-#endif /* defined HAVE_LOG4CXX_H */
-
-    LOG4CXX_INFO(logger,"configFile         = " << programOptions.configFile);
-    LOG4CXX_INFO(logger,"loggerConfigFile   = " << programOptions.loggerConfigFile);
-    LOG4CXX_INFO(logger,"defaultLoggerLevel = " << programOptions.defaultLoggerLevel);
-
-    LOG4CXX_INFO(logger,"GliderVarioStatus::STATUS_IND_ACC_HEADING is " << GliderVarioStatus::STATUS_IND_ACC_HEADING);
-    LOG4CXX_INFO(logger,"GliderVarioDriverBase::DYNAMIC_PRESSURE   is " << GliderVarioDriverBase::DYNAMIC_PRESSURE);
-    LOG4CXX_INFO(logger,"GliderVarioDriverBase::ACCEL_X            is " << GliderVarioDriverBase::ACCEL_X);
-    LOG4CXX_INFO(logger,"GliderVarioDriverBase::ACCEL_Y            is " << GliderVarioDriverBase::ACCEL_Y);
-    LOG4CXX_INFO(logger,"GliderVarioDriverBase::ACCEL_Z            is " << GliderVarioDriverBase::ACCEL_Z);
-
-
-    std::cout << "configFile         = " << programOptions.configFile << std::endl;
-    std::cout << "loggerConfigFile   = " << programOptions.loggerConfigFile << std::endl;
-    std::cout << "defaultLoggerLevel = " << programOptions.defaultLoggerLevel << std::endl;
-
-    std::cout << "GliderVarioStatus::STATUS_IND_ACC_HEADING is " << GliderVarioStatus::STATUS_IND_ACC_HEADING << std::endl;
-    std::cout << "GliderVarioDriverBase::DYNAMIC_PRESSURE   is " << GliderVarioDriverBase::DYNAMIC_PRESSURE << std::endl;
-    std::cout << "GliderVarioDriverBase::ACCEL_X            is " << GliderVarioDriverBase::ACCEL_X << std::endl;
-    std::cout << "GliderVarioDriverBase::ACCEL_Y            is " << GliderVarioDriverBase::ACCEL_Y << std::endl;
-    std::cout << "GliderVarioDriverBase::ACCEL_Z            is " << GliderVarioDriverBase::ACCEL_Z << std::endl;
 
     return rc;
 }
@@ -343,6 +317,13 @@ int main (int argc, char *argv[]) {
     int rc = 0;
 
     rc = readOptions (argc,argv);
+
+#if defined HAVE_LOG4CXX_H
+    log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("openEV");
+    logger->setLevel(log4cxx::Level::getInfo());
+    log4cxx::BasicConfigurator::configure();
+#endif /* defined HAVE_LOG4CXX_H */
+
 
 
     return rc;
