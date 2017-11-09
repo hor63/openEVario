@@ -25,7 +25,9 @@ gtest-all.cc: $(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc
 bin_PROGRAMS = testOpenEVario$(EXEEXT)
 testOpenEVario_SOURCES = testOpenEVario.cpp FastMath_test.cpp GliderVarioMeasurementUpdater_test.cpp GliderVarioMeasurementVector_test.cpp \
 	GliderVarioStatus_test.cpp GliderVarioTransitionMatrix_test.cpp MeasureMatrix_test.cpp RotationMatrix_test.cpp
-  
+
+testOpenEVario_LDFLAGS = $(AM_LDFLAGS)
+
 testOpenEVario_LDADD = ./libgoogletest.la \
 	../../src/kalman/libopenEVKalman.la \
 	../../src/util/libopenEVUtil.la \
@@ -43,6 +45,7 @@ testOpenEVario_CXXFLAGS = -isystem $(top_srcdir)/3rdParty/googletest/googletest/
 	-I$(top_srcdir)/3rdParty/eigen \
 	-I$(top_srcdir)/src \
 	-DENABLE_UNIT_TESTS=1 \
+	$(LOG4CXX_CXXFLAGS) \
 	$(PTHREAD_CFLAGS)
 
 # compiling googletest itself requires PTHRED options, and the googletest source directory as include path.
@@ -50,15 +53,4 @@ libgoogletest_la_CXXFLAGS = \
 	-isystem $(top_srcdir)/3rdParty/googletest/googletest/include \
 	-I$(top_srcdir)/3rdParty/googletest/googletest
 
-AM_CXXFLAGS_FOR_BUILD="-I$(top_srcdir)/3rdParty/eigen/Eigen"
-
-LINK_FOR_BUILD.cpp = $(CXX_FOR_BUILD) $(CXXFLAGS_FOR_BUILD) $(CPPFLAGS_FOR_BUILD) $(AM_CXXFLAGS_FOR_BUILD) $(LDFLAGS_FOR_BUILD) $(TARGET_ARCH_FOR_BUILD)
-
-# compile and link in one step. Saves me at least mainaining object and source file lists.
-genSineTables$(EXEEXT) : $(genSineTables_sources)
-	$(LINK_FOR_BUILD.cpp) $^ $(LOADLIBES_FOR_BUILD) $(LDLIBS_FOR_BUILD) -o $@
-
-# Generate the sinus and atan2 lookup tables for the FastMath class.
-FastMathSineTable.cpp: genSineTables$(EXEEXT)
-	./genSineTables$(EXEEXT) FastMathSineTable.cpp
-	
+AM_LDFLAGS = $(LOG4CXX_LDFLAGS)

@@ -128,6 +128,7 @@ AS_IF(
 # Save LIBS for link test
 logger_test_save_LIBS="$LIBS"
 logger_test_save_LDFLAGS="$LDFLAGS"
+logger_test_save_CPPFLAGS="$CPPFLAGS"
 LIBS="-llog4cxx $LIBS"
 
 if test "x$LOG4CXX_PREFIX_LIST" != x
@@ -137,7 +138,7 @@ then
 	do
 		if test x"$i" != xnone
 		then
-			LDFLAGS="$LFGLAGS -L$i/lib"
+			LDFLAGS="$LDGLAGS -L$i/lib"
 			CPPFLAGS="$CPPFLAGS -I$i/include"
 			AC_MSG_CHECKING([log4cxx header and library usability in $i])
 		else
@@ -158,7 +159,7 @@ then
 		if test x"$i" != xnone
 		then
 			LOG4CXX_LDFLAGS=-L$i/lib
-			LOG4CXXFLAGS=-I$i/include
+			LOG4CXX_CXXFLAGS=-I$i/include
 		fi
 		break
 		]
@@ -174,6 +175,7 @@ fi # if test "x$LOG4CXX_PREFIX_LIST" != x
 # restore LIBS after test 
 LIBS="$logger_test_save_LIBS"
 LDFLAGS="$logger_test_save_LDFLAGS"
+CPPFLAGS="$logger_test_save_CPPFLAGS"
 
 if test x"$USE_EMBEDDED_LOG4CXX_SOURCES" = xyes
 then
@@ -183,7 +185,7 @@ then
 		
 		LOG4CXX_LIBS=-llog4cxx
 		LOG4CXX_LDFLAGS=-L\$\(top_builddir\)/3rdParty/apache/log4cxx/src/main/cpp
-		LOG4CXXFLAGS=-I\$\(top_srcdir\)/3rdParty/apache/log4cxx/src/main/include
+		LOG4CXX_CXXFLAGS=-I\$\(top_srcdir\)/3rdParty/apache/log4cxx/src/main/include
 		
 		AC_CONFIG_SUBDIRS([3rdParty/apache/apr 3rdParty/apache/apr-util 3rdParty/apache/log4cxx])
 		AC_SUBST([LOG4CXX_MAKE_SUBDIRS],["apr apr-util log4cxx"])
@@ -209,10 +211,9 @@ then
 		and if log4cxx is to be used at all])
 fi
 
-
 AC_SUBST([LOG4CXX_LIBS])
 AC_SUBST([LOG4CXX_LDFLAGS])
-AC_SUBST([LOG4CXXFLAGS])
+AC_SUBST([LOG4CXX_CXXFLAGS])
 
 
 DX_DOXYGEN_FEATURE(ON)

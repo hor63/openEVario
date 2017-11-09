@@ -30,7 +30,7 @@ libopenEVUtil_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT) $(LOG4CXX_LDFLAGS)
 # Build compiler sources are not well supported by autotools. Back to manual
 genSineTables_sources=genSineTables.cpp
 
-AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen $(LOG4CXXFLAGS) \
+AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen $(LOG4CXX_CXXFLAGS) \
 	$(PTHREAD_CFLAGS)
 
 AM_CXXFLAGS_FOR_BUILD=-I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen
