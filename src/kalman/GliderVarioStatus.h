@@ -137,21 +137,21 @@ public:
 	OEV_ENUM(StatusComponentIndex,
     // enum StatusComponentIndex {
 
-        /// Constants
+		// constants (but may varying slightly
         STATUS_IND_GRAVITY      ,  ///< The gravity, initialized to #::GRAVITY
 
-        /// Position and altitude
+        // Position and altitude
         STATUS_IND_LATITUDE  	,  ///< Latitude in arc seconds North
         STATUS_IND_LONGITUDE	,  ///< Longitude in arc seconds East
         STATUS_IND_ALT_MSL   	,  ///< Altitude in m over Mean Sea Level
 
-        /// Attitude of the body to the world coordinate system
+        // Attitude of the body to the world coordinate system
         STATUS_IND_HEADING		,  ///< Heading of the plane in deg. right turn from true north. This is the flight direction relative to the surrounding air.
         ///< Synonymous with Yaw.
         STATUS_IND_PITCH		,  ///< Pitch angle in deg. nose up. Pitch is applied after yaw.
         STATUS_IND_ROLL		    ,  ///< Roll angle in deg. right. Roll is applied after yaw and pitch.
 
-        /// Speeds
+        // Speeds
         STATUS_IND_SPEED_GROUND_N	,  ///< Ground speed component North in m/s
         STATUS_IND_SPEED_GROUND_E	,  ///< Ground speed component East in m/s
         STATUS_IND_TAS			,  ///< True air speed horizontally in direction of heading
@@ -159,19 +159,19 @@ public:
         STATUS_IND_VERTICAL_SPEED	, ///< Absolute vertical speed in m/s downward. Z axis is direction down.
         STATUS_IND_THERMAL_SPEED	, ///< The true reason for the whole exercise! :). As always in Z axis direction downward.
 
-        /// Accelerations in direction of the heading, vertical and perpendicular to heading.
+        // Accelerations in direction of the heading, vertical and perpendicular to heading.
         STATUS_IND_ACC_HEADING		, ///< Acceleration in m/s^2 horizontally along the heading of the plane
         STATUS_IND_ACC_CROSS		, ///< Acceleration in m/s^2 horizontally perpendicular to the heading
         ///< Note that this does *not* include centrifugal force!!!
         ///< This is only residual acceleration not accounted by turning.
         STATUS_IND_ACC_VERTICAL		, ///< Acceleration in m/s^2 along body Z axis
 
-        /// Turn rates in reference to the world coordinate system
+        // Turn rates in reference to the world coordinate system
         STATUS_IND_ROTATION_X	, ///< Roll rate in deg/s to the right around the X axis
         STATUS_IND_ROTATION_Y	, ///< Pitch rate in deg/s nose up around the Y axis
         STATUS_IND_ROTATION_Z	, ///< Yaw (turn) rate clockwise in deg/s around the Z (downward) axis
 
-        /// Derived values which improve the responsiveness of the Kalman filter.
+        // Derived values which improve the responsiveness of the Kalman filter.
         STATUS_IND_GYRO_BIAS_X	, ///< Bias (0-offset) of the plane X axis gyro in deg/s
         STATUS_IND_GYRO_BIAS_Y	, ///< Bias (0-offset) of the plane Y axis gyro in deg/s
         STATUS_IND_GYRO_BIAS_Z	, ///< Bias (0-offset) of the plane Z axis gyro in deg/s
@@ -324,18 +324,7 @@ OEV_PUBLIC std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus
 OEV_PUBLIC std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus::StatusCoVarianceType &co);
 OEV_PUBLIC std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus::StatusComponentIndex ind);
 
-#if defined HAVE_LOG4CXX_H
-OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::MessageBuffer& o ,openEV::GliderVarioStatus& s);
-OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer& o ,openEV::GliderVarioStatus& s);
+OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioStatus::_StatusComponentIndex e);
 
-OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::MessageBuffer& o ,openEV::GliderVarioStatus::StatusVectorType &v);
-OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer& o ,openEV::GliderVarioStatus::StatusVectorType &v);
-
-OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::MessageBuffer& o ,openEV::GliderVarioStatus::StatusCoVarianceType &co);
-OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer& o ,openEV::GliderVarioStatus::StatusCoVarianceType &co);
-
-OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::MessageBuffer& o ,openEV::GliderVarioStatus::StatusComponentIndex ind);
-OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer& o ,openEV::GliderVarioStatus::StatusComponentIndex ind);
-#endif /* #if defined HAVE_LOG4CXX_H */
 
 #endif /* GLIDERVARIOSTATUS_H_ */

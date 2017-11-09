@@ -254,49 +254,8 @@ std::ostream& operator << (std::ostream &o,openEV::GliderVarioStatus::StatusComp
     return o;
 }
 
-#if defined HAVE_LOG4CXX_H
-std::ostream& operator << (log4cxx::helpers::MessageBuffer& o ,openEV::GliderVarioStatus& s) {
-    std::ostream &os = o;
-    os << s;
-    return os;
-}
-std::ostream& operator << (log4cxx::helpers::CharMessageBuffer& o ,openEV::GliderVarioStatus& s) {
-    std::ostream &os = o;
-    os << s;
-    return os;
+std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioStatus::_StatusComponentIndex e) {
+	std::ostream &o = b;
+	return operator << (o,e.e);
 }
 
-std::ostream& operator << (log4cxx::helpers::MessageBuffer& o ,openEV::GliderVarioStatus::StatusVectorType &v) {
-    std::ostream &os = o;
-    os << v;
-    return os;
-}
-
-std::ostream& operator << (log4cxx::helpers::CharMessageBuffer& o ,openEV::GliderVarioStatus::StatusVectorType &v) {
-    std::ostream &os = o;
-    os << v;
-    return os;
-}
-
-std::ostream& operator << (log4cxx::helpers::MessageBuffer& o ,openEV::GliderVarioStatus::StatusCoVarianceType &co) {
-    std::ostream &os = o;
-    os << co;
-    return os;
-}
-std::ostream& operator << (log4cxx::helpers::CharMessageBuffer& o ,openEV::GliderVarioStatus::StatusCoVarianceType &co) {
-    std::ostream &os = o;
-    os << co;
-    return os;
-}
-
-std::ostream& operator << (log4cxx::helpers::MessageBuffer& o ,openEV::GliderVarioStatus::StatusComponentIndex ind) {
-    std::ostream &os = o;
-    os << ind;
-    return os;
-}
-std::ostream& operator << (log4cxx::helpers::CharMessageBuffer& o ,openEV::GliderVarioStatus::StatusComponentIndex ind) {
-    std::ostream &os = o;
-    os << ind;
-    return os;
-}
-#endif /* #if defined HAVE_LOG4CXX_H */

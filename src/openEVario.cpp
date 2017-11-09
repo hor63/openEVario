@@ -324,7 +324,7 @@ int main (int argc, char *argv[]) {
     log4cxx::BasicConfigurator::configure();
 #endif /* defined HAVE_LOG4CXX_H */
 
-
+    LOG4CXX_INFO(logger,"GliderVarioStatus::STATUS_IND_ACC_HEADING is " << GliderVarioStatus::printStatusComponentIndex(GliderVarioStatus::STATUS_IND_ACC_HEADING));
 
     return rc;
 }
