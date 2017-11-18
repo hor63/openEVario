@@ -38,14 +38,16 @@ GliderVarioMeasurementVector::~GliderVarioMeasurementVector() {
 
 }
 
-std::ostream& operator << (std::ostream &o,openEV::GliderVarioMeasurementVector::MeasureComponentIndex ind) {
+} /* namespace openEV */
+
+std::ostream& operator << (std::ostream &o, openEV::GliderVarioMeasurementVector::MeasureComponentIndex ind) {
     o << openEV::GliderVarioMeasurementVector::MeasureComponentIndexHelperObj.getString(ind);
     return o;
 }
 
+#if defined HAVE_LOG4CXX_H
 std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioMeasurementVector::_MeasureComponentIndex e) {
 	std::ostream &o = b;
 	return operator << (o,e.e);
 }
-
-} /* namespace openEV */
+#endif /* #if defined HAVE_LOG4CXX_H */

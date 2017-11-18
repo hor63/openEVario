@@ -160,7 +160,9 @@ protected:
 
 OEV_PUBLIC std::ostream& operator << (std::ostream &o, openEV::GliderVarioMeasurementVector::MeasureComponentIndex ind);
 
+#if defined HAVE_LOG4CXX_H
 OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioMeasurementVector::_MeasureComponentIndex e);
+#endif /* #if defined HAVE_LOG4CXX_H */
 
 inline openEV::GliderVarioMeasurementVector::_MeasureComponentIndex toString (openEV::GliderVarioMeasurementVector::MeasureComponentIndex i) {
 	openEV::GliderVarioMeasurementVector::_MeasureComponentIndex r = {i};
