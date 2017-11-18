@@ -45,6 +45,22 @@
 #	include <log4cxx/logger.h>
 #	include "log4cxx/basicconfigurator.h"
 #	include "log4cxx/propertyconfigurator.h"
+#else /* #if defined HAVE_LOG4CXX_H */
+// These are all the logger macros from log4cxx/logger.h. Here redefined empty when no logger is used.
+#define LOG4CXX_LOG(logger, level, message)  do {;} while (0)
+#define LOG4CXX_LOGLS(logger, level, message)  do {;} while (0)
+#define LOG4CXX_DEBUG(logger, message)  do {;} while (0)
+#define LOG4CXX_TRACE(logger, message)  do {;} while (0)
+#define LOG4CXX_INFO(logger, message)  do {;} while (0)
+#define LOG4CXX_WARN(logger, message)  do {;} while (0)
+#define LOG4CXX_ERROR(logger, message)  do {;} while (0)
+#define LOG4CXX_ASSERT(logger, condition, message)  do {;} while (0)
+#define LOG4CXX_FATAL(logger, message)  do {;} while (0)
+#define LOG4CXX_L7DLOG(logger, level, key)  do {;} while (0)
+#define LOG4CXX_L7DLOG1(logger, level, key, p1)  do {;} while (0)
+#define LOG4CXX_L7DLOG1(logger, level, key, p1)  do {;} while (0)
+#define LOG4CXX_L7DLOG2(logger, level, key, p1, p2)  do {;} while (0)
+#define LOG4CXX_L7DLOG3(logger, level, key, p1, p2, p3)  do {;} while (0)
 #endif /* #if defined HAVE_LOG4CXX_H */
 
 /**
