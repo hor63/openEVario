@@ -1,3 +1,19 @@
+2017-11-18  hor  <hor@horUbuntu>
+
+	* src/kalman/GliderVarioStatus.cpp (operator <<): 
+	  Compile logger messagebuffer stream operator only when logger support is compiled in.
+	  
+	* src/kalman/GliderVarioStatus.h (toString):
+	  Make GliderVarioStatus::StatusComponentIndex visible again for Doxygen. 
+
+	* src/kalman/GliderVarioMeasurementVector.cpp (operator <<): 
+	* src/kalman/GliderVarioMeasurementVector.h (toString):
+	  Define GliderVarioMeasurementVector::MeasureComponentIndex with marco OEV_ENUM
+	   
+	* src/OEVCommon.h:
+	  Define all logger macros as empty macros when no logger support is compiled in.
+	
+	 
 2017-11-03  kai_horstmann  <kai_horstmann@werum1619>
 
 	* 3rdParty\apache\Makefile.am: New file.
