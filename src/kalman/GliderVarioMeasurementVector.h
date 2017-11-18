@@ -46,7 +46,12 @@ public:
     }
     virtual ~GliderVarioMeasurementVector();
 
+#if defined DOXYGEN
     enum MeasureComponentIndex {
+#else
+	OEV_ENUM(MeasureComponentIndex,
+#endif
+
         // GPS Measurements
         MEASURE_IND_GPS_LAT, ///< Latitude in arc seconds
         MEASURE_IND_GPS_LON, ///< Longitude in arc seconds
@@ -74,7 +79,11 @@ public:
         MEASURE_IND_DYNAMIC_PRESSURE, ///< dynamic (pitot) pressure in Pascal, i.e. total pressure-static pressure.
 
         MEASURE_NUM_ROWS
-    };
+#if defined DOXYGEN
+	    };
+#else
+	);
+#endif
 
     typedef Eigen::Matrix<FloatType,MEASURE_NUM_ROWS,1> MeasureVectorType;
     typedef Eigen::Matrix<FloatType,MEASURE_NUM_ROWS,MEASURE_NUM_ROWS> MeasureCovarianceType;
@@ -148,5 +157,14 @@ protected:
 };
 
 } /* namespace openEV */
+
+OEV_PUBLIC std::ostream& operator << (std::ostream &o, openEV::GliderVarioMeasurementVector::MeasureComponentIndex ind);
+
+OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioMeasurementVector::_MeasureComponentIndex e);
+
+inline openEV::GliderVarioMeasurementVector::_MeasureComponentIndex toString (openEV::GliderVarioMeasurementVector::MeasureComponentIndex i) {
+	openEV::GliderVarioMeasurementVector::_MeasureComponentIndex r = {i};
+	return r;
+}
 
 #endif /* GLIDERVARIOMEASUREMENTVECTOR_H_ */

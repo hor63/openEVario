@@ -32,8 +32,20 @@
 
 namespace openEV {
 
+GliderVarioMeasurementVector::MeasureComponentIndexHelperClass GliderVarioMeasurementVector::MeasureComponentIndexHelperObj;
+
 GliderVarioMeasurementVector::~GliderVarioMeasurementVector() {
 
+}
+
+std::ostream& operator << (std::ostream &o,openEV::GliderVarioMeasurementVector::MeasureComponentIndex ind) {
+    o << openEV::GliderVarioMeasurementVector::MeasureComponentIndexHelperObj.getString(ind);
+    return o;
+}
+
+std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioMeasurementVector::_MeasureComponentIndex e) {
+	std::ostream &o = b;
+	return operator << (o,e.e);
 }
 
 } /* namespace openEV */
