@@ -1,5 +1,10 @@
 2017-11-18  hor  <hor@horUbuntu>
 
+	* src/drivers/GliderVarioDriverBase.h (GliderVarioDriverBase): 
+	* src/kalman/GliderVarioDriverBase.cpp (operator <<): 
+	(toString): 
+	  Add full loogger and doxygen support for GliderVarioDriverBase::SensorCapability
+
 	* src/kalman/GliderVarioStatus.cpp (operator <<): 
 	  Compile logger messagebuffer stream operator only when logger support is compiled in.
 	  

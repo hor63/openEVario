@@ -60,8 +60,12 @@ public:
 
     /// The list of sensor capabilities. Each one is a position in an integer.
     /// The capabilities are ORed into the capabilities of the driver in #sensorCapabilities.
-    //enum SensorCapability {
+#if defined DOXYGEN
+    enum SensorCapability {
+#else
     OEV_ENUM (SensorCapability,
+#endif
+
         GPS_LATITUDE = 0,
         GPS_LONGITUDE = 1,
         GPS_ALTITUDE_MSL = 2,
@@ -78,8 +82,11 @@ public:
         COMPASS_Z = 13,
         STATIC_PRESSURE = 14,
         DYNAMIC_PRESSURE = 15,
-     );
-//    };
+#if defined DOXYGEN
+	    };
+#else
+	);
+#endif
 
     /// Get the capabilities of the sensor defined in #sensorCapabilities.
     inline uint32_t getSensorCapabilities () {
@@ -120,7 +127,17 @@ protected:
 
 }
 
-OEV_DRIVER_PUBLIC std::ostream& operator << (std::ostream &o,openEV::GliderVarioDriverBase::SensorCapability ind);
+OEV_PUBLIC std::ostream& operator << (std::ostream &o,openEV::GliderVarioDriverBase::SensorCapability ind);
+
+
+#if defined HAVE_LOG4CXX_H
+OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioDriverBase::_SensorCapability e);
+#endif /* #if defined HAVE_LOG4CXX_H */
+
+inline openEV::GliderVarioDriverBase::_SensorCapability toString (openEV::GliderVarioDriverBase::SensorCapability i) {
+	openEV::GliderVarioDriverBase::_SensorCapability r = {i};
+	return r;
+}
 
 #endif /* GLIDERVARIODRIVERBASE_H_ */
 
