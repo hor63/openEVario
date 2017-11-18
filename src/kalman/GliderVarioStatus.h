@@ -134,8 +134,11 @@ public:
      *
      * Enumeration of the components of the Kalman status vector #statusVector_x
      */
+#if defined DOXYGEN
+    enum StatusComponentIndex {
+#else
 	OEV_ENUM(StatusComponentIndex,
-    // enum StatusComponentIndex {
+#endif
 
 		// constants (but may varying slightly
         STATUS_IND_GRAVITY      ,  ///< The gravity, initialized to #::GRAVITY
@@ -188,8 +191,11 @@ public:
         ///< last altitude update :)
 
         STATUS_NUM_ROWS				///< The number of rows in the vector. This is not a component of the vector!
+#if defined DOXYGEN
+	    };
+#else
 	);
-    //};
+#endif
 
     typedef Eigen::Matrix<FloatType,STATUS_NUM_ROWS,1> StatusVectorType; ///< Saves typing of the complex template type
     typedef Eigen::SparseMatrix<FloatType> StatusCoVarianceType; ///< Co-variance matrix type for P and Q
@@ -325,6 +331,10 @@ OEV_PUBLIC std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus
 OEV_PUBLIC std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus::StatusComponentIndex ind);
 
 OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioStatus::_StatusComponentIndex e);
+inline openEV::GliderVarioStatus::_StatusComponentIndex toString (openEV::GliderVarioStatus::StatusComponentIndex i) {
+	openEV::GliderVarioStatus::_StatusComponentIndex r = {i};
+	return r;
+}
 
 
 #endif /* GLIDERVARIOSTATUS_H_ */
