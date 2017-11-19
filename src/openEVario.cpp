@@ -74,7 +74,7 @@ mt19937 randomGenerator;
 FloatType x = 0;
 
 #define defaultConfigFileName "./openEvario.cfg"
-#define defaultLoggerConfigFileName "./openEvarioLog.cfg"
+#define defaultLoggerConfigFileName "./log4cxx.properties"
 
 static struct {
     string configFile       = defaultConfigFileName;
@@ -205,7 +205,7 @@ static void usage(std::ostream& outStr){
 "              -d                         Increase default logger level\n"
 "                                         (Silent-[Error]-Info-Debug)\n"
 "              -l loggerConfigFile        Name of logger configuration file\n"
-"                                         [./openEvarioLog.cfg]\n"
+"                                         [./log4cxx.properties]\n"
 "              -q, -s                     Shhhh. Be quiet. Suppress any logger output,\n"
 "                                         i.e. set logger level to Silent (see -d)\n"
 "              -?                         Give this help list\n"
@@ -320,11 +320,13 @@ int main (int argc, char *argv[]) {
 
 #if defined HAVE_LOG4CXX_H
     log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("openEV");
-    logger->setLevel(log4cxx::Level::getInfo());
-    log4cxx::BasicConfigurator::configure();
+    //logger->setLevel(log4cxx::Level::getInfo());
+    //log4cxx::BasicConfigurator::configure();
 #endif /* defined HAVE_LOG4CXX_H */
 
     LOG4CXX_INFO(logger,"GliderVarioStatus::STATUS_IND_ACC_HEADING is " << toString(GliderVarioStatus::STATUS_IND_ACC_HEADING));
+    LOG4CXX_INFO(logger,"GliderVarioMeasurementVector::MEASURE_IND_GPS_HEADING is " << toString(GliderVarioMeasurementVector::MEASURE_IND_GPS_HEADING));
+    LOG4CXX_INFO(logger,"GliderVarioDriverBase::GYRO_Y is " << toString(GliderVarioDriverBase::GYRO_Y));
 
     return rc;
 }
