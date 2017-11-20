@@ -339,5 +339,9 @@ inline openEV::GliderVarioStatus::_StatusComponentIndex toString (openEV::Glider
 	return r;
 }
 
+inline  std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus::_StatusComponentIndex e) {
+	return operator << (o,e.e);
+}
+
 
 #endif /* GLIDERVARIOSTATUS_H_ */

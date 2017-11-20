@@ -169,4 +169,9 @@ inline openEV::GliderVarioMeasurementVector::_MeasureComponentIndex toString (op
 	return r;
 }
 
+inline std::ostream& operator << (std::ostream &o, openEV::GliderVarioMeasurementVector::_MeasureComponentIndex e) {
+	return operator << (o,e.e);
+}
+
+
 #endif /* GLIDERVARIOMEASUREMENTVECTOR_H_ */

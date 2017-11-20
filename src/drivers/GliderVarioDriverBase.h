@@ -139,5 +139,9 @@ inline openEV::GliderVarioDriverBase::_SensorCapability toString (openEV::Glider
 	return r;
 }
 
+inline std::ostream& operator << (std::ostream &o, openEV::GliderVarioDriverBase::_SensorCapability e) {
+	return operator << (o,e.e);
+}
+
 #endif /* GLIDERVARIODRIVERBASE_H_ */
 
