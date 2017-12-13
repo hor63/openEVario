@@ -139,7 +139,7 @@ then
 		if test x"$i" != xnone
 		then
 			LDFLAGS="$LDGLAGS -L$i/lib"
-			CPPFLAGS="$CPPFLAGS -I$i/include"
+			CPPFLAGS="$CPPFLAGS -isystem $i/include"
 			AC_MSG_CHECKING([log4cxx header and library usability in $i])
 		else
 			AC_MSG_CHECKING([log4cxx header and library usability])
@@ -159,7 +159,7 @@ then
 		if test x"$i" != xnone
 		then
 			LOG4CXX_LDFLAGS=-L$i/lib
-			LOG4CXX_CXXFLAGS=-I$i/include
+			LOG4CXX_CXXFLAGS="-isystem $i/include"
 		fi
 		break
 		]
@@ -184,8 +184,8 @@ then
 		HAVE_LOG4CXX_H=1
 		
 		LOG4CXX_LIBS=-llog4cxx
-		LOG4CXX_LDFLAGS=-L\$\(top_builddir\)/3rdParty/apache/log4cxx/src/main/cpp
-		LOG4CXX_CXXFLAGS=-I\$\(top_srcdir\)/3rdParty/apache/log4cxx/src/main/include
+		LOG4CXX_LDFLAGS="-L\$(top_builddir)/3rdParty/apache/log4cxx/src/main/cpp"
+		LOG4CXX_CXXFLAGS="-isystem \$(abs_top_srcdir)/3rdParty/apache/log4cxx/src/main/include"
 		
 		AC_CONFIG_SUBDIRS([3rdParty/apache/apr 3rdParty/apache/apr-util 3rdParty/apache/log4cxx])
 		AC_SUBST([LOG4CXX_MAKE_SUBDIRS],["apr apr-util log4cxx"])
