@@ -66,6 +66,10 @@
 #include "drivers/GliderVarioDriverBase.h"
 #include "drivers/sensorDriver.h"
 
+#if HAVE_LOG4CXX_H == 1
+#	include "log4cxx/helpers/exception.h"
+#endif
+
 using namespace std;
 using namespace openEV;
 
@@ -73,14 +77,14 @@ mt19937 randomGenerator;
 
 FloatType x = 0;
 
-#define defaultConfigFileName "./openEvario.cfg"
-#define defaultLoggerConfigFileName "./log4cxx.properties"
+#define defaultConfigFileName "./openEVario.cfg"
+#define defaultLoggerConfigFileName "./openEVario.logger.properties"
 
 static struct {
     string configFile       = defaultConfigFileName;
     string loggerConfigFile = defaultLoggerConfigFileName;
     /// logger level can be
-    /// 0: Quiet. No outpout at all
+    /// 0: Quiet. No output at all
     /// 1: Errors are reported
     /// 2: Info. Major events and activities
     /// 3: Debug. Be really chatty
@@ -178,7 +182,7 @@ static void usage(std::ostream& outStr){
 "              -c, --configuration=configFileName\n"
 "                                         Name of the configuration file [" defaultConfigFileName "]\n"
 "              -d, --debug                Increase default logger level\n"
-"                                         ([Error]-Info-Debug)\n"
+"                                         (Silent-[Error]-Info-Debug)\n"
 "              -l, --logger-configuration=loggerConfigFile\n"
 "                                         Name of logger configuration file\n"
 "                                         [" defaultLoggerConfigFileName "]\n"
@@ -239,8 +243,6 @@ static int readOptions (int& argc, char*argv[]) {
     static struct argp arrgp = {options, parse_opt, 0, argpDoc};
 
     rc = argp_parse (&arrgp, argc, argv, 0, 0, 0);
-
-    std::cout << "argp_parse returned " << rc << std::endl;
 
 #else /* HAVE_ARGP_PARSE == 1 */
 
@@ -319,14 +321,41 @@ int main (int argc, char *argv[]) {
     rc = readOptions (argc,argv);
 
 #if defined HAVE_LOG4CXX_H
+
+	log4cxx::BasicConfigurator::configure();
+
     log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("openEV");
-    //logger->setLevel(log4cxx::Level::getInfo());
-    //log4cxx::BasicConfigurator::configure();
+
+    // Silent-[Error]-Info-Debug
+    switch (programOptions.defaultLoggerLevel) {
+
+    	case 0: // Silent. Fatal errors causing immediate termination are still reported.
+    	    logger->setLevel(log4cxx::Level::getFatal());
+    	    break;
+
+    	case 2:
+    	    logger->setLevel(log4cxx::Level::getInfo());
+    	    break;
+
+		case 3:
+			logger->setLevel(log4cxx::Level::getDebug());
+			break;
+
+		case 1:
+		default:
+			logger->setLevel(log4cxx::Level::getError());
+
+    }
+
+
+    // The configuration file (when I can load it) will overwrite the command line settings.
+    log4cxx::PropertyConfigurator::configure(log4cxx::File(programOptions.loggerConfigFile));
+
 #endif /* defined HAVE_LOG4CXX_H */
 
-    LOG4CXX_INFO(logger,"GliderVarioStatus::STATUS_IND_ACC_HEADING is " << toString(GliderVarioStatus::STATUS_IND_ACC_HEADING));
-    LOG4CXX_INFO(logger,"GliderVarioMeasurementVector::MEASURE_IND_GPS_HEADING is " << toString(GliderVarioMeasurementVector::MEASURE_IND_GPS_HEADING));
-    LOG4CXX_INFO(logger,"GliderVarioDriverBase::GYRO_Y is " << toString(GliderVarioDriverBase::GYRO_Y));
+    LOG4CXX_INFO(logger," = " << programOptions.configFile);
+    LOG4CXX_INFO(logger," = " << programOptions.defaultLoggerLevel);
+    LOG4CXX_INFO(logger," = " << programOptions.loggerConfigFile);
 
     return rc;
 }

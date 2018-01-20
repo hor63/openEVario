@@ -1,3 +1,12 @@
+2018-01-20  hor  <hor@horUbuntu>
+
+	* src/log4cxx.properties renamed to src/openEVario.logger.properties
+	* src/openEVario.cpp (usage): 
+	(readOptions): 
+	(main): 
+	  Configure logger with logger configuration file,
+	  or with command line options when no logger configuration file is present.
+	
 2017-11-18  hor  <hor@horUbuntu>
 
 	* src/drivers/GliderVarioDriverBase.h (GliderVarioDriverBase): 
