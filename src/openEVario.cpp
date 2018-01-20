@@ -57,6 +57,10 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 
+#if HAVE_CONFUSE_H == 1
+    #include <confuse.h>
+#endif
+
 #include "kalman/GliderVarioStatus.h"
 #include "kalman/GliderVarioTransitionMatrix.h"
 #include "util/RotationMatrix.h"

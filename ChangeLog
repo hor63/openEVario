@@ -1,3 +1,9 @@
+2018-01-21  hor  <hor@horUbuntu>
+
+	* src/drivers/GliderVarioDriverBase.h (GliderVarioDriverBase):
+	  Work on defining the abstract interface.
+	  Add methods for configuration, and abstract interface to allow driver subclassing.
+	 
 2018-01-20  hor  <hor@horUbuntu>
 
 	* src/log4cxx.properties renamed to src/openEVario.logger.properties

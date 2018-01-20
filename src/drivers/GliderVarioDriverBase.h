@@ -32,7 +32,11 @@
 
 #if HAVE_CONFUSE_H == 1
     #include <confuse.h>
+#else
+#	error Confuse configuration library is not available
 #endif
+
+#include <list>
 
 #include "OEVCommon.h"
 #include "kalman/GliderVarioStatus.h"
@@ -88,7 +92,10 @@ public:
 	);
 #endif
 
-    /// Get the capabilities of the sensor defined in #sensorCapabilities.
+    /**
+     * Get the capabilities of the sensor defined in #sensorCapabilities.
+     * @return capabilities as bit list. The bits are positions defined by #SensorCapability.
+     */
     inline uint32_t getSensorCapabilities () {
         return sensorCapabilities;
     }
@@ -108,8 +115,29 @@ public:
         sensorCapabilities &= ~(1UL<<capability);
     }
 
+    // start of the abstract interface which must be implemented by each driver.
+
+    /**
+     * Initialize the driver
+     */
     virtual void driverInit() = 0;
-    virtual void applyMeasurement (GliderVarioStatus& varioStatus,GliderVarioMeasurementUpdater& measurementVector) = 0;
+
+    /**
+     * Add list of options to be read from the configuration file for this driver.
+     * The configuration options added are being read from the configuration file, and being passed to this driver
+     * with #configureDriver.
+     * @param optionList List of options. Add options for your driver to this list with optionList.push_back
+     */
+    virtual void addConfigurationOptions(std::list<cfg_opt_t>&optionList) = 0;
+
+    /**
+     * Configure your driver with the configuration values which you added with #addConfigurationOptions.
+     * @param cfg
+     */
+    virtual void configureDriver (cfg_t* cfg) = 0;
+
+
+
 
 protected:
 
@@ -119,9 +147,20 @@ protected:
         this->sensorCapabilities = sensorCapabilities;
     }
 
-
     /// Bit list of capabilities. The bit positions are defined in the enum #SensorCapability.
     uint32_t sensorCapabilities;
+
+    // Abstract functions allowing sub-classing of the driver
+
+    /**
+     * Apply the measurements managed by this driver to the Kalman filter.
+     * Measurement values are to be applied by the static functions of class openEV::GliderVarioMeasurementUpdater
+     * @param varioStatus The current Kalman filter status.
+     * @param measurementVector The current measurement vector.
+     */
+    virtual void applyMeasurement (GliderVarioStatus& varioStatus,GliderVarioMeasurementUpdater& measurementVector) = 0;
+
+
 
 }; // class GliderVarioDriverBase
 
