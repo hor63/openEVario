@@ -132,7 +132,7 @@ public:
 
     /**
      * Configure your driver with the configuration values which you added with #addConfigurationOptions.
-     * @param cfg
+     * @param cfg Configurations variable list
      */
     virtual void configureDriver (cfg_t* cfg) = 0;
 
