@@ -11,7 +11,7 @@
 <option id="host" value=""/>
 <option id="build" value=""/>
 <option id="target" value=""/>
-<option id="prefix" value=""/>
+<option id="prefix" value="$HOME/local"/>
 <option id="exec-prefix" value=""/>
 <option id="libdir" value=""/>
 <option id="bindir" value=""/>

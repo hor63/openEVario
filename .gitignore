@@ -2,6 +2,8 @@
 #Local Eclipse stuff
 .settings
 
+build/
+
 #Backup files
 *~
 
