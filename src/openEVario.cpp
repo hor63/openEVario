@@ -81,7 +81,7 @@ mt19937 randomGenerator;
 
 FloatType x = 0;
 
-#define defaultConfigFileName "./openEVario.cfg"
+#define defaultConfigFileName "./openEVario.properties"
 #define defaultLoggerConfigFileName "./openEVario.logger.properties"
 
 static struct {
