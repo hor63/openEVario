@@ -17,15 +17,14 @@
 
 
  
-lib_LTLIBRARIES=libopenEVKalman.la
+lib_LTLIBRARIES=libopenEVMain.la
 
-libopenEVKalman_la_SOURCES=GliderVarioStatus.cpp GliderVarioTransitionMatrix.cpp MeasureMatrix.cpp \
- GliderVarioMeasurementVector.cpp GliderVarioMeasurementUpdater.cpp
+libopenEVMain_la_SOURCES=GliderVarioDriverBase.cpp 
  
-libopenEVKalman_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT) $(LOG4CXX_LDFLAGS)
-libopenEVKalman_la_LIBADD=../util/libopenEVUtil.la $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
+libopenEVMain_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT) $(LOG4CXX_LDFLAGS)
+libopenEVMain_la_LIBADD=../kalman/libopenEVKalman.la ../util/libopenEVUtil.la $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
 
-libopenEVKalman_la_CXXFLAGS=$(AM_CXXFLAGS) -DBUILDING_OEV_KALMAN=1 $(DLL_VISIBLE_CFLAGS)
+libopenEVMain_la_CXXFLAGS=$(AM_CXXFLAGS) -DBUILDING_OEV_KALMAN=1 $(DLL_VISIBLE_CFLAGS)
 
 AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen \
 	$(LOG4CXX_CXXFLAGS) \

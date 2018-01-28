@@ -227,6 +227,7 @@ AC_CONFIG_FILES(Makefile
 				3rdParty/apache/Makefile
                 src/util/Makefile
                 src/kalman/Makefile
+                src/main/Makefile
                 src/Makefile
                 src/drivers/simul/Makefile
                 test/src/Makefile)
