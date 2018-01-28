@@ -1,3 +1,14 @@
+2018-01-28  hor  <hor@horUbuntu>
+
+	* src/GliderVarioMain.h: New file.
+	* src/main/GliderVarioMain.cpp: New file.
+	* src/main/Makefile.am:
+	  Move main() functionality into class openEV::GliderVarioMain to encapsulate command line parsing and program management
+	  in the library libopenEVMain. This allows easy direct integration into external programs
+	
+	* src/openEVario.cpp 
+	  Cleanup and leave only the main function which will utilize the class openEV::GliderVarioMain to the the heavy lifting.
+	    
 2018-01-21  hor  <hor@horUbuntu>
 
 	* src/drivers/GliderVarioDriverBase.h (GliderVarioDriverBase):
