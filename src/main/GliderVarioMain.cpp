@@ -264,13 +264,13 @@ static int readOptions (int& argc, char*argv[]) {
 
              case ':':
                  if (argv[0]) {
-                     std::cerr << "Try `" << argv[0] << " --help' or `" << argv[0] << " --usage' for more information." << endl;
+                     std::cerr << "Try `" << argv[0] << " --help' or `" << argv[0] << " --usage' for more information." << std::endl;
                  }
                  break;
 
              default:
                  if (argv[0]) {
-                     std::cerr << argv[0] << ": getopt_long returned unexpected value" << key <<". Program aborting" << endl;
+                     std::cerr << argv[0] << ": getopt_long returned unexpected value" << key <<". Program aborting" << std::endl;
                  }
               exit(1);
              }
