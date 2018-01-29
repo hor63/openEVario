@@ -185,7 +185,7 @@ then
 		
 		LOG4CXX_LIBS=-llog4cxx
 		LOG4CXX_LDFLAGS="-L\$(top_builddir)/3rdParty/apache/log4cxx/src/main/cpp"
-		LOG4CXX_CXXFLAGS="-isystem \$(abs_top_srcdir)/3rdParty/apache/log4cxx/src/main/include"
+		LOG4CXX_CXXFLAGS="-isystem \$(top_builddir)/3rdParty/apache/log4cxx/src/main/include -isystem \$(top_srcdir)/3rdParty/apache/log4cxx/src/main/include"
 		
 		AC_CONFIG_SUBDIRS([3rdParty/apache/apr 3rdParty/apache/apr-util 3rdParty/apache/log4cxx])
 		AC_SUBST([LOG4CXX_MAKE_SUBDIRS],["apr apr-util log4cxx"])
