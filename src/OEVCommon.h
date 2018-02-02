@@ -116,6 +116,16 @@
   #define OEV_DRIVER_LOCAL  OV_DLL_LOCAL
 #endif /* BUILDING_OEV_UTILS */
 
+
+#if defined (BUILDING_OEV_MAIN)
+  #define OEV_MAIN_PUBLIC OV_DLL_EXPORT
+  #define OEV_MAIN_LOCAL  OV_DLL_LOCAL
+#else /* BUILDING_OEV_UTILS */
+  #define OEV_MAIN_PUBLIC OV_DLL_IMPORT
+  #define OEV_MAIN_LOCAL  OV_DLL_LOCAL
+#endif /* BUILDING_OEV_UTILS */
+
+
 namespace openEV {
 
 /**
@@ -153,7 +163,11 @@ namespace openEV {
  *
  *       enum xx {a=2, b=4, c=5}
  *
- * will return the right representation for values 2, 4, and 5. Any value n between will be printed as unknown value.
+ * can be re-written to
+ *
+ *       OEV_ENUM ( xx, a=2, b=4, c=5}
+ *
+ * will return the right representation for values 2, 4, and 5. Any value n between (here 3) will be printed as unknown value.
  *
  * It implements the enum foo with its members,
  * an output operator

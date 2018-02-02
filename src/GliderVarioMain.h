@@ -35,7 +35,7 @@ namespace openEV {
  * This class encapsulates the main program to make it as easz as possible to link openEV into another program.
  *
  */
-class GliderVarioMain {
+class OEV_MAIN_PUBLIC GliderVarioMain {
 public:
 
 	/** \brief Constructor accepting command line options compatible with main()
@@ -45,9 +45,11 @@ public:
 	 * argc und argv parameters of the main() function
 	 *
 	 * @param argc Number of command line arguments in argv
-	 * @param argv Array of strings with the command line options.
+	 * @param argv Array of strings with the command line options. The arguments list is copied into the object.
+	 *   The caller may free the list between this constructor and calling \ref startup().
+	 *   Changes of the caller's arguments list between this constructor and calling \ref startup() will have therefore no effect.
 	 */
-	GliderVarioMain(int argc, char const *argv[]);
+	GliderVarioMain(int argc, const char *argv[]);
 
 	/** \brief Destructor. Shutdown the program. Release resources.
 	 *
@@ -87,6 +89,11 @@ public:
 	 *
 	 */
 	void resumeMainLoop ();
+
+private:
+
+	int argc;
+	char **argv;
 
 };
 

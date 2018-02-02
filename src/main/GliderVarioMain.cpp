@@ -35,6 +35,7 @@
 #include <math.h>
 #include <time.h>
 #include <sys/time.h>
+#include <string.h>
 
 // One options library
 #if HAVE_ARGP_H == 1
@@ -294,7 +295,37 @@ static int readOptions (int& argc, char*argv[]) {
  * @param argv
  * @return Return code of the program. 0 means without error.
  */
-int main (int argc, char *argv[]) {
+namespace openEV {
+
+GliderVarioMain::GliderVarioMain(int argc, const char *argv[]) {
+
+	int i;
+
+	this->argc = argc;
+
+	this->argv = (char**) (malloc( sizeof(char*) *argc));
+
+	for (i=0;i < argc; i++) {
+		this->argv[i] = new char[strlen(argv[i])+1];
+		strcpy(this->argv[i],argv[i]);
+	}
+
+}
+
+GliderVarioMain::~GliderVarioMain() {
+
+	int i;
+
+	for (i=0;i < argc; i++) {
+		delete argv[i];
+	}
+
+	free (argv);
+
+
+}
+
+void GliderVarioMain::startup () {
     int rc = 0;
 
     rc = readOptions (argc,argv);
@@ -336,18 +367,7 @@ int main (int argc, char *argv[]) {
     LOG4CXX_INFO(logger," = " << programOptions.defaultLoggerLevel);
     LOG4CXX_INFO(logger," = " << programOptions.loggerConfigFile);
 
-    return rc;
-}
 
-namespace openEV {
-
-GliderVarioMain::GliderVarioMain(int argc, char const *argv[]) {
-	// TODO Auto-generated constructor stub
-
-}
-
-GliderVarioMain::~GliderVarioMain() {
-	// TODO Auto-generated destructor stub
 }
 
 } /* namespace openEV */

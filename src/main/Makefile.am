@@ -24,7 +24,7 @@ libopenEVMain_la_SOURCES=GliderVarioMain.cpp
 libopenEVMain_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT) $(LOG4CXX_LDFLAGS)
 libopenEVMain_la_LIBADD=../kalman/libopenEVKalman.la ../util/libopenEVUtil.la $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
 
-libopenEVMain_la_CXXFLAGS=$(AM_CXXFLAGS) -DBUILDING_OEV_KALMAN=1 $(DLL_VISIBLE_CFLAGS)
+libopenEVMain_la_CXXFLAGS=$(AM_CXXFLAGS) -DBUILDING_OEV_MAIN=1 $(DLL_VISIBLE_CFLAGS)
 
 AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen \
 	$(LOG4CXX_CXXFLAGS) \
