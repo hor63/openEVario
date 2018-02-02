@@ -50,7 +50,7 @@ namespace openEV {
  * The actual driver implementation is never exposed to the main program but hidden in the shared library which
  * implements the driver
  */
-class OEV_DRIVER_PUBLIC GliderVarioDriverBase {
+class OEV_UTILS_PUBLIC GliderVarioDriverBase {
 
 public:
 
@@ -166,11 +166,11 @@ protected:
 
 }
 
-OEV_PUBLIC std::ostream& operator << (std::ostream &o,openEV::GliderVarioDriverBase::SensorCapability ind);
+OEV_UTILS_PUBLIC std::ostream& operator << (std::ostream &o,openEV::GliderVarioDriverBase::SensorCapability ind);
 
 
 #if defined HAVE_LOG4CXX_H
-OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioDriverBase::_SensorCapability e);
+OEV_UTILS_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioDriverBase::_SensorCapability e);
 #endif /* #if defined HAVE_LOG4CXX_H */
 
 inline openEV::GliderVarioDriverBase::_SensorCapability toString (openEV::GliderVarioDriverBase::SensorCapability i) {
