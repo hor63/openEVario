@@ -275,7 +275,9 @@ static int readOptions (int& argc, char*argv[]) {
 
              default:
                  if (argv[0]) {
-                     std::cerr << argv[0] << ": getopt_long returned unexpected value" << key <<". Program aborting" << std::endl;
+                	 std::ostringstream errMsg;
+                	 errMsg << argv[0] << ": getopt_long returned unexpected value" << key <<". Program aborting";
+                	 throw openEV::GliderVarioExceptionBase(__FILE__,__LINE__,errMsg.str().c_str());
                  }
               exit(1);
              }
@@ -396,6 +398,7 @@ void GliderVarioMain::startup () {
 			LOG4CXX_DEBUG(logger,"argv[" << i << "] = \"" << argv[i] << "\"");
 		}
 	}
+
 
 
 }
