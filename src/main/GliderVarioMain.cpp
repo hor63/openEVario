@@ -55,6 +55,10 @@
 #	include <confuse.h>
 #endif
 
+#if defined HAVE_LOG4CXX_H
+log4cxx::LoggerPtr logger = 0;
+#endif
+
 #define defaultConfigFileName "./openEVario.properties"
 #define defaultLoggerConfigFileName "./openEVario.logger.properties"
 
@@ -297,17 +301,28 @@ static int readOptions (int& argc, char*argv[]) {
  */
 namespace openEV {
 
+
+
 GliderVarioMain::GliderVarioMain(int argc, const char *argv[]) {
 
 	int i;
 
+	if (!logger) {
+		logger = log4cxx::Logger::getLogger("openEV.Main.GliderVarioMain");
+	}
+
 	this->argc = argc;
 
-	this->argv = (char**) (malloc( sizeof(char*) *argc));
+	if (argc > 0) {
 
-	for (i=0;i < argc; i++) {
-		this->argv[i] = new char[strlen(argv[i])+1];
-		strcpy(this->argv[i],argv[i]);
+		this->argv = (char**) (malloc( sizeof(char*) * argc));
+
+		for (i=0;i < argc; i++) {
+			this->argv[i] = new char[strlen(argv[i])+1];
+			strcpy(this->argv[i],argv[i]);
+		}
+	} else {
+		this->argv = NULL;
 	}
 
 }
@@ -316,11 +331,13 @@ GliderVarioMain::~GliderVarioMain() {
 
 	int i;
 
-	for (i=0;i < argc; i++) {
-		delete argv[i];
-	}
+	if (argc > 0) {
+		for (i=0;i < argc; i++) {
+			delete argv[i];
+		}
 
-	free (argv);
+		free (argv);
+	}
 
 
 }
@@ -333,8 +350,6 @@ void GliderVarioMain::startup () {
 #if defined HAVE_LOG4CXX_H
 
 	log4cxx::BasicConfigurator::configure();
-
-    log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("openEV");
 
     // Silent-[Error]-Info-Debug
     switch (programOptions.defaultLoggerLevel) {
@@ -363,9 +378,24 @@ void GliderVarioMain::startup () {
 
 #endif /* defined HAVE_LOG4CXX_H */
 
-    LOG4CXX_INFO(logger," = " << programOptions.configFile);
-    LOG4CXX_INFO(logger," = " << programOptions.defaultLoggerLevel);
-    LOG4CXX_INFO(logger," = " << programOptions.loggerConfigFile);
+	std::cout << "logger->getName() " << logger->getName() << std::endl;
+	std::cout << "logger->getLevel() " << logger->getLevel() << std::endl;
+	std::cout << "logger->getParent()->getName() " << logger->getParent()->getName() << std::endl;
+	std::cout << "logger->getParent()->getLevel() " << logger->getParent()->getLevel() << std::endl;
+
+    LOG4CXX_INFO(logger,"programOptions.configFile = " << programOptions.configFile);
+    LOG4CXX_INFO(logger,"programOptions.defaultLoggerLevel = " << programOptions.defaultLoggerLevel);
+    LOG4CXX_INFO(logger,"programOptions.loggerConfigFile = " << programOptions.loggerConfigFile);
+
+	LOG4CXX_DEBUG(logger,"argc = " << argc);
+	if (argc > 0) {
+
+		int i;
+
+		for (i=0;i < argc; i++) {
+			LOG4CXX_DEBUG(logger,"argv[" << i << "] = \"" << argv[i] << "\"");
+		}
+	}
 
 
 }

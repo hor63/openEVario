@@ -29,24 +29,9 @@
 #  include <config.h>
 #endif
 
+#include "GliderVarioMain.h"
 
-#if HAVE_LOG4CXX_H == 1
-#	include "log4cxx/helpers/exception.h"
-#	include "log4cxx/logger.h"
-#	include "log4cxx/basicconfigurator.h"
-#endif
-
-namespace openEV {
-
-}
-
-
-using namespace std;
 using namespace openEV;
-
-
-
-
 
 /**
  * \brief The one and only main() function
@@ -56,15 +41,10 @@ using namespace openEV;
  * @return Return code of the program. 0 means without error.
  */
 int main (int argc, char *argv[]) {
-    int rc = 0;
+    GliderVarioMain oevMain (argc, (const char**)( argv));
 
-#if defined HAVE_LOG4CXX_H
+    oevMain.startup();
 
-	log4cxx::BasicConfigurator::configure();
+    // oevMain.runMainLoop();
 
-    log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("openEV");
-
-#endif /* defined HAVE_LOG4CXX_H */
-
-    return rc;
 }
