@@ -19,7 +19,7 @@
  
 lib_LTLIBRARIES=libopenEVMain.la
 
-libopenEVMain_la_SOURCES=GliderVarioMain.cpp
+libopenEVMain_la_SOURCES=GliderVarioMain.cpp GliderVarioDriverList.cpp
  
 libopenEVMain_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT) $(LOG4CXX_LDFLAGS)
 libopenEVMain_la_LIBADD=../kalman/libopenEVKalman.la ../util/libopenEVUtil.la $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
