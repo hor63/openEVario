@@ -7,7 +7,7 @@
  *  Base class of driver classes for OpenEVario
  *
  *   This file is part of openEVario, an electronic variometer for glider planes
- *   Copyright (C) 2016  Kai Horstmann
+ *   Copyright (C) 2017  Kai Horstmann
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 #define GLIDERVARIODRIVERBASE_H_
 
 #include <cstdint>
+#include <memory>
 
 #if HAVE_CONFUSE_H == 1
     #include <confuse.h>
@@ -37,6 +38,8 @@
 #endif
 
 #include <list>
+#include <memory>
+
 
 #include "OEVCommon.h"
 #include "kalman/GliderVarioStatus.h"
@@ -163,6 +166,9 @@ protected:
 
 
 }; // class GliderVarioDriverBase
+
+/// Define a shared pointer to the driver object which keeps a reference count
+typedef std::shared_ptr<openEV::GliderVarioDriverBase> GliderVarioDriverBasePtr;
 
 }
 

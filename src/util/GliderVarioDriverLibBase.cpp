@@ -1,11 +1,11 @@
 /*
- * sensorDriver.h
+ * GliderVarioDriverLibBase.cpp
  *
- *  Created on: Sep 29, 2017
+ *  Created on: Feb 6, 2018
  *      Author: hor
  *
  *   This file is part of openEVario, an electronic variometer for glider planes
- *   Copyright (C) 2017  Kai Horstmann
+ *   Copyright (C) 2018  Kai Horstmann
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -23,22 +23,12 @@
  *
  */
 
-#ifndef SENSORDRIVER_H_
-#define SENSORDRIVER_H_
+#include "drivers/GliderVarioDriverLibBase.h"
 
-#include "OEVCommon.h"
-#include "drivers/GliderVarioDriverBase.h"
+namespace openEV {
 
-
-extern "C" {
-/// Do whatever initialization is required
-int OEV_DRIVER_PUBLIC driverInit(void);
-
-
-/// Return a pointer to a driver object. The object must be created with the operator 'new'.
-openEV::GliderVarioDriverBasePtr OEV_DRIVER_PUBLIC getDriver();
-
-
+GliderVarioDriverLibBase::~GliderVarioDriverLibBase() {
+	// TODO Auto-generated destructor stub
 }
 
-#endif /* SENSORDRIVER_H_ */
+} /* namespace openEV */

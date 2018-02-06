@@ -5,7 +5,7 @@
  *      Author: hor
  *
  *   This file is part of openEVario, an electronic variometer for glider planes
- *   Copyright (C) 2016  Kai Horstmann
+ *   Copyright (C) 2018  Kai Horstmann
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -28,7 +28,10 @@
 
 #include <memory>
 #include <map>
+#include <string>
 
+#include "drivers/GliderVarioDriverLibBase.h"
+#include "drivers/GliderVarioDriverBase.h"
 
 namespace openEV {
 
@@ -49,9 +52,11 @@ public:
 
 protected:
 
+	std::map<std::string,GliderVarioDriverLibBasePtr> driverLibList;
+	std::map<std::string,GliderVarioDriverBasePtr> driverList;
+
+
 };
-
-
 
 
 
