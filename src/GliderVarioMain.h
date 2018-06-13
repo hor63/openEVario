@@ -33,7 +33,7 @@ namespace openEV {
 
 /** \brief Main class of the Open Electronic Vario (openEV)
  *
- * This class encapsulates the main program to make it as easz as possible to link openEV into another program.
+ * This class encapsulates the main program to make it as easy as possible to link openEV into another program.
  *
  */
 class OEV_MAIN_PUBLIC GliderVarioMain {
