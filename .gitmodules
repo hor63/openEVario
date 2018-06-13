@@ -10,3 +10,6 @@
 [submodule "3rdParty/apache/apr-util"]
 	path = 3rdParty/apache/apr-util
 	url = https://github.com/hor63/apr-util.git
+[submodule "3rdParty/eigen"]
+	path = 3rdParty/eigen
+	url = https://github.com/hor63/eigen-git-mirror.git
