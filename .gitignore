@@ -23,6 +23,7 @@ depcomp
 install-sh
 ltmain.sh
 missing
+ylwrap
 
 #Generated stuff by configure and make
 Makefile
