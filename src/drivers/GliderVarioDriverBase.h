@@ -31,11 +31,7 @@
 #include <cstdint>
 #include <memory>
 
-#if HAVE_CONFUSE_H == 1
-    #include <confuse.h>
-#else
-#	error Confuse configuration library is not available
-#endif
+#include "Properties4CXX/Properties.h"
 
 #include <list>
 #include <memory>
@@ -124,22 +120,6 @@ public:
      * Initialize the driver
      */
     virtual void driverInit() = 0;
-
-    /**
-     * Add list of options to be read from the configuration file for this driver.
-     * The configuration options added are being read from the configuration file, and being passed to this driver
-     * with #configureDriver.
-     * @param optionList List of options. Add options for your driver to this list with optionList.push_back
-     */
-    virtual void addConfigurationOptions(std::list<cfg_opt_t>&optionList) = 0;
-
-    /**
-     * Configure your driver with the configuration values which you added with #addConfigurationOptions.
-     * @param cfg Configurations variable list
-     */
-    virtual void configureDriver (cfg_t* cfg) = 0;
-
-
 
 
 protected:

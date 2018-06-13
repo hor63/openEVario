@@ -50,9 +50,6 @@ AC_SUBST([LIBTOOL_DEPS])
 
 AC_LANG([C++])
 
-AC_CHECK_HEADER([confuse.h],[AC_DEFINE([HAVE_CONFUSE_H],[1],[Define to 1 if you have the <confuse.h> header file.])],[])
-AC_SEARCH_LIBS([cfg_init],[confuse],[],[  AC_MSG_ERROR([Cannot find function cfg_init in libconfuse])])
-
 AC_CHECK_HEADER([linux/i2c-dev.h],[AC_DEFINE([HAVE_I2C_DEV_H],[1],[Define to 1 if you have the <linux/i2c-dev.h> header file.])],[])
 AC_CHECK_HEADER([linux/i2c.h],[AC_DEFINE([HAVE_I2C_H],[1],[Define to 1 if you have the <linux/i2c.h> header file.])],[])
 
@@ -215,6 +212,10 @@ AC_SUBST([LOG4CXX_LIBS])
 AC_SUBST([LOG4CXX_LDFLAGS])
 AC_SUBST([LOG4CXX_CXXFLAGS])
 
+AC_CONFIG_SUBDIRS([3rdParty/Properties4CXX])
+CPPFLAGS="$CPPFLAGS -I\$(top_srcdir)/3rdParty/Properties4CXX/include"
+LDFLAGS="$LDFLAGS -L\$(top_builddir)/3rdParty/Properties4CXX/src -lProperties4CXX"
+
 
 DX_DOXYGEN_FEATURE(ON)
 DX_DOT_FEATURE(ON)
@@ -225,6 +226,7 @@ DX_INIT_DOXYGEN(openEVario, $(srcdir)/doxygen.cfg, doc/doxygen)
 
 AC_CONFIG_FILES(Makefile
 				3rdParty/apache/Makefile
+				3rdParty/Properties4CXX/Makefile
                 src/util/Makefile
                 src/kalman/Makefile
                 src/main/Makefile
