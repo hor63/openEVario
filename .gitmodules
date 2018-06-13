@@ -13,3 +13,6 @@
 [submodule "3rdParty/eigen"]
 	path = 3rdParty/eigen
 	url = https://github.com/hor63/eigen-git-mirror.git
+[submodule "3rdParty/Properties4CXX"]
+	path = 3rdParty/Properties4CXX
+	url = https://github.com/hor63/Properties4CXX.git
