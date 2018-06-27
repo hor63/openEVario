@@ -29,3 +29,8 @@ AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen $(LOG4CXX_CXXFL
 
 AM_LDFLAGS=$(LOG4CXX_LDFLAGS)
 
+all: $(abs_builddir)/openEVario.properties
+
+$(abs_builddir)/openEVario.properties: $(srcdir)/openEVario.properties
+	cp $(srcdir)/openEVario.properties $(abs_builddir)/openEVario.properties
+

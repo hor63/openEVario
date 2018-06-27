@@ -1,11 +1,11 @@
 /*
- * GliderVarioMain.h
+ * GliderVarioMainPriv.h
  *
- *  Created on: Jan 28, 2018
+ *  Created on: Jun 15, 2018
  *      Author: hor
  *
  *   This file is part of openEVario, an electronic variometer for glider planes
- *   Copyright (C) 2016  Kai Horstmann
+ *   Copyright (C) 2018  Kai Horstmann
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -23,24 +23,40 @@
  *
  */
 
-#ifndef MAIN_GLIDERVARIOMAIN_H_
-#define MAIN_GLIDERVARIOMAIN_H_
+#ifndef MAIN_GLIDERVARIOMAINPRIV_H_
+#define MAIN_GLIDERVARIOMAINPRIV_H_
 
 #include "OEVCommon.h"
 #include "util/GliderVarioExceptionBase.h"
 
+#include "Properties4CXX/Properties.h"
+
+#define defaultConfigFileName "./openEVario.properties"
+#define defaultLoggerConfigFileName "./openEVario.logger.properties"
+
+
 namespace openEV {
 
-// Class prototype of the internal main class
-class GliderVarioMainPriv;
-
-/** \brief Main class of the Open Electronic Vario (openEV)
+/** \brief Internal main class of the openEVario which implements the functions and holds the variables of openEVario
  *
- * This class encapsulates the main program to make it as easy as possible to link openEV into another program.
+ *  \ref GliderVarioMain is a shell class which implements the interface to the outside world but does not expose any internal information to
+ *  the outside world. All that is in this class here.
  *
  */
-class OEV_MAIN_PUBLIC GliderVarioMain {
+class GliderVarioMainPriv {
 public:
+
+	struct ProgramOptions{
+	    std::string configFile       = defaultConfigFileName;
+	    std::string loggerConfigFile = defaultLoggerConfigFileName;
+	    /// logger level can be
+	    /// 0: Quiet. No output at all
+	    /// 1: Errors are reported
+	    /// 2: Info. Major events and activities
+	    /// 3: Debug. Be really chatty
+	    int defaultLoggerLevel = 2; // Default level info.
+	} ;
+
 
 	/** \brief Constructor accepting command line options compatible with main()
 	 *
@@ -53,7 +69,7 @@ public:
 	 *   The caller may free the list between this constructor and calling \ref startup().
 	 *   Changes of the caller's arguments list between this constructor and calling \ref startup() will have therefore no effect.
 	 */
-	GliderVarioMain(int argc, const char *argv[]);
+	GliderVarioMainPriv(int argc, const char *argv[]);
 
 	/** \brief Destructor. Shutdown the program. Release resources.
 	 *
@@ -64,7 +80,7 @@ public:
 	 * - Release all allocated memory
 	 *
 	 */
-	virtual ~GliderVarioMain();
+	virtual ~GliderVarioMainPriv();
 
 	/** \brief Initialize and startup the program
 	 *
@@ -94,13 +110,32 @@ public:
 	 */
 	void resumeMainLoop ();
 
+	ProgramOptions const &getProgramOptions() const {
+		return programOptions;
+	}
+
 private:
 
-	/// Pointer to the internal complementary object which does the actual work
-	GliderVarioMainPriv *priv;
+	int argc;
+	char **argv;
+
+	ProgramOptions programOptions;
+
+	Properties4CXX::Properties configuration;
+
+
+
+	/** \brief Open the driver libraries and initialize them
+	 *
+	 * Tries to open the drivers as shared libraries.
+	 *
+	 * The list of driver libs is in the configuration variable "driverSharedLibs".
+	 *
+	 */
+	void readDriverLibs();
 
 };
 
 } /* namespace openEV */
 
-#endif /* MAIN_GLIDERVARIOMAIN_H_ */
+#endif /* MAIN_GLIDERVARIOMAINPRIV_H_ */
