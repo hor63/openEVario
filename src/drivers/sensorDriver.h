@@ -31,11 +31,18 @@
 
 
 extern "C" {
-/// Do whatever initialization is required
-int OEV_DRIVER_PUBLIC driverInit(void);
+/** \brief Do whatever initialization is required
+ *
+ * This function must tolerate to be called multiple times without adverse effects.
+ *
+ */
+void OEV_DRIVER_PUBLIC driverInit(void);
 
 
-/// Return a pointer to a driver object. The object must be created with the operator 'new'.
+/** \brief Return a pointer to a driver object. The object must be created with the operator 'new'.
+ *
+ * @return Pointer to the driver object
+ */
 openEV::GliderVarioDriverBasePtr OEV_DRIVER_PUBLIC getDriver();
 
 
