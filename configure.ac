@@ -226,7 +226,6 @@ DX_INIT_DOXYGEN(openEVario, $(srcdir)/doxygen.cfg, doc/doxygen)
 
 AC_CONFIG_FILES(Makefile
 				3rdParty/apache/Makefile
-				3rdParty/Properties4CXX/Makefile
                 src/util/Makefile
                 src/kalman/Makefile
                 src/main/Makefile
