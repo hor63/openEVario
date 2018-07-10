@@ -33,6 +33,6 @@
 
 using namespace openEV;
 
-int driverInit(void) {
-    return 0;
+void driverInit(void) {
+    ;
 }
