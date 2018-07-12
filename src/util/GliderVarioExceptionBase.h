@@ -83,6 +83,29 @@ protected:
 	std::string whatString;
 };
 
+class OEV_UTILS_PUBLIC GliderVarioFatalConfigException :public GliderVarioExceptionBase {
+public:
+	GliderVarioFatalConfigException (
+			char const *source,
+			int line,
+			char const *description)
+		:GliderVarioExceptionBase {source,line,description}
+	{}
+
+};
+
+class OEV_UTILS_PUBLIC GliderVarioDriverLoadException :public GliderVarioExceptionBase {
+public:
+	GliderVarioDriverLoadException (
+			char const *source,
+			int line,
+			char const *description)
+		:GliderVarioExceptionBase {source,line,description}
+	{}
+
+};
+
+
 
 
 } /* namespace openEV */

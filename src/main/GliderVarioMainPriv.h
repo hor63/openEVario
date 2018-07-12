@@ -28,6 +28,7 @@
 
 #include "OEVCommon.h"
 #include "util/GliderVarioExceptionBase.h"
+#include "main/GliderVarioDriverList.h"
 
 #include "Properties4CXX/Properties.h"
 
@@ -55,6 +56,7 @@ public:
 	    /// 2: Info. Major events and activities
 	    /// 3: Debug. Be really chatty
 	    int defaultLoggerLevel = 2; // Default level info.
+	    bool terminateOnDriverLoadError = true;
 	} ;
 
 
@@ -123,6 +125,7 @@ private:
 
 	Properties4CXX::Properties configuration;
 
+	GliderVarioDriverList driverList;
 
 
 	/** \brief Open the driver libraries and initialize them
@@ -133,6 +136,22 @@ private:
 	 *
 	 */
 	void readDriverLibs();
+
+	/** \brief Load the drivers defined in the configuration.
+	 *
+	 * Iterate over the list of driver libs "driverSharedLibs" in the \ref configuration.
+	 * Call \ref loadDriver() for each lib name.
+	 *
+	 */
+	void loadDrivers();
+
+	/** \brief Load a driver shared library.
+	 *
+	 * Load the driver libs and add them to \ref driverList.
+	 * Let the libs add their driver implementations to \ref driverList.
+	 *
+	 */
+	void loadDriver(char const *driverLibName);
 
 };
 

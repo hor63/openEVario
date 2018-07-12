@@ -27,10 +27,13 @@
 #  include <config.h>
 #endif
 
+#include <dlfcn.h>
+
 #include <GliderVarioMain.h>
 #include <main/GliderVarioMainPriv.h>
 
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <math.h>
 #include <time.h>
@@ -384,7 +387,114 @@ void GliderVarioMainPriv::startup () {
 	configuration.setFileName(programOptions.configFile);
 	configuration.readConfiguration();
 
+	Properties4CXX::Property const* prop = configuration.searchProperty("terminateOnDriverLoadError");
+	if (prop && prop->isBool()) {
+		programOptions.terminateOnDriverLoadError = prop->getBoolValue();
+	}
 
+	loadDrivers();
+
+}
+
+void GliderVarioMainPriv::loadDrivers() {
+
+	// get the driver lib list from the configuration
+	Properties4CXX::Property const * driverLibNames = configuration.searchProperty ("driverSharedLibs");
+
+
+
+	if (!driverLibNames) {
+		throw GliderVarioFatalConfigException(__FILE__,__LINE__,
+				"Configuration does not contain variable \"driverSharedLibs\"" );
+	}
+
+	if (driverLibNames->isString()) {
+		// If this single driver load fails I cannot ignore a load failure.
+		// Therefore an exception will fall through.
+		loadDriver(driverLibNames->getStrValue());
+	} else {
+		if (driverLibNames->isList()) {
+			Properties4CXX::PropertyValueList const & nameList = driverLibNames->getPropertyValueList();
+			auto nameIter = nameList.cbegin();
+
+			while (nameIter != nameList.cend()) {
+
+				// If necessary swallow an exception here and carry on loading drivers.
+				try {
+					loadDriver(nameIter->c_str());
+				} catch (GliderVarioDriverLoadException& e) {
+					if (programOptions.terminateOnDriverLoadError) {
+						throw;
+					}
+				}
+
+				nameIter++;
+			}
+		} else {
+			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"Configuration variable \"driverSharedLibs\" is neither a string nor a string list");
+		}
+	}
+
+
+}
+
+void GliderVarioMainPriv::loadDriver(const char* driverLibName) {
+
+
+	void *libHandle = dlopen(driverLibName,RTLD_NOW);
+	char const* errStr = NULL;
+	void (*driverInit)(void);
+	GliderVarioDriverBasePtr  (*getDriver)();
+
+
+	LOG4CXX_DEBUG(logger,"dlopen for DLL \"" << driverLibName << "\" returns " << libHandle);
+
+	if (!libHandle) {
+		std::ostringstream os;
+		os << "Error loading shared library \"" << driverLibName << "\": " << dlerror();
+
+		LOG4CXX_ERROR(logger,os.str());
+		throw GliderVarioDriverLoadException(__FILE__,__LINE__,os.str().c_str());
+
+	}
+
+	char const* symName = "driverInit";
+	void * sym = dlsym(libHandle,symName);
+	errStr = dlerror();
+	if (errStr) {
+		std::ostringstream os;
+		os << "Error loading symbol \"" << symName << "\" from library \""<< driverLibName << "\"";
+
+		LOG4CXX_ERROR(logger,os.str());
+
+		dlclose(libHandle);
+
+		throw GliderVarioDriverLoadException(__FILE__,__LINE__,os.str().c_str());
+
+	}
+
+	driverInit = (void (*)(void))(sym);
+
+
+	symName = "getDriver";
+	sym = dlsym(libHandle,symName);
+	errStr = dlerror();
+	if (errStr) {
+		std::ostringstream os;
+		os << "Error loading symbol \"" << symName << "\" from library \""<< driverLibName << "\"";
+
+		LOG4CXX_ERROR(logger,os.str());
+
+		dlclose(libHandle);
+
+		throw GliderVarioDriverLoadException(__FILE__,__LINE__,os.str().c_str());
+
+	}
+
+	getDriver = (GliderVarioDriverBasePtr (*)()) (sym);
+
+	driverInit();
+	getDriver();
 
 }
 
