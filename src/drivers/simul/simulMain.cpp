@@ -30,9 +30,45 @@
 
 #include "kalman/GliderVarioStatus.h"
 #include "simulDriver.h"
+#include "drivers/sensorDriver.h"
 
 using namespace openEV;
 
-void driverInit(void) {
-    ;
+static log4cxx::LoggerPtr logger = 0;
+
+static void initLogger() {
+	if (!logger) {
+		logger = log4cxx::Logger::getLogger("openEV.Drivers.Simul");
+	}
+}
+
+extern "C" {
+/** \brief Do whatever initialization is required
+ *
+ * This function must tolerate to be called multiple times without adverse effects.
+ *
+ */
+void OEV_DRIVER_PUBLIC driverInit(void) {
+
+	initLogger();
+
+	LOG4CXX_INFO(logger,"Initialize the simulation driver");
+
+}
+
+
+/** \brief Return a pointer to a driver object. The object must be created with the operator 'new'.
+ *
+ * @return Pointer to the driver object
+ */
+openEV::GliderVarioDriverBasePtr OEV_DRIVER_PUBLIC getDriver() {
+
+	initLogger();
+
+	LOG4CXX_INFO(logger,"getDriver");
+
+	return 0;
+}
+
+
 }
