@@ -30,6 +30,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <string>
 
 #include "Properties4CXX/Properties.h"
 
@@ -53,8 +54,15 @@ class OEV_UTILS_PUBLIC GliderVarioDriverBase {
 
 public:
 
-    GliderVarioDriverBase ()
-    : sensorCapabilities {0}
+    GliderVarioDriverBase (
+    	    char const *driverName,
+			char const *description,
+			char const *instanceName
+			)
+    : sensorCapabilities {0},
+	  driverName {driverName},
+	  description {description},
+	  instanceName {instanceName}
     {
         ;
     }
@@ -121,6 +129,16 @@ public:
      */
     virtual void driverInit() = 0;
 
+    char const * getDriverName () const {
+    	return driverName.c_str();
+    }
+    char const * getDescription () const {
+    	return description.c_str();
+    }
+    char const * getInstanceName () const {
+    	return instanceName.c_str();
+    }
+
 
 protected:
 
@@ -132,6 +150,10 @@ protected:
 
     /// Bit list of capabilities. The bit positions are defined in the enum #SensorCapability.
     uint32_t sensorCapabilities;
+
+    std::string driverName;
+    std::string description;
+    std::string instanceName;
 
     // Abstract functions allowing sub-classing of the driver
 

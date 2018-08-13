@@ -36,7 +36,10 @@
 namespace openEV {
 
 /// Function pointer type to create a new driver instance
-typedef GliderVarioDriverBase* (*GetNewDriverInstance) (char const *instanceName);
+typedef GliderVarioDriverBase* (*GetNewDriverInstance) (
+	    char const *driverName,
+		char const *description,
+		char const *instanceName);
 
 typedef struct {
 	std::string driverName;
@@ -77,7 +80,10 @@ public:
 			return 0;
 		}
 		else {
-			return it->second.getNewDriverInstance(instanceName);
+			return it->second.getNewDriverInstance(
+					it->second.driverName.c_str(),
+					it->second.description.c_str(),
+					instanceName);
 		}
 	}
 
