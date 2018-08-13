@@ -26,11 +26,25 @@
 #ifndef DRIVERS_GLIDERVARIODriverLIBBASE_H_
 #define DRIVERS_GLIDERVARIODriverLIBBASE_H_
 
-#include <memory>
+#include <map>
+#include <string>
 
 #include "OEVCommon.h"
 
+#include "GliderVarioDriverBase.h"
+
 namespace openEV {
+
+/// Function pointer type to create a new driver instance
+typedef GliderVarioDriverBase* (*GetNewDriverInstance) (char const *instanceName);
+
+typedef struct {
+	std::string driverName;
+	std::string description;
+	GetNewDriverInstance getNewDriverInstance;
+} DriverListItem;
+
+typedef std::map<std::string,DriverListItem> TDriverList;
 
 /** \brief Driver library base class.
  *
@@ -41,14 +55,47 @@ namespace openEV {
  */
 class OEV_UTILS_PUBLIC GliderVarioDriverLibBase {
 public:
+
+	/** \brief Return the iterator through the list of available drivers from this library
+	 *
+	 * @return Iterator pointing to the begin of the list of available drivers
+	 */
+	TDriverList::const_iterator getCBegin() {
+		return driverList.cbegin();
+	}
+
+	/** \brief Return a driver instance
+	 *
+	 * @param driverName
+	 * @param instanceName
+	 * @return
+	 */
+	GliderVarioDriverBase* getNewDriverInstance(std::string &driverName,char const *instanceName) {
+		auto it = driverList.find(driverName);
+
+		if (it == driverList.end()) {
+			return 0;
+		}
+		else {
+			return it->second.getNewDriverInstance(instanceName);
+		}
+	}
+
+protected:
 	GliderVarioDriverLibBase() {
-		// TODO Auto-generated constructor stub
 
 	}
 	virtual ~GliderVarioDriverLibBase();
+
+	/** \brief Driver list of this library
+	 * The driver list consists of a pair with the driver name (key) and description (mapped value).
+	 */
+	TDriverList driverList;
+
+
 };
 
-typedef std::shared_ptr<GliderVarioDriverLibBase> GliderVarioDriverLibBasePtr;
+typedef GliderVarioDriverLibBase* GliderVarioDriverLibBasePtr;
 
 } /* namespace openEV */
 

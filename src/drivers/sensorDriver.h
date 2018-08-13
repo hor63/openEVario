@@ -39,11 +39,11 @@ extern "C" {
 void OEV_DRIVER_PUBLIC driverInit(void);
 
 
-/** \brief Return a pointer to a driver object. The object must be created with the operator 'new'.
+/** \brief Return a pointer to a driver library. The object is static in the respective driver library, and must never be deleted by the caller.
  *
- * @return Pointer to the driver object
+ * @return Pointer to the driver library object
  */
-openEV::GliderVarioDriverBasePtr OEV_DRIVER_PUBLIC getDriver();
+openEV::GliderVarioDriverBasePtr OEV_DRIVER_PUBLIC getDriverLib();
 
 
 }
