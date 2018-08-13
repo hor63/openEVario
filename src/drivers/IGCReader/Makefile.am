@@ -15,25 +15,19 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-SUBDIRS=util kalman drivers/simul drivers/IGCReader main
-	
 
-bin_PROGRAMS=openEVario$(EXEEXT)
+lib_LTLIBRARIES = libopenEVIGCReader.la
 
-openEVario_SOURCES=openEVario.cpp 
+libopenEVIGCReader_la_SOURCES=IGCReaderMain.cpp
  
-openEVario_LDADD=main/libopenEVMain.la kalman/libopenEVKalman.la util/libopenEVUtil.la $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
+libopenEVIGCReader_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT) $(LOG4CXX_LDFLAGS)
+libopenEVIGCReader_la_LIBADD = $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
 
-AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen $(LOG4CXX_CXXFLAGS) \
-	$(PTHREAD_CFLAGS)
+AM_CXXFLAGS = -I../../.. -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen \
+	$(LOG4CXX_CXXFLAGS) \
+	$(PTHREAD_CFLAGS) \
+	$(DLL_VISIBLE_CFLAGS)
+	
+libopenEVIGCReader_la_CXXFLAGS=$(AM_CXXFLAGS) -DBUILDING_OEV_DRIVER=1
 
-AM_LDFLAGS=$(LOG4CXX_LDFLAGS)
-
-all: $(abs_builddir)/openEVario.properties $(abs_builddir)/openEVario.logger.properties
-
-$(abs_builddir)/openEVario.properties: $(srcdir)/openEVario.properties
-	cp $(srcdir)/openEVario.properties $(abs_builddir)/openEVario.properties
-
-$(abs_builddir)/openEVario.logger.properties: $(srcdir)/openEVario.logger.properties
-	cp $(srcdir)/openEVario.logger.properties $(abs_builddir)/openEVario.logger.properties
-
+	

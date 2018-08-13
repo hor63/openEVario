@@ -231,6 +231,7 @@ AC_CONFIG_FILES(Makefile
                 src/main/Makefile
                 src/Makefile
                 src/drivers/simul/Makefile
+                src/drivers/IGCReader/Makefile
                 test/src/Makefile)
 
 AC_OUTPUT
