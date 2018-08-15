@@ -1,12 +1,11 @@
-/* Simulation driver main module
+/*
+ * IGCReaderMain.cpp
  *
- * simulMain.cpp
- *
- *  Created on: Sep 24, 2017
- *      Author: hor
+ *  Created on: Aug 15, 2018
+ *      Author: kai_horstmann
  *
  *   This file is part of openEVario, an electronic variometer for glider planes
- *   Copyright (C) 2017  Kai Horstmann
+ *   Copyright (C) 2018  Kai Horstmann
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -38,34 +37,26 @@ static log4cxx::LoggerPtr logger = 0;
 
 static void initLogger() {
 	if (!logger) {
-		logger = log4cxx::Logger::getLogger("openEV.Drivers.Simul");
+		logger = log4cxx::Logger::getLogger("openEV.Drivers.IGCReader");
 	}
 }
 
 extern "C" {
-/** \brief Do whatever initialization is required
- *
- * This function must tolerate to be called multiple times without adverse effects.
- *
- */
+
 void OEV_DRIVER_PUBLIC driverInit(void) {
 
 	initLogger();
 
-	LOG4CXX_INFO(logger,"Initialize the simulation driver");
+	LOG4CXX_INFO(logger,"Initialize the IGCReader driver library");
 
 }
 
 
-/** \brief Return a pointer to a driver object. The object must be created with the operator 'new'.
- *
- * @return Pointer to the driver object
- */
-openEV::GliderVarioDriverBasePtr OEV_DRIVER_PUBLIC getDriver() {
+openEV::GliderVarioDriverLibBasePtr OEV_DRIVER_PUBLIC getDriverLib() {
 
 	initLogger();
 
-	LOG4CXX_INFO(logger,"getDriver");
+	LOG4CXX_INFO(logger,"getDriverLib");
 
 	return 0;
 }

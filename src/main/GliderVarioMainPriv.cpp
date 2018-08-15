@@ -444,7 +444,7 @@ void GliderVarioMainPriv::loadDriver(const char* driverLibName) {
 	void *libHandle = dlopen(driverLibName,RTLD_NOW);
 	char const* errStr = NULL;
 	void (*driverInit)(void);
-	GliderVarioDriverBasePtr  (*getDriver)();
+	GliderVarioDriverLibBasePtr  (*getDriverLib)();
 
 
 	LOG4CXX_DEBUG(logger,"dlopen for DLL \"" << driverLibName << "\" returns " << libHandle);
@@ -476,7 +476,7 @@ void GliderVarioMainPriv::loadDriver(const char* driverLibName) {
 	driverInit = (void (*)(void))(sym);
 
 
-	symName = "getDriver";
+	symName = "getDriverLib";
 	sym = dlsym(libHandle,symName);
 	errStr = dlerror();
 	if (errStr) {
@@ -491,10 +491,10 @@ void GliderVarioMainPriv::loadDriver(const char* driverLibName) {
 
 	}
 
-	getDriver = (GliderVarioDriverBasePtr (*)()) (sym);
+	getDriverLib = (GliderVarioDriverLibBasePtr (*)()) (sym);
 
 	driverInit();
-	getDriver();
+	getDriverLib();
 
 }
 

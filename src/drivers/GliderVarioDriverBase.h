@@ -122,13 +122,6 @@ public:
         sensorCapabilities &= ~(1UL<<capability);
     }
 
-    // start of the abstract interface which must be implemented by each driver.
-
-    /**
-     * Initialize the driver
-     */
-    virtual void driverInit() = 0;
-
     char const * getDriverName () const {
     	return driverName.c_str();
     }
@@ -138,6 +131,13 @@ public:
     char const * getInstanceName () const {
     	return instanceName.c_str();
     }
+
+    // start of the abstract interface which must be implemented by each driver.
+
+    /**
+     * Initialize the driver
+     */
+    virtual void driverInit() = 0;
 
 
 protected:
@@ -156,14 +156,6 @@ protected:
     std::string instanceName;
 
     // Abstract functions allowing sub-classing of the driver
-
-    /**
-     * Apply the measurements managed by this driver to the Kalman filter.
-     * Measurement values are to be applied by the static functions of class openEV::GliderVarioMeasurementUpdater
-     * @param varioStatus The current Kalman filter status.
-     * @param measurementVector The current measurement vector.
-     */
-    virtual void applyMeasurement (GliderVarioStatus& varioStatus,GliderVarioMeasurementUpdater& measurementVector) = 0;
 
 
 

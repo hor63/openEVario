@@ -73,7 +73,7 @@ public:
 	 * @param instanceName
 	 * @return
 	 */
-	GliderVarioDriverBase* getNewDriverInstance(std::string &driverName,char const *instanceName) {
+	GliderVarioDriverBase* getNewDriverInstance(std::string const &driverName,char const *instanceName) {
 		auto it = driverList.find(driverName);
 
 		if (it == driverList.end()) {
@@ -87,8 +87,22 @@ public:
 		}
 	}
 
+	char const *getLibName () const {
+		return libName.c_str();
+	}
+
+	char const *getDescription () const {
+		return description.c_str();
+	}
+
+
 protected:
-	GliderVarioDriverLibBase() {
+	GliderVarioDriverLibBase(
+			char const * libName,
+			char const * description)
+	: libName {libName},
+	  description {description}
+	{
 
 	}
 	virtual ~GliderVarioDriverLibBase();
@@ -97,6 +111,9 @@ protected:
 	 * The driver list consists of a pair with the driver name (key) and description (mapped value).
 	 */
 	TDriverList driverList;
+
+	std::string libName;
+	std::string description;
 
 
 };

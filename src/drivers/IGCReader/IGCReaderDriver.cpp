@@ -1,12 +1,11 @@
-/* Simulation driver main module
+/*
+ * IGCReaderDriver.cpp
  *
- * simulMain.cpp
- *
- *  Created on: Sep 24, 2017
- *      Author: hor
+ *  Created on: Aug 15, 2018
+ *      Author: kai_horstmann
  *
  *   This file is part of openEVario, an electronic variometer for glider planes
- *   Copyright (C) 2017  Kai Horstmann
+ *   Copyright (C) 2018  Kai Horstmann
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -28,38 +27,13 @@
 #  include <config.h>
 #endif
 
-#include "kalman/GliderVarioStatus.h"
-#include "simulDriver.h"
-#include "drivers/sensorDriver.h"
 
-using namespace openEV;
+#include "IGCReaderDriver.h"
 
-static log4cxx::LoggerPtr logger = 0;
+namespace OevGLES {
 
-static void initLogger() {
-	if (!logger) {
-		logger = log4cxx::Logger::getLogger("openEV.Drivers.Simul");
-	}
+IGCReaderDriver::~IGCReaderDriver() {
+	// TODO Auto-generated destructor stub
 }
 
-extern "C" {
-
-void OEV_DRIVER_PUBLIC driverInit(void) {
-
-	initLogger();
-
-	LOG4CXX_INFO(logger,"Initialize the simulation driver");
-
-}
-
-openEV::GliderVarioDriverLibBasePtr OEV_DRIVER_PUBLIC getDriverLib() {
-
-	initLogger();
-
-	LOG4CXX_INFO(logger,"getDriverLib");
-
-	return 0;
-}
-
-
-}
+} /* namespace OevGLES */

@@ -1,13 +1,11 @@
 /*
  * IGCReaderDriver.h
  *
- *  Created on: Sep 29, 2017
- *      Author: hor
- *
- *  Internal definitions of the simulation driver
+ *  Created on: Aug 15, 2018
+ *      Author: kai_horstmann
  *
  *   This file is part of openEVario, an electronic variometer for glider planes
- *   Copyright (C) 2016  Kai Horstmann
+ *   Copyright (C) 2018  Kai Horstmann
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -33,5 +31,17 @@
 // included here because the defines above are used in the include
 #include "drivers/sensorDriver.h"
 
+namespace OevGLES {
+
+class IGCReaderDriver {
+public:
+	IGCReaderDriver() {
+		// TODO Auto-generated constructor stub
+
+	}
+	virtual ~IGCReaderDriver();
+};
+
+} /* namespace OevGLES */
 #endif /* IGCREADERDRIVER_H_ */
 

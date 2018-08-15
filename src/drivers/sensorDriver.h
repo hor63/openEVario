@@ -27,7 +27,7 @@
 #define SENSORDRIVER_H_
 
 #include "OEVCommon.h"
-#include "drivers/GliderVarioDriverBase.h"
+#include "drivers/GliderVarioDriverLibBase.h"
 
 
 extern "C" {
@@ -43,7 +43,7 @@ void OEV_DRIVER_PUBLIC driverInit(void);
  *
  * @return Pointer to the driver library object
  */
-openEV::GliderVarioDriverBasePtr OEV_DRIVER_PUBLIC getDriverLib();
+openEV::GliderVarioDriverLibBasePtr OEV_DRIVER_PUBLIC getDriverLib();
 
 
 }
