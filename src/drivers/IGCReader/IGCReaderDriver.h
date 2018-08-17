@@ -29,17 +29,29 @@
 #include "OEVCommon.h"
 
 // included here because the defines above are used in the include
-#include "drivers/sensorDriver.h"
+#include "drivers/GliderVarioDriverBase.h"
 
-namespace OevGLES {
+namespace openEV {
 
-class IGCReaderDriver {
+class IGCReaderDriver  : public GliderVarioDriverBase {
 public:
-	IGCReaderDriver() {
-		// TODO Auto-generated constructor stub
+	IGCReaderDriver(
+    	    char const *driverName,
+			char const *description,
+			char const *instanceName
+			)
+	: GliderVarioDriverBase(driverName,description,instanceName)
+	{
 
 	}
 	virtual ~IGCReaderDriver();
+
+    /**
+     * Initialize the driver
+     */
+    virtual void driverInit() override;
+
+
 };
 
 } /* namespace OevGLES */

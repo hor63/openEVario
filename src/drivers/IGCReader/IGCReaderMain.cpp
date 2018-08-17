@@ -28,6 +28,7 @@
 #endif
 
 #include "kalman/GliderVarioStatus.h"
+#include "IGCReaderLib.h"
 #include "IGCReaderDriver.h"
 #include "drivers/sensorDriver.h"
 
@@ -45,16 +46,24 @@ extern "C" {
 
 void OEV_DRIVER_PUBLIC driverInit(void) {
 
+	static bool initialized = false;
+
+	if (initialized) {
+		return;
+	}
+
 	initLogger();
 
 	LOG4CXX_INFO(logger,"Initialize the IGCReader driver library");
+
+	initialized = true;
 
 }
 
 
 openEV::GliderVarioDriverLibBasePtr OEV_DRIVER_PUBLIC getDriverLib() {
 
-	initLogger();
+	driverInit();
 
 	LOG4CXX_INFO(logger,"getDriverLib");
 

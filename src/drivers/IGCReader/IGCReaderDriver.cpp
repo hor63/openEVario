@@ -30,10 +30,15 @@
 
 #include "IGCReaderDriver.h"
 
-namespace OevGLES {
+namespace openEV {
 
 IGCReaderDriver::~IGCReaderDriver() {
-	// TODO Auto-generated destructor stub
+
+}
+
+
+void IGCReaderDriver::driverInit() {
+
 }
 
 } /* namespace OevGLES */

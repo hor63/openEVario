@@ -29,11 +29,29 @@
 
 
 #include "IGCReaderLib.h"
+#include "IGCReaderDriver.h"
 
-namespace OevGLES {
+namespace openEV {
 
-IGCReaderLib::~IGCReaderLib() {
-	// TODO Auto-generated destructor stub
+static GliderVarioDriverBase* getNewIGCReaderInstance (
+	    char const *driverName,
+		char const *description,
+		char const *instanceName) {
+	return new IGCReaderDriver (driverName,description,instanceName);
 }
 
-} /* namespace OevGLES */
+IGCReaderLib::IGCReaderLib()
+	: GliderVarioDriverLibBase{"IGCReaderLib","Driver library for simulation and test drivers based on IGC file recordings"}
+{
+
+	DriverListItem listItem = {"IGCReader","Simulation and test driver reading recorded flight data from an IGC file",getNewIGCReaderInstance};
+
+}
+
+
+IGCReaderLib::~IGCReaderLib() {
+
+}
+
+
+} /* namespace openEV */

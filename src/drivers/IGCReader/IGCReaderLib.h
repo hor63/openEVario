@@ -28,14 +28,11 @@
 
 #include "drivers/GliderVarioDriverLibBase.h"
 
-namespace OevGLES {
+namespace openEV {
 
-class IGCReaderLib :public GliderVarioDriverLibBase {
+class IGCReaderLib : public GliderVarioDriverLibBase {
 public:
-	IGCReaderLib() {
-		// TODO Auto-generated constructor stub
-
-	}
+	IGCReaderLib();
 	virtual ~IGCReaderLib();
 };
 
