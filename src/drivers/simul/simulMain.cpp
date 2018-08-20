@@ -44,7 +44,7 @@ static void initLogger() {
 
 extern "C" {
 
-void OEV_DRIVER_PUBLIC driverInit(void) {
+void OEV_DRIVER_PUBLIC driverLibInit(void) {
 
 	initLogger();
 

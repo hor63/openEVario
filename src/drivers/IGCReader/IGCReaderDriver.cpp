@@ -41,4 +41,9 @@ void IGCReaderDriver::driverInit() {
 
 }
 
+void IGCReaderDriver::readConfiguration (Properties4CXX::Properties const &configuration) {
+
+}
+
+
 } /* namespace OevGLES */

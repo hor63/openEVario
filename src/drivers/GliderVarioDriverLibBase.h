@@ -42,9 +42,9 @@ typedef GliderVarioDriverBase* (*GetNewDriverInstance) (
 		char const *instanceName);
 
 typedef struct {
-	std::string driverName;
-	std::string description;
-	GetNewDriverInstance getNewDriverInstance;
+	std::string const driverName;
+	std::string const description;
+	GetNewDriverInstance const getNewDriverInstance;
 } DriverListItem;
 
 typedef std::map<std::string,DriverListItem> TDriverList;

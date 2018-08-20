@@ -52,6 +52,13 @@ public:
     virtual void driverInit() override;
 
 
+    /** \brief Read the configuration for the driver
+     *
+     * @param configuration Configuration file content
+     */
+    virtual void readConfiguration (Properties4CXX::Properties const &configuration) override;
+
+
 };
 
 } /* namespace OevGLES */

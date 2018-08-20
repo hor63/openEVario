@@ -26,11 +26,15 @@
 #ifndef MAIN_GLIDERVARIOMAINPRIV_H_
 #define MAIN_GLIDERVARIOMAINPRIV_H_
 
+#include <list>
+
+#include "Properties4CXX/Properties.h"
+
 #include "OEVCommon.h"
 #include "util/GliderVarioExceptionBase.h"
 #include "main/GliderVarioDriverList.h"
-
-#include "Properties4CXX/Properties.h"
+#include "kalman/GliderVarioStatus.h"
+#include "kalman/GliderVarioTransitionMatrix.h"
 
 #define defaultConfigFileName "./openEVario.properties"
 #define defaultLoggerConfigFileName "./openEVario.logger.properties"
@@ -127,6 +131,15 @@ private:
 
 	GliderVarioDriverList driverList;
 
+	/// The alternating status variables. These are never used directly but the pointers \ref currentStatus and \ref nextStatus which are exchanged after each
+	/// prediction step.
+	GliderVarioStatus stat1,stat2;
+
+	/// The transition matrix to predict the next status and the co-variance
+	GliderVarioTransitionMatrix transitionMatrix;
+
+	GliderVarioStatus *currentStatus = &stat1;
+	GliderVarioStatus *nextStatus = &stat2;
 
 	/** \brief Open the driver libraries and initialize them
 	 *

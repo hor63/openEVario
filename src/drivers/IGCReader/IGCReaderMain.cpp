@@ -44,7 +44,7 @@ static void initLogger() {
 
 extern "C" {
 
-void OEV_DRIVER_PUBLIC driverInit(void) {
+void OEV_DRIVER_PUBLIC driverLibInit(void) {
 
 	static bool initialized = false;
 
@@ -63,9 +63,9 @@ void OEV_DRIVER_PUBLIC driverInit(void) {
 
 openEV::GliderVarioDriverLibBasePtr OEV_DRIVER_PUBLIC getDriverLib() {
 
-	driverInit();
+	driverLibInit();
 
-	LOG4CXX_INFO(logger,"getDriverLib");
+	LOG4CXX_INFO(logger,"IGCReader: getDriverLib");
 
 	return 0;
 }

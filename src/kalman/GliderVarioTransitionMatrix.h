@@ -132,7 +132,7 @@ public:
      * See \ref dynamicRollTimeConstant
      * @param dynamicRollTimeConstant New value of \ref dynamicRollTimeConstant
      */
-    static inline void getDynamicRollTimeConstant (FloatType dynamicRollTimeConstant ) {
+    static inline void setDynamicRollTimeConstant (FloatType dynamicRollTimeConstant ) {
         GliderVarioTransitionMatrix::dynamicRollTimeConstant = dynamicRollTimeConstant;
     }
 

@@ -494,7 +494,9 @@ void GliderVarioMainPriv::loadDriver(const char* driverLibName) {
 	getDriverLib = (GliderVarioDriverLibBasePtr (*)()) (sym);
 
 	driverInit();
-	getDriverLib();
+	GliderVarioDriverLibBasePtr driverLib = getDriverLib();
+
+
 
 }
 

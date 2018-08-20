@@ -36,7 +36,7 @@ extern "C" {
  * This function must tolerate to be called multiple times without adverse effects.
  *
  */
-void OEV_DRIVER_PUBLIC driverInit(void);
+void OEV_DRIVER_PUBLIC driverLibInit(void);
 
 
 /** \brief Return a pointer to a driver library. The object is static in the respective driver library, and must never be deleted by the caller.

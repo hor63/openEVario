@@ -39,6 +39,7 @@
 
 
 #include "OEVCommon.h"
+#include "main/GliderVarioMainPriv.h"
 #include "kalman/GliderVarioStatus.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
 
@@ -139,6 +140,21 @@ public:
      */
     virtual void driverInit() = 0;
 
+    /** \brief Read the configuration for the driver
+     *
+     * @param configuration Configuration file content
+     */
+    virtual void readConfiguration (Properties4CXX::Properties const &configuration) = 0;
+
+    virtual void initializeStatus(GliderVarioStatus &varioStatus) = 0;
+
+    virtual void start() = 0;
+
+    virtual void stop() = 0;
+
+    virtual void suspend() = 0;
+
+    virtual void resume() = 0;
 
 protected:
 
