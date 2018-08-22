@@ -28,11 +28,21 @@
 #endif
 
 #include "GliderVarioDriverList.h"
+#include "drivers/GliderVarioDriverLibBase.h"
 
 namespace openEV {
 
 GliderVarioDriverList::~GliderVarioDriverList() {
-	// TODO Auto-generated destructor stub
+
+}
+
+void GliderVarioDriverList::addDriver (GliderVarioDriverLibBase::DriverListItem const& driverListItem){
+	GliderVarioDriverLibBase::DriverList::value_type newListItem {
+		driverListItem.driverName,
+		driverListItem
+	};
+
+	driverList.insert(newListItem);
 }
 
 } /* namespace openEV */

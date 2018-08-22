@@ -31,23 +31,14 @@
 
 #include "OEVCommon.h"
 
+#include "main/GliderVarioDriverList.h"
 #include "GliderVarioDriverBase.h"
 
 namespace openEV {
 
-/// Function pointer type to create a new driver instance
-typedef GliderVarioDriverBase* (*GetNewDriverInstance) (
-	    char const *driverName,
-		char const *description,
-		char const *instanceName);
-
-typedef struct {
-	std::string const driverName;
-	std::string const description;
-	GetNewDriverInstance const getNewDriverInstance;
-} DriverListItem;
-
-typedef std::map<std::string,DriverListItem> TDriverList;
+// Forward declarations because the complex include hierarchy can have side effects on the order of includes
+class GliderVarioDriverList;
+class GliderVarioDriverBase;
 
 /** \brief Driver library base class.
  *
@@ -59,33 +50,20 @@ typedef std::map<std::string,DriverListItem> TDriverList;
 class OEV_UTILS_PUBLIC GliderVarioDriverLibBase {
 public:
 
-	/** \brief Return the iterator through the list of available drivers from this library
-	 *
-	 * @return Iterator pointing to the begin of the list of available drivers
-	 */
-	TDriverList::const_iterator getCBegin() {
-		return driverList.cbegin();
-	}
+	/// Function pointer type to create a new driver instance
+	typedef GliderVarioDriverBase* (*GetNewDriverInstance) (
+		    char const *driverName,
+			char const *description,
+			char const *instanceName);
 
-	/** \brief Return a driver instance
-	 *
-	 * @param driverName
-	 * @param instanceName
-	 * @return
-	 */
-	GliderVarioDriverBase* getNewDriverInstance(std::string const &driverName,char const *instanceName) {
-		auto it = driverList.find(driverName);
+	typedef struct {
+		std::string const driverName;
+		std::string const description;
+		GetNewDriverInstance const getNewDriverInstance;
+	} DriverListItem;
 
-		if (it == driverList.end()) {
-			return 0;
-		}
-		else {
-			return it->second.getNewDriverInstance(
-					it->second.driverName.c_str(),
-					it->second.description.c_str(),
-					instanceName);
-		}
-	}
+	typedef std::map<std::string,GliderVarioDriverLibBase::DriverListItem> DriverList;
+
 
 	char const *getLibName () const {
 		return libName.c_str();
@@ -95,6 +73,13 @@ public:
 		return description.c_str();
 	}
 
+	/** \brief Add the drivers implemented by this library to the global driver list
+	 *
+	 * The method must be overridden by a library implementation. It will call \ref GliderVarioDriverList::addDriver() for each driver it implements.
+	 *
+	 * @param gliderVarioDriverList Global administration of sensor drivers.
+	 */
+	virtual void addDrivers(GliderVarioDriverList &gliderVarioDriverList) = 0;
 
 protected:
 	GliderVarioDriverLibBase(
@@ -110,8 +95,6 @@ protected:
 	/** \brief Driver list of this library
 	 * The driver list consists of a pair with the driver name (key) and description (mapped value).
 	 */
-	TDriverList driverList;
-
 	std::string libName;
 	std::string description;
 

@@ -39,7 +39,6 @@
 
 
 #include "OEVCommon.h"
-#include "main/GliderVarioMainPriv.h"
 #include "kalman/GliderVarioStatus.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
 
@@ -181,6 +180,8 @@ protected:
 typedef std::shared_ptr<openEV::GliderVarioDriverBase> GliderVarioDriverBasePtr;
 
 }
+
+#include "main/GliderVarioMainPriv.h"
 
 OEV_UTILS_PUBLIC std::ostream& operator << (std::ostream &o,openEV::GliderVarioDriverBase::SensorCapability ind);
 

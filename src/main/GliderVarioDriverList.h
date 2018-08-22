@@ -33,32 +33,59 @@
 #include "drivers/GliderVarioDriverLibBase.h"
 #include "drivers/GliderVarioDriverBase.h"
 
+
 namespace openEV {
 
-/** \brief Administration of the driver list
+/** \brief Administration of driver libraries, and the driver list
  *
  * Administration, loading, storing, iteration through, and access to the list of sensor drivers
+ *
+ * This class maintains mainly three lists:
+ * - List of driver libraries \ref driverLibList. These are listed in the configuration variable "driverSharedLibs"
+ * - List of driver instances \ref driverInstanceList.
  *
  */
 class GliderVarioDriverList {
 public:
+
+	typedef void (*DriverInitProc) ();
+	typedef GliderVarioDriverLibBase* (*GetDriverLibProc)();
+
+	typedef struct {
+		GliderVarioDriverLibBase* libObj;
+		std::string shLibName;
+		void *shLibHandle;
+		DriverInitProc driverInit;
+		GetDriverLibProc getDriverLib;
+	} DriverLibListItem;
+
+	typedef std::map<std::string,DriverLibListItem> DriverLibList;
+	typedef std::map<std::string,GliderVarioDriverBase *> DriverInstanceList;
+
+
 	GliderVarioDriverList() {
 		// TODO Auto-generated constructor stub
 
 	}
 	virtual ~GliderVarioDriverList();
 
+	/** \brief Add a driver list item to the global list of avialable drivers
+	 *
+	 * @param driverListItem Driver list item to be added to \ref driverList.
+	 */
+	void addDriver (GliderVarioDriverLibBase::DriverListItem const& driverListItem);
 
 
 protected:
 
-	std::map<std::string,GliderVarioDriverLibBasePtr> driverLibList;
-	std::map<std::string,GliderVarioDriverBasePtr> driverList;
+	DriverLibList driverLibList;
+
+	GliderVarioDriverLibBase::DriverList driverList;
+
+	DriverInstanceList driverInstanceList;
 
 
 };
-
-
 
 } /* namespace openEV */
 
