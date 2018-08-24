@@ -1,8 +1,9 @@
 /*
- * IGCReaderDriver.cpp
+ * ProgramOptions.h
  *
- *  Created on: Aug 15, 2018
- *      Author: kai_horstmann
+ *  Created on: Aug 23, 2018
+ *      Author: hor
+ *
  *
  *   This file is part of openEVario, an electronic variometer for glider planes
  *   Copyright (C) 2018  Kai Horstmann
@@ -23,47 +24,29 @@
  *
  */
 
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
+#ifndef MAIN_PROGRAMOPTIONS_H_
+#define MAIN_PROGRAMOPTIONS_H_
 
+#include <string> 
+ 
 
-#include "IGCReaderDriver.h"
+#define defaultConfigFileName "./openEVario.properties"
+#define defaultLoggerConfigFileName "./openEVario.logger.properties"
 
 namespace openEV {
 
-IGCReaderDriver::~IGCReaderDriver() {
+	struct ProgramOptions{
+	    std::string configFile       = defaultConfigFileName;
+	    std::string loggerConfigFile = defaultLoggerConfigFileName;
+	    /// logger level can be
+	    /// 0: Quiet. No output at all
+	    /// 1: Errors are reported
+	    /// 2: Info. Major events and activities
+	    /// 3: Debug. Be really chatty
+	    int defaultLoggerLevel = 2; // Default level info.
+	    bool terminateOnDriverLoadError = true;
+	} ;
+ 
+} // namespace openEV
 
-}
-
-
-void IGCReaderDriver::driverInit() {
-
-}
-
-void IGCReaderDriver::readConfiguration (Properties4CXX::Properties const &configuration) {
-
-}
-
-void IGCReaderDriver::initializeStatus(GliderVarioStatus &varioStatus) {
-
-}
-
-void IGCReaderDriver::start() {
-
-}
-
-void IGCReaderDriver::stop() {
-
-}
-
-void IGCReaderDriver::suspend() {
-
-}
-
-void IGCReaderDriver::resume() {
-
-}
-
-
-} /* namespace OevGLES */
+#endif /* MAIN_PROGRAMOPTIONS_H_ */

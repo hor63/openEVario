@@ -15,8 +15,7 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-SUBDIRS=util kalman drivers/simul drivers/IGCReader main
-	
+SUBDIRS=util kalman main drivers/simul drivers/IGCReader
 
 bin_PROGRAMS=openEVario$(EXEEXT)
 

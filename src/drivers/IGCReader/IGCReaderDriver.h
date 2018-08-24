@@ -30,7 +30,7 @@
 
 // included here because the defines above are used in the include
 #include "drivers/GliderVarioDriverBase.h"
-
+#include "IGCReaderLib.h"
 namespace openEV {
 
 class IGCReaderDriver  : public GliderVarioDriverBase {
@@ -40,7 +40,7 @@ public:
 			char const *description,
 			char const *instanceName
 			)
-	: GliderVarioDriverBase(driverName,description,instanceName)
+	: GliderVarioDriverBase {driverName,description,instanceName,IGCReaderLib::theOneAndOnly}
 	{
 
 	}
@@ -57,6 +57,16 @@ public:
      * @param configuration Configuration file content
      */
     virtual void readConfiguration (Properties4CXX::Properties const &configuration) override;
+
+    virtual void initializeStatus(GliderVarioStatus &varioStatus) override;
+
+    virtual void start() override;
+
+    virtual void stop() override;
+
+    virtual void suspend() override;
+
+    virtual void resume() override;
 
 
 };

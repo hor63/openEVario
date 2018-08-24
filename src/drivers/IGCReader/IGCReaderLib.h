@@ -32,8 +32,18 @@ namespace openEV {
 
 class IGCReaderLib : public GliderVarioDriverLibBase {
 public:
+
+	virtual void addDrivers(GliderVarioDriverList &gliderVarioDriverList);
+
+	static IGCReaderLib theOneAndOnly;
+
+
+// no one shall create instances except the one and only static instance
+private:
 	IGCReaderLib();
 	virtual ~IGCReaderLib();
+
+
 };
 
 } /* namespace OevGLES */

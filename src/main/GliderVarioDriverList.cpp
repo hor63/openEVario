@@ -27,22 +27,238 @@
 #	include "config.h"
 #endif
 
+#include <dlfcn.h>
+
 #include "GliderVarioDriverList.h"
 #include "drivers/GliderVarioDriverLibBase.h"
 
+#if defined HAVE_LOG4CXX_H
+static log4cxx::LoggerPtr logger = 0;
+#endif
+
 namespace openEV {
+
+GliderVarioDriverList::GliderVarioDriverList(ProgramOptions &programOptions)
+	:programOptions {programOptions}
+{
+#if defined HAVE_LOG4CXX_H
+	if (!logger) {
+		logger = log4cxx::Logger::getLogger("openEV.Main.GliderVarioDriverList");
+	}
+#endif /* HAVE_LOG4CXX_H */
+
+}
 
 GliderVarioDriverList::~GliderVarioDriverList() {
 
 }
 
-void GliderVarioDriverList::addDriver (GliderVarioDriverLibBase::DriverListItem const& driverListItem){
-	GliderVarioDriverLibBase::DriverList::value_type newListItem {
+void GliderVarioDriverList::addDriver (DriverListItem const& driverListItem){
+	DriverList::value_type newListItem {
 		driverListItem.driverName,
 		driverListItem
 	};
 
+	LOG4CXX_INFO(logger,"Adding new driver \"" << driverListItem.driverName << "\": " << driverListItem.description);
+
 	driverList.insert(newListItem);
 }
+
+
+void GliderVarioDriverList::loadDriverLibs(Properties4CXX::Properties const &configuration) {
+
+	// get the driver lib list from the configuration
+	Properties4CXX::Property const * driverLibNames = configuration.searchProperty ("driverSharedLibs");
+
+	if (!driverLibNames) {
+		LOG4CXX_FATAL(logger,"Configuration does not contain variable \"driverSharedLibs\"");
+
+		throw GliderVarioFatalConfigException(__FILE__,__LINE__,
+				"Configuration does not contain variable \"driverSharedLibs\"" );
+	}
+
+	LOG4CXX_INFO(logger,"Driver libraries are :" << driverLibNames->getStrValue());
+
+	if (driverLibNames->isString()) {
+		// If this single driver load fails I cannot ignore a load failure.
+		// Therefore an exception will fall through.
+
+		loadDriverLib(driverLibNames->getStrValue());
+	} else {
+		if (driverLibNames->isList()) {
+			Properties4CXX::PropertyValueList const & nameList = driverLibNames->getPropertyValueList();
+			auto nameIter = nameList.cbegin();
+
+			while (nameIter != nameList.cend()) {
+
+				// If necessary swallow an exception here and carry on loading drivers.
+				try {
+					loadDriverLib(nameIter->c_str());
+				} catch (GliderVarioDriverLoadException& e) {
+					if (programOptions.terminateOnDriverLoadError) {
+						throw;
+					}
+				}
+
+				nameIter++;
+			}
+		} else {
+			LOG4CXX_FATAL(logger,"Configuration variable \"driverSharedLibs\" is neither a string nor a string list");
+			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"Configuration variable \"driverSharedLibs\" is neither a string nor a string list");
+		}
+	}
+
+
+}
+
+void GliderVarioDriverList::loadDriverInstances(Properties4CXX::Properties const &configuration) {
+
+	// get the driver lib list from the configuration
+	Properties4CXX::Property const * driverNames = configuration.searchProperty ("drivers");
+
+	if (!driverNames) {
+		throw GliderVarioFatalConfigException(__FILE__,__LINE__,
+				"Configuration does not contain variable \"drivers\"" );
+	}
+
+	if (driverNames->isString()) {
+		// If this single driver load fails I cannot ignore a load failure.
+		// Therefore an exception will fall through.
+		loadDriverInstance(driverNames->getStrValue(),configuration);
+	} else {
+		if (driverNames->isList()) {
+			Properties4CXX::PropertyValueList const & nameList = driverNames->getPropertyValueList();
+			auto nameIter = nameList.cbegin();
+
+			while (nameIter != nameList.cend()) {
+
+				// If necessary swallow an exception here and carry on loading drivers.
+				try {
+					loadDriverInstance(nameIter->c_str(),configuration);
+				} catch (GliderVarioDriverLoadException& e) {
+					if (programOptions.terminateOnDriverLoadError) {
+						throw;
+					}
+				}
+
+				nameIter++;
+			}
+		} else {
+			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"Configuration variable \"driverSharedLibs\" is neither a string nor a string list");
+		}
+	}
+
+
+}
+
+void GliderVarioDriverList::loadDriverLib(const char* driverLibName) {
+
+
+	char const* errStr = NULL;
+	DriverLibListItem listItem;
+
+	LOG4CXX_INFO(logger,"Loading driver library \"" << driverLibName << "\"");
+
+	listItem.shLibName = driverLibName;
+	listItem.shLibHandle = dlopen(driverLibName,RTLD_NOW);
+
+	LOG4CXX_DEBUG(logger,"dlopen for DLL \"" << driverLibName << "\" returns " << listItem.shLibHandle);
+
+	if (!listItem.shLibHandle) {
+		std::ostringstream os;
+		os << "Error loading shared library \"" << driverLibName << "\": " << dlerror();
+
+		LOG4CXX_ERROR(logger,os.str());
+		throw GliderVarioDriverLoadException(__FILE__,__LINE__,os.str().c_str());
+
+	}
+
+	char const* symName = "driverInit";
+	void * sym = dlsym(listItem.shLibHandle,symName);
+	errStr = dlerror();
+	if (errStr) {
+		std::ostringstream os;
+		os << "Error loading symbol \"" << symName << "\" from library \""<< driverLibName << "\"";
+
+		LOG4CXX_ERROR(logger,os.str());
+
+		dlclose(listItem.shLibHandle);
+
+		throw GliderVarioDriverLoadException(__FILE__,__LINE__,os.str().c_str());
+
+	}
+
+	listItem.driverInit = DriverInitProc (sym);
+
+
+	symName = "getDriverLib";
+	sym = dlsym(listItem.shLibHandle,symName);
+	errStr = dlerror();
+	if (errStr) {
+		std::ostringstream os;
+		os << "Error loading symbol \"" << symName << "\" from library \""<< driverLibName << "\"";
+
+		LOG4CXX_ERROR(logger,os.str());
+
+		dlclose(listItem.shLibHandle);
+
+		throw GliderVarioDriverLoadException(__FILE__,__LINE__,os.str().c_str());
+
+	}
+
+	listItem.getDriverLib = GetDriverLibProc(sym);
+
+	listItem.driverInit();
+	listItem.libObj = listItem.getDriverLib();
+
+	LOG4CXX_INFO(logger,"Obtained library object \"" << listItem.libObj->getLibName() << "\": " << listItem.libObj->getDescription());
+
+	{
+		DriverLibList::value_type newListItem {listItem.libObj->getLibName(),listItem};
+		driverLibList.insert(newListItem);
+	}
+
+
+}
+
+void GliderVarioDriverList::loadDriverInstance(char const *driverInstanceName, Properties4CXX::Properties const &configuration) {
+
+	Properties4CXX::Property const * driverConfig;
+
+	LOG4CXX_INFO(logger,"Loading driver instance \"" << driverInstanceName << "\"");
+
+	driverConfig = configuration.searchProperty(driverInstanceName);
+
+	if (!driverConfig->isStruct()) {
+	}
+
+	Properties4CXX::Properties const &driverConfigStruct = driverConfig->getPropertiesStructure();
+
+	Properties4CXX::Property const * driverName =  driverConfigStruct.searchProperty("driver");
+
+	LOG4CXX_INFO (logger,"Driver name is \"" << driverName->getStringValue() << "\"");
+
+	auto driverIter = driverList.find(driverName->getStringValue());
+	if (driverIter == driverList.cend()) {
+		std::ostringstream os;
+		os << "Driver \"" << driverName->getStringValue() << "\" does not exist.";
+
+		LOG4CXX_ERROR(logger,os.str());
+
+		throw GliderVarioDriverLoadException(__FILE__,__LINE__,os.str().c_str());
+	}
+
+	auto driverInstance = driverIter->second.getNewDriverInstance(driverIter->second.driverName.c_str(),driverIter->second.description.c_str(),driverInstanceName);
+
+	LOG4CXX_INFO (logger,"Created driver instance \"" << driverInstance->getInstanceName()
+			<< "\" for driver \"" << driverInstance->getDriverName() << "\" from library \""
+			<< driverInstance->GetDriverLib().getLibName() << "\"");
+
+	DriverInstanceList::value_type newInstanceListItem {driverInstanceName,driverInstance};
+
+	driverInstanceList.insert(newInstanceListItem);
+
+}
+
 
 } /* namespace openEV */

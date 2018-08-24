@@ -1,3 +1,56 @@
+2018-08-24  hor  <horstmannkai@hotmail.com>
+
+	* src\main\ProgramOptions.h: New file.
+	* .autotools: 
+	* src\drivers\GliderVarioDriverBase.h (GliderVarioDriverBase.GliderVarioDriverBase): 
+	* src\drivers\GliderVarioDriverLibBase.h (GliderVarioDriverLibBase): 
+	* src\drivers\IGCReader\IGCReaderDriver.cpp (IGCReaderDriver::initializeStatus): 
+	* src\drivers\IGCReader\IGCReaderDriver.h (IGCReaderDriver): 
+	* src\drivers\IGCReader\IGCReaderLib.cpp (getNewIGCReaderInstance): 
+	* src\drivers\IGCReader\IGCReaderLib.h (IGCReaderLib): 
+	(IGCReaderLib::theOneAndOnly): 
+	(IGCReaderLib): 
+	(IGCReaderLib::IGCReaderLib): 
+	(~IGCReaderLib): 
+	(IGCReaderLib::addDrivers): 
+	(IGCReaderDriver.IGCReaderDriver): 
+	(IGCReaderDriver::start): 
+	(IGCReaderDriver::stop): 
+	(IGCReaderDriver::suspend): 
+	(IGCReaderDriver::resume): 
+	(GliderVarioDriverLibBase.getLibName): 
+	(GliderVarioDriverBase): 
+	(GliderVarioDriverBase.GetDriverLib): 
+	* src\drivers\IGCReader\Makefile.am: 
+	* src\main\GliderVarioDriverList.cpp (~GliderVarioDriverList): 
+	* src\main\GliderVarioDriverList.h (GliderVarioDriverList): 
+	* src\main\GliderVarioMainPriv.cpp (readOptions): 
+	* src\main\GliderVarioMainPriv.h (GliderVarioMainPriv): 
+	(GliderVarioMainPriv): 
+	(GliderVarioMainPriv::GliderVarioMainPriv): 
+	(startup): 
+	(loadDrivers): 
+	(loadDriver): 
+	(GliderVarioMainPriv::startup): 
+	(addDriver): 
+	(GliderVarioDriverList::GliderVarioDriverList): 
+	(GliderVarioDriverList::~GliderVarioDriverList): 
+	(GliderVarioDriverList::addDriver): 
+	(GliderVarioDriverList::loadDriverLibs): 
+	(GliderVarioDriverList::loadDriverInstances): 
+	(GliderVarioDriverList::loadDriverLib): 
+	(GliderVarioDriverList::loadDriverInstance): 
+	* src\Makefile.am: 
+	  Use Properties4CXX as configuration reader.
+	  
+	  Driver interface basics done:
+	    - Load driver libs as shared libraries/DLLs
+	    - Driver libs self-register the drivers which they implement
+	    - Driver instances are created with drivers.
+	    - Resolve complex include and library dependencies
+	    
+	  To do: Configure the driver instances, and let them do something useful. 
+	
 2018-01-28  hor  <hor@horUbuntu>
 
 	* src/GliderVarioMain.h: New file.

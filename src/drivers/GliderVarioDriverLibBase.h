@@ -31,9 +31,6 @@
 
 #include "OEVCommon.h"
 
-#include "main/GliderVarioDriverList.h"
-#include "GliderVarioDriverBase.h"
-
 namespace openEV {
 
 // Forward declarations because the complex include hierarchy can have side effects on the order of includes
@@ -49,20 +46,6 @@ class GliderVarioDriverBase;
  */
 class OEV_UTILS_PUBLIC GliderVarioDriverLibBase {
 public:
-
-	/// Function pointer type to create a new driver instance
-	typedef GliderVarioDriverBase* (*GetNewDriverInstance) (
-		    char const *driverName,
-			char const *description,
-			char const *instanceName);
-
-	typedef struct {
-		std::string const driverName;
-		std::string const description;
-		GetNewDriverInstance const getNewDriverInstance;
-	} DriverListItem;
-
-	typedef std::map<std::string,GliderVarioDriverLibBase::DriverListItem> DriverList;
 
 
 	char const *getLibName () const {
@@ -104,5 +87,9 @@ protected:
 typedef GliderVarioDriverLibBase* GliderVarioDriverLibBasePtr;
 
 } /* namespace openEV */
+
+#include "main/GliderVarioDriverList.h"
+#include "GliderVarioDriverBase.h"
+
 
 #endif /* DRIVERS_GLIDERVARIODriverLIBBASE_H_ */

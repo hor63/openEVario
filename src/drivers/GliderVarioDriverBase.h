@@ -41,6 +41,7 @@
 #include "OEVCommon.h"
 #include "kalman/GliderVarioStatus.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
+#include "drivers/GliderVarioDriverLibBase.h"
 
 namespace openEV {
 
@@ -57,12 +58,14 @@ public:
     GliderVarioDriverBase (
     	    char const *driverName,
 			char const *description,
-			char const *instanceName
+			char const *instanceName,
+			GliderVarioDriverLibBase &driverLib
 			)
     : sensorCapabilities {0},
 	  driverName {driverName},
 	  description {description},
-	  instanceName {instanceName}
+	  instanceName {instanceName},
+	  driverLib {driverLib}
     {
         ;
     }
@@ -132,6 +135,14 @@ public:
     	return instanceName.c_str();
     }
 
+    GliderVarioDriverLibBase &GetDriverLib () {
+    	return driverLib;
+    }
+
+    GliderVarioDriverLibBase const &GetDriverLib () const {
+    	return driverLib;
+    }
+
     // start of the abstract interface which must be implemented by each driver.
 
     /**
@@ -170,6 +181,8 @@ protected:
     std::string description;
     std::string instanceName;
 
+    GliderVarioDriverLibBase &driverLib;
+
     // Abstract functions allowing sub-classing of the driver
 
 
@@ -181,7 +194,7 @@ typedef std::shared_ptr<openEV::GliderVarioDriverBase> GliderVarioDriverBasePtr;
 
 }
 
-#include "main/GliderVarioMainPriv.h"
+#include "main/GliderVarioDriverList.h"
 
 OEV_UTILS_PUBLIC std::ostream& operator << (std::ostream &o,openEV::GliderVarioDriverBase::SensorCapability ind);
 

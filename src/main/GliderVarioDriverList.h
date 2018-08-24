@@ -30,11 +30,16 @@
 #include <map>
 #include <string>
 
-#include "drivers/GliderVarioDriverLibBase.h"
-#include "drivers/GliderVarioDriverBase.h"
+#include "Properties4CXX/Properties.h"
 
+#include "OEVCommon.h"
+#include "util/GliderVarioExceptionBase.h"
+#include "main/ProgramOptions.h"
 
 namespace openEV {
+
+class GliderVarioDriverLibBase;
+class GliderVarioDriverBase;
 
 /** \brief Administration of driver libraries, and the driver list
  *
@@ -47,6 +52,21 @@ namespace openEV {
  */
 class GliderVarioDriverList {
 public:
+
+	/// Function pointer type to create a new driver instance
+	typedef GliderVarioDriverBase* (*GetNewDriverInstance) (
+		    char const *driverName,
+			char const *description,
+			char const *instanceName);
+
+	typedef struct {
+		std::string const driverName;
+		std::string const description;
+		GetNewDriverInstance const getNewDriverInstance;
+	} DriverListItem;
+
+	typedef std::map<std::string,DriverListItem> DriverList;
+
 
 	typedef void (*DriverInitProc) ();
 	typedef GliderVarioDriverLibBase* (*GetDriverLibProc)();
@@ -63,30 +83,68 @@ public:
 	typedef std::map<std::string,GliderVarioDriverBase *> DriverInstanceList;
 
 
-	GliderVarioDriverList() {
-		// TODO Auto-generated constructor stub
-
-	}
+	GliderVarioDriverList(ProgramOptions &programOptions);
 	virtual ~GliderVarioDriverList();
 
-	/** \brief Add a driver list item to the global list of avialable drivers
+	/** \brief Open the driver libraries and initialize them
+	 *
+	 * Tries to open the drivers as shared libraries.
+	 *
+	 * The list of driver libs is in the configuration variable "driverSharedLibs".
+	 *
+	 */
+	void loadDriverLibs(Properties4CXX::Properties const &configuration);
+
+	/** \brief Load the drivers defined in the configuration.
+	 *
+	 * Iterate over the list of driver instances "drivers" in the \ref configuration.
+	 * Call \ref loadDriverInstance() for each instance name.
+	 *
+	 */
+	void loadDriverInstances(Properties4CXX::Properties const &configuration);
+
+	/** \brief Add a driver list item to the global list of available drivers
 	 *
 	 * @param driverListItem Driver list item to be added to \ref driverList.
 	 */
-	void addDriver (GliderVarioDriverLibBase::DriverListItem const& driverListItem);
-
+	void OEV_MAIN_PUBLIC addDriver (DriverListItem const& driverListItem);
 
 protected:
 
 	DriverLibList driverLibList;
 
-	GliderVarioDriverLibBase::DriverList driverList;
+	DriverList driverList;
 
 	DriverInstanceList driverInstanceList;
 
+	ProgramOptions &programOptions;
+
+	/** \brief Load a driver shared library.
+	 *
+	 * Load the driver libs and add them to \ref driverList.
+	 * Let the libs add their driver implementations to \ref driverList.
+	 *
+	 */
+	void loadDriverLib(char const *driverLibName);
+
+	/** \brief Create a driver instance
+	 *
+	 * Read the configuration for the driver instance.
+	 * Look up the driver from the configuration.
+	 * Create a driver instance.
+	 * Store the driver instance in the list of driver instances.
+	 *
+	 * @param driverInstanceName Name of the driver instance.
+	 * @param configuration Configuration of the program. Must contain a structure named as the driverInstanceName.
+	 */
+	void loadDriverInstance(char const *driverInstanceName, Properties4CXX::Properties const &configuration);
 
 };
 
 } /* namespace openEV */
+
+#include "drivers/GliderVarioDriverLibBase.h"
+#include "drivers/GliderVarioDriverBase.h"
+
 
 #endif /* MAIN_GLIDERVARIODRIVERLIST_H_ */

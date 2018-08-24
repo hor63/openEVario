@@ -27,17 +27,16 @@
 #define MAIN_GLIDERVARIOMAINPRIV_H_
 
 #include <list>
+#include <string>
 
 #include "Properties4CXX/Properties.h"
 
 #include "OEVCommon.h"
+#include "main/ProgramOptions.h"
 #include "util/GliderVarioExceptionBase.h"
 #include "main/GliderVarioDriverList.h"
 #include "kalman/GliderVarioStatus.h"
 #include "kalman/GliderVarioTransitionMatrix.h"
-
-#define defaultConfigFileName "./openEVario.properties"
-#define defaultLoggerConfigFileName "./openEVario.logger.properties"
 
 
 namespace openEV {
@@ -50,18 +49,6 @@ namespace openEV {
  */
 class GliderVarioMainPriv {
 public:
-
-	struct ProgramOptions{
-	    std::string configFile       = defaultConfigFileName;
-	    std::string loggerConfigFile = defaultLoggerConfigFileName;
-	    /// logger level can be
-	    /// 0: Quiet. No output at all
-	    /// 1: Errors are reported
-	    /// 2: Info. Major events and activities
-	    /// 3: Debug. Be really chatty
-	    int defaultLoggerLevel = 2; // Default level info.
-	    bool terminateOnDriverLoadError = true;
-	} ;
 
 
 	/** \brief Constructor accepting command line options compatible with main()
@@ -140,31 +127,6 @@ private:
 
 	GliderVarioStatus *currentStatus = &stat1;
 	GliderVarioStatus *nextStatus = &stat2;
-
-	/** \brief Open the driver libraries and initialize them
-	 *
-	 * Tries to open the drivers as shared libraries.
-	 *
-	 * The list of driver libs is in the configuration variable "driverSharedLibs".
-	 *
-	 */
-	void readDriverLibs();
-
-	/** \brief Load the drivers defined in the configuration.
-	 *
-	 * Iterate over the list of driver libs "driverSharedLibs" in the \ref configuration.
-	 * Call \ref loadDriver() for each lib name.
-	 *
-	 */
-	void loadDrivers();
-
-	/** \brief Load a driver shared library.
-	 *
-	 * Load the driver libs and add them to \ref driverList.
-	 * Let the libs add their driver implementations to \ref driverList.
-	 *
-	 */
-	void loadDriver(char const *driverLibName);
 
 };
 

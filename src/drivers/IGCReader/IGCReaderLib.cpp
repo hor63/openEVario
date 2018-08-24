@@ -36,6 +36,9 @@ namespace openEV {
 static std::string const igcReaderDriverName = "IGCReader";
 static std::string const igcReaderDriverLibName = "IGCReaderLib";
 
+IGCReaderLib IGCReaderLib::theOneAndOnly;
+
+
 static GliderVarioDriverBase* getNewIGCReaderInstance (
 	    char const *driverName,
 		char const *description,
@@ -51,16 +54,18 @@ IGCReaderLib::IGCReaderLib()
 	: GliderVarioDriverLibBase{igcReaderDriverLibName.c_str(),"Driver library for simulation and test drivers based on IGC file recordings"}
 {
 
-	DriverListItem listItem = {igcReaderDriverName,"Simulation and test driver reading recorded flight data from an IGC file",getNewIGCReaderInstance};
 
-	TDriverList::value_type newListEntry {listItem.driverName,listItem}  ;
-
-	driverList.insert(newListEntry);
 }
 
 
 IGCReaderLib::~IGCReaderLib() {
 
+}
+
+void IGCReaderLib::addDrivers(GliderVarioDriverList &gliderVarioDriverList) {
+	GliderVarioDriverList::DriverListItem listItem {igcReaderDriverName,"Simulation and test driver reading recorded flight data from an IGC file",getNewIGCReaderInstance};
+
+	gliderVarioDriverList.addDriver(listItem);
 }
 
 
