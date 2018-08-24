@@ -117,6 +117,7 @@ void GliderVarioDriverList::loadDriverInstances(Properties4CXX::Properties const
 	Properties4CXX::Property const * driverNames = configuration.searchProperty ("drivers");
 
 	if (!driverNames) {
+		LOG4CXX_ERROR(logger,"Configuration does not contain variable \"drivers\"");
 		throw GliderVarioFatalConfigException(__FILE__,__LINE__,
 				"Configuration does not contain variable \"drivers\"" );
 	}
@@ -173,7 +174,7 @@ void GliderVarioDriverList::loadDriverLib(const char* driverLibName) {
 
 	}
 
-	char const* symName = "driverInit";
+	char const* symName = "driverLibInit";
 	void * sym = dlsym(listItem.shLibHandle,symName);
 	errStr = dlerror();
 	if (errStr) {
@@ -218,6 +219,8 @@ void GliderVarioDriverList::loadDriverLib(const char* driverLibName) {
 		driverLibList.insert(newListItem);
 	}
 
+	listItem.libObj->addDrivers(*this);
+
 
 }
 
@@ -227,14 +230,33 @@ void GliderVarioDriverList::loadDriverInstance(char const *driverInstanceName, P
 
 	LOG4CXX_INFO(logger,"Loading driver instance \"" << driverInstanceName << "\"");
 
-	driverConfig = configuration.searchProperty(driverInstanceName);
+	try {
+		driverConfig = configuration.searchProperty(driverInstanceName);
+	} catch (...) {
+		std::ostringstream os;
+		os << "Could not find property \"" << driverInstanceName << "\"";
+		LOG4CXX_ERROR(logger,os.str());
+		throw;
+	}
 
 	if (!driverConfig->isStruct()) {
+		std::ostringstream os;
+		os << "Property \"" << driverInstanceName << "\" is not a structure";
+		LOG4CXX_ERROR(logger,os.str());
+		throw GliderVarioDriverLoadException(__FILE__,__LINE__,os.str().c_str());
 	}
 
 	Properties4CXX::Properties const &driverConfigStruct = driverConfig->getPropertiesStructure();
 
-	Properties4CXX::Property const * driverName =  driverConfigStruct.searchProperty("driver");
+	Properties4CXX::Property const * driverName;
+	try {
+		driverName =  driverConfigStruct.searchProperty("driver");
+	} catch (...) {
+		std::ostringstream os;
+		os << "Could not find property \"" << driverInstanceName << "/driver\"";
+		LOG4CXX_ERROR(logger,os.str());
+		throw GliderVarioDriverLoadException(__FILE__,__LINE__,os.str().c_str());
+	}
 
 	LOG4CXX_INFO (logger,"Driver name is \"" << driverName->getStringValue() << "\"");
 
