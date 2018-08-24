@@ -67,7 +67,7 @@ openEV::GliderVarioDriverLibBasePtr OEV_DRIVER_PUBLIC getDriverLib() {
 
 	LOG4CXX_INFO(logger,"IGCReader: getDriverLib");
 
-	return 0;
+	return &IGCReaderLib::theOneAndOnly;
 }
 
 
