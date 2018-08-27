@@ -86,7 +86,7 @@ parse_opt (int key, char *arg, struct argp_state *state)
   /* Get the input argument from argp_parse, which we
    * know is a pointer to our ProgramOptions struct.
    */
-	openEV::GliderVarioMainPriv::ProgramOptions &programOptions = *((openEV::GliderVarioMainPriv::ProgramOptions*)(state->input));
+	openEV::ProgramOptions &programOptions = *((openEV::ProgramOptions*)(state->input));
 
     switch (key)
         {
@@ -386,8 +386,15 @@ void GliderVarioMainPriv::startup () {
 		}
 	}
 
+	try {
 	configuration.setFileName(programOptions.configFile);
 	configuration.readConfiguration();
+	} catch (Properties4CXX::ExceptionBase const& e) {
+		std::ostringstream os;
+		os << "Error reading the configuration from file \"" << programOptions.configFile << "\": " << e.what();
+		LOG4CXX_FATAL(logger,os.str());
+		throw;
+	}
 
 	Properties4CXX::Property const* prop = configuration.searchProperty("terminateOnDriverLoadError");
 	if (prop && prop->isBool()) {

@@ -68,7 +68,17 @@ void GliderVarioDriverList::addDriver (DriverListItem const& driverListItem){
 void GliderVarioDriverList::loadDriverLibs(Properties4CXX::Properties const &configuration) {
 
 	// get the driver lib list from the configuration
-	Properties4CXX::Property const * driverLibNames = configuration.searchProperty ("driverSharedLibs");
+	Properties4CXX::Property const * driverLibNames;
+
+	try {
+	driverLibNames = configuration.searchProperty ("driverSharedLibs");
+	} catch (Properties4CXX::ExceptionBase const& e) {
+		std::ostringstream os;
+		os << "Cannot find configuration variable \"driverSharedLibs\": " << e.what();
+		LOG4CXX_FATAL(logger,os.str());
+		throw GliderVarioFatalConfigException(__FILE__,__LINE__,
+				"Configuration does not contain variable \"driverSharedLibs\"" );
+	}
 
 	if (!driverLibNames) {
 		LOG4CXX_FATAL(logger,"Configuration does not contain variable \"driverSharedLibs\"");
@@ -114,12 +124,20 @@ void GliderVarioDriverList::loadDriverLibs(Properties4CXX::Properties const &con
 void GliderVarioDriverList::loadDriverInstances(Properties4CXX::Properties const &configuration) {
 
 	// get the driver lib list from the configuration
-	Properties4CXX::Property const * driverNames = configuration.searchProperty ("drivers");
+	Properties4CXX::Property const * driverNames;
+
+	try {
+	driverNames = configuration.searchProperty ("drivers");
+	} catch (Properties4CXX::ExceptionBase const& e) {
+		LOG4CXX_FATAL(logger,"Configuration does not contain variable \"drivers\"");
+		throw GliderVarioFatalConfigException(__FILE__,__LINE__,
+				"Configuration does not contain property \"drivers\"" );
+	}
 
 	if (!driverNames) {
-		LOG4CXX_ERROR(logger,"Configuration does not contain variable \"drivers\"");
+		LOG4CXX_FATAL(logger,"Configuration does not contain variable \"drivers\"");
 		throw GliderVarioFatalConfigException(__FILE__,__LINE__,
-				"Configuration does not contain variable \"drivers\"" );
+				"Configuration does not contain property \"drivers\"" );
 	}
 
 	if (driverNames->isString()) {
@@ -212,6 +230,18 @@ void GliderVarioDriverList::loadDriverLib(const char* driverLibName) {
 	listItem.driverInit();
 	listItem.libObj = listItem.getDriverLib();
 
+	if (!listItem.libObj) {
+		std::ostringstream os;
+		os << "Library \""<< driverLibName << "\" returned NULL for the library object.";
+
+		LOG4CXX_ERROR(logger,os.str());
+
+		dlclose(listItem.shLibHandle);
+
+		throw GliderVarioDriverLoadException(__FILE__,__LINE__,os.str().c_str());
+
+	}
+
 	LOG4CXX_INFO(logger,"Obtained library object \"" << listItem.libObj->getLibName() << "\": " << listItem.libObj->getDescription());
 
 	{
@@ -232,11 +262,11 @@ void GliderVarioDriverList::loadDriverInstance(char const *driverInstanceName, P
 
 	try {
 		driverConfig = configuration.searchProperty(driverInstanceName);
-	} catch (...) {
+	} catch (Properties4CXX::ExceptionBase const& e) {
 		std::ostringstream os;
 		os << "Could not find property \"" << driverInstanceName << "\"";
 		LOG4CXX_ERROR(logger,os.str());
-		throw;
+		throw GliderVarioDriverLoadException(__FILE__,__LINE__,os.str().c_str() );
 	}
 
 	if (!driverConfig->isStruct()) {
@@ -251,7 +281,7 @@ void GliderVarioDriverList::loadDriverInstance(char const *driverInstanceName, P
 	Properties4CXX::Property const * driverName;
 	try {
 		driverName =  driverConfigStruct.searchProperty("driver");
-	} catch (...) {
+	} catch (Properties4CXX::ExceptionBase const& e) {
 		std::ostringstream os;
 		os << "Could not find property \"" << driverInstanceName << "/driver\"";
 		LOG4CXX_ERROR(logger,os.str());
