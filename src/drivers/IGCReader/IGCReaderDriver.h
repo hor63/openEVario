@@ -52,15 +52,11 @@ public:
     virtual void driverInit() override;
 
 
-    /** \brief Read the configuration for the driver
-     *
-     * @param configuration Configuration file content
-     */
     virtual void readConfiguration (Properties4CXX::Properties const &configuration) override;
 
     virtual void initializeStatus(GliderVarioStatus &varioStatus) override;
 
-    virtual void start() override;
+    virtual void start(GliderVarioMainPriv *varioMain) override;
 
     virtual void stop() override;
 
@@ -68,6 +64,7 @@ public:
 
     virtual void resume() override;
 
+    virtual void updateKalmanStatus (GliderVarioStatus &varioStatus) override;
 
 };
 

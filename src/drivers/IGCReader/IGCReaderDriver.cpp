@@ -43,18 +43,26 @@ void IGCReaderDriver::driverInit() {
 
 void IGCReaderDriver::readConfiguration (Properties4CXX::Properties const &configuration) {
 
+	try {
+
+	} catch (Properties4CXX::ExceptionBase const &e) {
+		throw GliderVarioDriverLoadException(__FILE__,__LINE__,e.what());
+	}
+
 }
 
 void IGCReaderDriver::initializeStatus(GliderVarioStatus &varioStatus) {
 
 }
 
-void IGCReaderDriver::start() {
+void IGCReaderDriver::start(GliderVarioMainPriv *varioMain) {
+	this->varioMain = varioMain;
 
 }
 
 void IGCReaderDriver::stop() {
 
+	varioMain = 0;
 }
 
 void IGCReaderDriver::suspend() {
@@ -64,6 +72,11 @@ void IGCReaderDriver::suspend() {
 void IGCReaderDriver::resume() {
 
 }
+
+void IGCReaderDriver::updateKalmanStatus (GliderVarioStatus &varioStatus) {
+
+}
+
 
 
 } /* namespace OevGLES */

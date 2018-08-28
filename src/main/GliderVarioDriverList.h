@@ -80,7 +80,8 @@ public:
 	} DriverLibListItem;
 
 	typedef std::map<std::string,DriverLibListItem> DriverLibList;
-	typedef std::map<std::string,GliderVarioDriverBase *> DriverInstanceList;
+	typedef std::shared_ptr<GliderVarioDriverBase> GliderVarioDriverBasePtr;
+	typedef std::map<std::string,GliderVarioDriverBasePtr> DriverInstanceList;
 
 
 	GliderVarioDriverList(ProgramOptions &programOptions);

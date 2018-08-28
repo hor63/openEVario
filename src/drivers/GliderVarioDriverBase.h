@@ -45,6 +45,9 @@
 
 namespace openEV {
 
+// Forward declaration
+class GliderVarioMainPriv;
+
 /** \brief Abstract base class for sensor drivers.
  *
  * Abstract base class of sensor drivers. Most methods are pure virtual, and must be implemented by the driver class
@@ -152,19 +155,57 @@ public:
 
     /** \brief Read the configuration for the driver
      *
-     * @param configuration Configuration file content
+     * @param configuration Sub-structure of the driver instance configuration
      */
     virtual void readConfiguration (Properties4CXX::Properties const &configuration) = 0;
 
+    /** \brief Initialize the status components which can be directly initialized from sensor values.
+     *
+     * Open and run the sensor to initialize the vario status. Initialize the components of the status which can be directly initialized,
+     * e.g. the position and altitude from initial GPS readings, or the altitude from the pressure sensor.
+     * In addition derived status values like the QFF can be initialized from the GPS altitude, and pressure altitude once both are known.
+     *
+     * It is in the discretion of the driver if it leaves the sensor connection open or it closes it until \ref start() is called.
+     *
+     * This call is synchronous. It should return ASAP in order to not make other initializations of the status invalid.
+     *
+     * @param varioStatus Status and Co-variance of the Kalman filter to be initialized.
+     */
     virtual void initializeStatus(GliderVarioStatus &varioStatus) = 0;
 
-    virtual void start() = 0;
+    /** \brief Start capturing data from the sensor, and updating the Kalman filter
+     *
+     * This call starts the internal thread of the driver instance and returns immediately.
+     *
+     * @param varioMain Pointer to the vario main object
+     */
+    virtual void start(GliderVarioMainPriv *varioMain) = 0;
 
+    /** \brief Stop capturing data from the sensor
+     *
+     * This calls returns when the internal thread is stopped and data capturing actually stopped.
+     * Connections are closed when necessary.
+     *
+     */
     virtual void stop() = 0;
 
+    /** \brief Suspend data capturing temporarily
+     *
+     * If a data capturing and Kalman update cycle is underway it will complete even if this function alreadz returned.
+     * It is in the discretion of the driver if data capturing continues (e.g. capturing GPS data).
+     *
+     * In any case updating of the Kalman filter is suspended.
+     */
     virtual void suspend() = 0;
 
+    /** \brief Data capturing and updating of the Kalman filter resumes
+     *
+     * When data capturing and Kalman filter updates were suspended before this call resumes operations.
+     *
+     */
     virtual void resume() = 0;
+
+    virtual void updateKalmanStatus (GliderVarioStatus &varioStatus) = 0;
 
 protected:
 
@@ -182,6 +223,9 @@ protected:
     std::string instanceName;
 
     GliderVarioDriverLibBase &driverLib;
+
+    /// Pointer to the main object. Is being set by \ref start() and set NULL by \ref stop()
+    GliderVarioMainPriv *varioMain = 0;
 
     // Abstract functions allowing sub-classing of the driver
 

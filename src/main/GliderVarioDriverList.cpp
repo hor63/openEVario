@@ -302,11 +302,20 @@ void GliderVarioDriverList::loadDriverInstance(char const *driverInstanceName, P
 
 	auto driverInstance = driverIter->second.getNewDriverInstance(driverIter->second.driverName.c_str(),driverIter->second.description.c_str(),driverInstanceName);
 
+	if (!driverInstance) {
+		std::ostringstream str;
+		str << "getNewDriverInstance for driver \"" << driverIter->second.driverName << "\" returned NULL";
+		LOG4CXX_ERROR(logger,str.str());
+		throw GliderVarioDriverLoadException (__FILE__,__LINE__,str.str().c_str());
+	}
+
 	LOG4CXX_INFO (logger,"Created driver instance \"" << driverInstance->getInstanceName()
 			<< "\" for driver \"" << driverInstance->getDriverName() << "\" from library \""
 			<< driverInstance->GetDriverLib().getLibName() << "\"");
 
 	DriverInstanceList::value_type newInstanceListItem {driverInstanceName,driverInstance};
+
+	driverInstance->readConfiguration(driverConfigStruct);
 
 	driverInstanceList.insert(newInstanceListItem);
 
