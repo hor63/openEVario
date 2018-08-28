@@ -1,3 +1,20 @@
+2018-08-29  hor  <horstmannkai@hotmail.com>
+
+	* src/drivers/GliderVarioDriverBase.h (GliderVarioDriverBase): 
+	* src/drivers/IGCReader/IGCReaderDriver.cpp (initializeStatus): 
+	* src/drivers/IGCReader/IGCReaderDriver.h (IGCReaderDriver): 
+	* src/main/GliderVarioDriverList.cpp (loadDriverInstance): 
+	* src/main/GliderVarioDriverList.h (GliderVarioDriverList): 
+	(GliderVarioDriverList::loadDriverInstance): 
+	(IGCReaderDriver::readConfiguration): 
+	(start): 
+	(stop): 
+	(IGCReaderDriver::start): 
+	(suspend): 
+	(IGCReaderDriver::stop): 
+	(IGCReaderDriver::updateKalmanStatus): 
+	  WIP - Work on driver intialization and invocation
+	   
 2018-08-24  hor  <horstmannkai@hotmail.com>
 
 	* src\main\ProgramOptions.h: New file.
