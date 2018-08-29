@@ -33,6 +33,29 @@
 #include "IGCReaderLib.h"
 namespace openEV {
 
+/** \brief Simulation/test driver playing back an IGC file
+ *
+ * This driver reads an IGC file with a flight record, and plays it back in real-time.
+ * This means that the Kalman filter updates occur with the exact intervals as the B (GPS fix) records were recorded in the IGC file
+ * The IGC file format is defined by the FAI (FÉDÉRATION AÉRONAUTIQUE INTERNATIONALE) INTERNATIONAL GLIDING COMMISSION.
+ *
+ * Please find the latest version of the specification at <a href="https://www.fai.org/igc-documents" >IGC documents</a>.
+ * There look for FLIGHT RECORDERS->"IGC-approved Flight Recorders - Technical Specification".
+ *
+ * The driver reads the I and B and K records.
+ * It updates these measurements in the Kalman filter:
+ * - GPS coordinates
+ * - GPS altitude
+ * - Static Pressure (calculated back from the pressure altitude in the record based on the standard atmosphere)
+ *
+ * The following measurements are updated when they are provided in the B records
+ * - GPS direction (optional)
+ * - Speed over ground (optional)
+ *
+ * Static pressure is calculated back from the pressure altitude in the B records according to the ICAO standard atmosphere.
+ * See <a href="https://de.wikipedia.org/wiki/Barometrische_H%C3%B6henformel#Internationale_H%C3%B6henformel" >Wikipedia: Internationale Höhenformel</a>
+ * or <a href="https://en.wikipedia.org/wiki/Barometric_formula#Pressure_equations" >Wikipedia: Barometric formula</a>
+ */
 class IGCReaderDriver  : public GliderVarioDriverBase {
 public:
 	IGCReaderDriver(
