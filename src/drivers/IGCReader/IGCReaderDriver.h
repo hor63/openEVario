@@ -26,11 +26,15 @@
 #ifndef IGCREADERDRIVER_H_
 #define IGCREADERDRIVER_H_
 
+#include <fstream>
+#include <string>
+
 #include "OEVCommon.h"
 
 // included here because the defines above are used in the include
 #include "drivers/GliderVarioDriverBase.h"
 #include "IGCReaderLib.h"
+
 namespace openEV {
 
 /** \brief Simulation/test driver playing back an IGC file
@@ -62,11 +66,7 @@ public:
     	    char const *driverName,
 			char const *description,
 			char const *instanceName
-			)
-	: GliderVarioDriverBase {driverName,description,instanceName,IGCReaderLib::theOneAndOnly}
-	{
-
-	}
+			);
 	virtual ~IGCReaderDriver();
 
     /**
@@ -88,6 +88,23 @@ public:
     virtual void resume() override;
 
     virtual void updateKalmanStatus (GliderVarioStatus &varioStatus) override;
+
+protected:
+
+    std::string igcFileName;
+    std::ifstream igcFile;
+
+    /** \brief Opens the IGC file if it has not been opened before
+     *
+     * Else do nothing.
+     */
+    void openIGCFile();
+
+    /** \brief Close the IGC file when it was open before.
+     *
+     * Else do nothing.
+     */
+    void closeIGCFile();
 
 };
 

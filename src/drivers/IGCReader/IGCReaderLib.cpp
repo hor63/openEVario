@@ -27,6 +27,8 @@
 #  include <config.h>
 #endif
 
+#include "OEVCommon.h"
+
 
 #include "IGCReaderLib.h"
 #include "IGCReaderDriver.h"

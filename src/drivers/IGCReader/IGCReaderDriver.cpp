@@ -27,10 +27,33 @@
 #  include <config.h>
 #endif
 
+#include <fstream>
 
 #include "IGCReaderDriver.h"
 
+
+#if defined HAVE_LOG4CXX_H
+static log4cxx::LoggerPtr logger = 0;
+#endif
+
 namespace openEV {
+
+IGCReaderDriver::IGCReaderDriver(
+	    char const *driverName,
+		char const *description,
+		char const *instanceName
+		)
+: GliderVarioDriverBase {driverName,description,instanceName,IGCReaderLib::theOneAndOnly}
+{
+
+#if defined HAVE_LOG4CXX_H
+	if (!logger) {
+		logger = log4cxx::Logger::getLogger("openEV.Drivers.IGCReader");
+	}
+#endif /* HAVE_LOG4CXX_H */
+
+}
+
 
 IGCReaderDriver::~IGCReaderDriver() {
 
@@ -43,15 +66,26 @@ void IGCReaderDriver::driverInit() {
 
 void IGCReaderDriver::readConfiguration (Properties4CXX::Properties const &configuration) {
 
+	Properties4CXX::Property const *fileNameProp;
+
 	try {
+
+		fileNameProp = configuration.searchProperty("file");
+
 
 	} catch (Properties4CXX::ExceptionBase const &e) {
 		throw GliderVarioDriverLoadException(__FILE__,__LINE__,e.what());
 	}
 
+	igcFileName = fileNameProp->getStringValue();
+
+	LOG4CXX_DEBUG (logger,"readConfiguration: Property \"file\" returns \"" << igcFileName << "\"");
+
 }
 
 void IGCReaderDriver::initializeStatus(GliderVarioStatus &varioStatus) {
+
+	openIGCFile();
 
 }
 
@@ -77,6 +111,27 @@ void IGCReaderDriver::updateKalmanStatus (GliderVarioStatus &varioStatus) {
 
 }
 
+void IGCReaderDriver::openIGCFile() {
+
+	if (!igcFile.is_open()) {
+		igcFile.open(igcFileName.c_str(),std::ios_base::in|std::ios_base::binary);
+		if (!igcFile) {
+			std::ostringstream os;
+			os << "Cannot open IGC file " << igcFileName;
+			LOG4CXX_ERROR(logger,os.str());
+			throw (GliderVarioDriverLoadException(__FILE__,__LINE__,os.str().c_str()));
+		}
+	}
+
+}
+
+void IGCReaderDriver::closeIGCFile() {
+
+	if (igcFile.is_open()) {
+		igcFile.close();
+	}
+
+}
 
 
 } /* namespace OevGLES */
