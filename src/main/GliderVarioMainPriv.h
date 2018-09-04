@@ -28,6 +28,8 @@
 
 #include <list>
 #include <string>
+#include <mutex>
+#include <chrono>
 
 #include "Properties4CXX/Properties.h"
 
@@ -50,6 +52,39 @@ namespace openEV {
 class GliderVarioMainPriv {
 public:
 
+	/** \ref Convenience class which implements a synchronized access to the current status of vario
+	 * Use instead of \ref GliderVarioMainPriv::getCurrentStatusAndLock and GliderVarioMainPriv::releaseCurrentStatus whenever possible
+	 * The current status will be locked as long as the object exists but automatically released when the object is deleted.
+	 * Therefore it is used best directly declared in a code block with limited scope.
+	 */
+	class LockedCurrentStatus {
+
+		LockedCurrentStatus (GliderVarioMainPriv & gliderVario)
+		: gliderVario {gliderVario}
+		{
+
+			currentStatus = gliderVario.getCurrentStatusAndLock();
+
+		}
+
+		~LockedCurrentStatus() {
+			gliderVario.releaseCurrentStatus();
+		}
+
+		GliderVarioStatus *getCurrentStatus () {
+			return currentStatus;
+		}
+
+		GliderVarioStatus * operator ->() {
+			return currentStatus;
+		}
+
+	private:
+
+		GliderVarioMainPriv & gliderVario;
+		GliderVarioStatus *currentStatus;
+
+	};
 
 	/** \brief Constructor accepting command line options compatible with main()
 	 *
@@ -107,6 +142,26 @@ public:
 		return programOptions;
 	}
 
+	/** \brief Return the pointer to the current status and lock it against concurrent access
+	 *
+	 * The function return a pointer to the current status, and requests a mutex to prevent concurrent access to the current status.
+	 *
+	 * The intended use of this function is the measurement update from sensors. If ProgramOptions::maxTimeBetweenPredictionAndMeasurementUpdate
+	 * is exceeded a prediction cycle is run and the status instances are swapped.
+	 *
+	 * After using the status it *must* be released ASAP by *the same* thread with \ref releaseCurrentStatus()
+	 *
+	 *
+	 * @return Pointer to the current status
+	 */
+	GliderVarioStatus *getCurrentStatusAndLock();
+
+	/** \brief Release the mutex of the current status obtained from calling \ref getCurrentStatusAndLock
+	 *
+	 */
+	void releaseCurrentStatus ();
+
+
 private:
 
 	int argc;
@@ -127,6 +182,20 @@ private:
 
 	GliderVarioStatus *currentStatus = &stat1;
 	GliderVarioStatus *nextStatus = &stat2;
+
+	/// \brief synchronizes access and updates to \ref stat1 and \ref stat2
+	std::mutex currentStatusLock;
+
+	std::chrono::high_resolution_clock clock;
+	std::chrono::high_resolution_clock::time_point lastPredictionUpdate;
+
+	/// \brief Read the configuration file, and extrace the base configuration values into \ref programOptions
+	void readConfiguration ();
+
+	/// \brief Performs a prediction from the current to the next status and swaps statuses.
+	/// This function must only be called under protection of \ref currentStatusLock
+	void predictAndSwapStatus();
+
 
 };
 

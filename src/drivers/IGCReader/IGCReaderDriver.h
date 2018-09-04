@@ -31,7 +31,6 @@
 
 #include "OEVCommon.h"
 
-// included here because the defines above are used in the include
 #include "drivers/GliderVarioDriverBase.h"
 #include "IGCReaderLib.h"
 

@@ -18,7 +18,7 @@
 
 lib_LTLIBRARIES = libopenEVIGCReader.la
 
-libopenEVIGCReader_la_SOURCES=IGCReaderMain.cpp IGCReaderLib.cpp IGCReaderDriver.cpp
+libopenEVIGCReader_la_SOURCES=IGCReaderMain.cpp IGCReaderLib.cpp IGCReaderDriver.cpp BRecordSection.cpp
  
 libopenEVIGCReader_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT) $(LOG4CXX_LDFLAGS)
 libopenEVIGCReader_la_LIBADD = ../../main/libopenEVMain.la ../../kalman/libopenEVKalman.la ../../util/libopenEVUtil.la $(LOG4CXX_LIBS) $(PTHREAD_LIBS)

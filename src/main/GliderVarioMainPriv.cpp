@@ -300,6 +300,8 @@ GliderVarioMainPriv::GliderVarioMainPriv(int argc, const char *argv[])
 	}
 #endif /* HAVE_LOG4CXX_H */
 
+	lastPredictionUpdate = clock.now();
+
 	this->argc = argc;
 
 	if (argc > 0) {
@@ -347,17 +349,17 @@ void GliderVarioMainPriv::startup () {
     	    logger->setLevel(log4cxx::Level::getFatal());
     	    break;
 
-    	case 2:
-    	    logger->setLevel(log4cxx::Level::getInfo());
+    	case 1:
+    	    logger->setLevel(log4cxx::Level::getError());
     	    break;
 
 		case 3:
 			logger->setLevel(log4cxx::Level::getDebug());
 			break;
 
-		case 1:
+		case 2:
 		default:
-			logger->setLevel(log4cxx::Level::getError());
+			logger->setLevel(log4cxx::Level::getInfo());
 
     }
 
@@ -386,6 +388,21 @@ void GliderVarioMainPriv::startup () {
 		}
 	}
 
+	// Read the configuration into memory and read out the global configuration properties.
+	readConfiguration();
+
+	// Read the driver shared libraries, open them and initialize the driver libraries
+	// Register the drivers implemented by the libraries
+    driverList.loadDriverLibs(configuration);
+
+    // Read the driver instances from the configuration, and create them for the specified drivers.
+	driverList.loadDriverInstances(configuration);
+
+}
+
+void GliderVarioMainPriv::readConfiguration () {
+
+
 	try {
 	configuration.setFileName(programOptions.configFile);
 	configuration.readConfiguration();
@@ -396,13 +413,80 @@ void GliderVarioMainPriv::startup () {
 		throw;
 	}
 
-	Properties4CXX::Property const* prop = configuration.searchProperty("terminateOnDriverLoadError");
-	if (prop && prop->isBool()) {
-		programOptions.terminateOnDriverLoadError = prop->getBoolValue();
-	}
+	try {
+		Properties4CXX::Property const* prop = configuration.searchProperty("terminateOnDriverLoadError");
+		if (prop && prop->isBool()) {
+			programOptions.terminateOnDriverLoadError = prop->getBoolValue();
+		} else {
+			LOG4CXX_ERROR(logger, "Property \"terminateOnDriverLoadError\" is not boolean. Use default value");
+		}
+	} catch (Properties4CXX::ExceptionBase const& e) {
+			LOG4CXX_DEBUG(logger,"Property \"terminateOnDriverLoadError\" does not exist. Use default value");
+		}
+	LOG4CXX_DEBUG(logger, "programOptions.terminateOnDriverLoadError = " << programOptions.terminateOnDriverLoadError);
 
-    driverList.loadDriverLibs(configuration);
-	driverList.loadDriverInstances(configuration);
+	try {
+		Properties4CXX::Property const* prop = configuration.searchProperty("idlePredictionCycle");
+		if (prop && (prop->isDouble()||prop->isInteger())) {
+			programOptions.idlePredictionCycle = std::chrono::milliseconds( prop->getIntVal());
+		} else {
+			LOG4CXX_ERROR(logger, "Property \"idlePredictionCycle\" is not double or integer. Use default value");
+		}
+	} catch (Properties4CXX::ExceptionBase const& e) {
+			LOG4CXX_DEBUG(logger,"Property \"idlePredictionCycle\" does not exist. Use default value");
+		}
+	LOG4CXX_DEBUG(logger, "programOptions.idlePredictionCycle = " << programOptions.idlePredictionCycle.count());
+
+	try {
+		Properties4CXX::Property const* prop = configuration.searchProperty("maxTimeBetweenPredictionAndMeasurementUpdate");
+		if (prop && (prop->isDouble()||prop->isInteger())) {
+			programOptions.maxTimeBetweenPredictionAndMeasurementUpdate = std::chrono::milliseconds(prop->getIntVal());
+		} else {
+			LOG4CXX_ERROR(logger, "Property \"maxTimeBetweenPredictionAndMeasurementUpdate\" is not double or integer. Use default value");
+		}
+	} catch (Properties4CXX::ExceptionBase const& e) {
+			LOG4CXX_DEBUG(logger,"Property \"maxTimeBetweenPredictionAndMeasurementUpdate\" does not exist. Use default value");
+		}
+	LOG4CXX_DEBUG(logger, "programOptions.maxTimeBetweenPredictionAndMeasurementUpdate = " << programOptions.maxTimeBetweenPredictionAndMeasurementUpdate.count());
+
 
 }
+
+
+GliderVarioStatus *GliderVarioMainPriv::getCurrentStatusAndLock() {
+
+	currentStatusLock.lock();
+
+	if ((lastPredictionUpdate + programOptions.maxTimeBetweenPredictionAndMeasurementUpdate) >= clock.now()) {
+		predictAndSwapStatus();
+	}
+
+	return currentStatus;
+
+}
+
+
+void GliderVarioMainPriv::releaseCurrentStatus () {
+	currentStatusLock.unlock();
+}
+
+void GliderVarioMainPriv::predictAndSwapStatus() {
+
+	auto timeBeforePredict = clock.now();
+
+
+	transitionMatrix.calcTransitionMatrixAndStatus(
+			FloatType(std::chrono::duration_cast<std::chrono::milliseconds>(timeBeforePredict - lastPredictionUpdate).count()),
+			*currentStatus,
+			*nextStatus);
+
+	// Swap status buffers
+	auto tempStatus = currentStatus;
+	currentStatus = nextStatus;
+	nextStatus = tempStatus;
+
+
+}
+
+
 } /* namespace openEV */

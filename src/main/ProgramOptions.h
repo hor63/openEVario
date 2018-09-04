@@ -28,6 +28,7 @@
 #define MAIN_PROGRAMOPTIONS_H_
 
 #include <string> 
+#include <chrono>
  
 
 #define defaultConfigFileName "./openEVario.properties"
@@ -45,6 +46,8 @@ namespace openEV {
 	    /// 3: Debug. Be really chatty
 	    int defaultLoggerLevel = 2; // Default level info.
 	    bool terminateOnDriverLoadError = true;
+	    std::chrono::duration<long double,std::milli> idlePredictionCycle = std::chrono::duration<long double,std::milli>(20);
+	    std::chrono::duration<long double,std::milli> maxTimeBetweenPredictionAndMeasurementUpdate = std::chrono::duration<long double,std::milli>(5);
 	} ;
  
 } // namespace openEV
