@@ -29,7 +29,6 @@
 #include <list>
 #include <string>
 #include <mutex>
-#include <chrono>
 
 #include "Properties4CXX/Properties.h"
 
@@ -39,6 +38,7 @@
 #include "main/GliderVarioDriverList.h"
 #include "kalman/GliderVarioStatus.h"
 #include "kalman/GliderVarioTransitionMatrix.h"
+#include "kalman/GliderVarioMeasurementVector.h"
 
 
 namespace openEV {
@@ -58,12 +58,13 @@ public:
 	 * Therefore it is used best directly declared in a code block with limited scope.
 	 */
 	class LockedCurrentStatus {
+	public:
 
 		LockedCurrentStatus (GliderVarioMainPriv & gliderVario)
 		: gliderVario {gliderVario}
 		{
 
-			currentStatus = gliderVario.getCurrentStatusAndLock();
+			currentStatus = gliderVario.getCurrentStatusAndLock(measurementVector);
 
 		}
 
@@ -79,10 +80,15 @@ public:
 			return currentStatus;
 		}
 
+		GliderVarioMeasurementVector *getMeasurementVector () {
+			return measurementVector;
+		}
+
 	private:
 
 		GliderVarioMainPriv & gliderVario;
 		GliderVarioStatus *currentStatus;
+		GliderVarioMeasurementVector *measurementVector;
 
 	};
 
@@ -151,10 +157,10 @@ public:
 	 *
 	 * After using the status it *must* be released ASAP by *the same* thread with \ref releaseCurrentStatus()
 	 *
-	 *
+	 * @param measurementVector Returns a pointer to the mostly useless :) measurement vector of the Kalman filter.
 	 * @return Pointer to the current status
 	 */
-	GliderVarioStatus *getCurrentStatusAndLock();
+	GliderVarioStatus *getCurrentStatusAndLock(GliderVarioMeasurementVector* & measurementVector);
 
 	/** \brief Release the mutex of the current status obtained from calling \ref getCurrentStatusAndLock
 	 *
@@ -179,6 +185,9 @@ private:
 
 	/// The transition matrix to predict the next status and the co-variance
 	GliderVarioTransitionMatrix transitionMatrix;
+
+	/// Needed for the Kalman filter interface, not much use otherwise at the moment.
+	GliderVarioMeasurementVector measurementVector;
 
 	GliderVarioStatus *currentStatus = &stat1;
 	GliderVarioStatus *nextStatus = &stat2;

@@ -40,7 +40,25 @@ void BRecordSectionLatitude::updateFilter (
 		char *const recordString,
 		int recordLen
 		) {
-#error Fill me
+
+	double deg = strToInt(recordString+recordPos,2);
+	double min = strToInt(recordString+(recordPos + 2),5) / 1000.0;
+	/// Accuracy one sigma in m.
+	int accuracy = 2;
+
+	if (accuracyLen > 0 && accuracyPos > 0) {
+		accuracy = strToInt(recordString + accuracyPos,accuracyLen);
+	}
+
+	deg += min / 60.0;
+
+
+	{
+		GliderVarioMainPriv::LockedCurrentStatus currentStatus(varioMain);
+		GliderVarioMeasurementUpdater::GPSLatitudeUpd(deg,FloatType(accuracy*accuracy), *currentStatus.getMeasurementVector(),*currentStatus.getCurrentStatus());
+
+	}
+
 }
 
 

@@ -453,13 +453,15 @@ void GliderVarioMainPriv::readConfiguration () {
 }
 
 
-GliderVarioStatus *GliderVarioMainPriv::getCurrentStatusAndLock() {
+GliderVarioStatus *GliderVarioMainPriv::getCurrentStatusAndLock(GliderVarioMeasurementVector* & measurementVector) {
 
 	currentStatusLock.lock();
 
 	if ((lastPredictionUpdate + programOptions.maxTimeBetweenPredictionAndMeasurementUpdate) >= clock.now()) {
 		predictAndSwapStatus();
 	}
+
+	measurementVector = &(this->measurementVector);
 
 	return currentStatus;
 
@@ -476,9 +478,11 @@ void GliderVarioMainPriv::predictAndSwapStatus() {
 
 
 	transitionMatrix.calcTransitionMatrixAndStatus(
-			FloatType(std::chrono::duration_cast<std::chrono::milliseconds>(timeBeforePredict - lastPredictionUpdate).count()),
+			FloatType(std::chrono::duration_cast<MilliSecondFrac>(timeBeforePredict - lastPredictionUpdate).count()),
 			*currentStatus,
 			*nextStatus);
+
+	lastPredictionUpdate = timeBeforePredict;
 
 	// Swap status buffers
 	auto tempStatus = currentStatus;

@@ -36,6 +36,7 @@
 #include <unordered_map>
 #include <stdlib.h>
 #include <cstdlib>
+#include <chrono>
 
 #if defined HAVE_CONFIG_H
 #	include "config.h"
@@ -129,10 +130,15 @@
 namespace openEV {
 
 /**
- * The global float type. Change this one to double, and the entire system will run in double.
+ * \brief The global float type. Change this one to double, and the entire system will run in double.
  * For optimal performance this should be *float*. Eigen can use the NEON unit for vectorized arithmetic on ARMV7 processors if available.
  */
 	typedef float FloatType;
+
+	/** \brief Millisecond duration type with fractional tick
+	 *
+	 */
+	typedef std::chrono::duration<double,std::milli> MilliSecondFrac;
 
 }
 

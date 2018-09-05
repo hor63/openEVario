@@ -29,6 +29,7 @@
 #include "OEVCommon.h"
 
 #include "drivers/GliderVarioDriverBase.h"
+#include "main/GliderVarioMainPriv.h"
 
 namespace openEV {
 
@@ -74,6 +75,37 @@ public:
 			int recordLen
 			) = 0;
 
+	static int strToInt (char const* str,int len) {
+		int rc = 0;
+		int sign = 1;
+
+		if (len <= 0) {
+			return rc;
+		}
+
+		if (*str == '-') {
+			sign = -1;
+			str ++;
+			len--;
+		}
+
+		while (len) {
+
+			if (*str >= '0' && *str <= '9') {
+				rc = rc * 10 + (*str - '0');
+
+			} else {
+				break;
+			}
+
+			len --;
+			str ++;
+		}
+
+		return sign * rc;
+
+	}
+
 protected:
 
 	int recordPos;
@@ -102,7 +134,7 @@ public:
 
 	void set_accuracyLoc (
 			int accuracyPos,
-			int accuracyLen,
+			int accuracyLen
 			) {
 		this->accuracyPos = accuracyPos;
 		this->accuracyLen = accuracyLen;
