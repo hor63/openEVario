@@ -42,10 +42,10 @@ namespace openEV {
  *
  * The standard structure of a B record is as follows:
  *
- *     B time   Latitude Longitude Valid PressAlt GPSAlt
- *     B HHMMSS DDMMmmmN DDDMMmmmE V     PPPPP    GGGGG CR LF
- *     0 123456 78901234 567890123 4     56789    01234
- *                 1          2                   3
+ *     B time   Latitude Longitude Valid BaroAlt GPSAlt
+ *     B HHMMSS DDMMmmmN DDDMMmmmE V     PPPPP   GGGGG CR LF
+ *     0 123456 78901234 567890123 4     56789   01234
+ *                 1          2                  3
  *
  * Additional sections may follow. These are defined with meaning, position and length in the I record.
  *
@@ -113,18 +113,38 @@ protected:
 
 }; // class BRecordSectionBase
 
-class BRecordSectionLatitude : public BRecordSectionBase {
+/// \brief Implements simultaneously the update with latitude and longitude, GPS altitude, and pressure from the B-record fix.
+class BRecordSectionStd : public BRecordSectionBase {
 public:
 
-	BRecordSectionLatitude()
-	:BRecordSectionBase {7,8},
+    static int constexpr latDegPos = 7;
+    static int constexpr latDegLen = 2;
+    static int constexpr latMinPos = 9;
+    static int constexpr latMinLen = 5;
+    static int constexpr latNPos   = 14;
+
+    static int constexpr lonDegPos = 15;
+    static int constexpr lonDegLen = 3;
+    static int constexpr lonMinPos = 18;
+    static int constexpr lonMinLen = 5;
+    static int constexpr lonEPos   = 23;
+
+    static int constexpr gpsValidPos = 24;
+
+    static int constexpr baroAltPos = 25;
+    static int constexpr baroAltLen = 5;
+
+    static int constexpr gpsAltPos = 30;
+    static int constexpr gpsAltLen = 5;
+
+
+	BRecordSectionStd()
+	:BRecordSectionBase {7,28},
 	 accuracyPos {-1},
-	 accuracyLen {-1},
-	 validityPos {24},
-	 validityLen {1}
+	 accuracyLen {-1}
 	{ }
 
-	virtual ~BRecordSectionLatitude();
+	virtual ~BRecordSectionStd();
 
 	virtual void updateFilter (
 			GliderVarioMainPriv &varioMain,
@@ -145,9 +165,6 @@ protected:
 
 	int accuracyPos;
 	int accuracyLen;
-
-	int validityPos;
-	int validityLen;
 
 };
 

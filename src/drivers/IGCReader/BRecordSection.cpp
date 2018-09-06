@@ -31,18 +31,18 @@ BRecordSectionBase::~BRecordSectionBase() {
 
 }
 
-BRecordSectionLatitude::~BRecordSectionLatitude() {
+BRecordSectionStd::~BRecordSectionStd() {
 
 }
 
-void BRecordSectionLatitude::updateFilter (
+void BRecordSectionStd::updateFilter (
 		GliderVarioMainPriv &varioMain,
 		char *const recordString,
 		int recordLen
 		) {
 
-	double deg = strToInt(recordString+recordPos,2);
-	double min = strToInt(recordString+(recordPos + 2),5) / 1000.0;
+	double degLat = strToInt(recordString+latDegPos,latDegLen);
+	double min = strToInt(recordString+latMinPos,latMinLen) / 1000.0;
 	/// Accuracy one sigma in m.
 	int accuracy = 2;
 
@@ -50,12 +50,12 @@ void BRecordSectionLatitude::updateFilter (
 		accuracy = strToInt(recordString + accuracyPos,accuracyLen);
 	}
 
-	deg += min / 60.0;
+	degLat += min / 60.0;
 
 
 	{
 		GliderVarioMainPriv::LockedCurrentStatus currentStatus(varioMain);
-		GliderVarioMeasurementUpdater::GPSLatitudeUpd(deg,FloatType(accuracy*accuracy), *currentStatus.getMeasurementVector(),*currentStatus.getCurrentStatus());
+		GliderVarioMeasurementUpdater::GPSLatitudeUpd(degLat,FloatType(accuracy*accuracy), *currentStatus.getMeasurementVector(),*currentStatus.getCurrentStatus());
 
 	}
 

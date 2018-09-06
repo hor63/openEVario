@@ -157,7 +157,7 @@ public:
 	 *
 	 * After using the status it *must* be released ASAP by *the same* thread with \ref releaseCurrentStatus()
 	 *
-	 * @param measurementVector Returns a pointer to the mostly useless :) measurement vector of the Kalman filter.
+	 * @param[out] measurementVector Returns a pointer to the mostly useless :) measurement vector of the Kalman filter.
 	 * @return Pointer to the current status
 	 */
 	GliderVarioStatus *getCurrentStatusAndLock(GliderVarioMeasurementVector* & measurementVector);
