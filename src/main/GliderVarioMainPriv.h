@@ -160,12 +160,12 @@ public:
 	 * @param[out] measurementVector Returns a pointer to the mostly useless :) measurement vector of the Kalman filter.
 	 * @return Pointer to the current status
 	 */
-	GliderVarioStatus *getCurrentStatusAndLock(GliderVarioMeasurementVector* & measurementVector);
+	GliderVarioStatus * OEV_MAIN_PUBLIC getCurrentStatusAndLock(GliderVarioMeasurementVector* & measurementVector);
 
 	/** \brief Release the mutex of the current status obtained from calling \ref getCurrentStatusAndLock
 	 *
 	 */
-	void releaseCurrentStatus ();
+	void OEV_MAIN_PUBLIC releaseCurrentStatus ();
 
 
 private:
