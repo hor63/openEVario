@@ -45,6 +45,7 @@ void BRecordSectionStd::updateFilter (
 	double min = strToInt(recordString+latMinPos,latMinLen) / 1000.0;
 	/// Accuracy one sigma in m.
 	int accuracy = 2;
+	int vertAccuracy = 10;
 
 	if (accuracyLen > 0 && accuracyPos > 0) {
 		accuracy = strToInt(recordString + accuracyPos,accuracyLen);
