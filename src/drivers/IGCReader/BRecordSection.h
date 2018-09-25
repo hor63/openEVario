@@ -60,6 +60,11 @@ namespace openEV {
 class BRecordSectionBase {
 public:
 
+	/** \brief Constructor
+	 *
+	 * @param recordPos Start position of the section in one record of the IGC file
+	 * @param recordLen Length of the section in one record of the IGC file
+	 */
 	BRecordSectionBase(
 			int recordPos,
 			int recordLen)
@@ -69,12 +74,26 @@ public:
 
 	virtual ~BRecordSectionBase();
 
+	/** \brief Read and interprete one B record of the IGC file. Update the Kalman filter with the measurements from the record
+	 *
+	 * @param varioMain Main object of the filter which is to be updated with the measurements
+	 * @param recordString Complete line of the IGC file including the identifying letter (here B), but without the line terminators (CR-LF).
+	 * @param recordLen Lengh of the recorf (without the CR-LF terminators)
+	 */
 	virtual void updateFilter (
 			GliderVarioMainPriv &varioMain,
 			char *const recordString,
 			int recordLen
 			) = 0;
 
+	/** \brief Read a signed integer value from a fixed length string
+	 *
+	 * Only minimal health checks are performed. The function stops reading when it encounters a non-digit character. Exception is the first character which can be a '-' character.
+	 *
+	 * @param str The string which is read as signed integer (does not have to be NULL terminated)
+	 * @param len Length of valid part the string (Usually the string is not NULL terminated, as the sections of a line in a IGC file are fixed positioned, and not separated.
+	 * @return Signed interger value
+	 */
 	static int strToInt (char const* str,int len) {
 		int rc = 0;
 		int sign = 1;
@@ -117,19 +136,21 @@ protected:
 class BRecordSectionStd : public BRecordSectionBase {
 public:
 
+	// fixed mandatory positions within a B-record
+
     static int constexpr latDegPos = 7;
     static int constexpr latDegLen = 2;
     static int constexpr latMinPos = 9;
     static int constexpr latMinLen = 5;
-    static int constexpr latNPos   = 14;
+    static int constexpr latNPos   = 14; ///< \brief N or S to indicate North or South of the equator. N becomes positive, S becomes negative latitude
 
     static int constexpr lonDegPos = 15;
     static int constexpr lonDegLen = 3;
     static int constexpr lonMinPos = 18;
     static int constexpr lonMinLen = 5;
-    static int constexpr lonEPos   = 23;
+    static int constexpr lonEPos   = 23; ///< \brief E or W to indicate East or West of the Terminator. E becomes positive, W becomes negative longitude.
 
-    static int constexpr gpsValidPos = 24;
+    static int constexpr gpsValidPos = 24; ///< \brief "A" indicates a valid 3-D fix, "V" indicates an invalid or 2d-only fix.
 
     static int constexpr baroAltPos = 25;
     static int constexpr baroAltLen = 5;
@@ -139,32 +160,55 @@ public:
 
 
 	BRecordSectionStd()
-	:BRecordSectionBase {7,28},
-	 accuracyPos {-1},
-	 accuracyLen {-1}
+	:BRecordSectionBase {7,28}
 	{ }
 
 	virtual ~BRecordSectionStd();
 
+	/// \brief \see BRecordSectionBase::updateFilter
 	virtual void updateFilter (
 			GliderVarioMainPriv &varioMain,
 			char *const recordString,
 			int recordLen
 			);
 
-	void set_accuracyLoc (
-			int accuracyPos,
-			int accuracyLen
-			) {
-		this->accuracyPos = accuracyPos;
-		this->accuracyLen = accuracyLen;
-	}
-
+	/** \brief Process an I-Record which defines the type and location of optional fields in the following B-Records
+	 *
+	 * @param recordString The entire I-record string including the leading character I, but exclusive the line terminator CR-LF.
+	 * @param recordLen Length of the record. \ref recordString is not necessarily NULL-terminated.
+	 */
+	void processIRecord (
+			char *const recordString,
+			int recordLen
+			);
 
 protected:
 
-	int accuracyPos;
-	int accuracyLen;
+	/// \brief Defined by the FXA code in the I-record
+	int accuracyPos = -1;
+	/// \brief \see accuracyPos
+	int accuracyLen = -1;
+
+	/// \brief Vertical accuracy in meter. Defined in the VXA record in the I-record
+	int vertAccuracyPos = -1;
+	/// \brief \see vertAccuracyPos
+	int vertAccuracyLen = -1;
+
+	/// \brief More decimal places for the latitude. Defined by the LAD code in the I-record
+	int latDecimalsPos = -1;
+	/// \brief \see latDecimalsPos
+	int latDecimalsLen = -1;
+
+	/// \brief More decimal places for the longitude. Defined by the LOD code in the I-record
+	int lonDecimalsPos = -1;
+	/// \brief \see lonDecimalsPos
+	int lonDecimalsLen = -1;
+
+	/// \brief Decimals of the timestamp. Defined by the TDS code in the I-record
+	int timestampDecimalsPos = -1;
+	/// \brief \see timestampDecimalsPos
+	int timestampDecimalsLen = -1;
+
 
 };
 
