@@ -23,6 +23,8 @@
  *
  */
 
+#include <string.h>
+
 #include "BRecordSection.h"
 
 namespace openEV {
@@ -62,5 +64,40 @@ void BRecordSectionStd::updateFilter (
 
 }
 
+void BRecordSectionStd::processIRecord(char* const recordString,
+		int recordLen) {
+
+	/*
+	 * The I-Record looks like this:
+	 * I	Nu	StEnCod	StEnCod ... CRLF
+	 * 0	12	3456789	0123456
+	 * 0				1
+	 *
+	 * with
+	 * I	Literal character 'I'
+	 * Nu	Number of records
+	 * St	Start Byte
+	 * En	End byte
+	 * Cod	Three-character code of the field, e.g. "FXA"
+	 */
+
+
+	int numRecords = strToInt(recordString + 1,2);
+	int pos = 1;
+
+	// termination condition checks that a full field of 7 characters is still available in the string
+	for (int i = 0; i < numRecords; i++) {
+
+		if (i*7 + 10 > recordLen) {
+			break;
+		}
+
+		if (!strncmp(recordString + pos + 4, "FXA",3)) {
+
+		}
+
+	}
+
+}
 
 } /* namespace openEV */
