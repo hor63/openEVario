@@ -83,16 +83,26 @@ void BRecordSectionStd::processIRecord(char* const recordString,
 
 
 	int numRecords = strToInt(recordString + 1,2);
-	int pos = 1;
 
 	// termination condition checks that a full field of 7 characters is still available in the string
 	for (int i = 0; i < numRecords; i++) {
+		int pos = i*7 + 3;
 
-		if (i*7 + 10 > recordLen) {
+
+		if (pos + 7 > recordLen) {
 			break;
 		}
 
-		if (!strncmp(recordString + pos + 4, "FXA",3)) {
+		// get field start and len. When this code is not used, do't worry about the lost time. The I record ocurs only once at the start of the file
+		// start byte starts at 1, C/C++ start at 0
+		int fieldStart = strToInt(recordString + pos,2) - 1;
+		int fieldLen = strToInt(recordString + (pos+2),2) - fieldStart;
+
+		if (fieldStart <= 0 || fieldLen <= 0) {
+			break;
+		}
+
+		if (!strncmp(recordString + (pos+4), "FXA",3)) {
 
 		}
 
