@@ -93,17 +93,60 @@ void BRecordSectionStd::processIRecord(char* const recordString,
 			break;
 		}
 
-		// get field start and len. When this code is not used, do't worry about the lost time. The I record ocurs only once at the start of the file
+		// get field start and len. When this code is not used, do't worry about the lost time. The I-record occurs only once at the start of the file
 		// start byte starts at 1, C/C++ start at 0
 		int fieldStart = strToInt(recordString + pos,2) - 1;
 		int fieldLen = strToInt(recordString + (pos+2),2) - fieldStart;
 
 		if (fieldStart <= 0 || fieldLen <= 0) {
-			break;
+			continue;
 		}
 
+	    // horizontal GPS accuracy. Quasi standard
 		if (!strncmp(recordString + (pos+4), "FXA",3)) {
+			accuracyPos = fieldStart;
+			accuracyLen = fieldLen;
+			continue;
+		}
 
+		// vertical GPS accuracy. If not present i assume 5 times horizontal accuracy
+		if (!strncmp(recordString + (pos+4), "VXA",3)) {
+			vertAccuracyPos = fieldStart;
+			vertAccuracyLen = fieldLen;
+			continue;
+		}
+
+		// additional decimal digits for the latitude
+		if (!strncmp(recordString + (pos+4), "LAD",3)) {
+			latDecimalsPos = fieldStart;
+			latDecimalsLen = fieldLen;
+			latDecFactor = 1/1000.0; // The base record provides three decimal digits for the latitude minutes
+			for (int k=0 ; k < fieldLen; k++) {
+				latDecFactor *= 0.1;
+			}
+			continue;
+		}
+
+		// additional decimal digits for the longitude
+		if (!strncmp(recordString + (pos+4), "LOD",3)) {
+			lonDecimalsPos = fieldStart;
+			lonDecimalsLen = fieldLen;
+			lonDecFactor = 1/1000.0; // The base record provides three decimal digits for the longitude minutes
+			for (int k=0 ; k < fieldLen; k++) {
+				lonDecFactor *= 0.1;
+			}
+			continue;
+		}
+
+		// additional decimal digits for the timestamp
+		if (!strncmp(recordString + (pos+4), "TDS",3)) {
+			timestampDecimalsPos = fieldStart;
+			timestampDecimalsLen = fieldLen;
+			timeDecFactor = 1.0; // The base record provides whole seconds for the timestamp
+			for (int k=0 ; k < fieldLen; k++) {
+				lonDecFactor *= 0.1;
+			}
+			continue;
 		}
 
 	}

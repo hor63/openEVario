@@ -198,16 +198,25 @@ protected:
 	int latDecimalsPos = -1;
 	/// \brief \see latDecimalsPos
 	int latDecimalsLen = -1;
+	/// \brief Factor to multiply the integer before adding to the base latitude.
+	/// \see latDecimalsPos
+	double latDecFactor = 0.0;
 
 	/// \brief More decimal places for the longitude. Defined by the LOD code in the I-record
 	int lonDecimalsPos = -1;
 	/// \brief \see lonDecimalsPos
 	int lonDecimalsLen = -1;
+	/// \brief Factor to multiply the integer before adding to the base longitude.
+	/// \see lonDecimalsPos
+	double lonDecFactor = 0.0;
 
 	/// \brief Decimals of the timestamp. Defined by the TDS code in the I-record
 	int timestampDecimalsPos = -1;
 	/// \brief \see timestampDecimalsPos
 	int timestampDecimalsLen = -1;
+	/// \brief Factor to multiply the integer before adding to the base timestamp.
+	/// \see lonDecimalsPos
+	double timeDecFactor = 0.0;
 
 
 };
