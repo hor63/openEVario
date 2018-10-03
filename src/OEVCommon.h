@@ -1,5 +1,5 @@
 /*
- * dllCommon.h
+ * OEVCommon.h
  *
  *  Created on: Sep 29, 2017
  *      Author: hor
@@ -37,6 +37,14 @@
 #include <stdlib.h>
 #include <cstdlib>
 #include <chrono>
+
+#if HAVE_TIME_H == 1
+#	include <time.h>
+#endif
+
+#if HAVE_SYS_TIME_H == 1
+#	include <sys/time.h>
+#endif
 
 #if defined HAVE_CONFIG_H
 #	include "config.h"
