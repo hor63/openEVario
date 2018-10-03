@@ -32,7 +32,42 @@
 
 namespace openEV {
 
-BRecordSectionBase::~BRecordSectionBase() {
+/** \brief Read a signed integer value from a fixed length string
+ *
+ * Only minimal health checks are performed. The function stops reading when it encounters a non-digit character. Exception is the first character which can be a '-' character.
+ *
+ * @param str The string which is read as signed integer (does not have to be NULL terminated)
+ * @param len Length of valid part the string (Usually the string is not NULL terminated, as the sections of a line in a IGC file are fixed positioned, and not separated.
+ * @return Signed interger value
+ */
+static inline int strToInt (char const* str,int len) {
+	int rc = 0;
+	int sign = 1;
+
+	if (len <= 0) {
+		return rc;
+	}
+
+	if (*str == '-') {
+		sign = -1;
+		str ++;
+		len--;
+	}
+
+	while (len) {
+
+		if (*str >= '0' && *str <= '9') {
+			rc = rc * 10 + (*str - '0');
+
+		} else {
+			break;
+		}
+
+		len --;
+		str ++;
+	}
+
+	return sign * rc;
 
 }
 

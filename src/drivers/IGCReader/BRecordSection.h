@@ -57,83 +57,7 @@ namespace openEV {
  *     K HHMMSS xxxxxxxxxx
  *     0 123456 7890...
  */
-class BRecordSectionBase {
-public:
-
-	/** \brief Constructor
-	 *
-	 * @param recordPos Start position of the section in one record of the IGC file
-	 * @param recordLen Length of the section in one record of the IGC file
-	 */
-	BRecordSectionBase(
-			int recordPos,
-			int recordLen)
-	:recordPos {recordPos},
-	 recordLen {recordLen}
-	{ }
-
-	virtual ~BRecordSectionBase();
-
-	/** \brief Read and interprete one B record of the IGC file. Update the Kalman filter with the measurements from the record
-	 *
-	 * @param varioMain Main object of the filter which is to be updated with the measurements
-	 * @param recordString Complete line of the IGC file including the identifying letter (here B), but without the line terminators (CR-LF).
-	 * @param recordLen Lengh of the recorf (without the CR-LF terminators)
-	 */
-	virtual void updateFilter (
-			GliderVarioMainPriv &varioMain,
-			char *const recordString,
-			int recordLen
-			) = 0;
-
-	/** \brief Read a signed integer value from a fixed length string
-	 *
-	 * Only minimal health checks are performed. The function stops reading when it encounters a non-digit character. Exception is the first character which can be a '-' character.
-	 *
-	 * @param str The string which is read as signed integer (does not have to be NULL terminated)
-	 * @param len Length of valid part the string (Usually the string is not NULL terminated, as the sections of a line in a IGC file are fixed positioned, and not separated.
-	 * @return Signed interger value
-	 */
-	static int strToInt (char const* str,int len) {
-		int rc = 0;
-		int sign = 1;
-
-		if (len <= 0) {
-			return rc;
-		}
-
-		if (*str == '-') {
-			sign = -1;
-			str ++;
-			len--;
-		}
-
-		while (len) {
-
-			if (*str >= '0' && *str <= '9') {
-				rc = rc * 10 + (*str - '0');
-
-			} else {
-				break;
-			}
-
-			len --;
-			str ++;
-		}
-
-		return sign * rc;
-
-	}
-
-protected:
-
-	int recordPos;
-	int recordLen;
-
-}; // class BRecordSectionBase
-
-/// \brief Implements simultaneously the update with latitude and longitude, GPS altitude, and pressure from the B-record fix.
-class BRecordSectionStd : public BRecordSectionBase {
+class BRecordSectionStd  {
 public:
 
 	// fixed mandatory positions within a B-record
@@ -160,7 +84,6 @@ public:
 
 
 	BRecordSectionStd()
-	:BRecordSectionBase {7,28}
 	{ }
 
 	virtual ~BRecordSectionStd();
@@ -181,6 +104,7 @@ public:
 			char *const recordString,
 			int recordLen
 			);
+
 
 protected:
 
