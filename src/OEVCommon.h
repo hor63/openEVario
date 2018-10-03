@@ -143,6 +143,10 @@ namespace openEV {
  */
 	typedef float FloatType;
 
+	/**
+	 * \brief Use the system clock duration definition throughout
+	 */
+	typedef std::chrono::system_clock::duration OEVDuration;
 
 }
 
