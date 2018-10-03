@@ -81,6 +81,22 @@ void BRecordSectionStd::processBRecord (
 		BRecord &bRecord
 		) {
 
+	// process the GPS position and alitude only when
+	if (recordString[gpsValidPos] == gpsValid) {
+
+		bRecord.altGPS = valueInvalid;
+		bRecord.latitude = valueInvalid;
+		bRecord.longitude = valueInvalid;
+
+
+	} else { // if (recordString[gpsValidPos] == gpsValid)
+
+		bRecord.altGPS = valueInvalid;
+		bRecord.latitude = valueInvalid;
+		bRecord.longitude = valueInvalid;
+	} // if (recordString[gpsValidPos] == gpsValid)
+
+
 }
 
 
