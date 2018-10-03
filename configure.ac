@@ -59,6 +59,13 @@ AC_SEARCH_LIBS([argp_parse],[],[AC_DEFINE([HAVE_ARGP_PARSE],[1],[Define to 1 if 
 AC_SEARCH_LIBS([getopt_long],[],[AC_DEFINE([HAVE_GETOPT_LONG],[1],[Define to 1 if the function getopt_long is available.])],[])
 AC_SEARCH_LIBS([getopt],[],[AC_DEFINE([HAVE_GETOPT],[1],[Define to 1 if the function getopt is available.])],[])
 
+AC_STRUCT_TIMEZONE
+AC_CHECK_HEADER([time.h],[AC_DEFINE([HAVE_TIME_H],[1],[Define to 1 if you have the <time.h> header file.])],[])
+AC_SEARCH_LIBS([timespec_get],[],[AC_DEFINE([HAVE_TIMESPEC_GET],[1],[Define to 1 if the function timespec_get is available.])],[])
+AC_CHECK_MEMBER([struct timespec.tv_nsec], 
+							[AC_DEFINE([HAVE_TIMESPEC_STRUCT],[1],[Define to 1 if you have the timespec structure defined in time.h.])],[],
+                          	[[#include <time.h>]])
+
 AX_CHECK_COMPILE_FLAG([-fvisibility=internal],[DLL_VISIBLE_CFLAGS="-fvisibility=internal"])
 AC_SUBST([DLL_VISIBLE_CFLAGS])
 
