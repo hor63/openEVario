@@ -29,6 +29,8 @@
 #include <fstream>
 #include <string>
 
+#include <map>
+
 #include "OEVCommon.h"
 
 #include "drivers/GliderVarioDriverBase.h"
@@ -61,6 +63,16 @@ namespace openEV {
  */
 class IGCReaderDriver  : public GliderVarioDriverBase {
 public:
+
+    typedef struct {
+    	OEVDuration timeSinceStart; ///< Duration since the first B-record
+    	double latitude; ///< Latitude in degrees. -9999.0 means the record is undefined
+    	double longitude; ///< Latitude in degrees. -9999.0 means the record is undefined
+    	double altGPS; ///< GPS altitude in m. -9999.0 means the record is undefined
+    	double pressure; ///< Pressure in hPa (mbar) calculated from the pressure altitude according to the standard atmosphere model
+    } BRecord;
+
+
 	IGCReaderDriver(
     	    char const *driverName,
 			char const *description,
@@ -92,6 +104,9 @@ protected:
 
     std::string igcFileName;
     std::ifstream igcFile;
+
+    /// All B-records (GPS fixes and pressure measurements)
+    std::map<OEVDuration,BRecord> bRecords;
 
     /** \brief Opens the IGC file if it has not been opened before
      *
