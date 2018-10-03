@@ -31,11 +31,20 @@
 #include <cstdint>
 #include <memory>
 #include <string>
-
-#include "Properties4CXX/Properties.h"
-
 #include <list>
 #include <memory>
+
+#if HAVE_TIME_H == 1
+#	include <time.h>
+#endif
+
+#if HAVE_SYS_TIME_H == 1
+#	include <sys/time.h>
+#endif
+
+#include <chrono>
+
+#include "Properties4CXX/Properties.h"
 
 
 #include "OEVCommon.h"
