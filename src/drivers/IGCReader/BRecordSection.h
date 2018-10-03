@@ -78,12 +78,15 @@ public:
     static int constexpr lonEPos   = 23; ///< \brief E or W to indicate East or West of the Terminator. E becomes positive, W becomes negative longitude.
 
     static int constexpr gpsValidPos = 24; ///< \brief "A" indicates a valid 3-D fix, "V" indicates an invalid or 2d-only fix.
-
-    static int constexpr baroAltPos = 25;
-    static int constexpr baroAltLen = 5;
+    static char constexpr gpsValid = 'A';
 
     static int constexpr gpsAltPos = 30;
     static int constexpr gpsAltLen = 5;
+
+    static double constexpr valueInvalid = -9999.0;
+
+    static int constexpr baroAltPos = 25;
+    static int constexpr baroAltLen = 5;
 
 
 	BRecordSectionStd()
