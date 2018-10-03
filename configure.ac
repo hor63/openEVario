@@ -66,6 +66,12 @@ AC_CHECK_MEMBER([struct timespec.tv_nsec],
 							[AC_DEFINE([HAVE_TIMESPEC_STRUCT],[1],[Define to 1 if you have the timespec structure defined in time.h.])],[],
                           	[[#include <time.h>]])
 
+AC_CHECK_HEADER([sys/time.h],[AC_DEFINE([HAVE_SYS_TIME_H],[1],[Define to 1 if you have the <sys/time.h> header file.])],[])
+AC_SEARCH_LIBS([gettimeofday],[],[AC_DEFINE([HAVE_GETTIMEOFDAY],[1],[Define to 1 if the function gettimeofday is available.])],[])
+AC_CHECK_MEMBER([struct timeval.tv_usec], 
+							[AC_DEFINE([HAVE_TIMEVAL_STRUCT],[1],[Define to 1 if you have the timeval structure defined in sys/time.h.])],[],
+                          	[[#include <sys/time.h>]])
+
 AX_CHECK_COMPILE_FLAG([-fvisibility=internal],[DLL_VISIBLE_CFLAGS="-fvisibility=internal"])
 AC_SUBST([DLL_VISIBLE_CFLAGS])
 
