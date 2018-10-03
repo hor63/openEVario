@@ -143,10 +143,6 @@ namespace openEV {
  */
 	typedef float FloatType;
 
-	/** \brief Millisecond duration type with fractional tick
-	 *
-	 */
-	typedef std::chrono::duration<double,std::milli> MilliSecondFrac;
 
 }
 
