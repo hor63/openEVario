@@ -88,13 +88,6 @@ public:
 
 	virtual ~BRecordSectionStd();
 
-	/// \brief \see BRecordSectionBase::updateFilter
-	virtual void updateFilter (
-			GliderVarioMainPriv &varioMain,
-			char *const recordString,
-			int recordLen
-			);
-
 	/** \brief Process an I-Record which defines the type and location of optional fields in the following B-Records
 	 *
 	 * @param recordString The entire I-record string including the leading character I, but exclusive the line terminator CR-LF.
