@@ -31,7 +31,10 @@
 #include "drivers/GliderVarioDriverBase.h"
 #include "main/GliderVarioMainPriv.h"
 
+#include "BRecord.h"
+
 namespace openEV {
+
 
 /** \brief Base class for IGC file B record section processors
  *
@@ -87,6 +90,12 @@ public:
 	{ }
 
 	virtual ~BRecordSectionStd();
+
+	void processBRecord (
+			char *const recordString,
+			int recordLen,
+			BRecord &bRecord
+			);
 
 	/** \brief Process an I-Record which defines the type and location of optional fields in the following B-Records
 	 *

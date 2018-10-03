@@ -75,6 +75,15 @@ BRecordSectionStd::~BRecordSectionStd() {
 
 }
 
+void BRecordSectionStd::processBRecord (
+		char *const recordString,
+		int recordLen,
+		BRecord &bRecord
+		) {
+
+}
+
+
 void BRecordSectionStd::processIRecord(char* const recordString,
 		int recordLen) {
 
