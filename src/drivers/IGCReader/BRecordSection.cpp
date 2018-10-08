@@ -27,6 +27,7 @@
 #endif
 
 #include <string.h>
+#include <ratio>
 
 #include "BRecordSection.h"
 
@@ -38,7 +39,7 @@ namespace openEV {
  *
  * @param str The string which is read as signed integer (does not have to be NULL terminated)
  * @param len Length of valid part the string (Usually the string is not NULL terminated, as the sections of a line in a IGC file are fixed positioned, and not separated.
- * @return Signed interger value
+ * @return Signed integer value
  */
 static inline int strToInt (char const* str,int len) {
 	int rc = 0;
@@ -71,6 +72,43 @@ static inline int strToInt (char const* str,int len) {
 
 }
 
+/** \brief Read the fractional part of a number.
+ *
+ * There are B-record extensions for more decimal digits on the coordinates and the time stamp.
+ * This method interprets a numeric string as decimal digits right to the decimal.
+ * e.g. a string "1234" is interpreted as 0.1234
+ *
+ * Only minimal health checks are performed. The function stops reading when it encounters a non-digit character.
+ *
+ * @param str The string which is read as fractional digits (does not have to be NULL terminated)
+ * @param len Length of valid part the string (Usually the string is not NULL terminated, as the sections of a line in a IGC file are fixed positioned, and not separated.
+ * @return Signed double value
+ */
+static inline double strToFract (char const* str,int len) {
+	double rc = 0;
+	double factor = 1.0;
+
+	if (len <= 0) {
+		return rc;
+	}
+
+	while (len) {
+
+		if (*str >= '0' && *str <= '9') {
+			rc = rc * 10.0 + double(*str - '0');
+			factor *= 10.0;
+		} else {
+			break;
+		}
+
+		len --;
+		str ++;
+	}
+
+	return rc / factor;
+
+}
+
 BRecordSectionStd::~BRecordSectionStd() {
 
 }
@@ -78,15 +116,47 @@ BRecordSectionStd::~BRecordSectionStd() {
 void BRecordSectionStd::processBRecord (
 		char *const recordString,
 		int recordLen,
-		BRecord &bRecord
+		BRecord &bRecord,
+		double &startTimeDay
 		) {
 
 	// process the GPS position and alitude only when
 	if (recordString[gpsValidPos] == gpsValid) {
 
-		bRecord.altGPS = valueInvalid;
-		bRecord.latitude = valueInvalid;
-		bRecord.longitude = valueInvalid;
+		bRecord.altGPS = double(strToInt(recordString + gpsAltPos,gpsAltLen));
+		// Minutes is a 5-digit string in the form MMmmm (i.e. MM.mmm).
+		// The integer value must be divided by 1000 to return minutes, and divided by 60 to return degrees.
+		bRecord.latitude = double(strToInt(recordString + latDegPos,latDegLen)) + double(strToInt(recordString + latMinPos,latMinLen)) / 60000.0;
+		if (latDecimalsPos >= 0) {
+			// Divide the fractional minutes by 1000 (the standard string already has 3 decimal digits) and then by 60 to return Degrees.
+			bRecord.latitude += strToFract(recordString + latDecimalsPos,latDecimalsLen) / 60000.0;
+		}
+		if (recordString[latNPos] == 'S' || recordString[latNPos] == 's') {
+			bRecord.latitude *= -1.0;
+		}
+
+		bRecord.longitude = double(strToInt(recordString + lonDegPos,lonDegLen)) + double(strToInt(recordString + lonMinPos,lonMinLen)) / 60000.0;
+		if (lonDecimalsPos >= 0) {
+			// Divide the fractional minutes by 1000 (the standard string already has 3 decimal digits) and then by 60 to return Degrees.
+			bRecord.longitude += strToFract(recordString + lonDecimalsPos,lonDecimalsLen) / 60000.0;
+		}
+		if (recordString[lonEPos] == 'W' || recordString[latNPos] == 'w') {
+			bRecord.longitude *= -1.0;
+		}
+
+		if (accuracyPos >= 0) {
+			bRecord.posAccuracy = double(strToInt(recordString + accuracyPos,accuracyLen));
+		} else {
+			// Use a default appropriate for a GPS receiver in a plane in free view to the sky
+			bRecord.posAccuracy = 2.0;
+		}
+
+		if (vertAccuracyPos >= 0) {
+			bRecord.altGPSAccuracy = double(strToInt(recordString + vertAccuracyPos,vertAccuracyLen));
+		} else {
+			// By default the vertical accuracy is a lot worse than the horizontal accuracy.
+			bRecord.altGPSAccuracy = bRecord.posAccuracy * 5.0;
+		}
 
 
 	} else { // if (recordString[gpsValidPos] == gpsValid)
@@ -96,6 +166,24 @@ void BRecordSectionStd::processBRecord (
 		bRecord.longitude = valueInvalid;
 	} // if (recordString[gpsValidPos] == gpsValid)
 
+
+	double timestampSecSinceMidnight = double (
+			strToInt(recordString + timestampPos,2) * 24*60 +
+			strToInt(recordString + (timestampPos + 2),2) * 60 +
+			strToInt(recordString + (timestampPos + 4),2)
+			);
+	if (timestampDecimalsPos >= 0) {
+		timestampSecSinceMidnight += strToFract(recordString + timestampDecimalsPos,timestampDecimalsLen);
+	}
+
+	if (timestampSecSinceMidnight < startTimeDay) {
+		startTimeDay -= 24.0*60.0*60.0;
+	}
+
+	bRecord.timeSinceStart =  std::chrono::duration_cast<std::chrono::system_clock::duration> (
+			std::chrono::duration<double> (timestampSecSinceMidnight - startTimeDay));
+
+#error Pressure calculation from the barometric altitude is missing
 
 }
 
@@ -156,10 +244,6 @@ void BRecordSectionStd::processIRecord(char* const recordString,
 		if (!strncmp(recordString + (pos+4), "LAD",3)) {
 			latDecimalsPos = fieldStart;
 			latDecimalsLen = fieldLen;
-			latDecFactor = 1/1000.0; // The base record provides three decimal digits for the latitude minutes
-			for (int k=0 ; k < fieldLen; k++) {
-				latDecFactor *= 0.1;
-			}
 			continue;
 		}
 
@@ -167,10 +251,6 @@ void BRecordSectionStd::processIRecord(char* const recordString,
 		if (!strncmp(recordString + (pos+4), "LOD",3)) {
 			lonDecimalsPos = fieldStart;
 			lonDecimalsLen = fieldLen;
-			lonDecFactor = 1/1000.0; // The base record provides three decimal digits for the longitude minutes
-			for (int k=0 ; k < fieldLen; k++) {
-				lonDecFactor *= 0.1;
-			}
 			continue;
 		}
 
@@ -178,10 +258,6 @@ void BRecordSectionStd::processIRecord(char* const recordString,
 		if (!strncmp(recordString + (pos+4), "TDS",3)) {
 			timestampDecimalsPos = fieldStart;
 			timestampDecimalsLen = fieldLen;
-			timeDecFactor = 1.0; // The base record provides whole seconds for the timestamp
-			for (int k=0 ; k < fieldLen; k++) {
-				lonDecFactor *= 0.1;
-			}
 			continue;
 		}
 

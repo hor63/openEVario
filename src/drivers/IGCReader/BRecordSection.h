@@ -65,6 +65,9 @@ public:
 
 	// fixed mandatory positions within a B-record
 
+	static int constexpr timestampPos = 1;
+	static int constexpr timestampLen = 6;
+
     static int constexpr latDegPos = 7;
     static int constexpr latDegLen = 2;
     static int constexpr latMinPos = 9;
@@ -94,16 +97,29 @@ public:
 
 	virtual ~BRecordSectionStd();
 
+	/** \brief Scan a B-record of the IGC file, and return the result in \ref bRecord
+	 *
+	 * If the timestamp in Seconds after midnight of the current record is smaller than \startTimeDay I assume that I crossed midnight UTC.
+	 * In this case I decrement \ref startTimeDay by 86400 sec (24h).
+	 * This case is not very likely in time zones far away from GMT, e.g. Pacific time, or Hawaii or Far East like Japan.
+	 *
+	 * @param[in] recordString A B-record string from the IGC file including the leading 'B' character, but excluding the line terminator CR-LF
+	 * @param[in] recordLen Length of the record. \ref recordString is not NULL-terminated.
+	 * @param[out] bRecord The BRecord structure filled with the parsed values
+	 * @param[in,out] startTimeDay Timestamp of the first B-Record after midnight.
+	 */
 	void processBRecord (
 			char *const recordString,
 			int recordLen,
-			BRecord &bRecord
+			BRecord &bRecord,
+			double &startTimeDay
 			);
 
 	/** \brief Process an I-Record which defines the type and location of optional fields in the following B-Records
 	 *
-	 * @param recordString The entire I-record string including the leading character I, but exclusive the line terminator CR-LF.
-	 * @param recordLen Length of the record. \ref recordString is not necessarily NULL-terminated.
+	 * @param recordString The entire I-record string including the leading character I, but excluding the line terminator CR-LF.
+	 * @param recordLen Length of the record. \ref recordString is not NULL-terminated.
+	 * @param[in,out] startTimeDay Timestamp of the first B-record in the IGC file in seconds after midnight.
 	 */
 	void processIRecord (
 			char *const recordString,
@@ -127,25 +143,16 @@ protected:
 	int latDecimalsPos = -1;
 	/// \brief \see latDecimalsPos
 	int latDecimalsLen = -1;
-	/// \brief Factor to multiply the integer before adding to the base latitude.
-	/// \see latDecimalsPos
-	double latDecFactor = 0.0;
 
 	/// \brief More decimal places for the longitude. Defined by the LOD code in the I-record
 	int lonDecimalsPos = -1;
 	/// \brief \see lonDecimalsPos
 	int lonDecimalsLen = -1;
-	/// \brief Factor to multiply the integer before adding to the base longitude.
-	/// \see lonDecimalsPos
-	double lonDecFactor = 0.0;
 
 	/// \brief Decimals of the timestamp. Defined by the TDS code in the I-record
 	int timestampDecimalsPos = -1;
 	/// \brief \see timestampDecimalsPos
 	int timestampDecimalsLen = -1;
-	/// \brief Factor to multiply the integer before adding to the base timestamp.
-	/// \see lonDecimalsPos
-	double timeDecFactor = 0.0;
 
 
 };
