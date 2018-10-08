@@ -97,6 +97,9 @@ protected:
     std::string igcFileName;
     std::ifstream igcFile;
 
+    /// \brief Timestamp of the first B-record in seconds after midnight UTC.
+    double startTimeDay = 0.0;
+
     /// All B-records (GPS fixes and pressure measurements)
     std::map<OEVDuration,BRecord> bRecords;
 
