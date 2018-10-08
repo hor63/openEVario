@@ -195,8 +195,7 @@ private:
 	/// \brief synchronizes access and updates to \ref stat1 and \ref stat2
 	std::mutex currentStatusLock;
 
-	std::chrono::high_resolution_clock clock;
-	std::chrono::high_resolution_clock::time_point lastPredictionUpdate;
+	std::chrono::system_clock::time_point lastPredictionUpdate;
 
 	/// \brief Read the configuration file, and extrace the base configuration values into \ref programOptions
 	void readConfiguration ();

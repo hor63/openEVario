@@ -300,7 +300,7 @@ GliderVarioMainPriv::GliderVarioMainPriv(int argc, const char *argv[])
 	}
 #endif /* HAVE_LOG4CXX_H */
 
-	lastPredictionUpdate = clock.now();
+	lastPredictionUpdate = std::chrono::system_clock::now();
 
 	this->argc = argc;
 
@@ -457,7 +457,7 @@ GliderVarioStatus *GliderVarioMainPriv::getCurrentStatusAndLock(GliderVarioMeasu
 
 	currentStatusLock.lock();
 
-	if ((lastPredictionUpdate + programOptions.maxTimeBetweenPredictionAndMeasurementUpdate) >= clock.now()) {
+	if ((lastPredictionUpdate + programOptions.maxTimeBetweenPredictionAndMeasurementUpdate) >= std::chrono::system_clock::now()) {
 		predictAndSwapStatus();
 	}
 
@@ -474,11 +474,15 @@ void GliderVarioMainPriv::releaseCurrentStatus () {
 
 void GliderVarioMainPriv::predictAndSwapStatus() {
 
-	auto timeBeforePredict = clock.now();
+	auto timeBeforePredict = std::chrono::system_clock::now();
 
+	auto timeDiff = timeBeforePredict - lastPredictionUpdate;
+
+	// Calculate fractional milliseconds from the system clock ticks with double arithmetic
+	FloatType timeDiffMS = double(timeDiff.count()) * (double(std::chrono::system_clock::period::num)/double(std::chrono::system_clock::period::den)*1000.0);
 
 	transitionMatrix.calcTransitionMatrixAndStatus(
-			FloatType(std::chrono::duration_cast<MilliSecondFrac>(timeBeforePredict - lastPredictionUpdate).count()),
+			timeDiffMS,
 			*currentStatus,
 			*nextStatus);
 
