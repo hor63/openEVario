@@ -28,6 +28,7 @@
 
 #include <string.h>
 #include <ratio>
+#include <cmath>
 
 #include "BRecordSection.h"
 
@@ -183,7 +184,20 @@ void BRecordSectionStd::processBRecord (
 	bRecord.timeSinceStart =  std::chrono::duration_cast<std::chrono::system_clock::duration> (
 			std::chrono::duration<double> (timestampSecSinceMidnight - startTimeDay));
 
-#error Pressure calculation from the barometric altitude is missing
+
+
+	// constants and barometric formula from https://en.wikipedia.org/wiki/Barometric_formula#Pressure_equations
+	double constexpr R  = 8.3144598	; ///< Universal gas constant: 8.3144598 J/mol/K
+	double constexpr g0 = 9.80665	; ///< Gravitational acceleration: 9.80665 m/s2
+	double constexpr M  = 0.0289644	; ///< Molar mass of Earth's air: 0.0289644 kg/mol
+	double constexpr Lb = 0.65/100.0 ; ///< Standard atmosphere temperature lapse: 0.65K/100m
+	// Exponent term
+	double constexpr exp = g0*M/(R*Lb); ///< Exponential term of the Barometric formula
+
+	double height = strToInt(recordString + baroAltPos,baroAltLen);
+
+	// simplified formula from https://de.wikipedia.org/wiki/Barometrische_H%C3%B6henformel#Internationale_H%C3%B6henformel
+	bRecord.pressure = 1013.25 * pow(1 - ((Lb * height ) / 288.15),exp);
 
 }
 
