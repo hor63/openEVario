@@ -36,7 +36,7 @@
 namespace openEV {
 
 
-/** \brief Base class for IGC file B record section processors
+/** \brief IGC file B record section processor
  *
  * Subclasses of this class implement reading, and interpreting sections of a B (and occasional K record)
  *
@@ -52,7 +52,7 @@ namespace openEV {
  *
  * Additional sections may follow. These are defined with meaning, position and length in the I record.
  *
- * K records
+ * K records (Not used currently)
  * ---------
  *
  * The only fixed field in a K record is the time. Any data meaning is solely defined in the J record:
@@ -60,7 +60,7 @@ namespace openEV {
  *     K HHMMSS xxxxxxxxxx
  *     0 123456 7890...
  */
-class BRecordSectionStd  {
+class BRecordSectionProcessor  {
 public:
 
 	// fixed mandatory positions within a B-record
@@ -92,10 +92,10 @@ public:
     static int constexpr baroAltLen = 5;
 
 
-	BRecordSectionStd()
+	BRecordSectionProcessor()
 	{ }
 
-	virtual ~BRecordSectionStd();
+	virtual ~BRecordSectionProcessor();
 
 	/** \brief Scan a B-record of the IGC file, and return the result in \ref bRecord
 	 *

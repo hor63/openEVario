@@ -110,11 +110,11 @@ static inline double strToFract (char const* str,int len) {
 
 }
 
-BRecordSectionStd::~BRecordSectionStd() {
+BRecordSectionProcessor::~BRecordSectionProcessor() {
 
 }
 
-void BRecordSectionStd::processBRecord (
+void BRecordSectionProcessor::processBRecord (
 		char *const recordString,
 		int recordLen,
 		BRecord &bRecord,
@@ -202,7 +202,7 @@ void BRecordSectionStd::processBRecord (
 }
 
 
-void BRecordSectionStd::processIRecord(char* const recordString,
+void BRecordSectionProcessor::processIRecord(char* const recordString,
 		int recordLen) {
 
 	/*

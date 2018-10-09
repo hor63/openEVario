@@ -59,7 +59,7 @@ namespace openEV {
  * - Speed over ground (optional)
  *
  * Static pressure is calculated back from the pressure altitude in the B records according to the ICAO standard atmosphere.
- * See <a href="https://de.wikipedia.org/wiki/Barometrische_H%C3%B6henformel#Internationale_H%C3%B6henformel" >Wikipedia: Internationale Höhenformel</a>
+ * \see <a href="https://de.wikipedia.org/wiki/Barometrische_H%C3%B6henformel#Internationale_H%C3%B6henformel" >Wikipedia: Internationale Höhenformel</a>
  * or <a href="https://en.wikipedia.org/wiki/Barometric_formula#Pressure_equations" >Wikipedia: Barometric formula</a>
  */
 class IGCReaderDriver  : public GliderVarioDriverBase {
