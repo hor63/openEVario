@@ -36,6 +36,7 @@
 #include "drivers/GliderVarioDriverBase.h"
 #include "IGCReaderLib.h"
 #include "BRecord.h"
+#include "BRecordSection.h"
 
 namespace openEV {
 
@@ -47,8 +48,10 @@ namespace openEV {
  *
  * Please find the latest version of the specification at <a href="https://www.fai.org/igc-documents" >IGC documents</a>.
  * There look for FLIGHT RECORDERS->"IGC-approved Flight Recorders - Technical Specification".
+ * The document version used for this driver is
+ * <a href="https://www.fai.org/sites/default/files/documents/igc_fr_spec_with_al4a_2016-4-10.pdf">Second Edition with Amendment 4a</a>
  *
- * The driver reads the I and B and K records.
+ * The driver reads the I and B records.
  * It updates these measurements in the Kalman filter:
  * - GPS coordinates
  * - GPS altitude
@@ -94,6 +97,18 @@ public:
 
 protected:
 
+    /** \brief Length of the line buffer.
+     *
+     * According to the IGC specification section A2.1 "File Structure" a line should never be longer than
+     * 76 char. So this size should be plenty
+     */
+    static int constexpr lineBufSize = 256;
+
+    /// Latest line of the IGC file read. The buffer is 0-terminated.
+    char lineBuffer[lineBufSize] = "";
+    /// Number of valid characters in lineBuffer.
+    int lineLen = 0;
+
     std::string igcFileName;
     std::ifstream igcFile;
 
@@ -102,6 +117,9 @@ protected:
 
     /// All B-records (GPS fixes and pressure measurements)
     std::map<OEVDuration,BRecord> bRecords;
+
+    /// \brief Processes I abd B records of the IGC file
+    BRecordSectionProcessor bRecordSectionProcessor;
 
     /** \brief Opens the IGC file if it has not been opened before
      *
@@ -114,6 +132,24 @@ protected:
      * Else do nothing.
      */
     void closeIGCFile();
+
+    /** \brief Read one line from the IGC file
+     *
+     * Read a line of \ref igcFile into the line buffer \ref lineBuffer.
+     * lineBuffer is 0-terminated, and the number of valid characters excluding the terminating 0
+     * stored in \ref lineLen.
+     * If
+     *
+     * @return true: \ref lineBuffer contains a valid new line. False: File end or read error.
+     */
+    bool readLine();
+
+    /** \brief Read an entire IGC file. Process I and B records, and store the B records in \ref bRecords.
+     *
+     * Read the file calling \ref readLine, and call
+     *
+     */
+    void readIGCFile ();
 
 };
 

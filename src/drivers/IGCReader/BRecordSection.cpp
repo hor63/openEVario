@@ -122,7 +122,7 @@ void BRecordSectionProcessor::processBRecord (
 		) {
 
 	// process the GPS position and alitude only when
-	if (recordString[gpsValidPos] == gpsValid) {
+	if (recordString[gpsValidPos] == GPS_VALID) {
 
 		bRecord.altGPS = double(strToInt(recordString + gpsAltPos,gpsAltLen));
 		// Minutes is a 5-digit string in the form MMmmm (i.e. MM.mmm).
@@ -187,12 +187,12 @@ void BRecordSectionProcessor::processBRecord (
 
 
 	// constants and barometric formula from https://en.wikipedia.org/wiki/Barometric_formula#Pressure_equations
-	double constexpr R  = 8.3144598	; ///< Universal gas constant: 8.3144598 J/mol/K
-	double constexpr g0 = 9.80665	; ///< Gravitational acceleration: 9.80665 m/s2
-	double constexpr M  = 0.0289644	; ///< Molar mass of Earth's air: 0.0289644 kg/mol
-	double constexpr Lb = 0.65/100.0 ; ///< Standard atmosphere temperature lapse: 0.65K/100m
+	static double constexpr R  = 8.3144598	; ///< Universal gas constant: 8.3144598 J/mol/K
+	static double constexpr g0 = 9.80665	; ///< Gravitational acceleration: 9.80665 m/s2
+	static double constexpr M  = 0.0289644	; ///< Molar mass of Earth's air: 0.0289644 kg/mol
+	static double constexpr Lb = 0.65/100.0 ; ///< Standard atmosphere temperature lapse: 0.65K/100m
 	// Exponent term
-	double constexpr exp = g0*M/(R*Lb); ///< Exponential term of the Barometric formula
+	static double constexpr exp = g0*M/(R*Lb); ///< Exponential term of the Barometric formula
 
 	double height = strToInt(recordString + baroAltPos,baroAltLen);
 
