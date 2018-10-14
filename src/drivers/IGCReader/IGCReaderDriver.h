@@ -108,6 +108,7 @@ protected:
     char lineBuffer[lineBufSize] = "";
     /// Number of valid characters in lineBuffer.
     int lineLen = 0;
+    int lineNum = 0;
 
     std::string igcFileName;
     std::ifstream igcFile;
@@ -116,7 +117,11 @@ protected:
     double startTimeDay = 0.0;
 
     /// All B-records (GPS fixes and pressure measurements)
-    std::map<OEVDuration,BRecord> bRecords;
+    typedef std::map<OEVDuration,BRecord> BRecordsMap;
+    typedef BRecordsMap::value_type BRecordsValue;
+    typedef BRecordsMap::const_iterator BRecordsCIter;
+    typedef BRecordsMap::iterator BRecordsIter;
+    BRecordsMap bRecords;
 
     /// \brief Processes I abd B records of the IGC file
     BRecordSectionProcessor bRecordSectionProcessor;

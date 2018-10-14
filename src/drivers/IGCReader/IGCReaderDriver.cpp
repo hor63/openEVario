@@ -133,5 +133,94 @@ void IGCReaderDriver::closeIGCFile() {
 
 }
 
+bool IGCReaderDriver::readLine() {
+
+	// If a line without line terminator was the last line in the file the previous call returned true,
+	// and the function is re-entered. The failbit is still set.
+	if (!igcFile) {
+		return false;
+	}
+	// read characters from the file until
+	// - the file end is reached
+	// - you hit a line terminator CR-LF
+	for (lineLen = 0; lineLen < lineBufSize - 1; lineLen++) {
+		int c = igcFile.get();
+
+		if (!igcFile) {
+			// read error or ordinary EOF
+			lineBuffer [lineLen] = '\0';
+			if (lineLen == 0) {
+				return false;
+			}
+
+			break;
+		}
+
+		// line terminator
+		if (c == '\r') {
+			lineBuffer [lineLen] = '\0';
+
+			// according to the specification lines are terminated with CR-LF.
+			// When I find CR I expect LF too.
+			c = igcFile.peek();
+			if (c == '\n') {
+				c = igcFile.get();
+			}
+
+			break;
+		}
+		if (c == '\n') {
+			lineBuffer [lineLen] = '\0';
+
+			break;
+		}
+
+	}
+
+	lineNum ++;
+
+	return true;
+
+}
+
+void IGCReaderDriver::readIGCFile() {
+
+	BRecord bRecord;
+
+	if (!igcFile.is_open()) {
+		openIGCFile();
+	}
+
+	// Read the first BRecord to initialize the start time of records in the IGC file,
+	// and the Kalman status.
+	while (readLine()) {
+		if (*lineBuffer == 'I') {
+			bRecordSectionProcessor.processIRecord(lineBuffer,lineLen);
+		}
+		if (*lineBuffer == 'B') {
+			bRecordSectionProcessor.processBRecord(lineBuffer,lineLen,bRecord,startTimeDay);
+
+#warning Initialize the Kalman filter status with the first B record.
+
+			startTimeDay = std::chrono::duration_cast<std::chrono::duration<double,std::ratio<1,1>>>(bRecord.timeSinceStart).count();
+
+			// Now process the record again with the correct start time.
+			bRecordSectionProcessor.processBRecord(lineBuffer,lineLen,bRecord,startTimeDay);
+			bRecords.insert(BRecordsValue(bRecord.timeSinceStart,bRecord));
+		}
+	}
+
+	// Now continue reading the IGC file to the end
+	while (readLine()) {
+		if (*lineBuffer == 'I') {
+			bRecordSectionProcessor.processIRecord(lineBuffer,lineLen);
+		}
+		if (*lineBuffer == 'B') {
+			bRecordSectionProcessor.processBRecord(lineBuffer,lineLen,bRecord,startTimeDay);
+			bRecords.insert(BRecordsValue(bRecord.timeSinceStart,bRecord));
+		}
+	}
+
+}
 
 } /* namespace OevGLES */
