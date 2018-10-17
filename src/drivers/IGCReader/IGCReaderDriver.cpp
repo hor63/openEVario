@@ -200,9 +200,7 @@ void IGCReaderDriver::readIGCFile() {
 		if (*lineBuffer == 'B') {
 			bRecordSectionProcessor.processBRecord(lineBuffer,lineLen,bRecord,startTimeDay);
 
-#warning Initialize the Kalman filter status with the first B record.
-
-			startTimeDay = std::chrono::duration_cast<std::chrono::duration<double,std::ratio<1,1>>>(bRecord.timeSinceStart).count();
+			startTimeDay = std::chrono::duration_cast<std::chrono::duration<double>>(bRecord.timeSinceStart).count();
 
 			// Now process the record again with the correct start time.
 			bRecordSectionProcessor.processBRecord(lineBuffer,lineLen,bRecord,startTimeDay);

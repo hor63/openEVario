@@ -185,7 +185,6 @@ void BRecordSectionProcessor::processBRecord (
 			std::chrono::duration<double> (timestampSecSinceMidnight - startTimeDay));
 
 
-
 	// constants and barometric formula from https://en.wikipedia.org/wiki/Barometric_formula#Pressure_equations
 	static double constexpr R  = 8.3144598	; ///< Universal gas constant: 8.3144598 J/mol/K
 	static double constexpr g0 = 9.80665	; ///< Gravitational acceleration: 9.80665 m/s2
