@@ -92,8 +92,7 @@ public:
     static int constexpr baroAltLen = 5;
 
 
-	BRecordSectionProcessor()
-	{ }
+	BRecordSectionProcessor();
 
 	virtual ~BRecordSectionProcessor();
 

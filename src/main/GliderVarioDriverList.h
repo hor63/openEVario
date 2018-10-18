@@ -35,6 +35,8 @@
 #include "OEVCommon.h"
 #include "util/GliderVarioExceptionBase.h"
 #include "main/ProgramOptions.h"
+#include "kalman/GliderVarioStatus.h"
+
 
 namespace openEV {
 
@@ -109,6 +111,12 @@ public:
 	 * @param driverListItem Driver list item to be added to \ref driverList.
 	 */
 	void OEV_MAIN_PUBLIC addDriver (DriverListItem const& driverListItem);
+
+	/** \brief Each driver initializes a part of the Kalman filter with initial sensor readings
+	 *
+	 * @param currentStatus Kalman status to be initialized
+	 */
+	void initializeKalmanStatus(GliderVarioStatus &currentStatus);
 
 protected:
 

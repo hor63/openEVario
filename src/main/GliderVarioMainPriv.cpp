@@ -398,6 +398,9 @@ void GliderVarioMainPriv::startup () {
     // Read the driver instances from the configuration, and create them for the specified drivers.
 	driverList.loadDriverInstances(configuration);
 
+	// Initialize the current Kalman status with initial sensor readingd
+	driverList.initializeKalmanStatus(*currentStatus);
+
 }
 
 void GliderVarioMainPriv::readConfiguration () {

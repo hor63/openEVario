@@ -321,5 +321,18 @@ void GliderVarioDriverList::loadDriverInstance(char const *driverInstanceName, P
 
 }
 
+void GliderVarioDriverList::initializeKalmanStatus(GliderVarioStatus &currentStatus) {
+
+	auto iter = driverInstanceList.begin();
+
+	while (iter != driverInstanceList.end()) {
+		iter->second->initializeStatus(currentStatus);
+
+		iter ++;
+	}
+
+}
+
+
 
 } /* namespace openEV */

@@ -32,6 +32,19 @@
 
 #include "BRecordSection.h"
 
+#if defined HAVE_LOG4CXX_H
+static log4cxx::LoggerPtr logger = 0;
+
+static inline void initLogger() {
+	if (!logger) {
+		logger = log4cxx::Logger::getLogger("openEV.Drivers.IGCReader.BRecordSectionProcessor");
+	}
+}
+
+#endif
+
+
+
 namespace openEV {
 
 /** \brief Read a signed integer value from a fixed length string
@@ -110,6 +123,11 @@ static inline double strToFract (char const* str,int len) {
 
 }
 
+BRecordSectionProcessor::BRecordSectionProcessor() {
+	initLogger();
+}
+
+
 BRecordSectionProcessor::~BRecordSectionProcessor() {
 
 }
@@ -120,6 +138,7 @@ void BRecordSectionProcessor::processBRecord (
 		BRecord &bRecord,
 		double &startTimeDay
 		) {
+
 
 	// process the GPS position and alitude only when
 	if (recordString[gpsValidPos] == GPS_VALID) {
@@ -169,7 +188,7 @@ void BRecordSectionProcessor::processBRecord (
 
 
 	double timestampSecSinceMidnight = double (
-			strToInt(recordString + timestampPos,2) * 24*60 +
+			strToInt(recordString + timestampPos,2) * 60*60 +
 			strToInt(recordString + (timestampPos + 2),2) * 60 +
 			strToInt(recordString + (timestampPos + 4),2)
 			);
@@ -198,6 +217,17 @@ void BRecordSectionProcessor::processBRecord (
 	// simplified formula from https://de.wikipedia.org/wiki/Barometrische_H%C3%B6henformel#Internationale_H%C3%B6henformel
 	bRecord.pressure = 1013.25 * pow(1 - ((Lb * height ) / 288.15),exp);
 
+	LOG4CXX_DEBUG(logger,"ProcessBRecord: \"" << recordString << "\"" <<
+			"\tbRecord.timeSinceStart = " << std::chrono::duration_cast<std::chrono::duration<double>>(  bRecord.timeSinceStart).count() <<
+			"\tbRecord.altGPS = " << bRecord.altGPS <<
+			"\tbRecord.altGPSAccuracy = " << bRecord.altGPSAccuracy <<
+			"\tbRecord.latitude = " << bRecord.latitude <<
+			"\tbRecord.longitude = " << bRecord.longitude	<<
+			"\tbRecord.posAccuracy = " << bRecord.posAccuracy <<
+			"\tbRecord.pressure = " << bRecord.pressure	<<
+			"\tBaroHeight = " << height);
+
+
 }
 
 
@@ -221,6 +251,8 @@ void BRecordSectionProcessor::processIRecord(char* const recordString,
 
 	int numRecords = strToInt(recordString + 1,2);
 
+	LOG4CXX_DEBUG(logger," ProcessIRecord: " << recordString);
+
 	// termination condition checks that a full field of 7 characters is still available in the string
 	for (int i = 0; i < numRecords; i++) {
 		int pos = i*7 + 3;
@@ -239,10 +271,16 @@ void BRecordSectionProcessor::processIRecord(char* const recordString,
 			continue;
 		}
 
+		LOG4CXX_DEBUG(logger,i << ". optional field code = \n" << recordString [pos+4] << recordString [pos+5] << recordString [pos+6]);
+
+
 	    // horizontal GPS accuracy. Quasi standard
 		if (!strncmp(recordString + (pos+4), "FXA",3)) {
 			accuracyPos = fieldStart;
 			accuracyLen = fieldLen;
+
+			LOG4CXX_DEBUG(logger,"FXA, GPS fix accuracy: fieldStart = " << fieldStart << ", fieldLen = " << fieldLen);
+
 			continue;
 		}
 
@@ -250,6 +288,9 @@ void BRecordSectionProcessor::processIRecord(char* const recordString,
 		if (!strncmp(recordString + (pos+4), "VXA",3)) {
 			vertAccuracyPos = fieldStart;
 			vertAccuracyLen = fieldLen;
+
+			LOG4CXX_DEBUG(logger,"VXA, GPS fix vertical accuracy: fieldStart = " << fieldStart << ", fieldLen = " << fieldLen);
+
 			continue;
 		}
 
@@ -257,6 +298,9 @@ void BRecordSectionProcessor::processIRecord(char* const recordString,
 		if (!strncmp(recordString + (pos+4), "LAD",3)) {
 			latDecimalsPos = fieldStart;
 			latDecimalsLen = fieldLen;
+
+			LOG4CXX_DEBUG(logger,"LAD, GPS latitude minutes additional decimals: fieldStart = " << fieldStart << ", fieldLen = " << fieldLen);
+
 			continue;
 		}
 
@@ -264,6 +308,9 @@ void BRecordSectionProcessor::processIRecord(char* const recordString,
 		if (!strncmp(recordString + (pos+4), "LOD",3)) {
 			lonDecimalsPos = fieldStart;
 			lonDecimalsLen = fieldLen;
+
+			LOG4CXX_DEBUG(logger,"LOD, GPS longitude minutes additional decimals: fieldStart = " << fieldStart << ", fieldLen = " << fieldLen);
+
 			continue;
 		}
 
@@ -271,6 +318,9 @@ void BRecordSectionProcessor::processIRecord(char* const recordString,
 		if (!strncmp(recordString + (pos+4), "TDS",3)) {
 			timestampDecimalsPos = fieldStart;
 			timestampDecimalsLen = fieldLen;
+
+			LOG4CXX_DEBUG(logger,"TDS, GPS longitude minutes additional decimals: fieldStart = " << fieldStart << ", fieldLen = " << fieldLen);
+
 			continue;
 		}
 

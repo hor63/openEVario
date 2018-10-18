@@ -197,7 +197,7 @@ private:
 
 	std::chrono::system_clock::time_point lastPredictionUpdate;
 
-	/// \brief Read the configuration file, and extrace the base configuration values into \ref programOptions
+	/// \brief Read the configuration file, and extract the base configuration values into \ref programOptions
 	void readConfiguration ();
 
 	/// \brief Performs a prediction from the current to the next status and swaps statuses.

@@ -34,6 +34,13 @@
 
 #if defined HAVE_LOG4CXX_H
 static log4cxx::LoggerPtr logger = 0;
+
+static inline void initLogger() {
+	if (!logger) {
+		logger = log4cxx::Logger::getLogger("openEV.Drivers.IGCReader");
+	}
+}
+
 #endif
 
 namespace openEV {
@@ -47,15 +54,15 @@ IGCReaderDriver::IGCReaderDriver(
 {
 
 #if defined HAVE_LOG4CXX_H
-	if (!logger) {
-		logger = log4cxx::Logger::getLogger("openEV.Drivers.IGCReader");
-	}
+	initLogger();
 #endif /* HAVE_LOG4CXX_H */
 
 }
 
 
 IGCReaderDriver::~IGCReaderDriver() {
+
+	closeIGCFile();
 
 }
 
@@ -86,6 +93,8 @@ void IGCReaderDriver::readConfiguration (Properties4CXX::Properties const &confi
 void IGCReaderDriver::initializeStatus(GliderVarioStatus &varioStatus) {
 
 	openIGCFile();
+
+	readIGCFile ();
 
 }
 
@@ -121,6 +130,8 @@ void IGCReaderDriver::openIGCFile() {
 			LOG4CXX_ERROR(logger,os.str());
 			throw (GliderVarioDriverLoadException(__FILE__,__LINE__,os.str().c_str()));
 		}
+
+		LOG4CXX_INFO(logger,"Opened IGC file \""<< igcFileName << "\" successfully");
 	}
 
 }
@@ -130,6 +141,8 @@ void IGCReaderDriver::closeIGCFile() {
 	if (igcFile.is_open()) {
 		igcFile.close();
 	}
+
+	LOG4CXX_INFO(logger,"Closed IGC file \""<< igcFileName << "\".");
 
 }
 
@@ -175,6 +188,7 @@ bool IGCReaderDriver::readLine() {
 			break;
 		}
 
+		lineBuffer [lineLen] = char(c);
 	}
 
 	lineNum ++;
@@ -205,6 +219,10 @@ void IGCReaderDriver::readIGCFile() {
 			// Now process the record again with the correct start time.
 			bRecordSectionProcessor.processBRecord(lineBuffer,lineLen,bRecord,startTimeDay);
 			bRecords.insert(BRecordsValue(bRecord.timeSinceStart,bRecord));
+
+			// I have the inital B record, and with that the start time.
+			// continue with the next loop.
+			break;
 		}
 	}
 
