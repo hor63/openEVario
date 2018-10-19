@@ -105,7 +105,7 @@ public:
 
         newStatus.getSystemNoiseCovariance_Q() = oldStatus.getSystemNoiseCovariance_Q();
 
-        newStatus.normalizeAngles();
+        newStatus.normalizeStatus();
     }
 
     /// See \ref staticRollTimeConstant

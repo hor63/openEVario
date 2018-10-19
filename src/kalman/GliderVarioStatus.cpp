@@ -29,6 +29,7 @@
 #endif
 
 #include "GliderVarioStatus.h"
+#include "util/FastMath.h"
 #include <iomanip>
 
 namespace openEV
@@ -60,7 +61,7 @@ GliderVarioStatus::~GliderVarioStatus ()
 
 }
 
-void GliderVarioStatus::normalizeAngles() {
+void GliderVarioStatus::normalizeStatus() {
 
     if (pitchAngle < -90.0f) {
         if (pitchAngle < -360.0f) {
@@ -69,7 +70,7 @@ void GliderVarioStatus::normalizeAngles() {
             } while (pitchAngle < -360.0f);
             // pitch angle can now be anywhere between 0 and -360
             // Therefore do it again recursively.
-            return normalizeAngles();
+            return normalizeStatus();
         } // if (pitchAngle < -360.0f)
         if (pitchAngle <= -180.0f) {
             // I am at an upward pointing angle
@@ -92,14 +93,14 @@ void GliderVarioStatus::normalizeAngles() {
             } while (pitchAngle >= 360.0f);
             // pitch angle can now be anywhere between 0 and +360
             // Therefore do it again recursively.
-            return normalizeAngles();
+            return normalizeStatus();
         } // if (pitchAngle > 360.0f)
         if (pitchAngle > 180.0f) {
             pitchAngle -= 360.0f;
             /* Pitch angle is negative now, and between -0 and -180. I deal with that above. Ugh.
              * So I call myself recursively
              */
-            return normalizeAngles();
+            return normalizeStatus();
         } else { // if (pitchAngle > 180.0f)
             /* I am between 90 and 180 deg, i.e. looping beyond perpendicular
              * i.e. I am flipping direction and roll, and bring pitch back into the 1st quadrant
@@ -151,6 +152,35 @@ void GliderVarioStatus::normalizeAngles() {
         heading -= 360.0f;
     }
 
+
+    // The normalization is admittedly extremely primitive but given the fact that an arc sec. is 30-something meters, and
+    // the Kalman filter will never run below 100ms per cycle even at 300km/s the plane will never move > 1 arc sec per cycle.
+    if (latitudeOffs > LEN_LAT_ARC_SEC) {
+    	while (latitudeOffs > LEN_LAT_ARC_SEC) {
+    		latitudeOffs -= LEN_LAT_ARC_SEC;
+    		latitudeBaseArcSec ++;
+    	}
+        lenLongitudeArcSec = LEN_LAT_ARC_SEC * FastMath::fastCos(FloatType(latitudeBaseArcSec)/3600.0f);
+    }
+    if (latitudeOffs < LEN_LAT_ARC_SEC) {
+    	while (latitudeOffs < LEN_LAT_ARC_SEC) {
+    		latitudeOffs += LEN_LAT_ARC_SEC;
+    		latitudeBaseArcSec --;
+    	}
+        lenLongitudeArcSec = LEN_LAT_ARC_SEC * FastMath::fastCos(FloatType(latitudeBaseArcSec)/3600.0f);
+    }
+
+
+	while (longitudeOffs > lenLongitudeArcSec) {
+		latitudeOffs -= lenLongitudeArcSec;
+		latitudeBaseArcSec ++;
+	}
+	while (longitudeOffs < lenLongitudeArcSec) {
+		latitudeOffs += lenLongitudeArcSec;
+		latitudeBaseArcSec --;
+	}
+
+
 }
 
 
@@ -159,8 +189,8 @@ void GliderVarioStatus::normalizeAngles() {
 
 static char const * const statusFieldNames [openEV::GliderVarioStatus::STATUS_NUM_ROWS] = {
         " gravity       ",
-        " longitude     ",
-        " latitude      ",
+        " longitudeOffs ",
+        " latitudeOffs  ",
         " altMSL        ",
         " heading       ",
         " pitchAngle    ",

@@ -34,11 +34,6 @@
 namespace openEV
 {
 
-/**
- * The rough length of a arc second latitude in meter at 45deg North.
- * \sa <a href="https://en.wikipedia.org/wiki/Longitude#Length_of_a_degree_of_longitude" >Length of a degree of longitude</a>
- */
-FloatType constexpr lenLatitudeArcSec = 111132.0 / 3600.0;
 
 FloatType GliderVarioTransitionMatrix::staticRollTimeConstant = 2.0f;
 FloatType GliderVarioTransitionMatrix::dynamicRollTimeConstant = 0.5f;
@@ -87,53 +82,53 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
 
     // I need half of time square for distance calculations based on acceleration here and there :)
     FloatType timeSquareHalf  = timeDiff*timeDiff / 2.0f;
-    FloatType const lenLongitudeArcSec = lenLatitudeArcSec * FastMath::fastCos(lastStatus.latitude/3600.0f);
 
     // I am using a number of temporary variables to store factors used for new status calculation, and to store in the transition matrix.
-    FloatType temp1, temp2, temp3, temp4, temp5;
+    register FloatType temp1, temp2, temp3, temp4, temp5;
+
+    // First copy the coordinate bases and conversion of longitude sec to m to the new status
+    newStatus.latitudeBaseArcSec = lastStatus.latitudeBaseArcSec;
+    newStatus.longitudeBaseArcSec = lastStatus.longitudeBaseArcSec;
+    newStatus.lenLongitudeArcSec = lastStatus.lenLongitudeArcSec;
 
     // OK, now systematically propagate the status based on previous status, and the elapsed time
     // Constant factors in comments have been moved to the class constructor. They will not change, and have to be set only once.
 
     // STATUS_IND_GRAVITY
     transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_GRAVITY,GliderVarioStatus::STATUS_IND_GRAVITY) = 1.0f;
-
     newStatus.gravity = lastStatus.gravity;
 
     // STATUS_IND_LATITUDE
-    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LATITUDE,GliderVarioStatus::STATUS_IND_LATITUDE) = 1.0f;
+    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LATITUDE_OFFS,GliderVarioStatus::STATUS_IND_LATITUDE_OFFS) = 1.0f;
+    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LATITUDE_OFFS,GliderVarioStatus::STATUS_IND_SPEED_GROUND_N) = timeDiff;
 
-    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LATITUDE,GliderVarioStatus::STATUS_IND_SPEED_GROUND_N) = temp1 = timeDiff / lenLatitudeArcSec;
-
-    FloatType timeSquareHalf2Lat = timeSquareHalf / lenLatitudeArcSec;
-    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LATITUDE,GliderVarioStatus::STATUS_IND_ACC_HEADING) = temp2 = timeSquareHalf2Lat * FastMath::fastCos(lastStatus.heading);
+    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LATITUDE_OFFS,GliderVarioStatus::STATUS_IND_ACC_HEADING) = temp2 = timeSquareHalf * FastMath::fastCos(lastStatus.heading);
 
     // The angles have an indirect effect on the new status by means of the rotation matrix with the accelerations
-    // Do a direct deviation of cos.
-    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LATITUDE,GliderVarioStatus::STATUS_IND_HEADING) =
-            timeSquareHalf2Lat * lastStatus.accelHeading * (-FastMath::fastSin(lastStatus.heading) * FastMath::degToRad);
+    // Do a direct derivation of cos.
+    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LATITUDE_OFFS,GliderVarioStatus::STATUS_IND_HEADING) =
+            timeSquareHalf * lastStatus.accelHeading * (-FastMath::fastSin(lastStatus.heading) * FastMath::degToRad);
 
 
-    newStatus.latitude = lastStatus.latitude +
-            temp1 * lastStatus.groundSpeedNorth +
+    newStatus.latitudeOffs = lastStatus.latitudeOffs +
+    		timeDiff * lastStatus.groundSpeedNorth +
             temp2 * lastStatus.accelHeading ;
 
     // STATUS_IND_LONGITUDE
-    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LONGITUDE,GliderVarioStatus::STATUS_IND_LONGITUDE) = 1.0f;
+    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS) = 1.0f;
 
-    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LONGITUDE,GliderVarioStatus::STATUS_IND_SPEED_GROUND_E) = temp1 = timeDiff / lenLongitudeArcSec ;
+    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,GliderVarioStatus::STATUS_IND_SPEED_GROUND_E) = timeDiff;
 
-    FloatType timeSquareHalf2Lon = timeSquareHalf / lenLongitudeArcSec;
-    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LONGITUDE,GliderVarioStatus::STATUS_IND_ACC_HEADING) = temp2 = timeSquareHalf2Lon * FastMath::fastSin(lastStatus.heading);
+    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,GliderVarioStatus::STATUS_IND_ACC_HEADING) = temp2 = timeSquareHalf * FastMath::fastSin(lastStatus.heading);
 
     // The angles have an indirect effect on the new status by means of the rotation matrix with the accelerations
     // I calculate the derivate of sin as cos.
-    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LONGITUDE,GliderVarioStatus::STATUS_IND_HEADING) =
-            timeSquareHalf2Lat * lastStatus.accelHeading * (FastMath::fastCos(lastStatus.heading) * FastMath::degToRad);
+    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,GliderVarioStatus::STATUS_IND_HEADING) =
+            timeSquareHalf * lastStatus.accelHeading * (FastMath::fastCos(lastStatus.heading) * FastMath::degToRad);
 
-    newStatus.longitude =
-            lastStatus.longitude +
-            temp1 * lastStatus.groundSpeedEast +
+    newStatus.longitudeOffs =
+            lastStatus.longitudeOffs +
+            timeDiff * lastStatus.groundSpeedEast +
             temp2 * lastStatus.accelHeading;
 
     // STATUS_IND_ALT_MSL

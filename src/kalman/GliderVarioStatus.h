@@ -96,6 +96,12 @@ extern OEV_PUBLIC FloatType MAG_INCLINATION; // = -67.0f;
  */
 static FloatType constexpr NM_TO_M = 1852.0f;
 
+/**
+ * The rough length of a arc second latitude in meter at 45deg North.
+ * \sa <a href="https://en.wikipedia.org/wiki/Longitude#Length_of_a_degree_of_longitude" >Length of a degree of longitude</a>
+ */
+FloatType constexpr LEN_LAT_ARC_SEC = 111132.0 / 3600.0;
+
 /*
  * Here a bunch of gas constants for dry air as an ideal gas
  */
@@ -144,29 +150,29 @@ public:
         STATUS_IND_GRAVITY      ,  ///< The gravity, initialized to #::GRAVITY
 
         // Position and altitude
-        STATUS_IND_LATITUDE  	,  ///< Latitude in arc seconds North
-        STATUS_IND_LONGITUDE	,  ///< Longitude in arc seconds East
-        STATUS_IND_ALT_MSL   	,  ///< Altitude in m over Mean Sea Level
+        STATUS_IND_LATITUDE_OFFS	,  ///< Latitude offset in meter North of \ref latitudeBaseArcSec
+        STATUS_IND_LONGITUDE_OFFS	,  ///< Longitude offset in meter East of \ref latitudeBaseArcSec
+        STATUS_IND_ALT_MSL   		,  ///< Altitude in m over Mean Sea Level
 
         // Attitude of the body to the world coordinate system
-        STATUS_IND_HEADING		,  ///< Heading of the plane in deg. right turn from true north. This is the flight direction relative to the surrounding air.
-        ///< Synonymous with Yaw.
-        STATUS_IND_PITCH		,  ///< Pitch angle in deg. nose up. Pitch is applied after yaw.
-        STATUS_IND_ROLL		    ,  ///< Roll angle in deg. right. Roll is applied after yaw and pitch.
+        STATUS_IND_HEADING			,  ///< Heading of the plane in deg. right turn from true north. This is the flight direction relative to the surrounding air.
+        								///< Synonymous with Yaw.
+        STATUS_IND_PITCH			,  ///< Pitch angle in deg. nose up. Pitch is applied after yaw.
+        STATUS_IND_ROLL		    	,  ///< Roll angle in deg. right. Roll is applied after yaw and pitch.
 
         // Speeds
         STATUS_IND_SPEED_GROUND_N	,  ///< Ground speed component North in m/s
         STATUS_IND_SPEED_GROUND_E	,  ///< Ground speed component East in m/s
-        STATUS_IND_TAS			,  ///< True air speed horizontally in direction of heading
-        STATUS_IND_RATE_OF_SINK	, ///< Rate of sink in m/s relative to the surrounding air. Sink because the Z axis points downward
+        STATUS_IND_TAS				,  ///< True air speed horizontally in direction of heading
+        STATUS_IND_RATE_OF_SINK		, ///< Rate of sink in m/s relative to the surrounding air. Sink because the Z axis points downward
         STATUS_IND_VERTICAL_SPEED	, ///< Absolute vertical speed in m/s downward. Z axis is direction down.
         STATUS_IND_THERMAL_SPEED	, ///< The true reason for the whole exercise! :). As always in Z axis direction downward.
 
         // Accelerations in direction of the heading, vertical and perpendicular to heading.
         STATUS_IND_ACC_HEADING		, ///< Acceleration in m/s^2 horizontally along the heading of the plane
         STATUS_IND_ACC_CROSS		, ///< Acceleration in m/s^2 horizontally perpendicular to the heading
-        ///< Note that this does *not* include centrifugal force!!!
-        ///< This is only residual acceleration not accounted by turning.
+        								///< Note that this does *not* include centrifugal force!!!
+        								///< This is only residual acceleration not accounted by turning.
         STATUS_IND_ACC_VERTICAL		, ///< Acceleration in m/s^2 along body Z axis
 
         // Turn rates in reference to the world coordinate system
@@ -187,8 +193,8 @@ public:
         STATUS_IND_WIND_SPEED_E	, ///< Wind speed East component in m/s
         STATUS_IND_QFF			, ///< QFF in Pascal (Using a more realistic model incl. temperature, but ignoring humidity).
         STATUS_IND_LAST_PRESSURE, ///< Calculated pressure from last altMSL. Used to avoid to calculate the expensive
-        ///< barometric formula multiple times. I am ignoring the error imposed by the
-        ///< last altitude update :)
+        								///< barometric formula multiple times. I am ignoring the error imposed by the
+        								///< last altitude update :)
 
         STATUS_NUM_ROWS				///< The number of rows in the vector. This is not a component of the vector!
 #if defined DOXYGEN
@@ -258,8 +264,12 @@ public:
      * -Roll: -180 <= roll < 180; 180 deg counts as -180
      * -Yaw: 0<= yaw < 360; 360 deg counts as 0.
      * Note that pitch must be normalized fist. It may flip roll and yaw around. Yaw and roll are independent from the other angles.
+     *
+     * Updating the status may lead to an overflow of \ref longitudeOffs and \ref latitudeOffs offset beyond one arc second.
+     * When that happens \ref latitudeBaseArcSec and/or \ref longitudeBaseArcSec are updated until the offsets are < 1sec.
+     *
      */
-    void normalizeAngles();
+    void normalizeStatus();
 
     // Here come all state vector elements as single references into the vector for easier access
 
@@ -267,8 +277,8 @@ public:
     FloatType& gravity  = statusVector_x [ STATUS_IND_GRAVITY ];  ///< The gravity, initialized to #::GRAVITY
 
     /// Position and altitude
-    FloatType& longitude = statusVector_x[ STATUS_IND_LONGITUDE	];  ///< Latitude in arc seconds North
-    FloatType& latitude = statusVector_x[ STATUS_IND_LATITUDE  	];  ///< Longitude in arc seconds East
+    FloatType& longitudeOffs = statusVector_x[ STATUS_IND_LONGITUDE_OFFS	];  ///< Latitude offset in meter North of \ref latitudeBaseArcSec
+    FloatType& latitudeOffs	 = statusVector_x[ STATUS_IND_LATITUDE_OFFS  	];  ///< Longitude offset in meter East of \ref latitudeBaseArcSec
     FloatType& altMSL = statusVector_x[ STATUS_IND_ALT_MSL   	    ];  ///< Altitude in m over Mean Sea Level
 
     /// Attitude of the body to the world coordinate system
@@ -313,12 +323,38 @@ public:
     ///< barometric formula multiple times. I am ignoring the error imposed by the
     ///< last altitude update :)
 
+    /** \brief Base value of the latitude in arc sec
+     *
+     * \ref STATUS_IND_LATITUDE and \ref latitude are the offset in *meter* whereas the latitude here is in *arc seconds*
+     *
+     * Also note that the type is long, i.e. only the neareast full arc second is used.
+     *
+     */
+    long				 latitudeBaseArcSec = 0l;
+
+    /** \brief Base value of the latitude in arc sec
+     *
+     * \ref STATUS_IND_LATITUDE and \ref latitude are the offset in *meter* whereas the latitude here is in *arc seconds*
+     *
+     * Also note that the type is long, i.e. only the nearest full arc second is used.
+     *
+     */
+    long				 longitudeBaseArcSec = 0l;
+
+    /** \ref Length of a longitude arc second at the current latitude in m
+     *
+     * This value is calculated from current latitudeBaseArcSec when it is initialized or updated by \ref normalizeStatus()
+     *
+     */
+    FloatType lenLongitudeArcSec = LEN_LAT_ARC_SEC ;
+
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-    
+
 protected:
     StatusVectorType     statusVector_x;
     StatusCoVarianceType systemNoiseCovariance_Q;
     StatusCoVarianceType errorCovariance_P;
+
 
 
 };
