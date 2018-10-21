@@ -49,7 +49,7 @@ bool GliderVarioMeasurementUpdater::unitTestMode = false;
 
 void
 GliderVarioMeasurementUpdater::GPSLatitudeUpd (
-        FloatType measuredLatitude,
+        double measuredLatitude,
         FloatType latitudeVariance,
         GliderVarioMeasurementVector &measurementVector,
         GliderVarioStatus &varioStatus
@@ -60,11 +60,11 @@ GliderVarioMeasurementUpdater::GPSLatitudeUpd (
     // measRowT.setZero();
 
     // calculate and fill in local variables here.
-    measuredLatitude *= 3600.0f; // to arc seconds
-    latitudeVariance *= 3600.0f * 3600.0f; // to arc seconds
+    measuredLatitude *= 3600.0; // to arc seconds
     measurementVector.gpsLatitude = measuredLatitude;
-    measRowT.insert(GliderVarioStatus::STATUS_IND_LATITUDE,0) = 1.0f;
-    calculatedValue = varioStatus.latitude;
+    measuredLatitude = (measuredLatitude - double(varioStatus.latitudeBaseArcSec)) * LEN_LAT_ARC_SEC;
+    measRowT.insert(GliderVarioStatus::STATUS_IND_LATITUDE_OFFS,0) = 1.0f;
+    calculatedValue = varioStatus.latitudeOffs;
 
     if (unitTestMode) {
         // Save internal statuses for unit tests
@@ -84,7 +84,7 @@ GliderVarioMeasurementUpdater::GPSLatitudeUpd (
 
 void
 GliderVarioMeasurementUpdater::GPSLongitudeUpd (
-        FloatType measuredLongitude,
+        double measuredLongitude,
         FloatType longitudeVariance,
         GliderVarioMeasurementVector &measurementVector,
         GliderVarioStatus &varioStatus
@@ -96,10 +96,10 @@ GliderVarioMeasurementUpdater::GPSLongitudeUpd (
 
     // calculate and fill in local variables here.
     measuredLongitude *= 3600.0f; // to arc seconds
-    longitudeVariance *= 3600.0f * 3600.0f; // to arc seconds
     measurementVector.gpsLongitude = measuredLongitude;
-    measRowT.insert(GliderVarioStatus::STATUS_IND_LONGITUDE,0) = 1.0f;
-    calculatedValue = varioStatus.longitude;
+    measuredLongitude = (measuredLongitude - varioStatus.longitudeBaseArcSec) * varioStatus.lenLongitudeArcSec;
+    measRowT.insert(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,0) = 1.0f;
+    calculatedValue = varioStatus.longitudeOffs;
 
     if (unitTestMode) {
         // Save internal statuses for unit tests

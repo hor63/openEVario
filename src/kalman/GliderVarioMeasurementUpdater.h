@@ -48,14 +48,22 @@ public:
 
     /**
      * \brief Update the status vector with a new measurement of the latitude
-     * Update the status vector with a new measurement of the latitude measurement
+     *
+     * In contrast to most functions here \ref measuredLatitude is double not FloatType (i.e. float)
+     * because the latitude scale is from 90deg to 1mm, requiring about 10 decimals, much larger than float
+     * Internally the Kalman filter splits the latitude in long whole seconds base and
+     * an offset in m which is actually part of the Kalman filter.
+     *
+     * Note that \ref latitudeVariance is in meter^2, not degrees because GPS receivers report the
+     * uncertainty in m, and internally the filter uses m for the latitude offset
+     *
      * @param[in] measuredLatitude Latitude in degrees North from the GPS receiver
-     * @param[in] latitudeVariance Variance of the latitude in Degrees^2
+     * @param[in] latitudeVariance Variance of the latitude in meter^2
      * @param[in,out] measurementVector The applicable column is updated for information purposes.
      * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
      */
     static void GPSLatitudeUpd (
-            FloatType measuredLatitude,
+            double measuredLatitude,
             FloatType latitudeVariance,
             GliderVarioMeasurementVector &measurementVector,
             GliderVarioStatus &varioStatus
@@ -63,14 +71,22 @@ public:
 
     /**
      * \brief Update the status vector with a new measurement of the longitude
-     * Update the status vector with a new measurement of the longitude
+     *
+     * In contrast to most functions here \ref measuredLongitude is double not FloatType (i.e. float)
+     * because the latitude scale is from 180deg to 1mm, requiring about 11 decimals, much larger than float
+     * Internally the Kalman filter splits the latitude in long whole seconds base and
+     * an offset in m which is actually part of the Kalman filter.
+     *
+     * Note that \ref longitudeVariance is in meter^2, not degrees because GPS receivers report the
+     * uncertainty in m, and internally the filter uses m for the longitude offset
+     *
      * @param[in] measuredLongitude Longitude in degrees East
-     * @param[in] longitudeVariance variance of the longitude measurement in Degrees^2
+     * @param[in] longitudeVariance variance of the longitude measurement in meter^2
      * @param[in,out] measurementVector The applicable column is updated for information purposes.
      * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
      */
     static void GPSLongitudeUpd (
-            FloatType measuredLongitude,
+            double measuredLongitude,
             FloatType longitudeVariance,
             GliderVarioMeasurementVector &measurementVector,
             GliderVarioStatus &varioStatus
