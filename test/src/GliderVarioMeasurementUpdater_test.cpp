@@ -55,18 +55,23 @@ public:
         // The noise covariance is set under the assumption that I run the status propagation in 100ms intervals,
         // i.e. all values per second are divided by 10, and values per minute divided by 600.
         // Mid of Lueneburg airport EDHG
-        st1.latitude = 53.2483824 * 3600.0;
-        // An arc minute =1.852km=1nm
-        errCov.coeffRef(st1.STATUS_IND_LATITUDE,st1.STATUS_IND_LATITUDE) = 60.0f * 60.0f;
-        // 1 arc sec per minute, i.e. about 100 meters
-        noiseCov.coeffRef(st1.STATUS_IND_LATITUDE,st1.STATUS_IND_LATITUDE) = (1.0* 1.0) / 600.0;
+        double latitude = 53.2483824 * 3600.0;
+        st1.latitudeBaseArcSec = lround(latitude);
+        st1.latitudeOffs = (latitude - double(st1.latitudeBaseArcSec)) * LEN_LAT_ARC_SEC;
+        st1.lenLongitudeArcSec = LEN_LAT_ARC_SEC * FastMath::fastCos(float(latitude));
+        // 100m initial
+        errCov.coeffRef(st1.STATUS_IND_LATITUDE_OFFS,st1.STATUS_IND_LATITUDE_OFFS) = 100.0f * 100.0f;
+        // 100 meters per minute
+        noiseCov.coeffRef(st1.STATUS_IND_LATITUDE_OFFS,st1.STATUS_IND_LATITUDE_OFFS) = (100.0f* 100.0f) / 600.0f;
 
         // Mid of Lueneburg airport EDHG
-        st1.longitude = 10.458796 * 3600.0;
-        // An arc minute at the latitude ~1km
-        errCov.coeffRef(st1.STATUS_IND_LONGITUDE,st1.STATUS_IND_LONGITUDE) = 60.0f * 60.0f;
-        // 1 arc sec per minute, i.e. about 60m meters
-        noiseCov.coeffRef(st1.STATUS_IND_LONGITUDE,st1.STATUS_IND_LONGITUDE) = (1.0 * 1.0) / 600.0;
+        double longitude = 10.458796 * 3600.0;
+        st1.longitudeBaseArcSec = lround(longitude);
+        st1.longitudeOffs = (longitude - double(st1.longitudeBaseArcSec)) * st1.lenLongitudeArcSec;
+        // 100m initial
+        errCov.coeffRef(st1.STATUS_IND_LONGITUDE_OFFS,st1.STATUS_IND_LONGITUDE_OFFS) = 100.0f * 100.0f;
+        // 100m/min
+        noiseCov.coeffRef(st1.STATUS_IND_LONGITUDE_OFFS,st1.STATUS_IND_LONGITUDE_OFFS) = (100.0f * 100.0f) / 600.0f;
 
         st1.altMSL = 500.0;
         errCov.coeffRef(st1.STATUS_IND_ALT_MSL,st1.STATUS_IND_ALT_MSL) = 100.0 * 100.0;
@@ -241,9 +246,12 @@ TEST_F(MeasurementUpdaterTest, Latitude) {
     // Test the result for a given combination of input values
     // and a number of time differences
 
-    FloatType measLat = st1.latitude/FloatType(3600.0) + FloatType(5/3600.0); // Increase by 5 arc seconds.
-                                                                                //Remember measurement is in degrees, status in arc seconds
-    FloatType expectResult = st1.latitude;
+	// Increase by 5 arc seconds.
+	// Remember measurement is in degrees, status base in arc seconds and offset in m
+    double measLat = (double(st1.latitudeBaseArcSec) +
+    		(double(st1.latitudeOffs) / double(st1.lenLongitudeArcSec)) + 5.0) / 3600.0;
+
+    FloatType expectResult = st1.latitudeOffs;
 
     GliderVarioMeasurementUpdater::GPSLatitudeUpd(measLat,15.0*15.0/3600.0/3600.0,measVect,st1);
 
@@ -252,7 +260,7 @@ TEST_F(MeasurementUpdaterTest, Latitude) {
     for (int i = 0; i < GliderVarioStatus::STATUS_NUM_ROWS; i++) {
         switch (i) {
 
-        case GliderVarioStatus::STATUS_IND_LATITUDE:
+        case GliderVarioStatus::STATUS_IND_LATITUDE_OFFS:
             EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),1.0f);
             break;
 
@@ -270,9 +278,12 @@ TEST_F(MeasurementUpdaterTest, Longitude) {
     // Test the result for a given combination of input values
     // and a number of time differences
 
-    FloatType measLon = st1.longitude/FloatType(3600.0) + FloatType(5/3600.0); // Increase by 5 arc seconds.
-                                                                                //Remember measurement is in degrees, status in arc seconds
-    FloatType expectResult = st1.longitude;
+	// Increase by 5 arc seconds.
+	//Remember measurement is in degrees, status split into base in arc seconds and offset in meters.
+    double measLon = (double(st1.longitudeBaseArcSec) +
+    		(double(st1.longitudeOffs) * double(LEN_LAT_ARC_SEC)) + 5.0) / 3600.0 ;
+
+    FloatType expectResult = st1.longitudeOffs;
 
     GliderVarioMeasurementUpdater::GPSLongitudeUpd(measLon,15.0*15.0/3600.0/3600.0,measVect,st1);
 
@@ -281,7 +292,7 @@ TEST_F(MeasurementUpdaterTest, Longitude) {
     for (int i = 0; i < GliderVarioStatus::STATUS_NUM_ROWS; i++) {
         switch (i) {
 
-        case GliderVarioStatus::STATUS_IND_LONGITUDE:
+        case GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS:
             EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),1.0f);
             break;
 
