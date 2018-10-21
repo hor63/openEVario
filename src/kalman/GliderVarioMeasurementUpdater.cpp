@@ -95,7 +95,7 @@ GliderVarioMeasurementUpdater::GPSLongitudeUpd (
     // measRowT.setZero();
 
     // calculate and fill in local variables here.
-    measuredLongitude *= 3600.0f; // to arc seconds
+    measuredLongitude *= 3600.0; // to arc seconds
     measurementVector.gpsLongitude = measuredLongitude;
     measuredLongitude = (measuredLongitude - varioStatus.longitudeBaseArcSec) * varioStatus.lenLongitudeArcSec;
     measRowT.insert(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,0) = 1.0f;
