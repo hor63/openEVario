@@ -76,49 +76,50 @@ TEST_F(TransitionMatrixTest, Latitude) {
     // and a number of time differences
     // input values are: Latitude, ground speed North, lineal acceleration, heading
     for (FloatType t = 0.01f; t<=1.3f; t+=0.23f  ) {
-        for (FloatType lat = 45.0f ; lat <= 65.0f; lat += 5.33f) {
+        for (double lat = 45.0 ; lat <= 65.0; lat += 5.33) {
             for (FloatType speedGroundN = 0.0f; speedGroundN <= 80.0f; speedGroundN += 6.77f) {
                 for (FloatType accel = -0.5f ; accel <= 0.5f; accel += 0.193f) {
                     for (FloatType heading = 0.0f ; heading < 360.0f; heading += 23.3f){
-                        st1.latitude = lat * 3600.0f;
+                    	st1.latitude(lat);
                         st1.groundSpeedNorth = speedGroundN;
                         st1.accelHeading = accel;
                         st1.heading = heading;
 
                         transMatrix.updateStatus(st1,st2,t);
 
-                        FloatType arcSecPerM = 3600.0 / 111132.0;
-                        FloatType expectResult =
-                                lat * 3600.0f
-                                + arcSecPerM * t*speedGroundN
-                                + arcSecPerM * FastMath::fastCos(heading) * accel *t*t/2
+                        double arcSecPerM = 3600.0 / 111132.0;
+                        double expectResult =
+                                lat
+                                + (t*speedGroundN
+                                		+ FastMath::fastCos(heading) * accel *t*t/2)/LEN_LAT_ARC_SEC / 3600.0;
                                 ;
 
-                        EXPECT_NEAR (st2.latitude,expectResult,fabs(expectResult*0.000001f)) <<
+                        EXPECT_NEAR (st2.latitude(),expectResult,fabs(expectResult*0.0000000001)) <<
                                 " at Latitude = " << lat << " groundSpeedN = " << speedGroundN << " acceleration = " << accel <<
                                 " heading = " << heading << " time = " << t;
 
                         // Test the coefficients in the matrix as derivatives.
-                        FloatType orgResult = expectResult;
-                        FloatType resultDelta;
-                        FloatType deltaValue;
+                        double orgResult = expectResult;
+                        double resultDelta;
+                        double deltaValue;
 
 
-                        // Modify the latitude
-                        deltaValue = 10.0f;
-                        st1.latitude = lat * 3600.0f + deltaValue;
+                        // Modify the latitude by 10 arc seconds
+                        deltaValue = 10.0 / 3600.0;
+                        st1.latitude (lat + double(deltaValue));
                         // transMatrix.updateStatus(st1,st2,t);
                         expectResult =
-                                (lat * 3600.0f + deltaValue)
-                                + arcSecPerM * t*speedGroundN
-                                + arcSecPerM * FastMath::fastCos(heading) * accel *t*t/2
+                                (lat + deltaValue / 3600.0)
+                                + (t*speedGroundN
+                                		+ arcSecPerM * FastMath::fastCos(heading) * accel *t*t/2) / LEN_LAT_ARC_SEC / 3600.0
                                 ;
+
                         resultDelta = deltaValue *
                                 transMatrix.getTransitionMatrix()
-                                .coeff(GliderVarioStatus::STATUS_IND_LATITUDE,GliderVarioStatus::STATUS_IND_LATITUDE);
+                                .coeff(GliderVarioStatus::STATUS_IND_LATITUDE_OFFS,GliderVarioStatus::STATUS_IND_LATITUDE_OFFS);
 
                         EXPECT_NEAR (expectResult,orgResult + resultDelta,fabs(expectResult*0.000001f)) << " Latitude delta = " << deltaValue;
-                        st1.latitude = lat * 3600.0f;
+                        st1.latitude (lat);
 
                         // Modify groundSpeedN
                         deltaValue = 1.0f;
