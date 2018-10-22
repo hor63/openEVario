@@ -62,9 +62,9 @@ GliderVarioMeasurementUpdater::GPSLatitudeUpd (
     // calculate and fill in local variables here.
     measuredLatitude *= 3600.0; // to arc seconds
     measurementVector.gpsLatitude = measuredLatitude;
-    measuredLatitude = (measuredLatitude - double(varioStatus.latitudeBaseArcSec)) * LEN_LAT_ARC_SEC;
+    measuredLatitude = (measuredLatitude - double(varioStatus.getLatitudeBaseArcSec())) * LEN_LAT_ARC_SEC;
     measRowT.insert(GliderVarioStatus::STATUS_IND_LATITUDE_OFFS,0) = 1.0f;
-    calculatedValue = varioStatus.latitudeOffs;
+    calculatedValue = varioStatus.latitudeOffsC;
 
     if (unitTestMode) {
         // Save internal statuses for unit tests
@@ -97,9 +97,9 @@ GliderVarioMeasurementUpdater::GPSLongitudeUpd (
     // calculate and fill in local variables here.
     measuredLongitude *= 3600.0; // to arc seconds
     measurementVector.gpsLongitude = measuredLongitude;
-    measuredLongitude = (measuredLongitude - varioStatus.longitudeBaseArcSec) * varioStatus.lenLongitudeArcSec;
+    measuredLongitude = (measuredLongitude - varioStatus.getLongitudeBaseArcSec()) * varioStatus.getLenLongitudeArcSec();
     measRowT.insert(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,0) = 1.0f;
-    calculatedValue = varioStatus.longitudeOffs;
+    calculatedValue = varioStatus.longitudeOffsC;
 
     if (unitTestMode) {
         // Save internal statuses for unit tests

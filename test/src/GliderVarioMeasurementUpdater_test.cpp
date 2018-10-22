@@ -55,19 +55,16 @@ public:
         // The noise covariance is set under the assumption that I run the status propagation in 100ms intervals,
         // i.e. all values per second are divided by 10, and values per minute divided by 600.
         // Mid of Lueneburg airport EDHG
-        double latitude = 53.2483824 * 3600.0;
-        st1.latitudeBaseArcSec = lround(latitude);
-        st1.latitudeOffs = (latitude - double(st1.latitudeBaseArcSec)) * LEN_LAT_ARC_SEC;
-        st1.lenLongitudeArcSec = LEN_LAT_ARC_SEC * FastMath::fastCos(float(latitude));
+        double latitude = 53.2483824;
+        st1.latitude(latitude);
         // 100m initial
         errCov.coeffRef(st1.STATUS_IND_LATITUDE_OFFS,st1.STATUS_IND_LATITUDE_OFFS) = 100.0f * 100.0f;
         // 100 meters per minute
         noiseCov.coeffRef(st1.STATUS_IND_LATITUDE_OFFS,st1.STATUS_IND_LATITUDE_OFFS) = (100.0f* 100.0f) / 600.0f;
 
         // Mid of Lueneburg airport EDHG
-        double longitude = 10.458796 * 3600.0;
-        st1.longitudeBaseArcSec = lround(longitude);
-        st1.longitudeOffs = (longitude - double(st1.longitudeBaseArcSec)) * st1.lenLongitudeArcSec;
+        double longitude = 10.458796;
+        st1.longitude(longitude);
         // 100m initial
         errCov.coeffRef(st1.STATUS_IND_LONGITUDE_OFFS,st1.STATUS_IND_LONGITUDE_OFFS) = 100.0f * 100.0f;
         // 100m/min
@@ -247,11 +244,9 @@ TEST_F(MeasurementUpdaterTest, Latitude) {
     // and a number of time differences
 
 	// Increase by 5 arc seconds.
-	// Remember measurement is in degrees, status base in arc seconds and offset in m
-    double measLat = (double(st1.latitudeBaseArcSec) +
-    		(double(st1.latitudeOffs) / double(st1.lenLongitudeArcSec)) + 5.0) / 3600.0;
+    double measLat = st1.latitude() + 5.0 / 3600.0;
 
-    FloatType expectResult = st1.latitudeOffs;
+    FloatType expectResult = st1.latitudeOffsC;
 
     GliderVarioMeasurementUpdater::GPSLatitudeUpd(measLat,15.0*15.0/3600.0/3600.0,measVect,st1);
 
@@ -280,10 +275,9 @@ TEST_F(MeasurementUpdaterTest, Longitude) {
 
 	// Increase by 5 arc seconds.
 	//Remember measurement is in degrees, status split into base in arc seconds and offset in meters.
-    double measLon = (double(st1.longitudeBaseArcSec) +
-    		(double(st1.longitudeOffs) * double(LEN_LAT_ARC_SEC)) + 5.0) / 3600.0 ;
+    double measLon = st1.longitude() + 5.0 / 3600.0 ;
 
-    FloatType expectResult = st1.longitudeOffs;
+    FloatType expectResult = st1.longitudeOffsC;
 
     GliderVarioMeasurementUpdater::GPSLongitudeUpd(measLon,15.0*15.0/3600.0/3600.0,measVect,st1);
 

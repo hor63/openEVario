@@ -134,6 +134,9 @@ static FloatType constexpr Rspec     = R/M;
  */
 class OEV_PUBLIC GliderVarioStatus
 {
+
+	friend class GliderVarioTransitionMatrix;
+
 public:
 
     /** \brief Index, i.e. positions of the status components in #statusVector_x
@@ -363,6 +366,21 @@ public:
      * @param lon Longitude in degrees
      */
     void longitude (double lon);
+
+    /// \brief \see latitudeBaseArcSec
+    long getLatitudeBaseArcSec () const {
+    	return latitudeBaseArcSec;
+    }
+
+    /// \brief \see longitudeBaseArcSec
+    long getLongitudeBaseArcSec () const {
+    	return longitudeBaseArcSec;
+    }
+
+    /// \brief \see lenLongitudeArcSec
+    FloatType getLenLongitudeArcSec () const {
+    	return lenLongitudeArcSec;
+    }
 
 
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW

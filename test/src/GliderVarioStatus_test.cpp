@@ -72,9 +72,9 @@ TEST_F(GliderVarioStatusTest, AccessorTest) {
 
     EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_GRAVITY), statusVector.gravity);
     i++;
-    EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_LATITUDE_OFFS), statusVector.latitudeOffs);
+    EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_LATITUDE_OFFS), statusVector.latitudeOffsC);
     i++;
-    EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_LONGITUDE_OFFS), statusVector.longitudeOffs);
+    EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_LONGITUDE_OFFS), statusVector.longitudeOffsC);
     i++;
     EXPECT_EQ (statusVector.getStatusVector_x()( statusVector.STATUS_IND_ALT_MSL), statusVector.altMSL);
     i++;
