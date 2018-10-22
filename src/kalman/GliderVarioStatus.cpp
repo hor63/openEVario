@@ -183,6 +183,27 @@ void GliderVarioStatus::normalizeStatus() {
 
 }
 
+void openEV::GliderVarioStatus::latitude(double lat) {
+
+	lenLongitudeArcSec = FastMath::fastCos(FloatType(lat));
+
+	lat *= 3600.0;
+
+	latitudeBaseArcSec	= lround(lat);
+	latitudeOffs		= (lat - latitudeBaseArcSec) * LEN_LAT_ARC_SEC;
+
+}
+
+void openEV::GliderVarioStatus::longitude(double lon) {
+
+	lon *= 3600.0;
+
+	longitudeBaseArcSec	= lround(lon);
+	longitudeOffs		= (lon - longitudeBaseArcSec) * lenLongitudeArcSec;
+
+}
+
+
 
 } // namespace openEV
 
@@ -289,6 +310,7 @@ std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::Glide
 	std::ostream &o = b;
 	return operator << (o,e.e);
 }
+
 #endif /* #if defined HAVE_LOG4CXX_H */
 
 

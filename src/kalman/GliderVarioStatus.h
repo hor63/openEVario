@@ -100,7 +100,7 @@ static FloatType constexpr NM_TO_M = 1852.0f;
  * The rough length of a arc second latitude in meter at 45deg North.
  * \sa <a href="https://en.wikipedia.org/wiki/Longitude#Length_of_a_degree_of_longitude" >Length of a degree of longitude</a>
  */
-FloatType constexpr LEN_LAT_ARC_SEC = 111132.0 / 3600.0;
+double constexpr LEN_LAT_ARC_SEC = 111132.0 / 3600.0;
 
 /*
  * Here a bunch of gas constants for dry air as an ideal gas
@@ -277,8 +277,8 @@ public:
     FloatType& gravity  = statusVector_x [ STATUS_IND_GRAVITY ];  ///< The gravity, initialized to #::GRAVITY
 
     /// Position and altitude
-    FloatType& longitudeOffs = statusVector_x[ STATUS_IND_LONGITUDE_OFFS	];  ///< Latitude offset in meter North of \ref latitudeBaseArcSec
-    FloatType& latitudeOffs	 = statusVector_x[ STATUS_IND_LATITUDE_OFFS  	];  ///< Longitude offset in meter East of \ref latitudeBaseArcSec
+    const FloatType& longitudeOffsC = statusVector_x[ STATUS_IND_LONGITUDE_OFFS	];  ///< Latitude offset in meter North of \ref latitudeBaseArcSec
+    const FloatType& latitudeOffsC	 = statusVector_x[ STATUS_IND_LATITUDE_OFFS  	];  ///< Longitude offset in meter East of \ref latitudeBaseArcSec
     FloatType& altMSL = statusVector_x[ STATUS_IND_ALT_MSL   	    ];  ///< Altitude in m over Mean Sea Level
 
     /// Attitude of the body to the world coordinate system
@@ -323,6 +323,58 @@ public:
     ///< barometric formula multiple times. I am ignoring the error imposed by the
     ///< last altitude update :)
 
+    /** \brief Return latitude from latitude base in arc sec, and offset in m
+     *
+     * Type is double to the large range
+     *
+     * @return Latitude in degrees
+     */
+    double latitude () const {
+    	return (double (latitudeBaseArcSec) + double(latitudeOffs) / LEN_LAT_ARC_SEC) / 3600.0;
+    }
+
+    /** \brief Set the latitude in degrees
+     *
+     * Converts the latitude into the integer latitude base in arc sec and the remainder offset in m.
+     * Calculates also the length of an arc second longitude at this latitude
+     *
+     * Type of \ref lat is double to the large range
+     *
+     * @param lat Latitude in degrees
+     */
+    void latitude (double lat);
+
+    /** \brief Return longitude from longitude base in arc sec, and offset in m
+     *
+     * Type is double to the large range
+     *
+     * @return Longitude in degrees
+     */
+    double longitude () const {
+    	return (double (longitudeBaseArcSec) + double(longitudeOffs) / lenLongitudeArcSec) / 3600.0;
+    }
+
+    /** \brief Set the longitude in degrees
+     *
+     * Converts the longitude into the integer longitude base in arc sec and the remainder offset in m.
+     *
+     * Type of \ref lon is double to the large range
+     *
+     * @param lon Longitude in degrees
+     */
+    void longitude (double lon);
+
+
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+protected:
+    StatusVectorType     statusVector_x;
+    StatusCoVarianceType systemNoiseCovariance_Q;
+    StatusCoVarianceType errorCovariance_P;
+
+    FloatType& longitudeOffs	= statusVector_x[ STATUS_IND_LONGITUDE_OFFS	];  ///< Latitude offset in meter North of \ref latitudeBaseArcSec
+    FloatType& latitudeOffs	= statusVector_x[ STATUS_IND_LATITUDE_OFFS  	];  ///< Longitude offset in meter East of \ref latitudeBaseArcSec
+
     /** \brief Base value of the latitude in arc sec
      *
      * \ref STATUS_IND_LATITUDE and \ref latitude are the offset in *meter* whereas the latitude here is in *arc seconds*
@@ -347,13 +399,6 @@ public:
      *
      */
     FloatType lenLongitudeArcSec = LEN_LAT_ARC_SEC ;
-
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
-protected:
-    StatusVectorType     statusVector_x;
-    StatusCoVarianceType systemNoiseCovariance_Q;
-    StatusCoVarianceType errorCovariance_P;
 
 
 
