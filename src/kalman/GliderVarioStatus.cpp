@@ -172,12 +172,12 @@ void GliderVarioStatus::normalizeStatus() {
 
 
 	while (longitudeOffs > lenLongitudeArcSec) {
-		latitudeOffs -= lenLongitudeArcSec;
-		latitudeBaseArcSec ++;
+		longitudeOffs -= lenLongitudeArcSec;
+		longitudeBaseArcSec ++;
 	}
 	while (longitudeOffs < lenLongitudeArcSec) {
-		latitudeOffs += lenLongitudeArcSec;
-		latitudeBaseArcSec --;
+		longitudeOffs += lenLongitudeArcSec;
+		longitudeBaseArcSec --;
 	}
 
 
