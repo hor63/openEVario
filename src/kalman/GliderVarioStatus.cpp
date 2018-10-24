@@ -185,12 +185,17 @@ void GliderVarioStatus::normalizeStatus() {
 
 void openEV::GliderVarioStatus::latitude(double lat) {
 
-	lenLongitudeArcSec = FastMath::fastCos(FloatType(lat));
+	// Save the current longitude because the length of an arc second will change with the new latitude
+	double longitudeBak = longitude();
+
+	lenLongitudeArcSec = LEN_LAT_ARC_SEC * FastMath::fastCos(FloatType(lat));
 
 	lat *= 3600.0;
 
 	latitudeBaseArcSec	= lround(lat);
 	latitudeOffs		= (lat - latitudeBaseArcSec) * LEN_LAT_ARC_SEC;
+
+	longitude(longitudeBak);
 
 }
 
