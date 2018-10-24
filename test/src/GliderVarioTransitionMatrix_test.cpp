@@ -111,7 +111,7 @@ TEST_F(TransitionMatrixTest, Latitude) {
                         expectResult =
                                 (lat + deltaValue)
                                 + (t*speedGroundN
-                                		+ arcSecPerM * FastMath::fastCos(heading) * accel *t*t/2.0) / LEN_LAT_ARC_SEC / 3600.0
+                                		+ FastMath::fastCos(heading) * accel *t*t/2.0) / LEN_LAT_ARC_SEC / 3600.0
                                 ;
 
                         resultDelta = deltaValue *
@@ -127,8 +127,8 @@ TEST_F(TransitionMatrixTest, Latitude) {
                         // transMatrix.updateStatus(st1,st2,t);
                         expectResult =
                                 lat
-                                + (arcSecPerM * t* (speedGroundN + deltaValue)
-                                		+ arcSecPerM * FastMath::fastCos(heading) * accel *t*t/2.0) / LEN_LAT_ARC_SEC / 3600.0;
+                                + (t* (speedGroundN + deltaValue)
+                                		+ FastMath::fastCos(heading) * accel *t*t/2.0) / LEN_LAT_ARC_SEC / 3600.0;
                                 ;
                         resultDelta =
                         		(deltaValue *
@@ -138,7 +138,10 @@ TEST_F(TransitionMatrixTest, Latitude) {
 
                         EXPECT_NEAR (expectResult,orgResult + resultDelta,abs(expectResult*0.0000000001)) <<
                                 " groundSpeedN delta = " << deltaValue <<
-                                " resultDelta = " << resultDelta;
+                                " resultDelta = " << resultDelta
+								<< "\n (GliderVarioStatus::STATUS_IND_LATITUDE_OFFS,GliderVarioStatus::STATUS_IND_SPEED_GROUND_N) = "
+								<< transMatrix.getTransitionMatrix().coeff(GliderVarioStatus::STATUS_IND_LATITUDE_OFFS,GliderVarioStatus::STATUS_IND_SPEED_GROUND_N);
+
                         st1.groundSpeedNorth = speedGroundN;
 
                         // Modify the acceleration
@@ -147,8 +150,8 @@ TEST_F(TransitionMatrixTest, Latitude) {
                         // transMatrix.updateStatus(st1,st2,t);
                         expectResult =
                                 lat
-                                + (arcSecPerM * t* speedGroundN
-                                		+ arcSecPerM * FastMath::fastCos(heading) * (accel + deltaValue) *t*t/2.0) / LEN_LAT_ARC_SEC / 3600.0;
+                                + (t* speedGroundN
+                                		+ FastMath::fastCos(heading) * (accel + deltaValue) *t*t/2.0) / LEN_LAT_ARC_SEC / 3600.0;
 
                         resultDelta =
                         		( deltaValue *
@@ -167,8 +170,8 @@ TEST_F(TransitionMatrixTest, Latitude) {
                         // transMatrix.updateStatus(st1,st2,t);
                         expectResult =
                                 lat
-                                + (arcSecPerM * t*speedGroundN
-                                		+ arcSecPerM * FastMath::fastCos(heading + deltaValue) * accel *t*t/2.0) / LEN_LAT_ARC_SEC / 3600.0
+                                + (t*speedGroundN
+                                		+ FastMath::fastCos(heading + deltaValue) * accel *t*t/2.0) / LEN_LAT_ARC_SEC / 3600.0
                                 ;
                         resultDelta =
                         		(deltaValue *
@@ -214,7 +217,10 @@ TEST_F(TransitionMatrixTest, Longitude) {
 
                             transMatrix.updateStatus(st1,st2,t);
 
-                            double degPerM = 1.0 / 111132.0 / FastMath::fastCos(latitude);
+                            double degPerM = 1.0 / (111132.0 * FastMath::fastCos(latitude));
+
+                            EXPECT_NEAR (degPerM, 1.0/ (st1.getLenLongitudeArcSec()*3600.0),0.000000001);
+
                             double expectResult =
                                     lon
                                     + (t*speedGroundE
@@ -222,7 +228,7 @@ TEST_F(TransitionMatrixTest, Longitude) {
 										* degPerM
                                     ;
 
-                            EXPECT_NEAR (st2.longitude(),expectResult,abs(expectResult*0.0000000001)) <<
+                            EXPECT_NEAR (st2.longitude(),expectResult,0.000000001) <<
                                     " at Latitude = " << lon << " groundSpeedE = " << speedGroundE << " acceleration = " << accel <<
                                     " heading = " << heading << " time = " << t;
 
@@ -243,10 +249,10 @@ TEST_F(TransitionMatrixTest, Longitude) {
                                     ;
                             resultDelta = deltaValue *
                                     transMatrix.getTransitionMatrix()
-                                    .coeff(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS)
-									* degPerM;
+                                    .coeff(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS);
+									//* degPerM;
 
-                            EXPECT_NEAR (expectResult,orgResult + resultDelta,abs(expectResult*0.0000000001)) << " Latitude delta = " << deltaValue;
+                            EXPECT_NEAR (expectResult,orgResult + resultDelta,0.000000001) << " Longitude delta = " << deltaValue;
                             st1.longitude (lon);
 
                             // Modify groundSpeedE
@@ -262,7 +268,7 @@ TEST_F(TransitionMatrixTest, Longitude) {
                                     transMatrix.getTransitionMatrix()
                                     .coeff(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,GliderVarioStatus::STATUS_IND_SPEED_GROUND_E) * degPerM;
 
-                            EXPECT_NEAR (expectResult,orgResult + resultDelta,abs(expectResult*0.0000000001)) <<
+                            EXPECT_NEAR (expectResult,orgResult + resultDelta,0.000000001) <<
                                     " groundSpeedE delta = " << deltaValue <<
                                     " resultDelta = " << resultDelta;
                             st1.groundSpeedEast = speedGroundE;
@@ -280,7 +286,7 @@ TEST_F(TransitionMatrixTest, Longitude) {
                                     transMatrix.getTransitionMatrix()
                                     .coeff(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,GliderVarioStatus::STATUS_IND_ACC_HEADING) * degPerM;
 
-                            EXPECT_NEAR (expectResult,orgResult + resultDelta,abs(expectResult*0.0000000001)) <<
+                            EXPECT_NEAR (expectResult,orgResult + resultDelta,0.000000001) <<
                                     " accelHeading delta = " << deltaValue <<
                                     " resultDelta = " << resultDelta;
                             st1.accelHeading = accel;
@@ -298,7 +304,7 @@ TEST_F(TransitionMatrixTest, Longitude) {
                                     transMatrix.getTransitionMatrix()
                                     .coeff(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,GliderVarioStatus::STATUS_IND_HEADING) * degPerM;
 
-                            EXPECT_NEAR (expectResult,orgResult + resultDelta,abs(expectResult*0.0000000001)) <<
+                            EXPECT_NEAR (expectResult,orgResult + resultDelta,0.00000001) <<
                                     " heading delta = " << deltaValue <<
                                     " resultDelta = " << resultDelta <<
                                     " heading = " << st1.heading <<
