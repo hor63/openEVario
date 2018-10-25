@@ -219,7 +219,7 @@ TEST_F(TransitionMatrixTest, Longitude) {
 
                             double degPerM = 1.0 / (111132.0 * FastMath::fastCos(latitude));
 
-                            EXPECT_NEAR (degPerM, 1.0/ (st1.getLenLongitudeArcSec()*3600.0),0.000000001);
+                            EXPECT_NEAR (degPerM, 1.0/ (st1.getLenLongitudeArcSec()*3600.0),0.0000000001);
 
                             double expectResult =
                                     lon
@@ -252,7 +252,7 @@ TEST_F(TransitionMatrixTest, Longitude) {
                                     .coeff(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS);
 									//* degPerM;
 
-                            EXPECT_NEAR (expectResult,orgResult + resultDelta,0.000000001) << " Longitude delta = " << deltaValue;
+                            EXPECT_NEAR (expectResult,orgResult + resultDelta,0.0000000001) << " Longitude delta = " << deltaValue;
                             st1.longitude (lon);
 
                             // Modify groundSpeedE
@@ -268,7 +268,7 @@ TEST_F(TransitionMatrixTest, Longitude) {
                                     transMatrix.getTransitionMatrix()
                                     .coeff(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,GliderVarioStatus::STATUS_IND_SPEED_GROUND_E) * degPerM;
 
-                            EXPECT_NEAR (expectResult,orgResult + resultDelta,0.000000001) <<
+                            EXPECT_NEAR (expectResult,orgResult + resultDelta,0.0000000001) <<
                                     " groundSpeedE delta = " << deltaValue <<
                                     " resultDelta = " << resultDelta;
                             st1.groundSpeedEast = speedGroundE;
@@ -286,7 +286,7 @@ TEST_F(TransitionMatrixTest, Longitude) {
                                     transMatrix.getTransitionMatrix()
                                     .coeff(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,GliderVarioStatus::STATUS_IND_ACC_HEADING) * degPerM;
 
-                            EXPECT_NEAR (expectResult,orgResult + resultDelta,0.000000001) <<
+                            EXPECT_NEAR (expectResult,orgResult + resultDelta,0.0000000001) <<
                                     " accelHeading delta = " << deltaValue <<
                                     " resultDelta = " << resultDelta;
                             st1.accelHeading = accel;
