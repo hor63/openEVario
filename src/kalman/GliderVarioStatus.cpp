@@ -156,18 +156,28 @@ void GliderVarioStatus::normalizeStatus() {
     // The normalization is admittedly extremely primitive but given the fact that an arc sec. is 30-something meters, and
     // the Kalman filter will never run below 100ms per cycle even at 300km/s the plane will never move > 1 arc sec per cycle.
     if (latitudeOffs > LEN_LAT_ARC_SEC) {
+    	// Save the current longitude because the length of an arc second will change with the new latitude
+    	double longitudeBak = longitude();
+
     	while (latitudeOffs > LEN_LAT_ARC_SEC) {
     		latitudeOffs -= LEN_LAT_ARC_SEC;
     		latitudeBaseArcSec ++;
     	}
-        lenLongitudeArcSec = LEN_LAT_ARC_SEC * FastMath::fastCos(FloatType(latitudeBaseArcSec)/3600.0f);
+        lenLongitudeArcSec = LEN_LAT_ARC_SEC * FastMath::fastCos(FloatType(latitudeBaseArcSec/3600.0));
+
+    	longitude(longitudeBak);
     }
     if (latitudeOffs < LEN_LAT_ARC_SEC) {
+    	// Save the current longitude because the length of an arc second will change with the new latitude
+    	double longitudeBak = longitude();
+
     	while (latitudeOffs < LEN_LAT_ARC_SEC) {
     		latitudeOffs += LEN_LAT_ARC_SEC;
     		latitudeBaseArcSec --;
     	}
-        lenLongitudeArcSec = LEN_LAT_ARC_SEC * FastMath::fastCos(FloatType(latitudeBaseArcSec)/3600.0f);
+        lenLongitudeArcSec = LEN_LAT_ARC_SEC * FastMath::fastCos(FloatType(latitudeBaseArcSec/3600.0));
+
+    	longitude(longitudeBak);
     }
 
 
@@ -188,12 +198,12 @@ void openEV::GliderVarioStatus::latitude(double lat) {
 	// Save the current longitude because the length of an arc second will change with the new latitude
 	double longitudeBak = longitude();
 
-	lenLongitudeArcSec = LEN_LAT_ARC_SEC * FastMath::fastCos(FloatType(lat));
-
 	lat *= 3600.0;
 
 	latitudeBaseArcSec	= lround(lat);
 	latitudeOffs		= (lat - latitudeBaseArcSec) * LEN_LAT_ARC_SEC;
+
+    lenLongitudeArcSec = LEN_LAT_ARC_SEC * FastMath::fastCos(FloatType(latitudeBaseArcSec/3600.0));
 
 	longitude(longitudeBak);
 
