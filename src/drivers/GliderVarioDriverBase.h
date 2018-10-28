@@ -98,6 +98,19 @@ public:
         COMPASS_Z = 13,
         STATIC_PRESSURE = 14,
         DYNAMIC_PRESSURE = 15,
+
+		/** \brief This driver will run the idle loop too. The main program will not run the idle loop itself
+		 *
+		 * This is a capability mainly for simulation, test and debug drivers.
+		 *
+		 * "Normal" sensor drivers will update the Kalman filter status only when new measurement values arrive.
+		 * The main program runs an independent thread which will run every 'idlePredictionCycle' ms, and runs a Kalman filter prediction cycle
+		 * when no new measurements force a prediction cycle in between.
+		 * A driver with this capability will prevent the main program to start the idle thread because this driver implements also the idle thread.
+		 * The purpose is for debugging and testing because the main part of the Kalman filter runs single-threaded.
+		 *
+		 */
+		RUN_IDLE_LOOP = 16,
 #if defined DOXYGEN
 	    };
 #else

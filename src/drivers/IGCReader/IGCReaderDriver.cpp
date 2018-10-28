@@ -57,6 +57,13 @@ IGCReaderDriver::IGCReaderDriver(
 	initLogger();
 #endif /* HAVE_LOG4CXX_H */
 
+	sensorCapabilities =
+	        GPS_LATITUDE |
+	        GPS_LONGITUDE |
+	        GPS_ALTITUDE_MSL |
+	        STATIC_PRESSURE |
+			RUN_IDLE_LOOP;
+
 }
 
 

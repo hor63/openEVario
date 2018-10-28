@@ -39,15 +39,23 @@ namespace openEV {
 	struct ProgramOptions{
 	    std::string configFile       = defaultConfigFileName;
 	    std::string loggerConfigFile = defaultLoggerConfigFileName;
-	    /// logger level can be
-	    /// 0: Quiet. No output at all
-	    /// 1: Errors are reported
-	    /// 2: Info. Major events and activities
-	    /// 3: Debug. Be really chatty
+	    /**
+	     * logger level can be
+	     * 0: Quiet. No output at all
+	     * 1: Errors are reported
+	     * 2: Info. Major events and activities
+	     * 3: Debug. Be really chatty
+	     */
 	    int defaultLoggerLevel = 2; // Default level info.
 	    bool terminateOnDriverLoadError = true;
 	    std::chrono::duration<long double,std::milli> idlePredictionCycle = std::chrono::duration<long double,std::milli>(20);
 	    std::chrono::duration<long double,std::milli> maxTimeBetweenPredictionAndMeasurementUpdate = std::chrono::duration<long double,std::milli>(5);
+	    /** \brief Run the idle thread in the main program to perform Kalman prediction cycles at least every \ref idlePredictionCycle.
+	     *
+	     * This will be set false only when a sensor driver has the capability \ref GliderVarioDriverBase::RUN_IDLE_LOOP. In this case the idle loop is executed
+	     * by the driver within for debugging and testing purposes.
+	     */
+	    bool runIdleLoop = true;
 	} ;
  
 } // namespace openEV
