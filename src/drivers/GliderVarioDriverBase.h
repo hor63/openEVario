@@ -33,6 +33,7 @@
 #include <string>
 #include <list>
 #include <memory>
+#include <thread>
 
 #include "Properties4CXX/Properties.h"
 
@@ -69,7 +70,6 @@ public:
 	  instanceName {instanceName},
 	  driverLib {driverLib}
     {
-        ;
     }
 
     virtual ~GliderVarioDriverBase () {}
@@ -130,16 +130,6 @@ public:
         return (sensorCapabilities & (1UL<<capability)) != 0;
     }
 
-    /// Set a driver capability. Capabilities are defined in #SensorCapability.
-    inline void setSensorCapability (SensorCapability capability) {
-        sensorCapabilities |= (1UL<<capability);
-    }
-
-    /// Clear a driver capability. Capabilities are defined in #SensorCapability.
-    inline void clearSensorCapability (SensorCapability capability) {
-        sensorCapabilities &= ~(1UL<<capability);
-    }
-
     char const * getDriverName () const {
     	return driverName.c_str();
     }
@@ -189,17 +179,23 @@ public:
      *
      * This call starts the internal thread of the driver instance and returns immediately.
      *
+     * The standard implementation should suffice in most cases. It can be overridden if necessary
+     *
      * @param varioMain Pointer to the vario main object
      */
-    virtual void start(GliderVarioMainPriv *varioMain) = 0;
+    virtual void start(GliderVarioMainPriv *varioMain);
 
     /** \brief Stop capturing data from the sensor
      *
      * This calls returns when the internal thread is stopped and data capturing actually stopped.
      * Connections are closed when necessary.
+     * This requires that the implementation of \ref driverThreadFunction regularly checks \ref isRunning and exits in time
+     * Otherwise this function would be stuck forever.
+     *
+     * The standard implementation should suffice in most cases. It can be overridden if necessary
      *
      */
-    virtual void stop() = 0;
+    virtual void stop();
 
     /** \brief Suspend data capturing temporarily
      *
@@ -221,12 +217,6 @@ public:
 
 protected:
 
-    /// Set the capabilities of the sensor in #sensorCapabilities.
-    /// To be set by the implementing class
-    inline void setSensorCapabilities (uint32_t sensorCapabilities) {
-        this->sensorCapabilities = sensorCapabilities;
-    }
-
     /// Bit list of capabilities. The bit positions are defined in the enum #SensorCapability.
     uint32_t sensorCapabilities;
 
@@ -239,8 +229,41 @@ protected:
     /// Pointer to the main object. Is being set by \ref start() and set NULL by \ref stop()
     GliderVarioMainPriv *varioMain = 0;
 
+    /** \brief Flag if the processing thread is (or should) be running.
+     *
+     * Serves also as signal to the processing thread if it should stop
+     */
+    bool isRunning = false;
+
+    /// \brief The sensor driver thread
+    std::thread driverThread;
+
+    /// Set a driver capability. Capabilities are defined in #SensorCapability.
+    inline void setSensorCapability (SensorCapability capability) {
+        sensorCapabilities |= (1UL<<capability);
+    }
+
+    /// Clear a driver capability. Capabilities are defined in #SensorCapability.
+    inline void clearSensorCapability (SensorCapability capability) {
+        sensorCapabilities &= ~(1UL<<capability);
+    }
+
     // Abstract functions allowing sub-classing of the driver
 
+    /** \brief The main worker thread of the sensor driver
+     *
+     * Must be overridden by the driver implementation
+     *
+     * This function *must* regularly check if \ref isRunning is set false, and then immediately exit.
+     * This check must occur within a reasonable interval, typically < 1 sec
+     */
+    virtual void driverThreadFunction() = 0;
+
+    /** \brief Static function required for \ref std::thread implementation.
+     *
+     * @param tis Pointer to the object to which the thread belongs
+     */
+    static void driverThreadEntry (GliderVarioDriverBase* tis);
 
 
 }; // class GliderVarioDriverBase

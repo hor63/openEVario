@@ -28,7 +28,6 @@
 
 #include <fstream>
 #include <string>
-
 #include <map>
 
 #include "OEVCommon.h"
@@ -85,10 +84,6 @@ public:
 
     virtual void initializeStatus(GliderVarioStatus &varioStatus) override;
 
-    virtual void start(GliderVarioMainPriv *varioMain) override;
-
-    virtual void stop() override;
-
     virtual void suspend() override;
 
     virtual void resume() override;
@@ -126,15 +121,23 @@ protected:
     /// \brief Processes I abd B records of the IGC file
     BRecordSectionProcessor bRecordSectionProcessor;
 
+    /** \brief The main worker thread of this driver
+     *
+     * \see GliderVarioDriverBase::driverThreadFunction
+     *
+     */
+    void driverThreadFunction() override;
+
+
     /** \brief Opens the IGC file if it has not been opened before
      *
-     * Else do nothing.
+     * If the file is open do nothing.
      */
     void openIGCFile();
 
     /** \brief Close the IGC file when it was open before.
      *
-     * Else do nothing.
+     * If the file is closed do nothing.
      */
     void closeIGCFile();
 

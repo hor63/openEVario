@@ -26,10 +26,45 @@
 
 #define BUILDING_OEV_DRIVER 1
 
+#include <system_error>
+
 #include "OEVCommon.h"
 #include "drivers/GliderVarioDriverBase.h"
 
 namespace openEV {
+
+void GliderVarioDriverBase::driverThreadEntry (GliderVarioDriverBase* tis) {
+	tis->driverThreadFunction();
+}
+
+
+void GliderVarioDriverBase::start(GliderVarioMainPriv *varioMain) {
+
+	if (isRunning) {
+		stop();
+	}
+
+	isRunning = true;
+	driverThread = std::thread(GliderVarioDriverBase::driverThreadEntry,this);
+
+}
+
+void GliderVarioDriverBase::stop() {
+
+	if (isRunning) {
+		isRunning = false;
+		if (driverThread.joinable()) {
+			try {
+				driverThread.join();
+
+			} catch  (std::system_error& e) {
+				;
+			}
+		}
+	}
+
+}
+
 
 GliderVarioDriverBase::SensorCapabilityHelperClass GliderVarioDriverBase::SensorCapabilityHelperObj;
 

@@ -57,12 +57,11 @@ IGCReaderDriver::IGCReaderDriver(
 	initLogger();
 #endif /* HAVE_LOG4CXX_H */
 
-	sensorCapabilities =
-	        GPS_LATITUDE |
-	        GPS_LONGITUDE |
-	        GPS_ALTITUDE_MSL |
-	        STATIC_PRESSURE |
-			RUN_IDLE_LOOP;
+	setSensorCapability(GPS_LATITUDE	);
+	setSensorCapability(GPS_LONGITUDE	);
+	setSensorCapability(GPS_ALTITUDE_MSL);
+	setSensorCapability(STATIC_PRESSURE	);
+	setSensorCapability(RUN_IDLE_LOOP	);
 
 }
 
@@ -103,16 +102,6 @@ void IGCReaderDriver::initializeStatus(GliderVarioStatus &varioStatus) {
 
 	readIGCFile ();
 
-}
-
-void IGCReaderDriver::start(GliderVarioMainPriv *varioMain) {
-	this->varioMain = varioMain;
-
-}
-
-void IGCReaderDriver::stop() {
-
-	varioMain = 0;
 }
 
 void IGCReaderDriver::suspend() {
@@ -202,6 +191,9 @@ bool IGCReaderDriver::readLine() {
 
 	return true;
 
+}
+
+void IGCReaderDriver::driverThreadFunction() {
 }
 
 void IGCReaderDriver::readIGCFile() {
