@@ -96,11 +96,130 @@ void IGCReaderDriver::readConfiguration (Properties4CXX::Properties const &confi
 
 }
 
-void IGCReaderDriver::initializeStatus(GliderVarioStatus &varioStatus) {
+void IGCReaderDriver::initializeStatus(
+		GliderVarioStatus &varioStatus,
+		GliderVarioMainPriv &varioMain) {
 
 	openIGCFile();
 
 	readIGCFile ();
+
+	double baseIntervalSec = std::chrono::duration_cast<std::chrono::duration<double>>(varioMain.getProgramOptions().idlePredictionCycle).count() ;
+
+	auto firstRec = bRecords.cbegin();
+
+#define SQUARE(x) ((x)*(x))
+
+	if (firstRec != bRecords.cend()) {
+		varioStatus.altMSL = firstRec->second.altGPS;
+		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) = 1000.0f;
+		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) =
+				SQUARE(4.0) * baseIntervalSec;
+
+		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_VERTICAL_SPEED,varioStatus.STATUS_IND_VERTICAL_SPEED) == 0.0f) {
+			varioStatus.verticalSpeed = 0.0f;
+			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_VERTICAL_SPEED,varioStatus.STATUS_IND_VERTICAL_SPEED) = 100.0f;
+			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_VERTICAL_SPEED,varioStatus.STATUS_IND_VERTICAL_SPEED) =
+					SQUARE(3.0) * baseIntervalSec;
+		}
+
+		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_THERMAL_SPEED,varioStatus.STATUS_IND_THERMAL_SPEED) == 0.0f) {
+			varioStatus.thermalSpeed = 0.0f;
+			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_THERMAL_SPEED,varioStatus.STATUS_IND_THERMAL_SPEED) = 100.0f;
+			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_THERMAL_SPEED,varioStatus.STATUS_IND_THERMAL_SPEED) =
+					SQUARE(3.0) * baseIntervalSec;
+		}
+
+		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_RATE_OF_SINK,varioStatus.STATUS_IND_RATE_OF_SINK) == 0.0f) {
+			varioStatus.rateOfSink = 0.0f;
+			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_RATE_OF_SINK,varioStatus.STATUS_IND_RATE_OF_SINK) = 50.0f;
+			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_RATE_OF_SINK,varioStatus.STATUS_IND_RATE_OF_SINK) =
+					SQUARE(3.0) * baseIntervalSec;
+		}
+
+		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_ACC_VERTICAL,varioStatus.STATUS_IND_ACC_VERTICAL) == 0.0f) {
+			varioStatus.accelVertical = 0.0f;
+			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ACC_VERTICAL,varioStatus.STATUS_IND_ACC_VERTICAL) = 4.0f;
+			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ACC_VERTICAL,varioStatus.STATUS_IND_ACC_VERTICAL) =
+					SQUARE(10.0) * baseIntervalSec;
+		}
+
+
+		varioStatus.longitude(firstRec->second.longitude);
+		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_LONGITUDE_OFFS,varioStatus.STATUS_IND_LONGITUDE_OFFS) = 10000.0f;
+		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_LONGITUDE_OFFS,varioStatus.STATUS_IND_LONGITUDE_OFFS) =
+				SQUARE(3.0) * baseIntervalSec;
+
+		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_SPEED_GROUND_E,varioStatus.STATUS_IND_SPEED_GROUND_E) == 0.0f) {
+			varioStatus.groundSpeedEast = 0.0f;
+			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_E,varioStatus.STATUS_IND_SPEED_GROUND_E) = 100.0f;
+			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_E,varioStatus.STATUS_IND_SPEED_GROUND_E) =
+					SQUARE(2.0) * baseIntervalSec;
+		}
+
+		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_WIND_SPEED_E,varioStatus.STATUS_IND_WIND_SPEED_E) == 0.0f) {
+			varioStatus.windSpeedEast = 0.0f;
+			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_WIND_SPEED_E,varioStatus.STATUS_IND_WIND_SPEED_E) = 100.0f;
+			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_WIND_SPEED_E,varioStatus.STATUS_IND_WIND_SPEED_E) =
+					SQUARE(3.0) * baseIntervalSec;
+		}
+
+		varioStatus.latitude(firstRec->second.latitude);
+		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_LATITUDE_OFFS,varioStatus.STATUS_IND_LATITUDE_OFFS) = 10000.0f;
+		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_LATITUDE_OFFS,varioStatus.STATUS_IND_LATITUDE_OFFS) =
+				SQUARE(3.0) * baseIntervalSec;
+
+
+		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_SPEED_GROUND_N,varioStatus.STATUS_IND_SPEED_GROUND_N) == 0.0f) {
+			varioStatus.groundSpeedNorth = 0.0f;
+			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_N,varioStatus.STATUS_IND_SPEED_GROUND_N) = 100.0f;
+			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_N,varioStatus.STATUS_IND_SPEED_GROUND_N) =
+					SQUARE(2.0) * baseIntervalSec;
+		}
+
+		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_WIND_SPEED_N,varioStatus.STATUS_IND_WIND_SPEED_N) == 0.0f) {
+			varioStatus.windSpeedNorth = 0.0f;
+			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_WIND_SPEED_N,varioStatus.STATUS_IND_WIND_SPEED_N) = 100.0f;
+			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_WIND_SPEED_N,varioStatus.STATUS_IND_WIND_SPEED_N) =
+					SQUARE(3.0) * baseIntervalSec;
+		}
+
+		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) == 0.0f) {
+			varioStatus.trueAirSpeed = 0.0f;
+			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) = 100.0f;
+			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) =
+					SQUARE(3.0) * baseIntervalSec;
+		}
+
+		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_ACC_HEADING,varioStatus.STATUS_IND_ACC_HEADING) == 0.0f) {
+			varioStatus.accelHeading = 0.0f;
+			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ACC_HEADING,varioStatus.STATUS_IND_ACC_HEADING) = 4.0f;
+			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ACC_HEADING,varioStatus.STATUS_IND_ACC_HEADING) =
+					SQUARE(3.0) * baseIntervalSec;
+		}
+
+		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_ACC_CROSS,varioStatus.STATUS_IND_ACC_CROSS) == 0.0f) {
+			varioStatus.accelCross = 0.0f;
+			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ACC_CROSS,varioStatus.STATUS_IND_ACC_CROSS) = 1.0f;
+			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ACC_CROSS,varioStatus.STATUS_IND_ACC_CROSS) =
+					SQUARE(2.0) * baseIntervalSec;
+		}
+
+		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) == 0.0f) {
+			varioStatus.heading = 0.0f;
+			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) = 90.0f * 90.0f;
+			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) =
+					SQUARE(10.0) * baseIntervalSec;
+		}
+
+		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_ROTATION_Z,varioStatus.STATUS_IND_ROTATION_Z) == 0.0f) {
+			varioStatus.yawRateZ = 0.0f;
+			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ROTATION_Z,varioStatus.STATUS_IND_ROTATION_Z) = 10.0f * 10.0f;
+			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ROTATION_Z,varioStatus.STATUS_IND_ROTATION_Z) =
+					SQUARE(20.0) * baseIntervalSec;
+		}
+
+	}
 
 }
 

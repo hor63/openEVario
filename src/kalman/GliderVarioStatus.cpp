@@ -154,7 +154,7 @@ void GliderVarioStatus::normalizeStatus() {
 
 
     // The normalization is admittedly extremely primitive but given the fact that an arc sec. is 30-something meters, and
-    // the Kalman filter will never run below 100ms per cycle even at 300km/s the plane will never move > 1 arc sec per cycle.
+    // the Kalman filter will never run above 100ms per cycle even at 300km/s the plane will never move > 1 arc sec per cycle.
     if (latitudeOffs > LEN_LAT_ARC_SEC) {
     	// Save the current longitude because the length of an arc second will change with the new latitude
     	double longitudeBak = longitude();

@@ -42,6 +42,7 @@ namespace openEV {
 
 class GliderVarioDriverLibBase;
 class GliderVarioDriverBase;
+class GliderVarioMainPriv;
 
 /** \brief Administration of driver libraries, and the driver list
  *
@@ -115,8 +116,11 @@ public:
 	/** \brief Each driver initializes a part of the Kalman filter with initial sensor readings
 	 *
 	 * @param currentStatus Kalman status to be initialized
+	 * @param varioMain mainVario object; provides all additional information like program parameters, and the parsed properties.
 	 */
-	void initializeKalmanStatus(GliderVarioStatus &currentStatus);
+	void initializeKalmanStatus(
+			GliderVarioStatus &currentStatus,
+			GliderVarioMainPriv &varioMain);
 
 protected:
 

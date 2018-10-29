@@ -82,7 +82,9 @@ public:
 
     virtual void readConfiguration (Properties4CXX::Properties const &configuration) override;
 
-    virtual void initializeStatus(GliderVarioStatus &varioStatus) override;
+    virtual void initializeStatus(
+    		GliderVarioStatus &varioStatus,
+			GliderVarioMainPriv &varioMain) override;
 
     virtual void suspend() override;
 

@@ -399,7 +399,7 @@ void GliderVarioMainPriv::startup () {
 	driverList.loadDriverInstances(configuration);
 
 	// Initialize the current Kalman status with initial sensor readingd
-	driverList.initializeKalmanStatus(*currentStatus);
+	driverList.initializeKalmanStatus(*currentStatus,*this);
 
 }
 

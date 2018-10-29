@@ -172,8 +172,11 @@ public:
      * This call is synchronous. It should return ASAP in order to not make other initializations of the status invalid.
      *
      * @param varioStatus Status and Co-variance of the Kalman filter to be initialized.
+	 * @param varioMain mainVario object; provides all additional information like program parameters, and the parsed properties.
      */
-    virtual void initializeStatus(GliderVarioStatus &varioStatus) = 0;
+    virtual void initializeStatus(
+    		GliderVarioStatus &varioStatus,
+			GliderVarioMainPriv &varioMain) = 0;
 
     /** \brief Start capturing data from the sensor, and updating the Kalman filter
      *
@@ -181,9 +184,9 @@ public:
      *
      * The standard implementation should suffice in most cases. It can be overridden if necessary
      *
-     * @param varioMain Pointer to the vario main object
+     * @param varioMain Reference to the vario main object
      */
-    virtual void start(GliderVarioMainPriv *varioMain);
+    virtual void start(GliderVarioMainPriv &varioMain);
 
     /** \brief Stop capturing data from the sensor
      *

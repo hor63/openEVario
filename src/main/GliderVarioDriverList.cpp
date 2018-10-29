@@ -334,12 +334,14 @@ void GliderVarioDriverList::loadDriverInstance(char const *driverInstanceName, P
 
 }
 
-void GliderVarioDriverList::initializeKalmanStatus(GliderVarioStatus &currentStatus) {
+void GliderVarioDriverList::initializeKalmanStatus(
+		GliderVarioStatus &currentStatus,
+		GliderVarioMainPriv &varioMain) {
 
 	auto iter = driverInstanceList.begin();
 
 	while (iter != driverInstanceList.end()) {
-		iter->second->initializeStatus(currentStatus);
+		iter->second->initializeStatus(currentStatus,varioMain);
 
 		iter ++;
 	}
