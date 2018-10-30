@@ -159,6 +159,8 @@ protected:
 
 };
 
+static double constexpr P0StdAtmosphere = 1013.25	; ///< Pressure at MSL according to standard atmosphere
+
 /** \brief Calculate the pressure from the altitude above MSL with the Barometric formula
  *
  * Constants and barometric formula from < a href="https://en.wikipedia.org/wiki/Barometric_formula#Pressure_equations">Barometric formula:Pressure equations</a>
@@ -177,10 +179,9 @@ static inline double altToPressure (double altitude,double temperatureLapse = 0.
 	// Exponent term
 	double const exp = g0*M/(R*temperatureLapse); ///< Exponential term of the Barometric formula
 
-	static double constexpr p0 = 1013.25	; ///< Pressure at MSL according to standard atmosphere
 	static double constexpr T0 = 288.15		; ///< 15C at MSL according to the standard atmosphere
 
-	return  (p0 * pow(1 - ((temperatureLapse * altitude ) / T0),exp));
+	return  (P0StdAtmosphere * pow(1 - ((temperatureLapse * altitude ) / T0),exp));
 
 }
 

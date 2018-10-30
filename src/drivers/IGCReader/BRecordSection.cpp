@@ -203,9 +203,9 @@ void BRecordSectionProcessor::processBRecord (
 			std::chrono::duration<double> (timestampSecSinceMidnight - startTimeDay));
 
 
-	double height = double(strToInt(recordString + baroAltPos,baroAltLen));
 
-	bRecord.pressure = altToPressure(height);
+	bRecord.altBaro = double(strToInt(recordString + baroAltPos,baroAltLen));
+	bRecord.pressure = altToPressure(bRecord.altBaro);
 
 	LOG4CXX_DEBUG(logger,"ProcessBRecord: \"" << recordString << "\"" <<
 			"\tbRecord.timeSinceStart = " << std::chrono::duration_cast<std::chrono::duration<double>>(  bRecord.timeSinceStart).count() <<
@@ -214,8 +214,9 @@ void BRecordSectionProcessor::processBRecord (
 			"\tbRecord.latitude = " << bRecord.latitude <<
 			"\tbRecord.longitude = " << bRecord.longitude	<<
 			"\tbRecord.posAccuracy = " << bRecord.posAccuracy <<
-			"\tbRecord.pressure = " << bRecord.pressure	<<
-			"\tBaroHeight = " << height);
+			"\tbRecord.altBaro = " << bRecord.altBaro <<
+			"\tbRecord.pressure = " << bRecord.pressure
+			);
 
 
 }
