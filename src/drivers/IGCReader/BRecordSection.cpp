@@ -28,7 +28,6 @@
 
 #include <string.h>
 #include <ratio>
-#include <cmath>
 
 #include "BRecordSection.h"
 
@@ -204,18 +203,9 @@ void BRecordSectionProcessor::processBRecord (
 			std::chrono::duration<double> (timestampSecSinceMidnight - startTimeDay));
 
 
-	// constants and barometric formula from https://en.wikipedia.org/wiki/Barometric_formula#Pressure_equations
-	static double constexpr R  = 8.3144598	; ///< Universal gas constant: 8.3144598 J/mol/K
-	static double constexpr g0 = 9.80665	; ///< Gravitational acceleration: 9.80665 m/s2
-	static double constexpr M  = 0.0289644	; ///< Molar mass of Earth's air: 0.0289644 kg/mol
-	static double constexpr Lb = 0.65/100.0 ; ///< Standard atmosphere temperature lapse: 0.65K/100m
-	// Exponent term
-	static double constexpr exp = g0*M/(R*Lb); ///< Exponential term of the Barometric formula
+	double height = double(strToInt(recordString + baroAltPos,baroAltLen));
 
-	double height = strToInt(recordString + baroAltPos,baroAltLen);
-
-	// simplified formula from https://de.wikipedia.org/wiki/Barometrische_H%C3%B6henformel#Internationale_H%C3%B6henformel
-	bRecord.pressure = 1013.25 * pow(1 - ((Lb * height ) / 288.15),exp);
+	bRecord.pressure = altToPressure(height);
 
 	LOG4CXX_DEBUG(logger,"ProcessBRecord: \"" << recordString << "\"" <<
 			"\tbRecord.timeSinceStart = " << std::chrono::duration_cast<std::chrono::duration<double>>(  bRecord.timeSinceStart).count() <<
