@@ -160,12 +160,12 @@ public:
 	 * @param[out] measurementVector Returns a pointer to the mostly useless :) measurement vector of the Kalman filter.
 	 * @return Pointer to the current status
 	 */
-	GliderVarioStatus * (OEV_MAIN_PUBLIC getCurrentStatusAndLock)(GliderVarioMeasurementVector* & measurementVector);
+	GliderVarioStatus * getCurrentStatusAndLock(GliderVarioMeasurementVector* & measurementVector) OEV_MAIN_PUBLIC;
 
 	/** \brief Release the mutex of the current status obtained from calling \ref getCurrentStatusAndLock
 	 *
 	 */
-	void OEV_MAIN_PUBLIC releaseCurrentStatus ();
+	void releaseCurrentStatus () OEV_MAIN_PUBLIC ;
 
 
 private:
@@ -200,10 +200,17 @@ private:
 	/// \brief Read the configuration file, and extract the base configuration values into \ref programOptions
 	void readConfiguration ();
 
-	/// \brief Performs a prediction from the current to the next status and swaps statuses.
-	/// This function must only be called under protection of \ref currentStatusLock
+	/** \brief Performs a prediction from the current to the next status and swaps statuses.
+	 *
+	 * This function must only be called under protection of \ref currentStatusLock
+	 */
 	void predictAndSwapStatus();
 
+	/** \brief Let all drivers initialize the status from initial readings.
+	 *
+	 * After letting all drivers initialize the status initialize the un-initialized components with default values.
+	 */
+	void intializeStatus ();
 
 };
 

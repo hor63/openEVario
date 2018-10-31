@@ -398,8 +398,7 @@ void GliderVarioMainPriv::startup () {
     // Read the driver instances from the configuration, and create them for the specified drivers.
 	driverList.loadDriverInstances(configuration);
 
-	// Initialize the current Kalman status with initial sensor readingd
-	driverList.initializeKalmanStatus(*currentStatus,*this);
+	intializeStatus();
 
 }
 
@@ -499,5 +498,142 @@ void GliderVarioMainPriv::predictAndSwapStatus() {
 
 }
 
+void GliderVarioMainPriv::intializeStatus() {
+
+	// Initialize the current Kalman status with initial sensor reading
+	driverList.initializeKalmanStatus(*currentStatus,*this);
+
+	double baseIntervalSec = std::chrono::duration_cast<std::chrono::duration<double>>(programOptions.idlePredictionCycle).count() ;
+
+
+#define SQUARE(x) ((x)*(x))
+
+	// Initialize the components which were not initialized by the drivers
+	if (currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ALT_MSL,currentStatus->STATUS_IND_ALT_MSL) == 0.0f) {
+		currentStatus->altMSL = 1000.0f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ALT_MSL,currentStatus->STATUS_IND_ALT_MSL) = 1000.0f;
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ALT_MSL,currentStatus->STATUS_IND_ALT_MSL) =
+				SQUARE(4.0) * baseIntervalSec;
+	}
+
+	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_VERTICAL_SPEED,currentStatus->STATUS_IND_VERTICAL_SPEED) == 0.0f) {
+		currentStatus->verticalSpeed = 0.0f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_VERTICAL_SPEED,currentStatus->STATUS_IND_VERTICAL_SPEED) = 100.0f;
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_VERTICAL_SPEED,currentStatus->STATUS_IND_VERTICAL_SPEED) =
+				SQUARE(3.0) * baseIntervalSec;
+	}
+
+	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_THERMAL_SPEED,currentStatus->STATUS_IND_THERMAL_SPEED) == 0.0f) {
+		currentStatus->thermalSpeed = 0.0f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_THERMAL_SPEED,currentStatus->STATUS_IND_THERMAL_SPEED) = 100.0f;
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_THERMAL_SPEED,currentStatus->STATUS_IND_THERMAL_SPEED) =
+				SQUARE(3.0) * baseIntervalSec;
+	}
+
+	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_RATE_OF_SINK,currentStatus->STATUS_IND_RATE_OF_SINK) == 0.0f) {
+		currentStatus->rateOfSink = 0.0f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_RATE_OF_SINK,currentStatus->STATUS_IND_RATE_OF_SINK) = 50.0f;
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_RATE_OF_SINK,currentStatus->STATUS_IND_RATE_OF_SINK) =
+				SQUARE(3.0) * baseIntervalSec;
+	}
+
+	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_ACC_VERTICAL,currentStatus->STATUS_IND_ACC_VERTICAL) == 0.0f) {
+		currentStatus->accelVertical = 0.0f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ACC_VERTICAL,currentStatus->STATUS_IND_ACC_VERTICAL) = 4.0f;
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ACC_VERTICAL,currentStatus->STATUS_IND_ACC_VERTICAL) =
+				SQUARE(10.0) * baseIntervalSec;
+	}
+
+
+	if (currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LONGITUDE_OFFS,currentStatus->STATUS_IND_LONGITUDE_OFFS) == 0.0f) {
+		// Lüneburg airport EDHG
+		currentStatus->longitude(10.458568);
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LONGITUDE_OFFS,currentStatus->STATUS_IND_LONGITUDE_OFFS) = 10000.0f;
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_LONGITUDE_OFFS,currentStatus->STATUS_IND_LONGITUDE_OFFS) =
+				SQUARE(3.0) * baseIntervalSec;
+	}
+
+	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_SPEED_GROUND_E,currentStatus->STATUS_IND_SPEED_GROUND_E) == 0.0f) {
+		currentStatus->groundSpeedEast = 0.0f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_E,currentStatus->STATUS_IND_SPEED_GROUND_E) = 100.0f;
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_E,currentStatus->STATUS_IND_SPEED_GROUND_E) =
+				SQUARE(2.0) * baseIntervalSec;
+	}
+
+	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_WIND_SPEED_E,currentStatus->STATUS_IND_WIND_SPEED_E) == 0.0f) {
+		currentStatus->windSpeedEast = 0.0f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_E,currentStatus->STATUS_IND_WIND_SPEED_E) = 100.0f;
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_E,currentStatus->STATUS_IND_WIND_SPEED_E) =
+				SQUARE(3.0) * baseIntervalSec;
+	}
+
+	if (currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LATITUDE_OFFS,currentStatus->STATUS_IND_LATITUDE_OFFS) == 0.0) {
+		// Lüneburg airport EDHG
+		currentStatus->latitude(53.248286);
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LATITUDE_OFFS,currentStatus->STATUS_IND_LATITUDE_OFFS) = 10000.0f;
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_LATITUDE_OFFS,currentStatus->STATUS_IND_LATITUDE_OFFS) =
+				SQUARE(3.0) * baseIntervalSec;
+	}
+
+
+	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_SPEED_GROUND_N,currentStatus->STATUS_IND_SPEED_GROUND_N) == 0.0f) {
+		currentStatus->groundSpeedNorth = 0.0f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_N,currentStatus->STATUS_IND_SPEED_GROUND_N) = 100.0f;
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_N,currentStatus->STATUS_IND_SPEED_GROUND_N) =
+				SQUARE(2.0) * baseIntervalSec;
+	}
+
+	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_WIND_SPEED_N,currentStatus->STATUS_IND_WIND_SPEED_N) == 0.0f) {
+		currentStatus->windSpeedNorth = 0.0f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_N,currentStatus->STATUS_IND_WIND_SPEED_N) = 100.0f;
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_N,currentStatus->STATUS_IND_WIND_SPEED_N) =
+				SQUARE(3.0) * baseIntervalSec;
+	}
+
+	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_TAS,currentStatus->STATUS_IND_TAS) == 0.0f) {
+		currentStatus->trueAirSpeed = 0.0f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_TAS,currentStatus->STATUS_IND_TAS) = 100.0f;
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_TAS,currentStatus->STATUS_IND_TAS) =
+				SQUARE(3.0) * baseIntervalSec;
+	}
+
+	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_ACC_HEADING,currentStatus->STATUS_IND_ACC_HEADING) == 0.0f) {
+		currentStatus->accelHeading = 0.0f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ACC_HEADING,currentStatus->STATUS_IND_ACC_HEADING) = 4.0f;
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ACC_HEADING,currentStatus->STATUS_IND_ACC_HEADING) =
+				SQUARE(3.0) * baseIntervalSec;
+	}
+
+	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_ACC_CROSS,currentStatus->STATUS_IND_ACC_CROSS) == 0.0f) {
+		currentStatus->accelCross = 0.0f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ACC_CROSS,currentStatus->STATUS_IND_ACC_CROSS) = 1.0f;
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ACC_CROSS,currentStatus->STATUS_IND_ACC_CROSS) =
+				SQUARE(2.0) * baseIntervalSec;
+	}
+
+	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_HEADING,currentStatus->STATUS_IND_HEADING) == 0.0f) {
+		currentStatus->heading = 0.0f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_HEADING,currentStatus->STATUS_IND_HEADING) = 90.0f * 90.0f;
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_HEADING,currentStatus->STATUS_IND_HEADING) =
+				SQUARE(10.0) * baseIntervalSec;
+	}
+
+	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_ROTATION_Z,currentStatus->STATUS_IND_ROTATION_Z) == 0.0f) {
+		currentStatus->yawRateZ = 0.0f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ROTATION_Z,currentStatus->STATUS_IND_ROTATION_Z) = 10.0f * 10.0f;
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ROTATION_Z,currentStatus->STATUS_IND_ROTATION_Z) =
+				SQUARE(20.0) * baseIntervalSec;
+	}
+
+
+	if (currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_QFF,currentStatus->STATUS_IND_QFF) == 0.0) {
+		currentStatus->qff = P0StdAtmosphere;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_QFF,currentStatus->STATUS_IND_QFF) = 100.0f;
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_QFF,currentStatus->STATUS_IND_QFF) =
+				SQUARE(0.01) * baseIntervalSec; // Veryyyy slow (1mbar / 100sec)
+	}
+
+
+}
 
 } /* namespace openEV */
