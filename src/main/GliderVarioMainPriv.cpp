@@ -508,6 +508,9 @@ void GliderVarioMainPriv::intializeStatus() {
 
 #define SQUARE(x) ((x)*(x))
 
+	/// \todo Complete the conditional initialization of all other parameters of the Kalman status
+#warning Complete the conditional initialization of all other parameters of the Kalman status
+
 	// Initialize the components which were not initialized by the drivers
 	if (currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ALT_MSL,currentStatus->STATUS_IND_ALT_MSL) == 0.0f) {
 		currentStatus->altMSL = 1000.0f;
