@@ -220,15 +220,15 @@ void IGCReaderDriver::initializeStatus(
 		}
 
 		// calculated factor to calculate the pressure at altGPS with a temperature lapse of 1K/100m
-		double factAltGPS = altToPressure(firstRec->second.altGPS,0.01) / P0StdAtmosphere;
-		double factBaroHeight = altToPressure(firstRec->second.altBaro) / P0StdAtmosphere;
+		double factAltGPS = altToPressureStdTemp(firstRec->second.altGPS,0.01) / P0StdAtmosphere;
+		double factBaroHeight = altToPressureStdTemp(firstRec->second.altBaro) / P0StdAtmosphere;
 
 		varioStatus.qff = P0StdAtmosphere * factBaroHeight / factAltGPS;
 		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_QFF,varioStatus.STATUS_IND_QFF) = 100.0f;
 		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_QFF,varioStatus.STATUS_IND_QFF) =
 				SQUARE(0.01) * baseIntervalSec; // Veryyyy slow (1mbar / 100sec)
 
-
+#undef SQUARE
 
 	}
 

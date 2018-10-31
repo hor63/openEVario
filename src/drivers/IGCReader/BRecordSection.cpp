@@ -205,7 +205,7 @@ void BRecordSectionProcessor::processBRecord (
 
 
 	bRecord.altBaro = double(strToInt(recordString + baroAltPos,baroAltLen));
-	bRecord.pressure = altToPressure(bRecord.altBaro);
+	bRecord.pressure = altToPressureStdTemp(bRecord.altBaro);
 
 	LOG4CXX_DEBUG(logger,"ProcessBRecord: \"" << recordString << "\"" <<
 			"\tbRecord.timeSinceStart = " << std::chrono::duration_cast<std::chrono::duration<double>>(  bRecord.timeSinceStart).count() <<
