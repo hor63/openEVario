@@ -159,31 +159,6 @@ protected:
 
 };
 
-static double constexpr P0StdAtmosphere = 1013.25	; ///< Pressure at MSL according to standard atmosphere
-
-/** \brief Calculate the pressure from the altitude above MSL with the Barometric formula
- *
- * Constants and barometric formula from < a href="https://en.wikipedia.org/wiki/Barometric_formula#Pressure_equations">Barometric formula:Pressure equations</a>
- * The simplified formual is taken from
- * <a href="https://de.wikipedia.org/wiki/Barometrische_H%C3%B6henformel#Internationale_H%C3%B6henformel">Barometrische Höhenformel:Internationale Höhenformel</a>
- *
- * @param altitude Altitude above MSL in m
- * @param temperatureLapse Temperature lapse in K/m. Default is the standard atmosphere lapse of 0.65K/100m
- * @return
- */
-static inline double altToPressure (double altitude,double temperatureLapse = 0.65/100.0) {
-
-	static double constexpr R  = 8.3144598	; ///< Universal gas constant: 8.3144598 J/mol/K
-	static double constexpr g0 = 9.80665	; ///< Gravitational acceleration: 9.80665 m/s2
-	static double constexpr M  = 0.0289644	; ///< Molar mass of Earth's air: 0.0289644 kg/mol
-	// Exponent term
-	double const exp = g0*M/(R*temperatureLapse); ///< Exponential term of the Barometric formula
-
-	static double constexpr T0 = 288.15		; ///< 15C at MSL according to the standard atmosphere
-
-	return  (P0StdAtmosphere * pow(1 - ((temperatureLapse * altitude ) / T0),exp));
-
-}
 
 } /* namespace openEV */
 
