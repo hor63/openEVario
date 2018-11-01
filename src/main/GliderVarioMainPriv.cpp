@@ -508,18 +508,16 @@ void GliderVarioMainPriv::intializeStatus() {
 
 #define SQUARE(x) ((x)*(x))
 
-
-	/// \todo Re-check indexes and parameters
-#warning Re-check indexes and parameters
-
+	//
 	// Initialize the components which were not initialized by the drivers
+	//
+
 	if (currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GRAVITY,currentStatus->STATUS_IND_GRAVITY) == 0.0f) {
 		currentStatus->gravity = GRAVITY;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GRAVITY,currentStatus->STATUS_IND_GRAVITY) = 0.01f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ALT_MSL,currentStatus->STATUS_IND_ALT_MSL) =
 				SQUARE(0.01) * baseIntervalSec;
 	}
-
 
 	if (currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LATITUDE_OFFS,currentStatus->STATUS_IND_LATITUDE_OFFS) == 0.0) {
 		// Lüneburg airport EDHG
@@ -545,7 +543,6 @@ void GliderVarioMainPriv::intializeStatus() {
 				SQUARE(4.0) * baseIntervalSec;
 	}
 
-
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_HEADING,currentStatus->STATUS_IND_HEADING) == 0.0f) {
 		currentStatus->heading = 0.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_HEADING,currentStatus->STATUS_IND_HEADING) = 90.0f * 90.0f;
@@ -553,9 +550,10 @@ void GliderVarioMainPriv::intializeStatus() {
 				SQUARE(10.0) * baseIntervalSec;
 	}
 
+
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_PITCH,currentStatus->STATUS_IND_PITCH) == 0.0f) {
 		currentStatus->pitchAngle = 0.0f;
-		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_PITCH,currentStatus->STATUS_IND_PITCH) = 20.0f * 20.0f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_PITCH,currentStatus->STATUS_IND_PITCH) = 30.0f * 30.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_PITCH,currentStatus->STATUS_IND_PITCH) =
 				SQUARE(10.0) * baseIntervalSec;
 	}
@@ -592,7 +590,7 @@ void GliderVarioMainPriv::intializeStatus() {
 		currentStatus->rateOfSink = 0.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_RATE_OF_SINK,currentStatus->STATUS_IND_RATE_OF_SINK) = 50.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_RATE_OF_SINK,currentStatus->STATUS_IND_RATE_OF_SINK) =
-				SQUARE(3.0) * baseIntervalSec;
+				SQUARE(2.0) * baseIntervalSec;
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_VERTICAL_SPEED,currentStatus->STATUS_IND_VERTICAL_SPEED) == 0.0f) {
@@ -651,24 +649,25 @@ void GliderVarioMainPriv::intializeStatus() {
 				SQUARE(20.0) * baseIntervalSec;
 	}
 
-
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_GYRO_BIAS_X,currentStatus->STATUS_IND_GYRO_BIAS_X) == 0.0f) {
 		currentStatus->gyroBiasX = 0.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_X,currentStatus->STATUS_IND_GYRO_BIAS_X) = 10.0f * 10.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_X,currentStatus->STATUS_IND_GYRO_BIAS_X) =
-				SQUARE(0.01) * baseIntervalSec;
+				SQUARE(0.1) * baseIntervalSec;
 	}
+
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_GYRO_BIAS_Y,currentStatus->STATUS_IND_GYRO_BIAS_Y) == 0.0f) {
 		currentStatus->gyroBiasY = 0.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Y,currentStatus->STATUS_IND_GYRO_BIAS_Y) = 10.0f * 10.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Y,currentStatus->STATUS_IND_GYRO_BIAS_Y) =
-				SQUARE(0.01) * baseIntervalSec;
+				SQUARE(0.1) * baseIntervalSec;
 	}
+
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_GYRO_BIAS_Z,currentStatus->STATUS_IND_GYRO_BIAS_Z) == 0.0f) {
 		currentStatus->gyroBiasZ = 0.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Z,currentStatus->STATUS_IND_GYRO_BIAS_Z) = 10.0f * 10.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Z,currentStatus->STATUS_IND_GYRO_BIAS_Z) =
-				SQUARE(0.01) * baseIntervalSec;
+				SQUARE(0.1) * baseIntervalSec;
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_MAGNETIC_DECLINATION,currentStatus->STATUS_IND_MAGNETIC_DECLINATION) == 0.0f) {
@@ -691,12 +690,14 @@ void GliderVarioMainPriv::intializeStatus() {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_X,currentStatus->STATUS_IND_COMPASS_DEVIATION_X) =
 				SQUARE(0.1) * baseIntervalSec;
 	}
+
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_COMPASS_DEVIATION_Y,currentStatus->STATUS_IND_COMPASS_DEVIATION_Y) == 0.0f) {
 		currentStatus->compassDeviationY = 0.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Y,currentStatus->STATUS_IND_COMPASS_DEVIATION_Y) = 10.0f * 10.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Y,currentStatus->STATUS_IND_COMPASS_DEVIATION_Y) =
 				SQUARE(0.1) * baseIntervalSec;
 	}
+
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_COMPASS_DEVIATION_Z,currentStatus->STATUS_IND_COMPASS_DEVIATION_Z) == 0.0f) {
 		currentStatus->compassDeviationZ = 0.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Z,currentStatus->STATUS_IND_COMPASS_DEVIATION_Z) = 10.0f * 10.0f;
@@ -731,9 +732,6 @@ void GliderVarioMainPriv::intializeStatus() {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_LAST_PRESSURE,currentStatus->STATUS_IND_LAST_PRESSURE) =
 				SQUARE(0.5) * baseIntervalSec; //  (0.5mbar / 1sec)
 	}
-
-
-
 
 }
 
