@@ -733,6 +733,29 @@ void GliderVarioMainPriv::intializeStatus() {
 				SQUARE(0.5) * baseIntervalSec; //  (0.5mbar / 1sec)
 	}
 
+	LOG4CXX_DEBUG(logger,"StatusVector = \n" << currentStatus->getStatusVector_x());
+	for (int i = 0; i<10; i++) {
+		FloatType timeDiffMS = 20.0f;
+
+		transitionMatrix.updateStatus(
+				*currentStatus,
+				*nextStatus,
+				timeDiffMS
+				);
+
+		// Swap status buffers
+		auto tempStatus = currentStatus;
+		currentStatus = nextStatus;
+		nextStatus = tempStatus;
+
+	}
+
+	LOG4CXX_DEBUG(logger,"StatusVector = \n" << currentStatus->getStatusVector_x());
+	LOG4CXX_DEBUG(logger,"SystemNoiseCovariance = \n" << currentStatus->getSystemNoiseCovariance_Q());
+	LOG4CXX_DEBUG(logger,"ErrorCovariance = \n" << currentStatus->getErrorCovariance_P());
+	LOG4CXX_DEBUG(logger,"transitionMatrix = \n" << transitionMatrix.getTransitionMatrix());
+
+
 }
 
 } /* namespace openEV */
