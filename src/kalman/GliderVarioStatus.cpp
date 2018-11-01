@@ -35,7 +35,7 @@
 namespace openEV
 {
 
-FloatType MAG_INCLINATION = 67.0f;
+FloatType MAG_INCLINATION = -67.0f;
 
 GliderVarioStatus::StatusComponentIndexHelperClass GliderVarioStatus::StatusComponentIndexHelperObj;
 
