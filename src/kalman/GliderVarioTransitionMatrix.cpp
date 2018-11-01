@@ -81,6 +81,10 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
 
 
     // I need half of time square for distance calculations based on acceleration here and there :)
+
+	// all calculations are in seconds
+	timeDiff /= 1000.0f;
+
     FloatType timeSquareHalf  = timeDiff*timeDiff / 2.0f;
 
     // I am using a number of temporary variables to store factors used for new status calculation, and to store in the transition matrix.
