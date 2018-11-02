@@ -480,13 +480,13 @@ void GliderVarioMainPriv::predictAndSwapStatus() {
 
 	auto timeDiff = timeBeforePredict - lastPredictionUpdate;
 
-	// Calculate fractional milliseconds from the system clock ticks with double arithmetic
-	FloatType timeDiffMS = double(timeDiff.count()) * (double(std::chrono::system_clock::period::num)/double(std::chrono::system_clock::period::den)*1000.0);
+	// Calculate fractional seconds from the system clock ticks with double arithmetic
+	FloatType timeDiffSec = double(timeDiff.count()) * (double(std::chrono::system_clock::period::num)/double(std::chrono::system_clock::period::den));
 
-	transitionMatrix.calcTransitionMatrixAndStatus(
-			timeDiffMS,
+	transitionMatrix.updateStatus(
 			*currentStatus,
-			*nextStatus);
+			*nextStatus,
+			timeDiffSec);
 
 	lastPredictionUpdate = timeBeforePredict;
 
@@ -735,12 +735,12 @@ void GliderVarioMainPriv::intializeStatus() {
 
 	LOG4CXX_DEBUG(logger,"StatusVector = \n" << currentStatus->getStatusVector_x());
 	for (int i = 0; i<10; i++) {
-		FloatType timeDiffMS = 20.0f;
+		FloatType timeDiffSec = 20.0f/1000.0f;
 
 		transitionMatrix.updateStatus(
 				*currentStatus,
 				*nextStatus,
-				timeDiffMS
+				timeDiffSec
 				);
 
 		// Swap status buffers
