@@ -501,9 +501,11 @@ void GliderVarioMainPriv::predictAndSwapStatus() {
 void GliderVarioMainPriv::intializeStatus() {
 
 	// Initialize the current Kalman status with initial sensor reading
-	driverList.initializeKalmanStatus(*currentStatus,*this);
+	// driverList.initializeKalmanStatus(*currentStatus,*this);
 
 	double baseIntervalSec = std::chrono::duration_cast<std::chrono::duration<double>>(programOptions.idlePredictionCycle).count() ;
+
+	LOG4CXX_DEBUG(logger,"baseIntervalSec = " << baseIntervalSec);
 
 
 #define SQUARE(x) ((x)*(x))
@@ -544,7 +546,7 @@ void GliderVarioMainPriv::intializeStatus() {
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_HEADING,currentStatus->STATUS_IND_HEADING) == 0.0f) {
-		currentStatus->heading = 0.0f;
+		currentStatus->heading = 45.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_HEADING,currentStatus->STATUS_IND_HEADING) = 90.0f * 90.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_HEADING,currentStatus->STATUS_IND_HEADING) =
 				SQUARE(10.0) * baseIntervalSec;
@@ -552,63 +554,63 @@ void GliderVarioMainPriv::intializeStatus() {
 
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_PITCH,currentStatus->STATUS_IND_PITCH) == 0.0f) {
-		currentStatus->pitchAngle = 0.0f;
+		currentStatus->pitchAngle = 5.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_PITCH,currentStatus->STATUS_IND_PITCH) = 30.0f * 30.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_PITCH,currentStatus->STATUS_IND_PITCH) =
 				SQUARE(10.0) * baseIntervalSec;
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_ROLL,currentStatus->STATUS_IND_ROLL) == 0.0f) {
-		currentStatus->rollAngle = 0.0f;
+		currentStatus->rollAngle = 8.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ROLL,currentStatus->STATUS_IND_ROLL) = 30.0f * 30.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ROLL,currentStatus->STATUS_IND_ROLL) =
 				SQUARE(10.0) * baseIntervalSec;
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_SPEED_GROUND_N,currentStatus->STATUS_IND_SPEED_GROUND_N) == 0.0f) {
-		currentStatus->groundSpeedNorth = 0.0f;
+		currentStatus->groundSpeedNorth = 10.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_N,currentStatus->STATUS_IND_SPEED_GROUND_N) = 100.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_N,currentStatus->STATUS_IND_SPEED_GROUND_N) =
 				SQUARE(2.0) * baseIntervalSec;
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_SPEED_GROUND_E,currentStatus->STATUS_IND_SPEED_GROUND_E) == 0.0f) {
-		currentStatus->groundSpeedEast = 0.0f;
+		currentStatus->groundSpeedEast = 11.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_E,currentStatus->STATUS_IND_SPEED_GROUND_E) = 100.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_E,currentStatus->STATUS_IND_SPEED_GROUND_E) =
 				SQUARE(2.0) * baseIntervalSec;
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_TAS,currentStatus->STATUS_IND_TAS) == 0.0f) {
-		currentStatus->trueAirSpeed = 0.0f;
+		currentStatus->trueAirSpeed = 10.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_TAS,currentStatus->STATUS_IND_TAS) = 100.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_TAS,currentStatus->STATUS_IND_TAS) =
 				SQUARE(3.0) * baseIntervalSec;
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_RATE_OF_SINK,currentStatus->STATUS_IND_RATE_OF_SINK) == 0.0f) {
-		currentStatus->rateOfSink = 0.0f;
+		currentStatus->rateOfSink = 1.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_RATE_OF_SINK,currentStatus->STATUS_IND_RATE_OF_SINK) = 50.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_RATE_OF_SINK,currentStatus->STATUS_IND_RATE_OF_SINK) =
 				SQUARE(2.0) * baseIntervalSec;
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_VERTICAL_SPEED,currentStatus->STATUS_IND_VERTICAL_SPEED) == 0.0f) {
-		currentStatus->verticalSpeed = 0.0f;
+		currentStatus->verticalSpeed = -2.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_VERTICAL_SPEED,currentStatus->STATUS_IND_VERTICAL_SPEED) = 100.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_VERTICAL_SPEED,currentStatus->STATUS_IND_VERTICAL_SPEED) =
 				SQUARE(3.0) * baseIntervalSec;
 	}
 
     if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_THERMAL_SPEED,currentStatus->STATUS_IND_THERMAL_SPEED) == 0.0f) {
-		currentStatus->thermalSpeed = 0.0f;
+		currentStatus->thermalSpeed = -1.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_THERMAL_SPEED,currentStatus->STATUS_IND_THERMAL_SPEED) = 100.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_THERMAL_SPEED,currentStatus->STATUS_IND_THERMAL_SPEED) =
 				SQUARE(3.0) * baseIntervalSec;
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_ACC_HEADING,currentStatus->STATUS_IND_ACC_HEADING) == 0.0f) {
-		currentStatus->accelHeading = 0.0f;
+		currentStatus->accelHeading = 0.2f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ACC_HEADING,currentStatus->STATUS_IND_ACC_HEADING) = 4.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ACC_HEADING,currentStatus->STATUS_IND_ACC_HEADING) =
 				SQUARE(3.0) * baseIntervalSec;
@@ -622,56 +624,56 @@ void GliderVarioMainPriv::intializeStatus() {
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_ACC_VERTICAL,currentStatus->STATUS_IND_ACC_VERTICAL) == 0.0f) {
-		currentStatus->accelVertical = 0.0f;
+		currentStatus->accelVertical = 0.1f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ACC_VERTICAL,currentStatus->STATUS_IND_ACC_VERTICAL) = 4.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ACC_VERTICAL,currentStatus->STATUS_IND_ACC_VERTICAL) =
 				SQUARE(10.0) * baseIntervalSec;
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_ROTATION_X,currentStatus->STATUS_IND_ROTATION_X) == 0.0f) {
-		currentStatus->rollRateX = 0.0f;
+		currentStatus->rollRateX = 0.5f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ROTATION_X,currentStatus->STATUS_IND_ROTATION_X) = 10.0f * 10.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ROTATION_X,currentStatus->STATUS_IND_ROTATION_X) =
 				SQUARE(20.0) * baseIntervalSec;
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_ROTATION_Y,currentStatus->STATUS_IND_ROTATION_Y) == 0.0f) {
-		currentStatus->pitchRateY = 0.0f;
+		currentStatus->pitchRateY = 0.1f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ROTATION_Y,currentStatus->STATUS_IND_ROTATION_Y) = 10.0f * 10.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ROTATION_Y,currentStatus->STATUS_IND_ROTATION_Y) =
 				SQUARE(20.0) * baseIntervalSec;
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_ROTATION_Z,currentStatus->STATUS_IND_ROTATION_Z) == 0.0f) {
-		currentStatus->yawRateZ = 0.0f;
+		currentStatus->yawRateZ = 8.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ROTATION_Z,currentStatus->STATUS_IND_ROTATION_Z) = 10.0f * 10.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ROTATION_Z,currentStatus->STATUS_IND_ROTATION_Z) =
 				SQUARE(20.0) * baseIntervalSec;
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_GYRO_BIAS_X,currentStatus->STATUS_IND_GYRO_BIAS_X) == 0.0f) {
-		currentStatus->gyroBiasX = 0.0f;
+		currentStatus->gyroBiasX = 10.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_X,currentStatus->STATUS_IND_GYRO_BIAS_X) = 10.0f * 10.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_X,currentStatus->STATUS_IND_GYRO_BIAS_X) =
 				SQUARE(0.1) * baseIntervalSec;
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_GYRO_BIAS_Y,currentStatus->STATUS_IND_GYRO_BIAS_Y) == 0.0f) {
-		currentStatus->gyroBiasY = 0.0f;
+		currentStatus->gyroBiasY = 11.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Y,currentStatus->STATUS_IND_GYRO_BIAS_Y) = 10.0f * 10.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Y,currentStatus->STATUS_IND_GYRO_BIAS_Y) =
 				SQUARE(0.1) * baseIntervalSec;
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_GYRO_BIAS_Z,currentStatus->STATUS_IND_GYRO_BIAS_Z) == 0.0f) {
-		currentStatus->gyroBiasZ = 0.0f;
+		currentStatus->gyroBiasZ = 12.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Z,currentStatus->STATUS_IND_GYRO_BIAS_Z) = 10.0f * 10.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Z,currentStatus->STATUS_IND_GYRO_BIAS_Z) =
 				SQUARE(0.1) * baseIntervalSec;
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_MAGNETIC_DECLINATION,currentStatus->STATUS_IND_MAGNETIC_DECLINATION) == 0.0f) {
-		currentStatus->magneticDeclination = -2.0f;
+		currentStatus->magneticDeclination = 2.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_MAGNETIC_DECLINATION,currentStatus->STATUS_IND_MAGNETIC_DECLINATION) = 10.0f * 10.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_MAGNETIC_DECLINATION,currentStatus->STATUS_IND_MAGNETIC_DECLINATION) =
 				SQUARE(0.1) * baseIntervalSec;
@@ -685,35 +687,35 @@ void GliderVarioMainPriv::intializeStatus() {
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_COMPASS_DEVIATION_X,currentStatus->STATUS_IND_COMPASS_DEVIATION_X) == 0.0f) {
-		currentStatus->compassDeviationX = 0.0f;
+		currentStatus->compassDeviationX = 12.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_X,currentStatus->STATUS_IND_COMPASS_DEVIATION_X) = 10.0f * 10.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_X,currentStatus->STATUS_IND_COMPASS_DEVIATION_X) =
 				SQUARE(0.1) * baseIntervalSec;
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_COMPASS_DEVIATION_Y,currentStatus->STATUS_IND_COMPASS_DEVIATION_Y) == 0.0f) {
-		currentStatus->compassDeviationY = 0.0f;
+		currentStatus->compassDeviationY = 33.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Y,currentStatus->STATUS_IND_COMPASS_DEVIATION_Y) = 10.0f * 10.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Y,currentStatus->STATUS_IND_COMPASS_DEVIATION_Y) =
 				SQUARE(0.1) * baseIntervalSec;
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_COMPASS_DEVIATION_Z,currentStatus->STATUS_IND_COMPASS_DEVIATION_Z) == 0.0f) {
-		currentStatus->compassDeviationZ = 0.0f;
+		currentStatus->compassDeviationZ = -34.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Z,currentStatus->STATUS_IND_COMPASS_DEVIATION_Z) = 10.0f * 10.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Z,currentStatus->STATUS_IND_COMPASS_DEVIATION_Z) =
 				SQUARE(0.1) * baseIntervalSec;
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_WIND_SPEED_N,currentStatus->STATUS_IND_WIND_SPEED_N) == 0.0f) {
-		currentStatus->windSpeedNorth = 0.0f;
+		currentStatus->windSpeedNorth = 1.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_N,currentStatus->STATUS_IND_WIND_SPEED_N) = 100.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_N,currentStatus->STATUS_IND_WIND_SPEED_N) =
 				SQUARE(3.0) * baseIntervalSec;
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_WIND_SPEED_E,currentStatus->STATUS_IND_WIND_SPEED_E) == 0.0f) {
-		currentStatus->windSpeedEast = 0.0f;
+		currentStatus->windSpeedEast = -3.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_E,currentStatus->STATUS_IND_WIND_SPEED_E) = 100.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_E,currentStatus->STATUS_IND_WIND_SPEED_E) =
 				SQUARE(3.0) * baseIntervalSec;
@@ -733,8 +735,10 @@ void GliderVarioMainPriv::intializeStatus() {
 				SQUARE(0.5) * baseIntervalSec; //  (0.5mbar / 1sec)
 	}
 
+	LOG4CXX_DEBUG(logger,"latitude = " << currentStatus->latitude());
+	LOG4CXX_DEBUG(logger,"longitude = " << currentStatus->longitude());
 	LOG4CXX_DEBUG(logger,"StatusVector = \n" << currentStatus->getStatusVector_x());
-	for (int i = 0; i<10; i++) {
+	for (int i = 0; i<1000; i++) {
 		FloatType timeDiffSec = 20.0f/1000.0f;
 
 		transitionMatrix.updateStatus(
@@ -748,8 +752,24 @@ void GliderVarioMainPriv::intializeStatus() {
 		currentStatus = nextStatus;
 		nextStatus = tempStatus;
 
+		LOG4CXX_DEBUG(logger,"----------------------------------------------------------------------------------------------");
+		LOG4CXX_DEBUG(logger,"Cycle " << i);
+
+		LOG4CXX_DEBUG(logger,"latitude = " << currentStatus->latitude());
+		LOG4CXX_DEBUG(logger,"longitude = " << currentStatus->longitude());
+		LOG4CXX_DEBUG(logger,"StatusVector = \n" << currentStatus->getStatusVector_x());
+		LOG4CXX_DEBUG(logger,"SystemNoiseCovariance = \n" << currentStatus->getSystemNoiseCovariance_Q());
+		LOG4CXX_DEBUG(logger,"ErrorCovariance = \n" << currentStatus->getErrorCovariance_P());
+		LOG4CXX_DEBUG(logger,"transitionMatrix = \n" << transitionMatrix.getTransitionMatrix());
+
+
+
 	}
 
+	LOG4CXX_DEBUG(logger,"----------------------------------------------------------------------------------------------");
+	LOG4CXX_DEBUG(logger,"----------------------------------------------------------------------------------------------");
+	LOG4CXX_DEBUG(logger,"latitude = " << currentStatus->latitude());
+	LOG4CXX_DEBUG(logger,"longitude = " << currentStatus->longitude());
 	LOG4CXX_DEBUG(logger,"StatusVector = \n" << currentStatus->getStatusVector_x());
 	LOG4CXX_DEBUG(logger,"SystemNoiseCovariance = \n" << currentStatus->getSystemNoiseCovariance_Q());
 	LOG4CXX_DEBUG(logger,"ErrorCovariance = \n" << currentStatus->getErrorCovariance_P());
