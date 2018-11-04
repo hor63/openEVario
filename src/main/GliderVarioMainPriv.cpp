@@ -501,7 +501,7 @@ void GliderVarioMainPriv::predictAndSwapStatus() {
 void GliderVarioMainPriv::intializeStatus() {
 
 	// Initialize the current Kalman status with initial sensor reading
-	// driverList.initializeKalmanStatus(*currentStatus,*this);
+	driverList.initializeKalmanStatus(*currentStatus,*this);
 
 	double baseIntervalSec = std::chrono::duration_cast<std::chrono::duration<double>>(programOptions.idlePredictionCycle).count() ;
 
