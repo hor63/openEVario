@@ -31,12 +31,31 @@
 #include "GliderVarioStatus.h"
 #include "util/RotationMatrix.h"
 
+
+#if defined HAVE_LOG4CXX_H
+static log4cxx::LoggerPtr logger = 0;
+#endif
+
+
 namespace openEV
 {
 
 
 FloatType GliderVarioTransitionMatrix::staticRollTimeConstant = 2.0f;
 FloatType GliderVarioTransitionMatrix::dynamicRollTimeConstant = 0.5f;
+
+GliderVarioTransitionMatrix::GliderVarioTransitionMatrix ()
+:transitionMatrix{GliderVarioStatus::STATUS_NUM_ROWS,GliderVarioStatus::STATUS_NUM_ROWS}
+{
+
+#if defined HAVE_LOG4CXX_H
+	if (!logger) {
+		logger = log4cxx::Logger::getLogger("openEV.Kalman.GliderVarioTransitionMatrix");
+	}
+#endif /* HAVE_LOG4CXX_H */
+
+
+}
 
 
 GliderVarioTransitionMatrix::~GliderVarioTransitionMatrix ()
@@ -62,6 +81,17 @@ GliderVarioTransitionMatrix::updateStatus (
         newStatus.getSystemNoiseCovariance_Q() = oldStatus.getSystemNoiseCovariance_Q();
 
         newStatus.normalizeStatus();
+
+    	LOG4CXX_DEBUG(logger,"GliderVarioTransitionMatrix::updateStatus"
+    			<< "\n--------------------------------------------------------------------");
+    	LOG4CXX_DEBUG(logger,"latitude = " << newStatus.latitude());
+    	LOG4CXX_DEBUG(logger,"longitude = " << newStatus.longitude());
+    	LOG4CXX_DEBUG(logger,"StatusVector = \n" << newStatus.getStatusVector_x());
+    	LOG4CXX_DEBUG(logger,"ErrorCovariance = \n" << newStatus.getErrorCovariance_P());
+    	LOG4CXX_DEBUG(logger,"transitionMatrix = \n" << transitionMatrix);
+    	LOG4CXX_DEBUG(logger,"SystemNoiseCovariance = \n" << newStatus.getSystemNoiseCovariance_Q());
+
+
 }
 
 
