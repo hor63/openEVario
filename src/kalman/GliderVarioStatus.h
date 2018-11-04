@@ -455,6 +455,11 @@ OEV_PUBLIC std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus
 OEV_PUBLIC std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus::StatusComponentIndex ind);
 
 #if defined HAVE_LOG4CXX_H
+OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioStatus& s);
+OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioStatus::StatusVectorType &v);
+OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioStatus::StatusCoVarianceType &co);
+OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioStatus::StatusComponentIndex ind);
+
 OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioStatus::_StatusComponentIndex e);
 #endif /* #if defined HAVE_LOG4CXX_H */
 

@@ -224,37 +224,37 @@ void openEV::GliderVarioStatus::longitude(double lon) {
 
 
 static char const * const statusFieldNames [openEV::GliderVarioStatus::STATUS_NUM_ROWS] = {
-        " gravity       ",
-        " longitudeOffs ",
-        " latitudeOffs  ",
-        " altMSL        ",
-        " heading       ",
-        " pitchAngle    ",
-        " rollAngle     ",
-        " groundSpeedN  ",
-        " groundSpeedE  ",
-        " trueAirSpeed  ",
-        " rateOfSink    ",
-        " verticalSpeed ",
-        " thermalSpeed  ",
-        " accelHeading  ",
-        " accelCross    ",
-        " accelVertical ",
-        " rollRateX     ",
-        " pitchRateY    ",
-        " yawRateZ      ",
-        " gyroBiasX     ",
-        " gyroBiasY     ",
-        " gyroBiasZ     ",
+        "        gravity",
+        "  longitudeOffs",
+        "   latitudeOffs",
+        "         altMSL",
+        "        heading",
+        "     pitchAngle",
+        "      rollAngle",
+        "   groundSpeedN",
+        "   groundSpeedE",
+        "   trueAirSpeed",
+        "     rateOfSink",
+        "  verticalSpeed",
+        "   thermalSpeed",
+        "   accelHeading",
+        "     accelCross",
+        "  accelVertical",
+        "      rollRateX",
+        "     pitchRateY",
+        "       yawRateZ",
+        "      gyroBiasX",
+        "      gyroBiasY",
+        "      gyroBiasZ",
         " magDeclination",
         " magInclination",
-        " compDeviatiX  ",
-        " compDeviatiY  ",
-        " compDeviatiZ  ",
+        "   compDeviatiX",
+        "   compDeviatiY",
+        "   compDeviatiZ",
         " windSpeedNorth",
-        " windSpeedEast ",
-        " QFF           ",
-        " lastPressure  ",
+        "  windSpeedEast",
+        "            QFF",
+        "   lastPressure",
 };
 
 std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
@@ -273,11 +273,11 @@ std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus::StatusVec
     }
 
     o << "\n" << std::fixed;
-    o.precision(7);
+    o.precision(6);
     o.fill('_');
 
     for (int i = 0 ; i < openEV::GliderVarioStatus::STATUS_NUM_ROWS; i++) {
-        o.precision(7);
+        o.precision(6);
         o.width(15);
         o << v(i,0)     ;
     }
@@ -296,7 +296,7 @@ std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus::StatusCoV
     }
 
     o << "\n" << std::fixed;
-    o.precision(7);
+    o.precision(6);
     o.fill('_');
 
     for (int i = 0 ; i < openEV::GliderVarioStatus::STATUS_NUM_ROWS; i++) {
@@ -304,7 +304,7 @@ std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus::StatusCoV
         o << "\n" << statusFieldNames[i];
 
         for (int k = 0 ; k < openEV::GliderVarioStatus::STATUS_NUM_ROWS; k++) {
-            o.precision(7);
+            o.precision(6);
             o.width(15);
             o << co.coeff(i,k)     ;
         }
@@ -324,6 +324,23 @@ std::ostream& operator << (std::ostream &o,openEV::GliderVarioStatus::StatusComp
 std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioStatus::_StatusComponentIndex e) {
 	std::ostream &o = b;
 	return operator << (o,e.e);
+}
+
+OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioStatus& s) {
+	std::ostream &o = b;
+	return operator << (o,s);
+}
+OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioStatus::StatusVectorType &v) {
+	std::ostream &o = b;
+	return operator << (o,v);
+}
+OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioStatus::StatusCoVarianceType &co) {
+	std::ostream &o = b;
+	return operator << (o,co);
+}
+OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioStatus::StatusComponentIndex ind) {
+	std::ostream &o = b;
+	return operator << (o,ind);
 }
 
 #endif /* #if defined HAVE_LOG4CXX_H */
