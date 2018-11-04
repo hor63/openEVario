@@ -549,7 +549,7 @@ void GliderVarioMainPriv::intializeStatus() {
 		currentStatus->heading = 45.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_HEADING,currentStatus->STATUS_IND_HEADING) = 90.0f * 90.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_HEADING,currentStatus->STATUS_IND_HEADING) =
-				SQUARE(10.0) * baseIntervalSec;
+				SQUARE(4.0) * baseIntervalSec;
 	}
 
 
@@ -557,14 +557,14 @@ void GliderVarioMainPriv::intializeStatus() {
 		currentStatus->pitchAngle = 5.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_PITCH,currentStatus->STATUS_IND_PITCH) = 30.0f * 30.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_PITCH,currentStatus->STATUS_IND_PITCH) =
-				SQUARE(10.0) * baseIntervalSec;
+				SQUARE(4.0) * baseIntervalSec;
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_ROLL,currentStatus->STATUS_IND_ROLL) == 0.0f) {
 		currentStatus->rollAngle = 8.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ROLL,currentStatus->STATUS_IND_ROLL) = 30.0f * 30.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ROLL,currentStatus->STATUS_IND_ROLL) =
-				SQUARE(10.0) * baseIntervalSec;
+				SQUARE(4.0) * baseIntervalSec;
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_SPEED_GROUND_N,currentStatus->STATUS_IND_SPEED_GROUND_N) == 0.0f) {
@@ -634,21 +634,21 @@ void GliderVarioMainPriv::intializeStatus() {
 		currentStatus->rollRateX = 0.5f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ROTATION_X,currentStatus->STATUS_IND_ROTATION_X) = 10.0f * 10.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ROTATION_X,currentStatus->STATUS_IND_ROTATION_X) =
-				SQUARE(20.0) * baseIntervalSec;
+				SQUARE(10.0) * baseIntervalSec;
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_ROTATION_Y,currentStatus->STATUS_IND_ROTATION_Y) == 0.0f) {
 		currentStatus->pitchRateY = 0.1f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ROTATION_Y,currentStatus->STATUS_IND_ROTATION_Y) = 10.0f * 10.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ROTATION_Y,currentStatus->STATUS_IND_ROTATION_Y) =
-				SQUARE(20.0) * baseIntervalSec;
+				SQUARE(10.0) * baseIntervalSec;
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_ROTATION_Z,currentStatus->STATUS_IND_ROTATION_Z) == 0.0f) {
 		currentStatus->yawRateZ = 8.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ROTATION_Z,currentStatus->STATUS_IND_ROTATION_Z) = 10.0f * 10.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ROTATION_Z,currentStatus->STATUS_IND_ROTATION_Z) =
-				SQUARE(20.0) * baseIntervalSec;
+				SQUARE(10.0) * baseIntervalSec;
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_GYRO_BIAS_X,currentStatus->STATUS_IND_GYRO_BIAS_X) == 0.0f) {
