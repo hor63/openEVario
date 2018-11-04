@@ -88,25 +88,12 @@ public:
      * @param[out] newStatus New status by extrapolation after timeDiff seconds
      * @param[in] timeDiff The time difference in seconds
      */
-    inline void
+    void
     updateStatus (
             GliderVarioStatus const &oldStatus ,
             GliderVarioStatus &newStatus,
             FloatType timeDiff
-    ){
-        calcTransitionMatrixAndStatus(timeDiff,oldStatus,newStatus);
-
-        newStatus.getErrorCovariance_P() = transitionMatrix * oldStatus.getErrorCovariance_P() * transitionMatrix.transpose()
-			          //+ oldStatus.getSystemNoiseCovariance_Q()
-			          ;
-
-        // Addition has to be added as a seperate statement. Eigen 3.3.4 did not like adding the noise covariance in the statement above.
-        newStatus.getErrorCovariance_P() += oldStatus.getSystemNoiseCovariance_Q();
-
-        newStatus.getSystemNoiseCovariance_Q() = oldStatus.getSystemNoiseCovariance_Q();
-
-        newStatus.normalizeStatus();
-    }
+    );
 
     /// See \ref staticRollTimeConstant
     static inline  FloatType getStaticRollTimeConstant() {
