@@ -30,9 +30,24 @@
 #  include <config.h>
 #endif
 
+#include "OEVCommon.h"
+
+#if defined HAVE_LOG4CXX_H
+static log4cxx::LoggerPtr logger = 0;
+#endif
+
+
 #include "gtest/gtest.h"
 
 int main(int argc, char **argv) {
+
+#if defined HAVE_LOG4CXX_H
+	log4cxx::BasicConfigurator::configure();
+	logger = log4cxx::Logger::getRootLogger();
+
+	logger->setLevel(log4cxx::Level::getInfo());
+#endif
+
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }

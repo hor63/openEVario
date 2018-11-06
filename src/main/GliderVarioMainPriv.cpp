@@ -55,6 +55,7 @@
 
 #if defined HAVE_LOG4CXX_H
 static log4cxx::LoggerPtr logger = 0;
+static log4cxx::LoggerPtr rootLogger = 0;
 #endif
 
 #define PROGRAM_DESCRIPTION "\n openEVario: Electronic variometer application using inertial and pressure sensors \n" \
@@ -298,6 +299,9 @@ GliderVarioMainPriv::GliderVarioMainPriv(int argc, const char *argv[])
 	if (!logger) {
 		logger = log4cxx::Logger::getLogger("openEV.Main.GliderVarioMain");
 	}
+	if (!rootLogger) {
+		rootLogger = log4cxx::Logger::getRootLogger();
+	}
 #endif /* HAVE_LOG4CXX_H */
 
 	lastPredictionUpdate = std::chrono::system_clock::now();
@@ -346,20 +350,20 @@ void GliderVarioMainPriv::startup () {
     switch (programOptions.defaultLoggerLevel) {
 
     	case 0: // Silent. Fatal errors causing immediate termination are still reported.
-    	    logger->setLevel(log4cxx::Level::getFatal());
+    	    rootLogger->setLevel(log4cxx::Level::getFatal());
     	    break;
 
     	case 1:
-    	    logger->setLevel(log4cxx::Level::getError());
+    		rootLogger->setLevel(log4cxx::Level::getError());
     	    break;
 
 		case 3:
-			logger->setLevel(log4cxx::Level::getDebug());
+			rootLogger->setLevel(log4cxx::Level::getDebug());
 			break;
 
 		case 2:
 		default:
-			logger->setLevel(log4cxx::Level::getInfo());
+			rootLogger->setLevel(log4cxx::Level::getInfo());
 
     }
 
