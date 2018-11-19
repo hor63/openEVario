@@ -348,6 +348,17 @@ void GliderVarioDriverList::initializeKalmanStatus(
 
 }
 
+void GliderVarioDriverList::startDrivers (GliderVarioMainPriv &varioMain) {
+
+	auto iter = driverInstanceList.begin();
+
+	while (iter != driverInstanceList.end()) {
+		iter->second->start(varioMain);
+
+		iter ++;
+	}
+
+}
 
 
 } /* namespace openEV */

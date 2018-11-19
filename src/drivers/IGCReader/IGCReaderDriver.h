@@ -86,6 +86,8 @@ public:
     		GliderVarioStatus &varioStatus,
 			GliderVarioMainPriv &varioMain) override;
 
+    void start(GliderVarioMainPriv &varioMain) override;
+
     virtual void suspend() override;
 
     virtual void resume() override;
@@ -109,6 +111,21 @@ protected:
 
     std::string igcFileName;
     std::ifstream igcFile;
+
+    /** \brief Run the measurement updates and Kalmen filter updates inernally single-threaded.
+     *
+     * Use for debugging purposes only. This option means that the driver will never return from the the driver start() call.
+     * If the parameter is false the internal loop will be run at full speed without breaks to achieve (near) real time.
+     */
+    bool runSingleThreadDebug = true;
+
+    /** \brief Run the driver simulation in real time
+     *
+     * This parameter is only used when runSingleThreadDebug is true.
+     * If the parameter is false the internal loop will be run at full speed without breaks to achieve (near) real time.
+     */
+    bool runInRealTime = false;
+
 
     /// \brief Timestamp of the first B-record in seconds after midnight UTC.
     double startTimeDay = 0.0;
@@ -161,6 +178,10 @@ protected:
      */
     void readIGCFile ();
 
+    /** \brief Run the Kalman filter main loop here single threaded for debugging purposes
+     *
+     */
+    void runDebugSingleThread(GliderVarioMainPriv &varioMain);
 };
 
 } /* namespace openEV */

@@ -94,6 +94,38 @@ void IGCReaderDriver::readConfiguration (Properties4CXX::Properties const &confi
 
 	LOG4CXX_DEBUG (logger,"readConfiguration: Property \"file\" returns \"" << igcFileName << "\"");
 
+	Properties4CXX::Property const *runSingleThreadDebugProp;
+
+	try {
+
+		runSingleThreadDebugProp = configuration.searchProperty("runSingleThreadDebug");
+
+		runSingleThreadDebug = runSingleThreadDebugProp->getBoolValue();
+
+	} catch (Properties4CXX::ExceptionBase const &e) {
+	    runSingleThreadDebug = false;
+	}
+
+
+	LOG4CXX_DEBUG (logger,"readConfiguration: Property \"runSingleThreadDebug\" returns \"" << runSingleThreadDebug << "\"");
+
+
+	Properties4CXX::Property const *runInRealTimeProp;
+
+	try {
+
+		runInRealTimeProp = configuration.searchProperty("runInRealTime");
+
+		runInRealTime = runInRealTimeProp->getBoolValue();
+
+	} catch (Properties4CXX::ExceptionBase const &e) {
+		runInRealTime = false;
+	}
+
+
+	LOG4CXX_DEBUG (logger,"readConfiguration: Property \"runInRealTime\" returns \"" << runInRealTime << "\"");
+
+
 }
 
 void IGCReaderDriver::initializeStatus(
@@ -234,6 +266,16 @@ void IGCReaderDriver::initializeStatus(
 
 }
 
+void IGCReaderDriver::start(GliderVarioMainPriv &varioMain) {
+
+	if (runSingleThreadDebug) {
+		runDebugSingleThread (varioMain);
+	} else {
+		GliderVarioDriverBase::start(varioMain);
+	}
+
+}
+
 void IGCReaderDriver::suspend() {
 
 }
@@ -366,6 +408,9 @@ void IGCReaderDriver::readIGCFile() {
 		}
 	}
 
+}
+
+void IGCReaderDriver::runDebugSingleThread(GliderVarioMainPriv& varioMain) {
 }
 
 } /* namespace OevGLES */

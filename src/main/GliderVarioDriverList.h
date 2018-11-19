@@ -122,6 +122,12 @@ public:
 			GliderVarioStatus &currentStatus,
 			GliderVarioMainPriv &varioMain);
 
+	/** \brief Start data capturing from all drivers
+	 *
+	 * @param varioMain mainVario object; provides all additional information like program parameters, and the parsed properties.
+	 */
+	void startDrivers (GliderVarioMainPriv &varioMain);
+
 protected:
 
 	DriverLibList driverLibList;

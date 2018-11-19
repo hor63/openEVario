@@ -742,4 +742,11 @@ void GliderVarioMainPriv::intializeStatus() {
 
 }
 
+void GliderVarioMainPriv::runMainLoop() {
+
+	driverList.startDrivers(*this);
+
+}
+
 } /* namespace openEV */
+
