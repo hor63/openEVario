@@ -128,6 +128,13 @@ public:
 	 */
 	void startDrivers (GliderVarioMainPriv &varioMain);
 
+	/** \brief Stop data capturing from all drivers
+	 *
+	 * This call waits for every driver to stop. It may not return immediately.
+	 *
+	 */
+	void stopDrivers ();
+
 protected:
 
 	DriverLibList driverLibList;
