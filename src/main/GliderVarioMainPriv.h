@@ -125,21 +125,36 @@ public:
 
 	/** \brief Run the program
 	 *
-	 * Run the main loop of the program. Run the predictions, read sensor values, and apply them to the model.
+	 * Start measurement capturing by all sensor drivers.
+	 *
+	 * Start the idle thread which forces a prediction cycle every \ref ProgramOptions::ProgramOptions milliseconds unless measurement updates are updating the Kalman status faster.
+	 *
+	 * This function returns immediately because the driver loops and the idle loop run as independend threads.
 	 *
 	 */
-	void runMainLoop ();
+	void startMainLoop ();
+
+	/** \brief Stop the program
+	 *
+	 * Stops measurement capturing by all sensor drivers.
+	 *
+	 * Stops the idle thread.
+	 *
+	 * This function may return with delay because it actively waits until all drivers have actually stopped.
+	 *
+	 */
+	void stopMainLoop ();
 
 	/** \brief Suspend the program
 	 *
-	 * Suspend the main loop of the program temporarily. Can be resumed with resumeMainLoop().
+	 * Suspend the main loop and measurement capturing of the program temporarily. Can be resumed with \ref resumeMainLoop().
 	 *
 	 */
 	void suspendMainLoop ();
 
 	/** \brief Resume the program
 	 *
-	 * Resume the main loop after it was suspended by suspendMainLoop().
+	 * Resume the main loop and measurement capturing after it was suspended by \ref suspendMainLoop().
 	 *
 	 */
 	void resumeMainLoop ();

@@ -360,5 +360,17 @@ void GliderVarioDriverList::startDrivers (GliderVarioMainPriv &varioMain) {
 
 }
 
+void GliderVarioDriverList::stopDrivers () {
+
+	auto iter = driverInstanceList.begin();
+
+	while (iter != driverInstanceList.end()) {
+		iter->second->stop();
+
+		iter ++;
+	}
+
+}
+
 
 } /* namespace openEV */

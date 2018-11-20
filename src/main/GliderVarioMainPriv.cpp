@@ -742,9 +742,19 @@ void GliderVarioMainPriv::intializeStatus() {
 
 }
 
-void GliderVarioMainPriv::runMainLoop() {
+void GliderVarioMainPriv::startMainLoop() {
 
 	driverList.startDrivers(*this);
+
+	/// todo: start the idle thread.
+
+}
+
+void GliderVarioMainPriv::stopMainLoop() {
+
+	driverList.startDrivers(*this);
+
+	/// todo: stop the idle thread.
 
 }
 
