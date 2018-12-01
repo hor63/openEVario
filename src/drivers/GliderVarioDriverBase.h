@@ -221,7 +221,7 @@ public:
 protected:
 
     /// Bit list of capabilities. The bit positions are defined in the enum #SensorCapability.
-    uint32_t sensorCapabilities;
+    uint32_t sensorCapabilities = 0;
 
     std::string driverName;
     std::string description;

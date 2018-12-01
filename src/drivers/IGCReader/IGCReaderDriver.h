@@ -112,7 +112,7 @@ protected:
     std::string igcFileName;
     std::ifstream igcFile;
 
-    /** \brief Run the measurement updates and Kalmen filter updates inernally single-threaded.
+    /** \brief Run the measurement updates and Kalman filter updates internally single-threaded.
      *
      * Use for debugging purposes only. This option means that the driver will never return from the the driver start() call.
      * If the parameter is false the internal loop will be run at full speed without breaks to achieve (near) real time.

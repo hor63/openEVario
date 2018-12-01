@@ -135,6 +135,14 @@ public:
 	 */
 	void stopDrivers ();
 
+	/** \brief Is any driver implementing the idle loop internally for debugging purposes?
+	 *
+	 * Run through the list of drivers, and check if any implements the capability \ref GliderVarioDriverBase::SensorCapability::RUN_IDLE_LOOP
+	 *
+	 * @return
+	 */
+	bool isDriverRunningIdleLoop();
+
 protected:
 
 	DriverLibList driverLibList;

@@ -127,9 +127,9 @@ public:
 	 *
 	 * Start measurement capturing by all sensor drivers.
 	 *
-	 * Start the idle thread which forces a prediction cycle every \ref ProgramOptions::ProgramOptions milliseconds unless measurement updates are updating the Kalman status faster.
+	 * Start the idle thread which forces a prediction cycle every \ref ProgramOptions::idlePredictionCycle milliseconds unless measurement updates are updating the Kalman status faster.
 	 *
-	 * This function returns immediately because the driver loops and the idle loop run as independend threads.
+	 * This function returns immediately because the driver loops and the idle loop run as independent threads.
 	 *
 	 */
 	void startMainLoop ();

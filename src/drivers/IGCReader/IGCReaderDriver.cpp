@@ -106,6 +106,12 @@ void IGCReaderDriver::readConfiguration (Properties4CXX::Properties const &confi
 	    runSingleThreadDebug = false;
 	}
 
+	if (runSingleThreadDebug ) {
+		setSensorCapability(RUN_IDLE_LOOP);
+	} else {
+		clearSensorCapability(RUN_IDLE_LOOP);
+	}
+
 
 	LOG4CXX_DEBUG (logger,"readConfiguration: Property \"runSingleThreadDebug\" returns \"" << runSingleThreadDebug << "\"");
 

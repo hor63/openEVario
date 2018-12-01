@@ -372,5 +372,21 @@ void GliderVarioDriverList::stopDrivers () {
 
 }
 
+bool GliderVarioDriverList::isDriverRunningIdleLoop() {
+
+	auto iter = driverInstanceList.begin();
+
+	while (iter != driverInstanceList.end()) {
+		if (iter->second->hasSensorCapability(GliderVarioDriverBase::RUN_IDLE_LOOP)) {
+			return true;
+		}
+
+		iter ++;
+	}
+
+	return false;
+}
+
+
 
 } /* namespace openEV */
