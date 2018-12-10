@@ -142,6 +142,8 @@ void BRecordSectionProcessor::processBRecord (
 	// process the GPS position and alitude only when
 	if (recordString[gpsValidPos] == GPS_VALID) {
 
+		bRecord.gpsIsValid = true;
+
 		bRecord.altGPS = double(strToInt(recordString + gpsAltPos,gpsAltLen));
 		// Minutes is a 5-digit string in the form MMmmm (i.e. MM.mmm).
 		// The integer value must be divided by 1000 to return minutes, and divided by 60 to return degrees.
@@ -180,9 +182,10 @@ void BRecordSectionProcessor::processBRecord (
 
 	} else { // if (recordString[gpsValidPos] == gpsValid)
 
-		bRecord.altGPS = valueInvalid;
-		bRecord.latitude = valueInvalid;
-		bRecord.longitude = valueInvalid;
+		bRecord.altGPS 		= valueInvalid;
+		bRecord.latitude	= valueInvalid;
+		bRecord.longitude	= valueInvalid;
+		bRecord.gpsIsValid	= false;
 	} // if (recordString[gpsValidPos] == gpsValid)
 
 
@@ -199,7 +202,7 @@ void BRecordSectionProcessor::processBRecord (
 		startTimeDay -= 24.0*60.0*60.0;
 	}
 
-	bRecord.timeSinceStart =  std::chrono::duration_cast<std::chrono::system_clock::duration> (
+	bRecord.timeSinceStart =  std::chrono::duration_cast<OEVDuration> (
 			std::chrono::duration<double> (timestampSecSinceMidnight - startTimeDay));
 
 

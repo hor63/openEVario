@@ -31,14 +31,15 @@
 namespace openEV {
 
 	typedef struct {
-		OEVDuration timeSinceStart; ///< Duration since the first B-record
-		double latitude; ///< Latitude in degrees. -9999.0 means the record is undefined
-		double longitude; ///< Latitude in degrees. -9999.0 means the record is undefined
-		double posAccuracy; ///< Accuracy of the position in m
-		double altGPS; ///< GPS altitude in m. -9999.0 means the record is undefined
-		double altGPSAccuracy; ///< Accuracy of the GPS altitude
-		double altBaro; ///< Barometric altitude, calculated in the recorder from a pressure sensor.
-		double pressure; ///< Pressure in hPa (mbar) calculated from the \ref altBaro according to the standard atmosphere model
+		OEVDuration	timeSinceStart;	///< Duration since the first B-record
+		double		latitude; 		///< Latitude in degrees. -9999.0 means the record is undefined
+		double 		longitude; 		///< Latitude in degrees. -9999.0 means the record is undefined
+		double 		posAccuracy; 	///< Accuracy of the position in m
+		double 		altGPS; 		///< GPS altitude in m. -9999.0 means the record is undefined
+		double 		altGPSAccuracy; ///< Accuracy of the GPS altitude
+		double 		altBaro; 		///< Barometric altitude, calculated in the recorder from a pressure sensor.
+		double 		pressure; 		///< Pressure in hPa (mbar) calculated from the \ref altBaro according to the standard atmosphere model
+		bool		gpsIsValid; 		///< GPS position and altitude are valid.
 	} BRecord;
 
 
