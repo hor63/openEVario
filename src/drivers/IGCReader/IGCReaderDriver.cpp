@@ -30,6 +30,8 @@
 #include <fstream>
 
 #include "IGCReaderDriver.h"
+#include "kalman/GliderVarioTransitionMatrix.h"
+#include "kalman/GliderVarioMeasurementUpdater.h"
 
 
 #if defined HAVE_LOG4CXX_H
@@ -417,6 +419,59 @@ void IGCReaderDriver::readIGCFile() {
 }
 
 void IGCReaderDriver::runDebugSingleThread(GliderVarioMainPriv& varioMain) {
+
+	std::chrono::system_clock::time_point startTime = std::chrono::system_clock::now();
+	std::chrono::system_clock::time_point lastUpdateTime = startTime;
+	GliderVarioMainPriv::LockedCurrentStatus currStatus (varioMain);
+	GliderVarioTransitionMatrix transMatrix;
+
+	GliderVarioStatus **currentStatus = 0;
+	GliderVarioStatus **nextStatus = 0;
+	GliderVarioTransitionMatrix *transitionMatrix = 0;
+	GliderVarioMeasurementVector *measurementVector = 0;
+	FloatType idleLoopIncrement = std::chrono::duration_cast<std::chrono::duration<FloatType>>(varioMain.getProgramOptions().idlePredictionCycle).count();
+
+	varioMain.getAndLockInternalStatusForDebug(
+			currentStatus,
+			nextStatus,
+			transitionMatrix,
+			measurementVector);
+
+	startTime = std::chrono::system_clock::now();
+	lastUpdateTime = startTime;
+
+	for (auto it = bRecords.cbegin(); it != bRecords.cend();it++) {
+
+		BRecord const &bRecord = it->second;
+
+		while (lastUpdateTime < (startTime + bRecord.timeSinceStart) ) {
+
+			transMatrix.updateStatus(**currentStatus,**nextStatus,idleLoopIncrement);
+			lastUpdateTime += varioMain.getProgramOptions().idlePredictionCycle;
+
+			GliderVarioStatus *tmp = *currentStatus;
+			*currentStatus = *nextStatus;
+			*nextStatus = tmp;
+		}
+
+		if (bRecord.gpsIsValid) {
+			double posVariance = bRecord.posAccuracy * bRecord.posAccuracy;
+			GliderVarioMeasurementUpdater::GPSLatitudeUpd(bRecord.latitude,posVariance,*measurementVector,**currentStatus);
+			GliderVarioMeasurementUpdater::GPSLongitudeUpd(bRecord.longitude,posVariance,*measurementVector,**currentStatus);
+			GliderVarioMeasurementUpdater::GPSAltitudeUpd(bRecord.altGPS,bRecord.altGPSAccuracy*bRecord.altGPSAccuracy,*measurementVector,**currentStatus);
+
+		}
+
+		GliderVarioMeasurementUpdater::staticPressureUpd(
+				bRecord.pressure,
+				25.0f-(bRecord.altBaro/100.0f), // Assume I fly at 25 ground temp, and 1°C/100m temperature lapse.
+				0.25f,  // assume about 4m inaccuracy
+				*measurementVector,
+				**currentStatus);
+
+
+	}
+
 }
 
 } /* namespace OevGLES */
