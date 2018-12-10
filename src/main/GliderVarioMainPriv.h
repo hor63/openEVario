@@ -29,6 +29,7 @@
 #include <list>
 #include <string>
 #include <mutex>
+#include <thread>
 
 #include "Properties4CXX/Properties.h"
 
@@ -50,6 +51,7 @@ namespace openEV {
  *
  */
 class GliderVarioMainPriv {
+
 public:
 
 	/** \ref Convenience class which implements a synchronized access to the current status of vario
@@ -182,6 +184,21 @@ public:
 	 */
 	void releaseCurrentStatus () OEV_MAIN_PUBLIC ;
 
+	/** \brief Access function to obtain all Kalman filter components for a driver running the complete main loop single threaded for debugging and testing purposes only.
+	 *
+	 * Do not forget to call \ref releaseCurrentStatus() .
+	 *
+	 * @param currentStatus Reference to the address of the pointer of the current status.
+	 * @param nextStatus Reference to the address of the pointer of the current status.
+	 * @param transitionMatrix Reference to the pointer to the transition matrix
+	 * @param measurementVector Refrence to the pointer to the (mostly useless :) measurement vector
+	 */
+	void getAndLockInternalStatusForDebug (
+			GliderVarioStatus **&currentStatus,
+			GliderVarioStatus **&nextStatus,
+			GliderVarioTransitionMatrix *&transitionMatrix,
+			GliderVarioMeasurementVector *&measurementVector
+			) OEV_MAIN_PUBLIC ;
 
 private:
 
@@ -212,6 +229,12 @@ private:
 
 	std::chrono::system_clock::time_point lastPredictionUpdate;
 
+    /// \brief The idle loop thread
+    std::thread idleLoopThread;
+
+    bool idleLoopRunning = false;
+
+
 	/// \brief Read the configuration file, and extract the base configuration values into \ref programOptions
 	void readConfiguration ();
 
@@ -226,6 +249,15 @@ private:
 	 * After letting all drivers initialize the status initialize the un-initialized components with default values.
 	 */
 	void intializeStatus ();
+
+	/*** \brief The idle loop will force an prediction cycle of the Kalman status when no measurement updates did it in the mean time.
+	 *
+	 *
+	 */
+	void idleLoop ();
+
+	static void idleLoopTreadEntry (GliderVarioMainPriv *vario);
+
 
 };
 

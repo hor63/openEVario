@@ -288,7 +288,6 @@ static int readOptions (int& argc, char*argv[],openEV::ProgramOptions &programOp
 namespace openEV {
 
 
-
 GliderVarioMainPriv::GliderVarioMainPriv(int argc, const char *argv[])
 	:driverList {programOptions}
 {
@@ -746,7 +745,23 @@ void GliderVarioMainPriv::startMainLoop() {
 
 	driverList.startDrivers(*this);
 
-	/// todo: start the idle thread.
+	if (!driverList.isDriverRunningIdleLoop()) {
+		if (!idleLoopRunning) {
+			// Stop signal has been sent
+			if (idleLoopThread.joinable()) {
+				// When the thread is still running wait until it terminates itself.
+				idleLoopThread.join();
+			}
+
+			idleLoopRunning = true;
+		}
+
+		if (!idleLoopThread.joinable()) {
+			// idleLoopRunning is now set but the thread is not running
+			// therefore start it now
+			idleLoopThread = std::thread (GliderVarioMainPriv::idleLoopTreadEntry,this);
+		}
+	}
 
 }
 
@@ -754,9 +769,60 @@ void GliderVarioMainPriv::stopMainLoop() {
 
 	driverList.stopDrivers();
 
-	/// todo: stop the idle thread.
+	idleLoopRunning = false;
+
+	if (idleLoopThread.joinable()) {
+		idleLoopThread.join();
+	}
 
 }
+
+void GliderVarioMainPriv::idleLoop() {
+
+	std::chrono::system_clock::time_point nextLoopTime =  std::chrono::system_clock::now();
+	std::chrono::system_clock::time_point now;
+
+	while (idleLoopRunning) {
+		GliderVarioMeasurementVector* measVector = 0;
+
+		// just retrieve the current status, and immediately release it.
+		// If the interval was exceeded the function will automatically calculate the next prediction.
+		getCurrentStatusAndLock(measVector);
+		releaseCurrentStatus();
+
+		now = std::chrono::system_clock::now();
+		do {
+			nextLoopTime += programOptions.idlePredictionCycle;
+
+		} while (nextLoopTime <= now);
+
+		// go to bed
+		std::this_thread::sleep_until(nextLoopTime);
+	}
+
+
+}
+
+void GliderVarioMainPriv::getAndLockInternalStatusForDebug (
+		GliderVarioStatus **&currentStatus,
+		GliderVarioStatus **&nextStatus,
+		GliderVarioTransitionMatrix *&transitionMatrix,
+		GliderVarioMeasurementVector *&measurementVector
+		) {
+
+	currentStatusLock.lock();
+
+	currentStatus		= &(this->currentStatus);
+	nextStatus			= &(this->nextStatus);
+	transitionMatrix	= &(this->transitionMatrix);
+	measurementVector	= &(this->measurementVector);
+
+}
+
+void GliderVarioMainPriv::idleLoopTreadEntry (GliderVarioMainPriv *vario) {
+	vario->idleLoop();
+}
+
 
 } /* namespace openEV */
 
