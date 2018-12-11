@@ -422,7 +422,6 @@ void IGCReaderDriver::runDebugSingleThread(GliderVarioMainPriv& varioMain) {
 
 	std::chrono::system_clock::time_point startTime = std::chrono::system_clock::now();
 	std::chrono::system_clock::time_point lastUpdateTime = startTime;
-	GliderVarioMainPriv::LockedCurrentStatus currStatus (varioMain);
 	GliderVarioTransitionMatrix transMatrix;
 
 	GliderVarioStatus **currentStatus = 0;
@@ -471,6 +470,8 @@ void IGCReaderDriver::runDebugSingleThread(GliderVarioMainPriv& varioMain) {
 
 
 	}
+
+	varioMain.releaseCurrentStatus();
 
 }
 
