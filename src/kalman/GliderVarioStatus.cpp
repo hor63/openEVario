@@ -163,19 +163,19 @@ void GliderVarioStatus::normalizeStatus() {
     		latitudeOffs -= LEN_LAT_ARC_SEC;
     		latitudeBaseArcSec ++;
     	}
-        lenLongitudeArcSec = LEN_LAT_ARC_SEC * FastMath::fastCos(FloatType(latitudeBaseArcSec/3600.0));
+        lenLongitudeArcSec = LEN_LAT_ARC_SEC * FastMath::fastCos(FloatType(latitudeBaseArcSec/3600.0f));
 
     	longitude(longitudeBak);
     }
-    if (latitudeOffs < LEN_LAT_ARC_SEC) {
+    if (latitudeOffs < -LEN_LAT_ARC_SEC) {
     	// Save the current longitude because the length of an arc second will change with the new latitude
     	double longitudeBak = longitude();
 
-    	while (latitudeOffs < LEN_LAT_ARC_SEC) {
+    	while (latitudeOffs < -LEN_LAT_ARC_SEC) {
     		latitudeOffs += LEN_LAT_ARC_SEC;
     		latitudeBaseArcSec --;
     	}
-        lenLongitudeArcSec = LEN_LAT_ARC_SEC * FastMath::fastCos(FloatType(latitudeBaseArcSec/3600.0));
+        lenLongitudeArcSec = LEN_LAT_ARC_SEC * FastMath::fastCos(FloatType(latitudeBaseArcSec/3600.0f));
 
     	longitude(longitudeBak);
     }
@@ -185,7 +185,7 @@ void GliderVarioStatus::normalizeStatus() {
 		longitudeOffs -= lenLongitudeArcSec;
 		longitudeBaseArcSec ++;
 	}
-	while (longitudeOffs < lenLongitudeArcSec) {
+	while (longitudeOffs < -lenLongitudeArcSec) {
 		longitudeOffs += lenLongitudeArcSec;
 		longitudeBaseArcSec --;
 	}
