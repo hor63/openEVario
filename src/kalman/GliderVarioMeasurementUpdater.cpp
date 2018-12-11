@@ -31,6 +31,28 @@
 #include "util/FastMath.h"
 #include "util/RotationMatrix.h"
 
+#if defined HAVE_LOG4CXX_H
+
+static log4cxx::LoggerPtr logger = 0;
+
+// Helper class to initiate the logger pointer since GliderVarioMeasurementUpdater is a pure static helper class which does not have a constructor.
+class GliderVarioMeasurementUpdaterLogger {
+
+private:
+
+	GliderVarioMeasurementUpdaterLogger() {
+		if (logger == 0) {
+			logger = log4cxx::Logger::getLogger("openEV.Kalman.GliderVarioMeasurementUpdater");
+		}
+	}
+
+	static GliderVarioMeasurementUpdaterLogger theOneAndOnly;
+};
+
+GliderVarioMeasurementUpdaterLogger GliderVarioMeasurementUpdaterLogger::theOneAndOnly;
+
+#endif  // defined HAVE_LOG4CXX_H
+
 namespace openEV {
 
 // This stuff is used only for unit tests.
@@ -72,6 +94,8 @@ GliderVarioMeasurementUpdater::GPSLatitudeUpd (
         measRowTTst1 = measRowT;
     }
 
+    LOG4CXX_DEBUG(logger,"GPSLatitudeUpd: measured latitudeOffset(m) = " <<  measuredLatitude
+    		<< ", calculated latitudeOffset = " << calculatedValue << ", variance = " << latitudeVariance);
 
     calcSingleMeasureUpdate (
             measuredLatitude,
@@ -107,6 +131,9 @@ GliderVarioMeasurementUpdater::GPSLongitudeUpd (
         measRowTTst1 = measRowT;
     }
 
+    LOG4CXX_DEBUG(logger,"GPSLongitudeUpd: measured latitudeOffset(m) = " <<  measuredLongitude
+    		<< ", calculated latitudeOffset = " << calculatedValue << ", variance = " << longitudeVariance);
+
     calcSingleMeasureUpdate (
             measuredLongitude,
             calculatedValue,
@@ -138,6 +165,9 @@ GliderVarioMeasurementUpdater::GPSAltitudeUpd (
         calculatedValueTst1 = calculatedValue;
         measRowTTst1 = measRowT;
     }
+
+    LOG4CXX_DEBUG(logger,"GPSAltitudeUpd: measuredAltitude = " <<  measuredAltitudeMSL
+    		<< ", calculated Altitude = " << calculatedValue << ", variance = " << altitudeVariance);
 
     calcSingleMeasureUpdate (
             measuredAltitudeMSL,
@@ -725,6 +755,12 @@ GliderVarioMeasurementUpdater::staticPressureUpd (
         measRowTTst1 = measRowT;
     }
 
+    LOG4CXX_DEBUG(logger,"staticPressureUpd: measured static pressure = " <<  measuredStaticPressure
+    		<< ", measured temperature = " <<  (measuredTemperature - KtoC)
+    		<< ", calculated pressure = " << p << ", variance = " << staticPressureVariance);
+
+    LOG4CXX_DEBUG(logger,"		QFF derivate = " << pFactor << ", altitude derivate = " << measRowT.coeff(GliderVarioStatus::STATUS_IND_ALT_MSL,0));
+
     calcSingleMeasureUpdate (
             measuredStaticPressure,
             p,
@@ -810,6 +846,9 @@ GliderVarioMeasurementUpdater::calcSingleMeasureUpdate (
     kalmanGain_K = coVariance_P * measRowT;
     kalmanGain_K /= denominator;
 
+    LOG4CXX_DEBUG(logger ,"calcSingleMeasureUpdate: valueDiff = " << valueDiff
+    		<< ", denominator = " << denominator);
+
     // substitute direct assignment by iterating over the sparse kalman gain vector, and perform the correct element wise.
     // Eigen does not take mixing dense and sparse matrixes lightly.
     GliderVarioStatus::StatusComponentIndex index;
@@ -821,6 +860,7 @@ GliderVarioMeasurementUpdater::calcSingleMeasureUpdate (
         kalmanGain *= valueDiff;
         val = statusVector_x(index);
         statusVector_x(index) = val + kalmanGain;
+        LOG4CXX_DEBUG(logger ,"Update " << index << ": previous value = " << val << ", Correction value = " << kalmanGain);
     }
 
     coVariance_P -=  (kalmanGain_K * hTimesP);
