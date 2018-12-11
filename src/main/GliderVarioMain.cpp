@@ -52,4 +52,10 @@ void GliderVarioMain::startup () {
 
 }
 
+void GliderVarioMain::runMainLoop() {
+	priv->startMainLoop();
+}
+
+
 } /* namespace openEV */
+

@@ -44,6 +44,7 @@ int main (int argc, char *argv[]) {
     GliderVarioMain oevMain (argc, (const char**)( argv));
 
     oevMain.startup();
+    oevMain.runMainLoop();
 
     // oevMain.runMainLoop();
 
