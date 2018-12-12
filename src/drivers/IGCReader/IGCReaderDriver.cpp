@@ -194,14 +194,14 @@ void IGCReaderDriver::initializeStatus(
 			varioStatus.groundSpeedEast = 0.0f;
 			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_E,varioStatus.STATUS_IND_SPEED_GROUND_E) = 100.0f;
 			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_E,varioStatus.STATUS_IND_SPEED_GROUND_E) =
-					SQUARE(2.0) * baseIntervalSec;
+					SQUARE(3.0) * baseIntervalSec;
 		}
 
 		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_WIND_SPEED_E,varioStatus.STATUS_IND_WIND_SPEED_E) == 0.0f) {
 			varioStatus.windSpeedEast = 0.0f;
 			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_WIND_SPEED_E,varioStatus.STATUS_IND_WIND_SPEED_E) = 100.0f;
 			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_WIND_SPEED_E,varioStatus.STATUS_IND_WIND_SPEED_E) =
-					SQUARE(3.0) * baseIntervalSec;
+					SQUARE(1.0) * baseIntervalSec;
 		}
 
 		varioStatus.latitude(firstRec->second.latitude);
@@ -214,14 +214,14 @@ void IGCReaderDriver::initializeStatus(
 			varioStatus.groundSpeedNorth = 0.0f;
 			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_N,varioStatus.STATUS_IND_SPEED_GROUND_N) = 100.0f;
 			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_N,varioStatus.STATUS_IND_SPEED_GROUND_N) =
-					SQUARE(2.0) * baseIntervalSec;
+					SQUARE(3.0) * baseIntervalSec;
 		}
 
 		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_WIND_SPEED_N,varioStatus.STATUS_IND_WIND_SPEED_N) == 0.0f) {
 			varioStatus.windSpeedNorth = 0.0f;
 			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_WIND_SPEED_N,varioStatus.STATUS_IND_WIND_SPEED_N) = 100.0f;
 			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_WIND_SPEED_N,varioStatus.STATUS_IND_WIND_SPEED_N) =
-					SQUARE(3.0) * baseIntervalSec;
+					SQUARE(1.0) * baseIntervalSec;
 		}
 
 		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) == 0.0f) {
@@ -249,14 +249,14 @@ void IGCReaderDriver::initializeStatus(
 			varioStatus.heading = 0.0f;
 			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) = 90.0f * 90.0f;
 			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) =
-					SQUARE(10.0) * baseIntervalSec;
+					SQUARE(5.0) * baseIntervalSec;
 		}
 
 		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_ROTATION_Z,varioStatus.STATUS_IND_ROTATION_Z) == 0.0f) {
 			varioStatus.yawRateZ = 0.0f;
 			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ROTATION_Z,varioStatus.STATUS_IND_ROTATION_Z) = 10.0f * 10.0f;
 			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ROTATION_Z,varioStatus.STATUS_IND_ROTATION_Z) =
-					SQUARE(20.0) * baseIntervalSec;
+					SQUARE(5.0) * baseIntervalSec;
 		}
 
 		// calculated factor to calculate the pressure at altGPS with a temperature lapse of 1K/100m

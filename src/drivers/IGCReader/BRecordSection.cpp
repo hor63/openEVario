@@ -166,7 +166,7 @@ void BRecordSectionProcessor::processBRecord (
 		}
 
 		if (accuracyPos >= 0) {
-			bRecord.posAccuracy = double(strToInt(recordString + accuracyPos,accuracyLen));
+			bRecord.posAccuracy = double(strToInt(recordString + accuracyPos,accuracyLen)) + 3; // 3m fudge factor
 		} else {
 			// Use a default appropriate for a GPS receiver in a plane in free view to the sky
 			bRecord.posAccuracy = 2.0;
