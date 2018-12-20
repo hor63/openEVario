@@ -166,7 +166,7 @@ void BRecordSectionProcessor::processBRecord (
 		}
 
 		if (accuracyPos >= 0) {
-			bRecord.posAccuracy = double(strToInt(recordString + accuracyPos,accuracyLen)) + 3; // 3m fudge factor
+			bRecord.posAccuracy = double(strToInt(recordString + accuracyPos,accuracyLen)) + 20.0; // 20m fudge factor.
 		} else {
 			// Use a default appropriate for a GPS receiver in a plane in free view to the sky
 			bRecord.posAccuracy = 2.0;
@@ -176,7 +176,8 @@ void BRecordSectionProcessor::processBRecord (
 			bRecord.altGPSAccuracy = double(strToInt(recordString + vertAccuracyPos,vertAccuracyLen));
 		} else {
 			// By default the vertical accuracy is a lot worse than the horizontal accuracy.
-			bRecord.altGPSAccuracy = bRecord.posAccuracy * 5.0;
+			// However I slap on a hefty fudge factor on the position.
+			bRecord.altGPSAccuracy = bRecord.posAccuracy * 2.0;
 		}
 
 

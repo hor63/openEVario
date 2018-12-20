@@ -131,7 +131,7 @@ GliderVarioMeasurementUpdater::GPSLongitudeUpd (
         measRowTTst1 = measRowT;
     }
 
-    LOG4CXX_DEBUG(logger,"GPSLongitudeUpd: measured latitudeOffset(m) = " <<  measuredLongitude
+    LOG4CXX_DEBUG(logger,"GPSLongitudeUpd: measured longitudeOffset(m) = " <<  measuredLongitude
     		<< ", calculated latitudeOffset = " << calculatedValue << ", variance = " << longitudeVariance);
 
     calcSingleMeasureUpdate (
@@ -848,6 +848,16 @@ GliderVarioMeasurementUpdater::calcSingleMeasureUpdate (
 
     LOG4CXX_DEBUG(logger ,"calcSingleMeasureUpdate: valueDiff = " << valueDiff
     		<< ", denominator = " << denominator);
+#if HAVE_LOG4CXX_H
+
+    if (logger->isDebugEnabled()) {
+    	for (Eigen::SparseMatrix <FloatType>::InnerIterator it(kalmanGain_K,0); it; ++it) {
+    		LOG4CXX_DEBUG(logger ,"    kalmanGain_K[" << GliderVarioStatus::StatusComponentIndex(it.row()) << "] = " << it.value());
+    	}
+    }
+
+#endif // HAVE_LOG4CXX_H
+
 
     // substitute direct assignment by iterating over the sparse kalman gain vector, and perform the correct element wise.
     // Eigen does not take mixing dense and sparse matrixes lightly.

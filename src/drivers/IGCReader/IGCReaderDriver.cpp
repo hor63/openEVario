@@ -186,26 +186,26 @@ void IGCReaderDriver::initializeStatus(
 
 
 		varioStatus.longitude(firstRec->second.longitude);
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_LONGITUDE_OFFS,varioStatus.STATUS_IND_LONGITUDE_OFFS) = 10000.0f;
+		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_LONGITUDE_OFFS,varioStatus.STATUS_IND_LONGITUDE_OFFS) = 1000.0f;
 		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_LONGITUDE_OFFS,varioStatus.STATUS_IND_LONGITUDE_OFFS) =
 				SQUARE(3.0) * baseIntervalSec;
 
 		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_SPEED_GROUND_E,varioStatus.STATUS_IND_SPEED_GROUND_E) == 0.0f) {
 			varioStatus.groundSpeedEast = 0.0f;
-			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_E,varioStatus.STATUS_IND_SPEED_GROUND_E) = 100.0f;
+			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_E,varioStatus.STATUS_IND_SPEED_GROUND_E) = 0.0f;
 			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_E,varioStatus.STATUS_IND_SPEED_GROUND_E) =
-					SQUARE(2.0) * baseIntervalSec;
+					SQUARE(2.5) * baseIntervalSec;
 		}
 
 		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_WIND_SPEED_E,varioStatus.STATUS_IND_WIND_SPEED_E) == 0.0f) {
 			varioStatus.windSpeedEast = 0.0f;
-			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_WIND_SPEED_E,varioStatus.STATUS_IND_WIND_SPEED_E) = 100.0f;
+			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_WIND_SPEED_E,varioStatus.STATUS_IND_WIND_SPEED_E) = 10.0f;
 			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_WIND_SPEED_E,varioStatus.STATUS_IND_WIND_SPEED_E) =
-					SQUARE(1.0) * baseIntervalSec;
+					SQUARE(0.5) * baseIntervalSec;
 		}
 
 		varioStatus.latitude(firstRec->second.latitude);
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_LATITUDE_OFFS,varioStatus.STATUS_IND_LATITUDE_OFFS) = 10000.0f;
+		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_LATITUDE_OFFS,varioStatus.STATUS_IND_LATITUDE_OFFS) = 1000.0f;
 		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_LATITUDE_OFFS,varioStatus.STATUS_IND_LATITUDE_OFFS) =
 				SQUARE(3.0) * baseIntervalSec;
 
@@ -214,47 +214,47 @@ void IGCReaderDriver::initializeStatus(
 			varioStatus.groundSpeedNorth = 0.0f;
 			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_N,varioStatus.STATUS_IND_SPEED_GROUND_N) = 100.0f;
 			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_N,varioStatus.STATUS_IND_SPEED_GROUND_N) =
-					SQUARE(2.0) * baseIntervalSec;
+					SQUARE(2.5) * baseIntervalSec;
 		}
 
 		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_WIND_SPEED_N,varioStatus.STATUS_IND_WIND_SPEED_N) == 0.0f) {
 			varioStatus.windSpeedNorth = 0.0f;
-			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_WIND_SPEED_N,varioStatus.STATUS_IND_WIND_SPEED_N) = 100.0f;
+			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_WIND_SPEED_N,varioStatus.STATUS_IND_WIND_SPEED_N) = 10.0f;
 			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_WIND_SPEED_N,varioStatus.STATUS_IND_WIND_SPEED_N) =
-					SQUARE(1.0) * baseIntervalSec;
+					SQUARE(0.5) * baseIntervalSec;
 		}
 
 		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) == 0.0f) {
 			varioStatus.trueAirSpeed = 0.0f;
-			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) = 100.0f;
+			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) = 10.0f;
 			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) =
 					SQUARE(2.0) * baseIntervalSec;
 		}
 
 		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_ACC_HEADING,varioStatus.STATUS_IND_ACC_HEADING) == 0.0f) {
 			varioStatus.accelHeading = 0.0f;
-			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ACC_HEADING,varioStatus.STATUS_IND_ACC_HEADING) = 4.0f;
+			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ACC_HEADING,varioStatus.STATUS_IND_ACC_HEADING) = 0.0f;
 			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ACC_HEADING,varioStatus.STATUS_IND_ACC_HEADING) =
 					SQUARE(0.5) * baseIntervalSec;
 		}
 
 		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_ACC_CROSS,varioStatus.STATUS_IND_ACC_CROSS) == 0.0f) {
 			varioStatus.accelCross = 0.0f;
-			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ACC_CROSS,varioStatus.STATUS_IND_ACC_CROSS) = 1.0f;
+			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ACC_CROSS,varioStatus.STATUS_IND_ACC_CROSS) = 0.0f;
 			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ACC_CROSS,varioStatus.STATUS_IND_ACC_CROSS) =
 					SQUARE(0.5) * baseIntervalSec;
 		}
 
 		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) == 0.0f) {
-			varioStatus.heading = 0.0f;
-			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) = 90.0f * 90.0f;
+			varioStatus.heading = calcInitialHeading();
+			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) = 10.0f;
 			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) =
 					SQUARE(5.0) * baseIntervalSec;
 		}
 
 		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_ROTATION_Z,varioStatus.STATUS_IND_ROTATION_Z) == 0.0f) {
 			varioStatus.yawRateZ = 0.0f;
-			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ROTATION_Z,varioStatus.STATUS_IND_ROTATION_Z) = 10.0f * 10.0f;
+			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ROTATION_Z,varioStatus.STATUS_IND_ROTATION_Z) = 1.0f;
 			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ROTATION_Z,varioStatus.STATUS_IND_ROTATION_Z) =
 					SQUARE(2.0) * baseIntervalSec;
 		}
@@ -266,7 +266,7 @@ void IGCReaderDriver::initializeStatus(
 		varioStatus.qff = P0StdAtmosphere * factBaroHeight / factAltGPS;
 		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_QFF,varioStatus.STATUS_IND_QFF) = 100.0f;
 		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_QFF,varioStatus.STATUS_IND_QFF) =
-				SQUARE(0.01) * baseIntervalSec; // Veryyyy slow (1mbar / 100sec)
+				SQUARE(0.05) * baseIntervalSec; // Veryyyy slow (5mbar / 100sec)
 
 #undef SQUARE
 
@@ -451,22 +451,27 @@ void IGCReaderDriver::runDebugSingleThread(GliderVarioMainPriv& varioMain) {
 			GliderVarioStatus *tmp = *currentStatus;
 			*currentStatus = *nextStatus;
 			*nextStatus = tmp;
+
 		}
 
 		if (bRecord.gpsIsValid) {
 			double posVariance = bRecord.posAccuracy * bRecord.posAccuracy;
 			GliderVarioMeasurementUpdater::GPSLatitudeUpd(bRecord.latitude,posVariance,*measurementVector,**currentStatus);
+			(*currentStatus)->normalizeStatus();
 			GliderVarioMeasurementUpdater::GPSLongitudeUpd(bRecord.longitude,posVariance,*measurementVector,**currentStatus);
+			(*currentStatus)->normalizeStatus();
 			GliderVarioMeasurementUpdater::GPSAltitudeUpd(bRecord.altGPS,bRecord.altGPSAccuracy*bRecord.altGPSAccuracy,*measurementVector,**currentStatus);
+			(*currentStatus)->normalizeStatus();
 
 		}
 
 		GliderVarioMeasurementUpdater::staticPressureUpd(
 				bRecord.pressure,
 				25.0f-(bRecord.altBaro/100.0f), // Assume I fly at 25 ground temp, and 1°C/100m temperature lapse.
-				0.25f,  // assume about 4m inaccuracy
+				1.5f,  // assume about 10m inaccuracy
 				*measurementVector,
 				**currentStatus);
+		(*currentStatus)->normalizeStatus();
 
 
 	}
@@ -475,4 +480,43 @@ void IGCReaderDriver::runDebugSingleThread(GliderVarioMainPriv& varioMain) {
 
 }
 
-} /* namespace OevGLES */
+FloatType IGCReaderDriver::calcInitialHeading() {
+
+	FloatType rc = 0.0f;
+
+	auto it = bRecords.cbegin();
+
+	if (it != bRecords.cend()) {
+
+		auto prevLatM = it->second.latitude * 3600 * LEN_LAT_ARC_SEC;
+		auto prevLonM = it->second.longitude * 3600 * LEN_LAT_ARC_SEC * FastMath::fastCos(it->second.latitude) ;
+		auto prevDurSec = (std::chrono::duration_cast<std::chrono::duration<double>>(it->second.timeSinceStart)).count();
+
+		for (++it;it != bRecords.cend();++it) {
+			auto latM = it->second.latitude * 3600 * LEN_LAT_ARC_SEC;
+			auto lonM = it->second.longitude * 3600 * LEN_LAT_ARC_SEC * FastMath::fastCos(it->second.latitude);
+			auto diffLonM = lonM - prevLonM;
+			auto diffLatM = latM - prevLatM;
+
+			auto durSec = (std::chrono::duration_cast<std::chrono::duration<double>>(it->second.timeSinceStart)).count();
+
+			auto diffDurSec = durSec - prevDurSec;
+
+			auto speedMperSec = sqrt(diffLatM*diffLatM + diffLonM*diffLonM) / diffDurSec;
+
+			if (speedMperSec > 10.0) {
+				rc = FastMath::fastATan2(diffLonM,diffLatM);
+				break;
+			}
+
+			prevLatM = latM;
+			prevLonM = lonM;
+			prevDurSec = durSec;
+
+		}
+	}
+	return rc;
+
+}
+
+} /* namespace openEV */

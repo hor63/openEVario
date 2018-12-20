@@ -182,6 +182,16 @@ protected:
      *
      */
     void runDebugSingleThread(GliderVarioMainPriv &varioMain);
+
+    /** \brief Determines the initial heading from the first two records where the plane moves > 10m/s
+     *
+     * Determining the initial heading is important to avoid instability of the filter in the inital phase, and locking itself at a 180deg reverse
+     * heading, and moving backwards instead :D
+     *
+     * @return Heading at the first pair of records where the plane moves faster than 10m/s
+     */
+    FloatType calcInitialHeading();
+
 };
 
 } /* namespace openEV */
