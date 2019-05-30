@@ -16,13 +16,13 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-noinst_LTLIBRARIES = libgoogletest.la
+EXTRA_LTLIBRARIES = libgoogletest.la
 libgoogletest_la_SOURCES = gtest-all.cc
 
 gtest-all.cc: $(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc
 	ln -s $(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc gtest-all.cc
 
-bin_PROGRAMS = testOpenEVario$(EXEEXT)
+check_PROGRAMS = testOpenEVario$(EXEEXT)
 testOpenEVario_SOURCES = testOpenEVario.cpp FastMath_test.cpp GliderVarioMeasurementUpdater_test.cpp GliderVarioMeasurementVector_test.cpp \
 	GliderVarioStatus_test.cpp GliderVarioTransitionMatrix_test.cpp MeasureMatrix_test.cpp RotationMatrix_test.cpp
 

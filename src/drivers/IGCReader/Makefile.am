@@ -16,12 +16,12 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-lib_LTLIBRARIES = libopenEVIGCReader.la
+pkglib_LTLIBRARIES = openEVIGCReader.la
 
-libopenEVIGCReader_la_SOURCES=IGCReaderMain.cpp IGCReaderLib.cpp IGCReaderDriver.cpp BRecordSection.cpp
+openEVIGCReader_la_SOURCES=IGCReaderMain.cpp IGCReaderLib.cpp IGCReaderDriver.cpp BRecordSection.cpp
  
-libopenEVIGCReader_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT) $(LOG4CXX_LDFLAGS)
-libopenEVIGCReader_la_LIBADD = ../../main/libopenEVMain.la ../../kalman/libopenEVKalman.la ../../util/libopenEVUtil.la $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
+openEVIGCReader_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT) $(LOG4CXX_LDFLAGS) -module
+openEVIGCReader_la_LIBADD = ../../main/libopenEVMain.la $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
 
 AM_CXXFLAGS = -I../../.. -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen \
 	$(LOG4CXX_CXXFLAGS) \

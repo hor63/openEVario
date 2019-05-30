@@ -227,7 +227,12 @@ AC_SUBST([LOG4CXX_CXXFLAGS])
 
 AC_CONFIG_SUBDIRS([3rdParty/Properties4CXX])
 CPPFLAGS="$CPPFLAGS -I\$(top_srcdir)/3rdParty/Properties4CXX/include"
-LDFLAGS="$LDFLAGS -L\$(top_builddir)/3rdParty/Properties4CXX/src -lProperties4CXX"
+
+# Link libraries only to the main shared library, but not the partial link jobs in util and kalman
+MAIN_LDFLAGS="-L\$(top_builddir)/3rdParty/Properties4CXX/src -lProperties4CXX"
+MAIN_LIBS="-lProperties4CXX"
+AC_SUBST([MAIN_LDFLAGS])
+AC_SUBST([MAIN_LIBS])
 
 
 DX_DOXYGEN_FEATURE(ON)

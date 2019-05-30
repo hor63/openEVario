@@ -15,15 +15,14 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+# Build a static lib only to be linked to the main share lib.
+noinst_LTLIBRARIES = libopenEVKalman.la
 
- 
-lib_LTLIBRARIES=libopenEVKalman.la
-
-libopenEVKalman_la_SOURCES=GliderVarioStatus.cpp GliderVarioTransitionMatrix.cpp MeasureMatrix.cpp \
+libopenEVKalman_la_SOURCES = GliderVarioStatus.cpp GliderVarioTransitionMatrix.cpp MeasureMatrix.cpp \
  GliderVarioMeasurementVector.cpp GliderVarioMeasurementUpdater.cpp
  
-libopenEVKalman_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT) $(LOG4CXX_LDFLAGS)
-libopenEVKalman_la_LIBADD=../util/libopenEVUtil.la $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
+libopenEVKalman_la_LDFLAGS = 
+libopenEVKalman_la_LIBADD = 
 
 libopenEVKalman_la_CXXFLAGS=$(AM_CXXFLAGS) -DBUILDING_OEV_KALMAN=1 $(DLL_VISIBLE_CFLAGS)
 

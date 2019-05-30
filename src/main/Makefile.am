@@ -16,13 +16,14 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
- 
-lib_LTLIBRARIES=libopenEVMain.la
+SUBDIRS = ../util ../kalman
+
+pkglib_LTLIBRARIES=libopenEVMain.la
 
 libopenEVMain_la_SOURCES=GliderVarioMain.cpp GliderVarioMainPriv.cpp GliderVarioDriverList.cpp
  
-libopenEVMain_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT) $(LOG4CXX_LDFLAGS)
-libopenEVMain_la_LIBADD=../kalman/libopenEVKalman.la ../util/libopenEVUtil.la $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
+libopenEVMain_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT) $(MAIN_LDFLAGS) $(LOG4CXX_LDFLAGS)
+libopenEVMain_la_LIBADD=../kalman/libopenEVKalman.la ../util/libopenEVUtil.la $(LOG4CXX_LIBS) $(MAIN_LIBS) $(PTHREAD_LIBS)
 
 libopenEVMain_la_CXXFLAGS=$(AM_CXXFLAGS) -DBUILDING_OEV_MAIN=1 $(DLL_VISIBLE_CFLAGS)
 

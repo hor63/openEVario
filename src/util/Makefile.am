@@ -16,16 +16,16 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-
-lib_LTLIBRARIES=libopenEVUtil.la
+# Build a static lib only to be linked to the main share lib.
+noinst_LTLIBRARIES=libopenEVUtil.la
 
 libopenEVUtil_la_SOURCES=RotationMatrix.cpp FastMath.cpp FastMathSineTable.cpp  GliderVarioDriverBase.cpp GliderVarioDriverLibBase.cpp GliderVarioExceptionBase.cpp
  
-libopenEVUtil_la_LIBADD=$(LOG4CXX_LIBS) $(PTHREAD_LIBS)
-
 libopenEVUtil_la_CXXFLAGS=$(AM_CXXFLAGS) -DBUILDING_OEV_UTILS=1 $(DLL_VISIBLE_CFLAGS)
 
-libopenEVUtil_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT) $(LOG4CXX_LDFLAGS)
+libopenEVUtil_la_LIBADD = 
+
+libopenEVUtil_la_LDFLAGS =
 
 # Build compiler sources are not well supported by autotools. Back to manual
 genSineTables_sources=genSineTables.cpp
