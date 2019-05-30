@@ -47,10 +47,10 @@ TEST_F(GliderVarioStatusTest, InitTest) {
     // verify that all elements of the status vector are initialized to 0 except selected components
     for (int i = 0; i < statusVector.STATUS_NUM_ROWS; i++){
         switch (i) {
-        case statusVector.STATUS_IND_GRAVITY:
+        case GliderVarioStatus::STATUS_IND_GRAVITY:
         EXPECT_EQ (statusVector.getStatusVector_x()(i),::GRAVITY) << "Status vector (STATUS_IND_GRAVITY) is not ::GRAVITY = " << ::GRAVITY;
         break;
-        case statusVector.STATUS_IND_LAST_PRESSURE:
+        case GliderVarioStatus::STATUS_IND_LAST_PRESSURE:
         EXPECT_EQ (statusVector.getStatusVector_x()(i),::pressureStdMSL) << "Status vector (STATUS_IND_LAST_PRESSURE) is not ::pressureStdMSL = " << ::pressureStdMSL;
         break;
         default:
