@@ -22,6 +22,7 @@ libgoogletest_la_SOURCES = gtest-all.cc
 gtest-all.cc: $(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc
 	ln -s $(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc gtest-all.cc
 
+TESTS = ./testOpenEVario$(EXEEXT)
 check_PROGRAMS = testOpenEVario$(EXEEXT)
 testOpenEVario_SOURCES = testOpenEVario.cpp FastMath_test.cpp GliderVarioMeasurementUpdater_test.cpp GliderVarioMeasurementVector_test.cpp \
 	GliderVarioStatus_test.cpp GliderVarioTransitionMatrix_test.cpp MeasureMatrix_test.cpp RotationMatrix_test.cpp

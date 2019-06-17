@@ -24,6 +24,7 @@ install-sh
 ltmain.sh
 missing
 ylwrap
+test-driver
 
 #Generated stuff by configure and make
 Makefile
