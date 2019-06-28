@@ -150,8 +150,7 @@ namespace openEV {
 
 }
 
-/** \brief Macro to define enums, which a facility to directly stream the Enum name, or to retrieve a string
- * Macro to define enums, which a facility to directly stream the Enum name, or to retrieve a string
+/** \brief Macro to define enums, with a facility to directly stream the Enum name, or to retrieve a string
  *
  * The macro requires:
  *
@@ -181,17 +180,14 @@ namespace openEV {
  *
  *       OEV_ENUM ( xx, a=2, b=4, c=5}
  *
- * will return the right representation for values 2, 4, and 5. Any value n between (here 3) will be printed as unknown value.
+ * will return the correct representation for values 2, 4, and 5. Any value in between (here 3) will be printed as unknown value.
  *
  * It implements the enum foo with its members,
- * an output operator
+ * and a function
+ *       std::string getString (enumName en)
+ * within the same visibility and class scope as the enum definition.
  *
- *       ostream& operator << (ostream&,foo)
- *
- *
- * and cast operators
- *
- *       operator std::string (foo)
+ * You may use this function to implement an ostream "<<" output operator.
  *
  */
 
@@ -260,7 +256,7 @@ namespace openEV {
 			std::unordered_map<int,std::string>::iterator it =  enumStrings.find(int(en)); \
 			if (it == enumStrings.end()) { \
 				std::ostringstream os; \
-				os << "<Unknown " #enumName " value" << int(en) << ">"; \
+				os << "<Unknown " #enumName " value <" << int(en) << ">"; \
 				return os.str(); \
 			} \
 			 \
