@@ -280,19 +280,5 @@ typedef std::shared_ptr<openEV::GliderVarioDriverBase> GliderVarioDriverBasePtr;
 
 OEV_UTILS_PUBLIC std::ostream& operator << (std::ostream &o,openEV::GliderVarioDriverBase::SensorCapability ind);
 
-
-#if defined HAVE_LOG4CXX_H
-OEV_UTILS_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioDriverBase::_SensorCapability e);
-#endif /* #if defined HAVE_LOG4CXX_H */
-
-inline openEV::GliderVarioDriverBase::_SensorCapability toString (openEV::GliderVarioDriverBase::SensorCapability i) {
-	openEV::GliderVarioDriverBase::_SensorCapability r = {i};
-	return r;
-}
-
-inline std::ostream& operator << (std::ostream &o, openEV::GliderVarioDriverBase::_SensorCapability e) {
-	return operator << (o,e.e);
-}
-
 #endif /* GLIDERVARIODRIVERBASE_H_ */
 

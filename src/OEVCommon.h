@@ -263,12 +263,6 @@ namespace openEV {
 			return it->second; \
 		} \
 	};  \
-	static enumName##HelperClass enumName##HelperObj; \
-	struct _##enumName {enumName e;}; \
-	static struct _##enumName print##enumName (enumName e) { \
-		struct _##enumName r {e}; \
-		return r; \
-	}
-
+	static enumName##HelperClass enumName##HelperObj;
 
 #endif /* OEVCOMMON_H_ */

@@ -321,11 +321,6 @@ std::ostream& operator << (std::ostream &o,openEV::GliderVarioStatus::StatusComp
 }
 
 #if defined HAVE_LOG4CXX_H
-std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioStatus::_StatusComponentIndex e) {
-	std::ostream &o = b;
-	return operator << (o,e.e);
-}
-
 OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioStatus& s) {
 	std::ostream &o = b;
 	return operator << (o,s);
@@ -342,7 +337,6 @@ OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, op
 	std::ostream &o = b;
 	return operator << (o,ind);
 }
-
 #endif /* #if defined HAVE_LOG4CXX_H */
 
 

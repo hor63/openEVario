@@ -26,7 +26,6 @@
  *
  */
 
-
 #ifndef GLIDERVARIOSTATUS_H_
 #define GLIDERVARIOSTATUS_H_
 
@@ -140,7 +139,6 @@ static inline double altToPressureStdTemp (double altitude,double temperatureLap
 	return  (P0StdAtmosphere * pow(1 - ((temperatureLapse * altitude ) / T0),exp));
 
 }
-
 
 /**
  *  \class GliderVarioStatus
@@ -407,7 +405,6 @@ public:
     	return lenLongitudeArcSec;
     }
 
-
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 protected:
@@ -443,8 +440,6 @@ protected:
      */
     FloatType lenLongitudeArcSec = LEN_LAT_ARC_SEC ;
 
-
-
 };
 
 } // namespace openEV
@@ -460,17 +455,6 @@ OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, op
 OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioStatus::StatusCoVarianceType &co);
 OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioStatus::StatusComponentIndex ind);
 
-OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioStatus::_StatusComponentIndex e);
 #endif /* #if defined HAVE_LOG4CXX_H */
-
-inline openEV::GliderVarioStatus::_StatusComponentIndex toString (openEV::GliderVarioStatus::StatusComponentIndex i) {
-	openEV::GliderVarioStatus::_StatusComponentIndex r = {i};
-	return r;
-}
-
-inline  std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus::_StatusComponentIndex e) {
-	return operator << (o,e.e);
-}
-
 
 #endif /* GLIDERVARIOSTATUS_H_ */
