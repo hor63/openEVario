@@ -105,6 +105,28 @@ public:
 
 };
 
+class OEV_UTILS_PUBLIC GliderVarioPortException :public GliderVarioExceptionBase {
+public:
+	GliderVarioPortException (
+			char const *source,
+			int line,
+			char const *description)
+		:GliderVarioExceptionBase {source,line,description}
+	{}
+
+};
+
+class OEV_UTILS_PUBLIC GliderVarioPortConfigException :public GliderVarioPortException {
+public:
+	GliderVarioPortConfigException (
+			char const *source,
+			int line,
+			char const *description)
+		:GliderVarioPortException {source,line,description}
+	{}
+
+};
+
 
 
 

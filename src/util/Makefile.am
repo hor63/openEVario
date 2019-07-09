@@ -16,10 +16,12 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-# Build a static lib only to be linked to the main share lib.
+# Build a static lib only to be linked to the main shared lib.
 noinst_LTLIBRARIES=libopenEVUtil.la
 
-libopenEVUtil_la_SOURCES=RotationMatrix.cpp FastMath.cpp FastMathSineTable.cpp  GliderVarioDriverBase.cpp GliderVarioDriverLibBase.cpp GliderVarioExceptionBase.cpp
+libopenEVUtil_la_SOURCES=RotationMatrix.cpp FastMath.cpp FastMathSineTable.cpp \
+	GliderVarioDriverBase.cpp GliderVarioDriverLibBase.cpp \
+	GliderVarioExceptionBase.cpp PortBase.cpp
  
 libopenEVUtil_la_CXXFLAGS=$(AM_CXXFLAGS) -DBUILDING_OEV_UTILS=1 $(DLL_VISIBLE_CFLAGS)
 

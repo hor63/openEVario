@@ -27,9 +27,6 @@
 #  include <config.h>
 #endif
 
-#include <GliderVarioMain.h>
-#include <main/GliderVarioMainPriv.h>
-
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -52,6 +49,10 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
+
+#include "GliderVarioMain.h"
+#include "main/GliderVarioMainPriv.h"
+#include "util/PortBase.h"
 
 #if defined HAVE_LOG4CXX_H
 static log4cxx::LoggerPtr logger = 0;
@@ -393,6 +394,9 @@ void GliderVarioMainPriv::startup () {
 
 	// Read the configuration into memory and read out the global configuration properties.
 	readConfiguration();
+
+	// Read the port configuration and create and load the ports
+	io::PortBase::loadPorts(configuration);
 
 	// Read the driver shared libraries, open them and initialize the driver libraries
 	// Register the drivers implemented by the libraries
