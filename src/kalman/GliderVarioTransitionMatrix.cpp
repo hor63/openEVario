@@ -136,7 +136,7 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
     FloatType timeSquareHalf  = timeDiff*timeDiff / 2.0f;
 
     // I am using a number of temporary variables to store factors used for new status calculation, and to store in the transition matrix.
-    register FloatType temp1, temp2, temp3, temp4, temp5;
+    FloatType temp1, temp2, temp3, temp4, temp5;
 
     // First copy the coordinate bases and conversion of longitude sec to m to the new status
     newStatus.latitudeBaseArcSec = lastStatus.latitudeBaseArcSec;
