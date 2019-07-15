@@ -40,10 +40,7 @@ namespace openEV {
  */
 class OEV_PUBLIC GliderVarioMeasurementVector {
 public:
-    GliderVarioMeasurementVector() {
-        measureVector.setZero();
-
-    }
+    GliderVarioMeasurementVector();
     virtual ~GliderVarioMeasurementVector();
 
 #if defined DOXYGEN
@@ -88,31 +85,35 @@ public:
     typedef Eigen::Matrix<FloatType,MEASURE_NUM_ROWS,1> MeasureVectorType;
     typedef Eigen::Matrix<FloatType,MEASURE_NUM_ROWS,MEASURE_NUM_ROWS> MeasureCovarianceType;
 
+protected:
+        MeasureVectorType measureVector; ///< holder of the vector
+
+public:
     // Here come all measurement components as references into the matrix
-    FloatType &gpsLatitude = measureVector [MEASURE_IND_GPS_LAT]; ///< Latitude in arc seconds
-    FloatType &gpsLongitude = measureVector [MEASURE_IND_GPS_LON]; ///< Longitude in arc seconds
-    FloatType &gpsMSL = measureVector [MEASURE_IND_GPS_ALT_MSL]; ///< Altitude MSL in m
-    FloatType &gpsHeading = measureVector [MEASURE_IND_GPS_HEADING]; ///< Heading in Deg
-    FloatType &gpsSpeed = measureVector [MEASURE_IND_GPS_SPEED]; ///< Speed in m/s
+    FloatType &gpsLatitude; ///< Latitude in arc seconds
+    FloatType &gpsLongitude; ///< Longitude in arc seconds
+    FloatType &gpsMSL; ///< Altitude MSL in m
+    FloatType &gpsHeading; ///< Heading in Deg
+    FloatType &gpsSpeed; ///< Speed in m/s
 
     // Accelerometer
-    FloatType &accelX = measureVector [MEASURE_IND_ACC_X]; ///< Acceleration along the X axis in m/s^2
-    FloatType &accelY = measureVector [MEASURE_IND_ACC_Y]; ///< Acceleration along the Y axis in m/s^2
-    FloatType &accelZ = measureVector [MEASURE_IND_ACC_Z]; ///< Acceleration along the Z axis in m/s^2
+    FloatType &accelX; ///< Acceleration along the X axis in m/s^2
+    FloatType &accelY; ///< Acceleration along the Y axis in m/s^2
+    FloatType &accelZ; ///< Acceleration along the Z axis in m/s^2
 
     // Gyro
-    FloatType &gyroRateX = measureVector [MEASURE_IND_GYRO_RATE_X]; ///< Turn rate around the X axis in Deg/s
-    FloatType &gyroRateY = measureVector [MEASURE_IND_GYRO_RATE_Y]; ///< Turn rate around the Y axis in Deg/s
-    FloatType &gyroRateZ = measureVector [MEASURE_IND_GYRO_RATE_Z]; ///< Turn rate around the Z axis in Deg/s
+    FloatType &gyroRateX; ///< Turn rate around the X axis in Deg/s
+    FloatType &gyroRateY; ///< Turn rate around the Y axis in Deg/s
+    FloatType &gyroRateZ; ///< Turn rate around the Z axis in Deg/s
 
     // Magnetometer
-    FloatType &magX = measureVector [MEASURE_IND_MAG_X]; ///< magnetic field strength along X axis in uT (absolute strength is irrelevant, only used to determine attitude)
-    FloatType &magY = measureVector [MEASURE_IND_MAG_Y]; ///< magnetic field strength along Y axis in uT (absolute strength is irrelevant, only used to determine attitude)
-    FloatType &magZ = measureVector [MEASURE_IND_MAG_Z]; ///< magnetic field strength along Z axis in uT (absolute strength is irrelevant, only used to determine attitude)
+    FloatType &magX; ///< magnetic field strength along X axis in uT (absolute strength is irrelevant, only used to determine attitude)
+    FloatType &magY; ///< magnetic field strength along Y axis in uT (absolute strength is irrelevant, only used to determine attitude)
+    FloatType &magZ; ///< magnetic field strength along Z axis in uT (absolute strength is irrelevant, only used to determine attitude)
 
     // Air pressure values (converted because raw values are highly non-linear to speed and altitude
-    FloatType &staticPressure = measureVector [MEASURE_IND_STATIC_PRESSURE]; ///< static pressure in Pascal
-    FloatType &dynamicPressure = measureVector [MEASURE_IND_DYNAMIC_PRESSURE];       ///< True air speed (based on difference pressure and air density based on absolute pressure) in m/s
+    FloatType &staticPressure; ///< static pressure in Pascal
+    FloatType &dynamicPressure;       ///< True air speed (based on difference pressure and air density based on absolute pressure) in m/s
 
     /**
      *
@@ -147,7 +148,6 @@ public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 protected:
-    MeasureVectorType measureVector; ///< holder of the vector
     MeasureVectorType measureError; ///< I am not using a measurement covariance matrix here as in classic Kalman theory.
     ///< The error variances are supposed to be independent, i.e. a matrix would be diagonal.
     ///< In addition I am using the sequential measurement method according to

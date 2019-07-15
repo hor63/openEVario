@@ -34,6 +34,37 @@ namespace openEV {
 
 GliderVarioMeasurementVector::MeasureComponentIndexHelperClass GliderVarioMeasurementVector::MeasureComponentIndexHelperObj;
 
+GliderVarioMeasurementVector::GliderVarioMeasurementVector() :
+		measureVector {MeasureVectorType::Zero()},
+	    // All measurement components as references into the matrix
+	    gpsLatitude {measureVector [MEASURE_IND_GPS_LAT]},
+	    gpsLongitude {measureVector [MEASURE_IND_GPS_LON]},
+	    gpsMSL {measureVector [MEASURE_IND_GPS_ALT_MSL]},
+	    gpsHeading {measureVector [MEASURE_IND_GPS_HEADING]},
+	    gpsSpeed {measureVector [MEASURE_IND_GPS_SPEED]},
+
+	    // Accelerometer
+	    accelX {measureVector [MEASURE_IND_ACC_X]},
+	    accelY {measureVector [MEASURE_IND_ACC_Y]},
+	    accelZ {measureVector [MEASURE_IND_ACC_Z]},
+
+	    // Gyro
+	    gyroRateX {measureVector [MEASURE_IND_GYRO_RATE_X]},
+	    gyroRateY {measureVector [MEASURE_IND_GYRO_RATE_Y]},
+	    gyroRateZ {measureVector [MEASURE_IND_GYRO_RATE_Z]},
+
+	    // Magnetometer
+	    magX {measureVector [MEASURE_IND_MAG_X]},
+	    magY {measureVector [MEASURE_IND_MAG_Y]},
+	    magZ {measureVector [MEASURE_IND_MAG_Z]},
+
+	    // Air pressure values (converted because raw values are highly non-linear to speed and altitude
+	    staticPressure {measureVector [MEASURE_IND_STATIC_PRESSURE]},
+	    dynamicPressure {measureVector [MEASURE_IND_DYNAMIC_PRESSURE]}
+{
+	measureError.setZero();
+}
+
 GliderVarioMeasurementVector::~GliderVarioMeasurementVector() {
 
 }

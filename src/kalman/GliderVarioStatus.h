@@ -232,6 +232,10 @@ public:
     typedef Eigen::Matrix<FloatType,STATUS_NUM_ROWS,1> StatusVectorType; ///< Saves typing of the complex template type
     typedef Eigen::SparseMatrix<FloatType> StatusCoVarianceType; ///< Co-variance matrix type for P and Q
 
+protected:
+        StatusVectorType     statusVector_x;
+
+public:
     GliderVarioStatus ();
     virtual
     ~GliderVarioStatus ();
@@ -408,12 +412,11 @@ public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 protected:
-    StatusVectorType     statusVector_x;
     StatusCoVarianceType systemNoiseCovariance_Q;
     StatusCoVarianceType errorCovariance_P;
 
-    FloatType& longitudeOffs	= statusVector_x[ STATUS_IND_LONGITUDE_OFFS	];  ///< Latitude offset in meter North of \ref latitudeBaseArcSec
-    FloatType& latitudeOffs	= statusVector_x[ STATUS_IND_LATITUDE_OFFS  	];  ///< Longitude offset in meter East of \ref latitudeBaseArcSec
+    FloatType& longitudeOffs;  ///< Latitude offset in meter North of \ref latitudeBaseArcSec
+    FloatType& latitudeOffs;  ///< Longitude offset in meter East of \ref latitudeBaseArcSec
 
     /** \brief Base value of the latitude in arc sec
      *

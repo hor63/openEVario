@@ -39,11 +39,59 @@ FloatType MAG_INCLINATION = -67.0f;
 
 GliderVarioStatus::StatusComponentIndexHelperClass GliderVarioStatus::StatusComponentIndexHelperObj;
 
-GliderVarioStatus::GliderVarioStatus ()
-:systemNoiseCovariance_Q{STATUS_NUM_ROWS,STATUS_NUM_ROWS},
- errorCovariance_P{STATUS_NUM_ROWS,STATUS_NUM_ROWS}
+GliderVarioStatus::GliderVarioStatus () :
+		statusVector_x{StatusVectorType::Zero()},
+		systemNoiseCovariance_Q{STATUS_NUM_ROWS,STATUS_NUM_ROWS},
+		errorCovariance_P{STATUS_NUM_ROWS,STATUS_NUM_ROWS},
+
+	    // All state vector elements as single references into the vector for easier access
+	    /// Constants
+	    gravity {statusVector_x ( STATUS_IND_GRAVITY )},
+
+	    /// Position and altitude
+	    longitudeOffsC {statusVector_x[ STATUS_IND_LONGITUDE_OFFS]},
+	    latitudeOffsC {statusVector_x[ STATUS_IND_LATITUDE_OFFS]},
+	    altMSL {statusVector_x[ STATUS_IND_ALT_MSL]},
+
+	    /// Attitude of the body to the world coordinate system
+	    heading {statusVector_x[ STATUS_IND_HEADING]},
+	    pitchAngle {statusVector_x[ STATUS_IND_PITCH]},
+	    rollAngle {statusVector_x[ STATUS_IND_ROLL]},
+
+	    /// Speeds
+	    groundSpeedNorth {statusVector_x[ STATUS_IND_SPEED_GROUND_N]},
+	    groundSpeedEast {statusVector_x[ STATUS_IND_SPEED_GROUND_E]},
+	    trueAirSpeed {statusVector_x[ STATUS_IND_TAS]},
+	    rateOfSink {statusVector_x[ STATUS_IND_RATE_OF_SINK]},
+	    verticalSpeed {statusVector_x[ STATUS_IND_VERTICAL_SPEED]},
+	    thermalSpeed {statusVector_x[ STATUS_IND_THERMAL_SPEED]},
+
+	    /// Accelerations in reference to the body (plane) coordinate system.
+	    accelHeading {statusVector_x[ STATUS_IND_ACC_HEADING]},
+	    accelCross {statusVector_x[ STATUS_IND_ACC_CROSS]},
+	    accelVertical {statusVector_x[ STATUS_IND_ACC_VERTICAL]},
+
+	    /// Turn rates in reference to the body (plane) coordinate system
+	    rollRateX {statusVector_x[ STATUS_IND_ROTATION_X]},
+	    pitchRateY {statusVector_x[ STATUS_IND_ROTATION_Y]},
+	    yawRateZ {statusVector_x[ STATUS_IND_ROTATION_Z]},
+
+	    /// Derived values which improve the responsiveness of the Kalman filter. Some are also the true goals of the filter
+	    gyroBiasX {statusVector_x[ STATUS_IND_GYRO_BIAS_X]},
+	    gyroBiasY {statusVector_x[ STATUS_IND_GYRO_BIAS_Y]},
+	    gyroBiasZ {statusVector_x[ STATUS_IND_GYRO_BIAS_Z]},
+	    magneticDeclination {statusVector_x [ STATUS_IND_MAGNETIC_DECLINATION]},
+	    magneticInclination {statusVector_x [ STATUS_IND_MAGNETIC_INCLINATION]},
+	    compassDeviationX {statusVector_x [ STATUS_IND_COMPASS_DEVIATION_X]},
+	    compassDeviationY {statusVector_x [ STATUS_IND_COMPASS_DEVIATION_Y]},
+	    compassDeviationZ {statusVector_x [ STATUS_IND_COMPASS_DEVIATION_Z]},
+	    windSpeedNorth {statusVector_x[ STATUS_IND_WIND_SPEED_N]},
+	    windSpeedEast  {statusVector_x[ STATUS_IND_WIND_SPEED_E]},
+	    qff {statusVector_x[ STATUS_IND_QFF]},
+	    lastPressure {statusVector_x[ STATUS_IND_LAST_PRESSURE]},
+	    longitudeOffs {statusVector_x[ STATUS_IND_LONGITUDE_OFFS]},
+	    latitudeOffs {statusVector_x[ STATUS_IND_LATITUDE_OFFS]}
 {
-    statusVector_x.setZero();
 
     // Changed to sparse matrixes which start empty by default
     // they are initialized to their dimensions in the initialization section of the constructor
