@@ -16,3 +16,6 @@
 [submodule "3rdParty/Properties4CXX"]
 	path = 3rdParty/Properties4CXX
 	url = https://github.com/hor63/Properties4CXX.git
+[submodule "3rdParty/horOvIp-I2C-Bridge"]
+	path = 3rdParty/horOvIp-I2C-Bridge
+	url = https://github.com/hor63/horOvIp-I2C-Bridge.git
