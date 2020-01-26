@@ -26,7 +26,10 @@
 #  include <config.h>
 #endif
 
-#include "PortBase.h"
+#include <sstream>
+#include <cstring>
+
+#include "util/io/PortBase.h"
 
 
 #if defined HAVE_LOG4CXX_H
@@ -44,14 +47,20 @@ static inline void initLogger() {
 namespace openEV {
 namespace io {
 
+static std::string const DevicePropertyName = "device";
+static std::string const BlockingPropertyName = "blocking";
+
+PortBase::StatusEnumHelperClass PortBase::StatusEnumHelperObj;
 PortBase::PortTypeMap PortBase::typeMap;
 PortBase::PortMap PortBase::portMap;
 
 PortBase::PortBase(
 		char const* portName,
 		char const* portType
-		)
-:portName{portName}
+		) :
+	portName{portName},
+	portType{portType},
+	deviceName{portName} // set deviceName by default to portName.
 {
 #if defined HAVE_LOG4CXX_H
 	initLogger();
@@ -85,55 +94,76 @@ void PortBase::addPortType (const char* portType, PortConstructor portConstruct)
 	}
 }
 
-void PortBase::addPort (PortBase& port) {
+void PortBase::addPort (PortBasePtr port) {
 
 #if defined HAVE_LOG4CXX_H
 	initLogger();
 #endif /* HAVE_LOG4CXX_H */
 
 	LOG4CXX_INFO(logger,__PRETTY_FUNCTION__
-			<< "(portName=" << port.portName
-			<< ", portType=" << port.portType << ')');
+			<< "(portName=" << port->portName
+			<< ", portType=" << port->portType << ')');
 
-	auto rc = portMap.emplace(port.portName,&port);
+	auto rc = portMap.emplace(port->portName,port);
 	if (!rc.second) {
 		std::ostringstream os;
-		os << "Port '" << port.portName << "' is defined more than once";
+		os << "Port '" << port->portName << "' is defined more than once";
 		LOG4CXX_ERROR(logger,os.str());
-		throw GliderVarioPortException (__FILE__,__LINE__,os.str().c_str());
+		throw GliderVarioPortConfigException (__FILE__,__LINE__,os.str().c_str());
 	}
 }
 
-void PortBase::loadSinglePort (Properties4CXX::Property const &property) {
+void PortBase::loadSinglePort (
+		Properties4CXX::Properties const &globalProperties,
+		Properties4CXX::Property const &portProperty) {
 
-	LOG4CXX_INFO(logger,"Load port '" << property.getPropertyName() << '\'');
+	PortBase* newPort = nullptr;
+	LOG4CXX_INFO(logger,"Load port '" << portProperty.getPropertyName() << '\'');
 
-	if (property.isStruct()) {
+	if (portProperty.isStruct()) {
+		Properties4CXX::Properties const &portStruct = portProperty.getPropertiesStructure();
 		try {
-			Properties4CXX::Properties const &portStruct = property.getPropertiesStructure();
 			Properties4CXX::Property const *typeProp = portStruct.searchProperty("type");
 
 			// look up the port type
 			auto portTypeIter = typeMap.find(typeProp->getStringValue());
 			if (portTypeIter == typeMap.end()) {
-				LOG4CXX_ERROR(logger,"Type '" << typeProp->getStringValue() << "' of port '" << property.getPropertyName()
+				LOG4CXX_ERROR(logger,"Type '" << typeProp->getStringValue() << "' of port '" << portProperty.getPropertyName()
 						<< "' does not exist.");
-				LOG4CXX_ERROR(logger,"  Port '" << property.getPropertyName() << "' will not be created.");
+				LOG4CXX_ERROR(logger,"  Port '" << portProperty.getPropertyName() << "' will not be created.");
 			} else { // if (portTypeIter == typeMap.end())
 				PortConstructor portConstructor = portTypeIter->second;
-				portConstructor(property.getStrValue(),portStruct);
+				newPort = portConstructor(portProperty.getStrValue(),portStruct);
 			} // if (portTypeIter == typeMap.end())
 
 		} catch (Properties4CXX::ExceptionPropertyNotFound const &) {
-			LOG4CXX_ERROR(logger,"Port '" << property.getPropertyName() << "' has no 'type' property.");
-			LOG4CXX_ERROR(logger,"  Port '" << property.getPropertyName() << "' will not be created.");
+			LOG4CXX_ERROR(logger,"Port '" << portProperty.getPropertyName() << "' has no 'type' property.");
+			LOG4CXX_ERROR(logger,"  Port '" << portProperty.getPropertyName() << "' will not be created.");
 		}
 	} else { // if (property.isStruct())
-		LOG4CXX_ERROR(logger,"Port configuration '" << property.getPropertyName() << "' is not a structure.");
-		LOG4CXX_ERROR(logger,"  Port '" << property.getPropertyName() << "' will not be created.");
+		LOG4CXX_ERROR(logger,"Port configuration '" << portProperty.getPropertyName() << "' is not a structure.");
+		LOG4CXX_ERROR(logger,"  Port '" << portProperty.getPropertyName() << "' will not be created.");
 	} //if (property.isStruct())
 
+	if (newPort) {
+		// The port was created.
+		PortBasePtr portPtr (newPort);
+		Properties4CXX::Properties const &portStruct = portProperty.getPropertiesStructure();
+
+		// Configure the port
+		// If an exception is thrown here, no worries.
+		// The shared pointer object portPtr will take care of deleting the dangling port object.
+		portPtr->configurePort(globalProperties,portStruct);
+
+		// Add it to the list of ports.
+		addPort (portPtr);
+
+		// Load default properties
+		newPort->deviceName = portStruct.getPropertyValue(DevicePropertyName,newPort->getPortName().c_str());
+		newPort->blocking = portStruct.getPropertyValue(BlockingPropertyName,true);
+	}
 }
+
 void PortBase::loadPorts(Properties4CXX::Properties const &properties) {
 
 #if defined HAVE_LOG4CXX_H
@@ -146,9 +176,15 @@ void PortBase::loadPorts(Properties4CXX::Properties const &properties) {
 			Properties4CXX::Properties const &portList = ioPorts->getPropertiesStructure();
 			auto portPropIter = portList.getFirstProperty();
 			while (portPropIter != portList.getListEnd()) {
-				Properties4CXX::Property const &portProp = portList.getPropertyFromIterator(portPropIter);
-				loadSinglePort(portProp);
-
+				try {
+					Properties4CXX::Property const &portProp = portList.getPropertyFromIterator(portPropIter);
+					loadSinglePort(properties,portProp);
+				} catch (GliderVarioPortConfigException const& e) {
+					LOG4CXX_ERROR (logger, "Exception when loading port "
+							<< portPropIter->second->getPropertyName()
+							<< " in source " << e.getSource() << " at line " << e.getLine()
+							<< ": " << e.getDescription());
+				}
 				portPropIter++;
 			}
 		} else {
@@ -159,6 +195,57 @@ void PortBase::loadPorts(Properties4CXX::Properties const &properties) {
 	}
 
 }
+
+void PortBase::open() {
+
+	devHandleMutex.lock();
+
+	deviceHandle = ::open(portName.c_str(),deviceOpenFlags);
+	status = OPEN;
+
+	if (deviceHandle == -1) {
+		int err = errno;
+		std::ostringstream str;
+
+		str << "Port" << portName << ':' << portType << ": Cannot open device \"" << portName << "\"";
+		LOG4CXX_ERROR(logger,"Port" << portName << ':' << portType << ": Opening \"" << portName << "\" failed. errno = " << err << ": " << strerror(err));
+
+		if (err == ENOENT) {
+			status = ERR_NO_DEVICE;
+			devHandleMutex.unlock();
+			throw GliderVarioPortDontExistException (__FILE__,__LINE__,str.str().c_str(),err);
+		} else { // if (err == ENOENT)
+			status = ERR_IO_TEMP;
+			devHandleMutex.unlock();
+			throw GliderVarioPortDontExistException (__FILE__,__LINE__,str.str().c_str(),err);
+		}
+	}
+
+	LOG4CXX_INFO(logger,"Port" << portName << ':' << portType << ": Opened port device \"" << portName << "\"");
+
+	devHandleMutex.unlock();
+}
+
+void PortBase::close() noexcept {
+	devHandleMutex.lock();
+	if (deviceHandle > 0) {
+		::close(deviceHandle);
+	}
+	status = CLOSED;
+	deviceHandle = 0;
+
+	LOG4CXX_INFO(logger,"Port" << portName << ':' << portType << ": Closed port device \"" << portName << "\"");
+
+	devHandleMutex.unlock();
+}
+
+void PortBase::recoverError() {
+	try {
+		close();
+	} catch (...) {}
+	open();
+}
+
 
 
 } /* namespace io */

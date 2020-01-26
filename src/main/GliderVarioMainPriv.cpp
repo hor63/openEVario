@@ -52,7 +52,7 @@
 
 #include "GliderVarioMain.h"
 #include "main/GliderVarioMainPriv.h"
-#include "util/PortBase.h"
+#include "util/io/PortBase.h"
 
 #if defined HAVE_LOG4CXX_H
 static log4cxx::LoggerPtr logger = 0;

@@ -29,6 +29,9 @@
 #include <exception>
 #include <string>
 
+#include <cerrno>
+#include <cstring>
+
 #include "OEVCommon.h"
 
 
@@ -105,6 +108,8 @@ public:
 
 };
 
+namespace io {
+
 class OEV_UTILS_PUBLIC GliderVarioPortException :public GliderVarioExceptionBase {
 public:
 	GliderVarioPortException (
@@ -127,6 +132,123 @@ public:
 
 };
 
+class OEV_UTILS_PUBLIC GliderVarioPortIOException :public GliderVarioPortException {
+public:
+	/**
+	 * \brief Extended constructor storing the system error code of the failed IO operation
+	 *
+	 * @param source Source file; usually __FILE__
+	 * @param line source line number; usually __LINE__
+	 * @param description Descriptive text of the error causing the exception
+	 * @param errNo System error number obtained by [errno](https://en.cppreference.com/w/cpp/error/errno)
+	 * 		If the parameter is omitted or the default value is passed the constructor retrieves the latest error code from
+	 * 		[errno](https://en.cppreference.com/w/cpp/error/errno) itself.
+	 *
+	 * \see [errno](https://en.cppreference.com/w/cpp/error/errno)
+	 */
+	GliderVarioPortIOException (
+			char const *source,
+			int line,
+			char const *description,
+			int errNo = -1)
+		:GliderVarioPortException {source,line,description},
+		 errNo {errNo}
+	{
+		if (this->errNo == -1) {
+			this->errNo = errno;
+		}
+		errStr = std::strerror(errNo);
+	}
+
+	/** \brief Return the system error code causing this exception.
+	 *
+	 * @return System error code causing this exception
+	 * \see [errno](https://en.cppreference.com/w/cpp/error/errno)
+	 */
+	int getErrno() const {
+		return errNo;
+	}
+
+	/** \brief Obtain the string of the error code \ref errno.
+	 *
+	 * @return System error string
+	 *
+	 * \see [strerror()](https://en.cppreference.com/w/cpp/string/byte/strerror)
+	 */
+	std::string const &getErrStr() const {
+		return errStr;
+	}
+protected:
+	/** \brief errno causing the I/O error
+	 *
+	 *  \see \ref getErrno()
+	 * \see [errno](https://en.cppreference.com/w/cpp/error/errno)
+	 */
+	int errNo;
+
+	/** \brief Systen error string of the I/O error
+	 *
+	 * \see \ref getErrStr()
+	 * \see [strerror()](https://en.cppreference.com/w/cpp/string/byte/strerror)
+	 */
+	std::string errStr;
+
+};
+
+
+class OEV_UTILS_PUBLIC GliderVarioPortOpenException :public GliderVarioPortIOException {
+public:
+	/// \see GliderVarioPortIOException::GliderVarioPortIOException()
+	GliderVarioPortOpenException (
+			char const *source,
+			int line,
+			char const *description,
+			int errNo = -1)
+		:GliderVarioPortIOException {source,line,description,errNo}
+	{}
+
+};
+
+class OEV_UTILS_PUBLIC GliderVarioPortDontExistException :public GliderVarioPortIOException {
+public:
+	/// \see GliderVarioPortIOException::GliderVarioPortIOException()
+	GliderVarioPortDontExistException (
+			char const *source,
+			int line,
+			char const *description,
+			int errNo = -1)
+		:GliderVarioPortIOException {source,line,description,errNo}
+	{}
+
+};
+
+class OEV_UTILS_PUBLIC GliderVarioPortReadException :public GliderVarioPortIOException {
+public:
+	/// \see GliderVarioPortIOException::GliderVarioPortIOException()
+	GliderVarioPortReadException (
+			char const *source,
+			int line,
+			char const *description,
+			int errNo = -1)
+		:GliderVarioPortIOException {source,line,description,errNo}
+	{}
+
+};
+
+class OEV_UTILS_PUBLIC GliderVarioPortWriteException :public GliderVarioPortIOException {
+public:
+	/// \see GliderVarioPortIOException::GliderVarioPortIOException()
+	GliderVarioPortWriteException (
+			char const *source,
+			int line,
+			char const *description,
+			int errNo = -1)
+		:GliderVarioPortIOException {source,line,description,errNo}
+	{}
+
+};
+
+} // namespace io
 
 
 
