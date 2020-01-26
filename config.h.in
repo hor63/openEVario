@@ -19,6 +19,15 @@
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 
+/* Define to 1 if the function getaddrinfo is available. */
+#undef HAVE_GETADDRINFO
+
+/* Define to 1 if the function gethostbyname is available. */
+#undef HAVE_GETHOSTBYNAME
+
+/* Define to 1 if the function gethostbyname_r is available. */
+#undef HAVE_GETHOSTBYNAME_R
+
 /* Define to 1 if the function getopt is available. */
 #undef HAVE_GETOPT
 
@@ -47,6 +56,9 @@
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
 
+/* Define to 1 if you have the <netdb.h> header file. */
+#undef HAVE_NETDB_H
+
 /* Define if you have POSIX threads libraries and header files. */
 #undef HAVE_PTHREAD
 
@@ -67,6 +79,9 @@
 
 /* Define to 1 if `tm_zone' is a member of `struct tm'. */
 #undef HAVE_STRUCT_TM_TM_ZONE
+
+/* Define to 1 if you have the <sys/socket.h> header file. */
+#undef HAVE_SYS_SOCKET_H
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #undef HAVE_SYS_STAT_H

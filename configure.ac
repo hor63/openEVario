@@ -72,6 +72,14 @@ AC_CHECK_MEMBER([struct timeval.tv_usec],
 							[AC_DEFINE([HAVE_TIMEVAL_STRUCT],[1],[Define to 1 if you have the timeval structure defined in sys/time.h.])],[],
                           	[[#include <sys/time.h>]])
 
+AC_CHECK_HEADER([sys/types.h],[AC_DEFINE([HAVE_SYS_TYPES_H],[1],[Define to 1 if you have the <sys/types.h> header file.])],[])
+AC_CHECK_HEADER([sys/socket.h],[AC_DEFINE([HAVE_SYS_SOCKET_H],[1],[Define to 1 if you have the <sys/socket.h> header file.])],[])
+AC_CHECK_HEADER([netdb.h],[AC_DEFINE([HAVE_NETDB_H],[1],[Define to 1 if you have the <netdb.h> header file.])],[])
+AC_SEARCH_LIBS([getaddrinfo],[],[AC_DEFINE([HAVE_GETADDRINFO],[1],[Define to 1 if the function getaddrinfo is available.])],[])
+AC_SEARCH_LIBS([gethostbyname_r],[],[AC_DEFINE([HAVE_GETHOSTBYNAME_R],[1],[Define to 1 if the function gethostbyname_r is available.])],[])
+AC_SEARCH_LIBS([gethostbyname],[],[AC_DEFINE([HAVE_GETHOSTBYNAME],[1],[Define to 1 if the function gethostbyname is available.])],[])
+
+
 AX_CHECK_COMPILE_FLAG([-fvisibility=internal],[DLL_VISIBLE_CFLAGS="-fvisibility=internal"])
 AC_SUBST([DLL_VISIBLE_CFLAGS])
 
