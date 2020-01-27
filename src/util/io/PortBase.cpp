@@ -125,6 +125,8 @@ void PortBase::loadSinglePort (
 		try {
 			Properties4CXX::Property const *typeProp = portStruct.searchProperty("type");
 
+			LOG4CXX_DEBUG(logger, "port type = " << typeProp->getStringValue());
+
 			// look up the port type
 			auto portTypeIter = typeMap.find(typeProp->getStringValue());
 			if (portTypeIter == typeMap.end()) {
@@ -161,6 +163,10 @@ void PortBase::loadSinglePort (
 		// Load default properties
 		newPort->deviceName = portStruct.getPropertyValue(DevicePropertyName,newPort->getPortName().c_str());
 		newPort->blocking = portStruct.getPropertyValue(BlockingPropertyName,true);
+
+		LOG4CXX_DEBUG(logger, "deviceName = " << newPort->deviceName);
+		LOG4CXX_DEBUG(logger, "blocking = " << newPort->blocking);
+
 	}
 }
 
