@@ -26,6 +26,9 @@
 #  include <config.h>
 #endif
 
+#include <errno.h>
+#include <unistd.h>
+
 #if HAVE_SYS_TYPES_H
 #	include <sys/types.h>
 #endif
@@ -38,7 +41,24 @@
 #	include <netdb.h>
 #endif
 
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+
+#include <sstream>
+
 #include "util/io/TCPPort.h"
+
+#if defined HAVE_LOG4CXX_H
+static log4cxx::LoggerPtr logger = 0;
+
+static inline void initLogger() {
+	if (!logger) {
+		logger = log4cxx::Logger::getLogger("openEV.IO.TCPPort");
+	}
+}
+
+#endif
+
 
 namespace openEV {
 namespace io {
@@ -57,6 +77,10 @@ class TCPPortRegister {
 private:
 
 	TCPPortRegister() {
+#if defined HAVE_LOG4CXX_H
+		initLogger();
+#endif /* HAVE_LOG4CXX_H */
+
 		TCPPort::registerTcpPortType();
 	}
 
@@ -68,6 +92,13 @@ TCPPortRegister TCPPortRegister::theOneAndOnly;
 TCPPort::TCPPort(char const* portName)
 	: StreamPort(portName,TcpPortType)
 {
+#if defined HAVE_LOG4CXX_H
+	initLogger();
+#endif /* HAVE_LOG4CXX_H */
+
+	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__
+			<< "(portName=" << getPortName()
+			<< ", portType=" << getPortType() << ')');
 
 }
 
@@ -90,16 +121,121 @@ void TCPPort::configurePort(
 		const Properties4CXX::Properties &globalConfiguration,
 		const Properties4CXX::Properties &portConfiguration) {
 
+
 	auto prop = portConfiguration.searchProperty(hostPropertyName);
 	tcpAddr = prop->getStringValue();
+
+	LOG4CXX_DEBUG(logger,"Configure port " << getPortName()
+			<< ": host = \"" << tcpAddr << '\"');
 
 	prop = portConfiguration.searchProperty(portPropertyName);
 	tcpPort = prop->getStringValue();
 
+	LOG4CXX_DEBUG(logger,"Configure port " << getPortName()
+			<< ": port = \"" << tcpPort << '\"');
 
 }
 
 void TCPPort::open() {
+
+	int sock = -1;
+	int rc;
+	struct addrinfo addrHint;
+	struct addrinfo *addr = NULL;
+	struct protoent *prot = NULL;
+
+	::memset (&addrHint,0,sizeof(addrHint));
+
+	// Allow TCP as well as TCP V6; Do not insist on TCP V4
+	// addrHint.ai_family = AF_INET;
+
+	// But insist on TCP; do not allow UDP
+	addrHint.ai_socktype = SOCK_STREAM;
+
+	rc = ::getaddrinfo(tcpAddr.c_str(),tcpPort.c_str(),&addrHint,&addr);
+
+	if (rc == 0) {
+		struct addrinfo *ad = addr;
+
+		while (ad) {
+
+			auto sockType = ad->ai_socktype;
+
+			if (isBlocking()) {
+				sockType |= SOCK_NONBLOCK;
+			}
+
+			sock = ::socket(ad->ai_family,sockType,ad->ai_protocol);
+
+			if (sock == -1) {
+				rc = errno;
+				LOG4CXX_ERROR(logger,"Open port " << getPortName()
+						<< ": socket() error: %s\n" << strerror(rc));
+				throw GliderVarioPortOpenException (
+						__FILE__,
+						__LINE__,
+						"Error in socket()",
+						rc);
+			}
+
+			if (sock != -1) {
+				rc = ::connect(sock,ad->ai_addr,ad->ai_addrlen);
+				if (rc == -1) {
+					rc = errno;
+					LOG4CXX_ERROR(logger,"Open port " << getPortName()
+							<< ": connect() error: %s\n" << strerror(rc));
+					::close (sock);
+					sock = -1;
+					throw GliderVarioPortOpenException (
+							__FILE__,
+							__LINE__,
+							"Error in connect()",
+							rc);
+				}
+			}
+
+			if (sock != -1) {
+				break;
+			}
+			ad = ad->ai_next;
+		}
+	} else {
+		std::ostringstream ostr;
+		ostr << "getaddrinfo() error: " << gai_strerror(rc);
+		LOG4CXX_ERROR(logger,"Open port " << getPortName()
+				<< ostr.str());
+		throw GliderVarioPortOpenException (
+				__FILE__,
+				__LINE__,
+				ostr.str().c_str(),
+				rc);
+	}
+
+	if (addr != NULL) {
+		::freeaddrinfo(addr);
+	}
+
+	if (sock != -1) {
+		int flag = 1;
+		rc = ::setsockopt(sock,IPPROTO_TCP,TCP_NODELAY,&flag, sizeof(flag));
+		if (rc == -1) {
+			rc = errno;
+			LOG4CXX_WARN(logger,"Open port " << getPortName()
+					<< ": setsockopt TCP_NODELAY error:" << strerror(rc));
+		}
+		flag = 1;
+		rc = ::setsockopt(sock,IPPROTO_TCP,TCP_QUICKACK,&flag, sizeof(flag));
+		if (rc == -1) {
+			rc = errno;
+			LOG4CXX_WARN(logger,"Open port " << getPortName()
+					<< ": setsockopt TCP_QUICKACK error:" << strerror(rc));
+		}
+
+	}
+
+	LOG4CXX_INFO(logger,"Open port " << getPortName() << ": Connected to host");
+
+
 }
 
 } /* namespace io */
