@@ -136,7 +136,7 @@ void TCPPort::configurePort(
 
 }
 
-void TCPPort::open() {
+void TCPPort::openInternal() {
 
 	int sock = -1;
 	int rc;
@@ -231,6 +231,11 @@ void TCPPort::open() {
 					<< ": setsockopt TCP_QUICKACK error:" << strerror(rc));
 		}
 
+	}
+
+	{
+		DeviceHandleAccess devAcc(*this);
+		devAcc.deviceHandle = sock;
 	}
 
 	LOG4CXX_INFO(logger,"Open port " << getPortName() << ": Connected to host");
