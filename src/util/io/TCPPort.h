@@ -41,7 +41,7 @@ public:
 	TCPPort(char const* portName);
 	virtual ~TCPPort();
 
-	virtual void open() override;
+	virtual void openInternal() override;
 	virtual void configurePort(
 			const Properties4CXX::Properties &globalConfiguration,
 			const Properties4CXX::Properties &portConfiguration) override;

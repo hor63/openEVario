@@ -195,26 +195,27 @@ public:
 
 	/** \brief Open the device port
 	 *
-	 * The default implementation opens the device with open().
+	 * This is the public wrapper function.
+	 * It handles the status handling, and locking the mutex.
+	 * If needed it calls the device specific \ref openInternal().
 	 *
 	 * @throws GliderVarioPortOpenException
 	 * @throws GliderVarioPortDontExistException
-	 *
-	 * \see Linux Programmer's Manual: [open(2)](http://man7.org/linux/man-pages/man2/open.2.html)
 	 */
-	virtual void open();
+	void open();
 
 	/** \brief Close the port
 	 *
 	 * Tries to close the port if it was open before.
-	 * Then the port was not open before no action is taken.
+	 * When the port was not open before no action is taken.
 	 * Regardless of the previous status the \ref status is reset in any case to CLOSED.
 	 * No exception is thrown in any case. This function is also a cleanup.
-	 * The default implementation calls close()
 	 *
-	 * \see  Linux Programmer's Manual: [close(2)](http://man7.org/linux/man-pages/man2/close.2.html)
+	 * This is the public wrapper function.
+	 * It handles the status handling, and locking the mutex.
+	 * If needed it calls the device specific \ref openInternal().
 	 */
-	virtual void close() noexcept;
+	void close() noexcept;
 
 	/** \brief Tries to recover the status of the port in case of an error.
 	 *
@@ -301,6 +302,32 @@ protected:
 	 * @throws GliderVarioPortConfigException when the port name is not unique in the configuration.
 	 */
 	static void addPort (PortBasePtr port);
+
+	/** \brief Device specific open function
+	 *
+	 * This function is the device specific open function. It is intended to be overridden.
+	 * The status handling, and locking the mutex is handled by the wrapper function \ref open()
+	 *
+	 * The default implementation opens the device with ::open().
+	 *
+	 * @throws GliderVarioPortOpenException
+	 * @throws GliderVarioPortDontExistException
+	 *
+	 * \see Linux Programmer's Manual: [open(2)](http://man7.org/linux/man-pages/man2/open.2.html)
+	 */
+	virtual void openInternal();
+
+	/** \brief Device specific close function
+	 *
+	 * This function is the device specific close function. It is intended to be overridden.
+	 * The status handling, and locking the mutex is handled by the wrapper function \ref close()
+	 *
+	 * The default implementation calls ::close()
+	 *
+	 * \see  Linux Programmer's Manual: [close(2)](http://man7.org/linux/man-pages/man2/close.2.html)
+	 */
+	virtual void closeInternal() noexcept;
+
 
 	/** \brief Flags for system call open(2)
 	 *
