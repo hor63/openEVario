@@ -94,7 +94,7 @@ public:
             virtual
             ~RotationMatrix ();
 
-            /// set yaw angle \Psi. Invalidates the matrix.
+            /// set yaw angle &Psi;. Invalidates the matrix.
             inline void
             setYaw (FloatType yaw)
             {
@@ -105,7 +105,7 @@ public:
 
             inline FloatType getYaw() {return yaw;}
 
-            /// set pitch angle \Theta. Invalidates the matrix.
+            /// set pitch angle &Theta;. Invalidates the matrix.
             inline void
             setPitch (FloatType pitch)
             {
@@ -116,7 +116,7 @@ public:
 
             inline FloatType getPitch() {return pitch;}
 
-            /// set roll angle \Phi. Invalidates the matrix.
+            /// set roll angle &Phi;. Invalidates the matrix.
             inline void
             setRoll (FloatType roll)
             {
@@ -172,11 +172,11 @@ protected:
             bool matrixPlaneToGloIsValid;
 
             // The angles.
-            /// Yaw angle in deg. \Psi in the norm DIN 9300. Also called \b Heading. Turning right hand around the z axis, i.e. in navigation direction
+            /// Yaw angle in deg. &Psi; in the norm DIN 9300. Also called \b Heading. Turning right hand around the z axis, i.e. in navigation direction
             FloatType yaw;
-            /// Pitch angle in deg. \Theta in the norm DIN 9300. Also called \b Elevation. Turning nose up around the y axis is positive.
+            /// Pitch angle in deg. &Theta; in the norm DIN 9300. Also called \b Elevation. Turning nose up around the y axis is positive.
             FloatType pitch;
-            /// Roll angle in deg. \Phi in the norm DIN 9300. Also called <b>Bank angle</b>.
+            /// Roll angle in deg. &Phi; in the norm DIN 9300. Also called <b>Bank angle</b>.
             FloatType roll;
 
 
@@ -184,18 +184,19 @@ protected:
              * Calculates the rotation matrix. The matrix from world coordinates to plane coordinates is calculated only.
              *
              * Again the the angle definitions:
-             * - Yaw angle 		\Psi 	= Heading
-             * - Pitch angle 	\Theta	= Elevation
-             * - Rollwinkel 	\Phi	= Bank angle
+             * - Yaw angle 		&Psi; 	= Heading
+             * - Pitch angle 	&Theta;	= Elevation
+             * - Rollwinkel 	&Phi;	= Bank angle
              *
              * Implementing the matrix according to the German Wikipedia <a href="https://de.wikipedia.org/wiki/Eulersche_Winkel#Drehfolgen_in_der_Fahrzeugtechnik">Wikipedia: Eulersche Winkel - Drehfolgen in der Fahrzeugtechnik</a>
              *
-             * \begin{align} M_{GNR} & =
+             * \f[
+             * M_{GNR} =
              * \begin{pmatrix} 	\cos \Theta \cos \Psi 					& 	\cos \Theta \sin \Psi 					& -\sin \Theta
-             * \\ 			\sin \Phi \sin \Theta \cos \Psi - \cos \Phi \sin \Psi 	&	\sin \Phi \sin \Theta \sin \Psi + \cos \Phi \cos \Psi 	& \sin \Phi \cos \Theta
+             * \\ 			\sin \Phi \sin \Theta \cos \Psi - \cos \Phi \sin \Psi 	&	sin \Phi sin \Theta \sin \Psi + \cos \Phi \cos \Psi 	& \sin \Phi \cos \Theta
              * \\ 			\cos \Phi \sin \Theta \cos \Psi + \sin \Phi \sin \Psi 	& \cos \Phi \sin \Theta \sin \Psi - \sin \Phi \cos \Psi 	& \cos \Phi \cos \Theta
-             * \end{pmatrix} \end{align}
-             *
+             * \end{pmatrix}
+             * \f]
              */
             void
             calculateRotationMatrixGloToPlane ();
