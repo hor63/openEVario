@@ -132,6 +132,17 @@ public:
 
 };
 
+class OEV_UTILS_PUBLIC GliderVarioPortNotOpenException :public GliderVarioPortException {
+public:
+	GliderVarioPortNotOpenException (
+			char const *source,
+			int line,
+			char const *description)
+		:GliderVarioPortException {source,line,description}
+	{}
+
+};
+
 class OEV_UTILS_PUBLIC GliderVarioPortIOException :public GliderVarioPortException {
 public:
 	/**
@@ -235,6 +246,18 @@ public:
 
 };
 
+class OEV_UTILS_PUBLIC GliderVarioPortReadEndOfFileException :public GliderVarioPortReadException {
+public:
+	/// \see GliderVarioPortReadException::GliderVarioPortReadException()
+	GliderVarioPortReadEndOfFileException (
+			char const *source,
+			int line,
+			char const *description)
+		:GliderVarioPortReadException {source,line,description,0}
+	{}
+
+};
+
 class OEV_UTILS_PUBLIC GliderVarioPortWriteException :public GliderVarioPortIOException {
 public:
 	/// \see GliderVarioPortIOException::GliderVarioPortIOException()
@@ -244,6 +267,18 @@ public:
 			char const *description,
 			int errNo = -1)
 		:GliderVarioPortIOException {source,line,description,errNo}
+	{}
+
+};
+
+class OEV_UTILS_PUBLIC GliderVarioPortWriteEndOfFileException :public GliderVarioPortWriteException {
+public:
+	/// \see GliderVarioPortWriteException::GliderVarioPortWriteException()
+	GliderVarioPortWriteEndOfFileException (
+			char const *source,
+			int line,
+			char const *description)
+		:GliderVarioPortWriteException {source,line,description,0}
 	{}
 
 };
