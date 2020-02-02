@@ -47,15 +47,21 @@ typedef Eigen::Matrix<FloatType, 3, 3> RotationMatrix3DType;
  *
  * Rotation matrix to transform the global coordinate system into the plane's coordinate system
  * References are <a href="https://en.wikipedia.org/wiki/Euler_angles#Vehicles_and_moving_frames">Wikipedia: Vehicles and moving frames</a>.
+ *
  * The matrix used is Tait-Bryan angles from
- * <a href="https://en.wikipedia.org/wiki/Euler_angles#Rotation_matrix" >Wikipedia: Euler angles - Rotation_matrix</a>.
- * A IMHO more concise description is in German <a href="https://de.wikipedia.org/wiki/Eulersche_Winkel#Drehfolgen_in_der_Fahrzeugtechnik">Wikipedia: Eulersche Winkel - Drehfolgen in der Fahrzeugtechnik</a>.
- * I am using the Y-Y-Z order as defined in DIN 9300 for aircraft rotational order.
- * I am also using the coordinate system definition according to DIN 9300:
+ * [Wikipedia: Euler angles - Rotation_matrix](https://en.wikipedia.org/wiki/Euler_angles#Rotation_matrix).
+ * A IMHO more concise description is in German
+ * [Wikipedia: Eulersche Winkel - Roll-, Nick- und Gierwinkel: z-y-x-Konvention](https://de.wikipedia.org/wiki/Eulersche_Winkel#Roll-,_Nick-_und_Gierwinkel:_z-y%E2%80%B2-x%E2%80%B3-Konvention).
+ *
+ * I am using the z-y'-x'' order as defined in DIN 9300 for aircraft rotational order to transfer world
+ * coordinates into vehicle coordinates.
+ * I am also using the world coordinate system definition according to DIN 9300:
  * - x = horizontal North.
  * - y = horizontal East
- * - z = perpendicular *down*; moving up decreases z, but on the other hand earth gravity is +9.81m/s^2 in z direction.
- * I am using the common names of the angles. In the description you find the greek designations from DIN 9300 (see the German Wikipedia)
+ * - z = perpendicular *down*; moving up decreases z, but on the other hand earth gravity is +9.81m/s&sup2; in z direction.
+ *
+ * I am using the common names of the angles. In the description you find the greek designations from DIN 9300
+ * (see the [German Wikipedia](https://de.wikipedia.org/wiki/Eulersche_Winkel#Roll-,_Nick-_und_Gierwinkel:_z-y%E2%80%B2-x%E2%80%B3-Konvention) )
  */
 class OEV_UTILS_PUBLIC RotationMatrix
 {
@@ -188,7 +194,8 @@ protected:
              * - Pitch angle 	&Theta;	= Elevation
              * - Rollwinkel 	&Phi;	= Bank angle
              *
-             * Implementing the matrix according to the German Wikipedia <a href="https://de.wikipedia.org/wiki/Eulersche_Winkel#Drehfolgen_in_der_Fahrzeugtechnik">Wikipedia: Eulersche Winkel - Drehfolgen in der Fahrzeugtechnik</a>
+             * Implementing the matrix according to German
+             * [Wikipedia: Eulersche Winkel - Roll-, Nick- und Gierwinkel: z-y-x-Konvention](https://de.wikipedia.org/wiki/Eulersche_Winkel#Roll-,_Nick-_und_Gierwinkel:_z-y%E2%80%B2-x%E2%80%B3-Konvention)
              *
              * \f[
              * M_{GNR} =
