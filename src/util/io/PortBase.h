@@ -217,40 +217,6 @@ public:
 	 */
 	void close() noexcept;
 
-	/** \brief Read a block of data from the device
-	 *
-	 * This is the common read function which handles mutex locking, and part of error handling
-	 * The actual read function is implemented by the device dependent function readInternal()
-	 *
-	 * @param[out] buf Pointer to the buffer which receives the data
-	 * @param bufLen Length of the buffer in bytes
-	 * @param readFullBufSize When true the function will keep reading until \p buf is filled
-	 * up to \p bufLen bytes unless an error occurs
-	 * @return Number of bytes read. If non-blocking mode is assumed it returns 0 when no data is available.
-	 * An end-of-file condition is here signaled by a GliderVarioPortReadEndOfFileException instead of returning 0.
-	 * @throws GliderVarioPortNotOpenException, GliderVarioPortReadException, GliderVarioPortReadEndOfFileException
-	 *
-	 * \see readInternal()
-	 */
-	ssize_t read(void *buf,size_t bufLen,bool readFullBufSize = true);
-
-	/** \brief Write a block of data to the device
-	 *
-	 * This is the common write function which handles mutex locking, and part of error handling
-	 * The actual write function is implemented by the device dependent function writeInternal()
-	 *
-	 * @param[in] buf Pointer to the buffer which contains the data
-	 * @param bufLen Length of the data in buf in bytes
-	 * @param writeFullBufSize When true the function will keep writing until \p bufLen bytes are written.
-	 * @return Number of bytes written. If non-blocking mode is assumed it returns 0 when no data could be written
-	 * without blocking.
-	 * An end-of-file condition is signaled by a GliderVarioPortReadEndOfFileException instead of returning 0.
-	 * @throws GliderVarioPortNotOpenException, GliderVarioPortWriteException, GliderVarioPortWriteEndOfFileException
-	 *
-	 * \see writeInternal()
-	 */
-	ssize_t write(void const *buf,size_t bufLen,bool writeFullBufSize = true);
-
 	/** \brief Tries to recover the status of the port in case of an error.
 	 *
 	 * The actions taken depend on the operational status of the port.
@@ -361,47 +327,6 @@ protected:
 	 * \see Linux Programmer's Manual: [close(2)](http://man7.org/linux/man-pages/man2/close.2.html)
 	 */
 	virtual void closeInternal() noexcept;
-
-
-	/** \brief Device specific read function
-	 *
-	 * This is the device specific read function. It is intended to be overridden.
-	 * The status handling, and locking the mutex is handled by the wrapper function read()
-	 *
-	 * The default implementation calls ::read().
-	 *
-	 * @param[out] buf Pointer to the buffer which receives the data
-	 * @param bufLen Length of the buffer in bytes
-	 * @param readFullBufSize When true the function will keep reading until \p buf is filled
-	 * up to \p bufLen bytes unless an error occurs
-	 * @return Number of bytes read. If non-blocking mode is assumed it returns 0 when no data is available.
-	 * An end-of-file condition is here signaled by a GliderVarioPortReadEndOfFileException instead of returning 0.
-	 * @throws GliderVarioPortReadException, GliderVarioPortReadEndOfFileException
-	 *
-	 * \see Linux Programmer's Manual: [read(2)](http://man7.org/linux/man-pages/man2/read.2.html)
-	 * \see read()
-	 */
-	virtual ssize_t readInternal(void *buf,size_t bufLen,bool readFullBufSize);
-
-	/** \brief Device specific write function
-	 *
-	 * This is the device specific write function. It is intended to be overridden.
-	 * The status handling, and locking the mutex is handled by the wrapper function write()
-	 *
-	 * The default implementation calls ::write().
-	 *
-	 * @param[in] buf Pointer to the buffer which contains the data
-	 * @param bufLen Length of the data in buf in bytes
-	 * @param writeFullBufSize When true the function will keep writing until \p bufLen bytes are written.
-	 * @return Number of bytes written. If non-blocking mode is assumed it returns 0 when no data could be written
-	 * without blocking.
-	 * An end-of-file condition is signaled by a GliderVarioPortReadEndOfFileException instead of returning 0.
-	 * @throws GliderVarioPortWriteException, GliderVarioPortWriteEndOfFileException
-	 *
-	 * \see Linux Programmer's Manual: [write(2)](http://man7.org/linux/man-pages/man2/write.2.html)
-	 * \see write()
-	 */
-	virtual ssize_t writeInternal(void const *buf,size_t bufLen,bool writeFullBufSize);
 
 	/** \brief Flags for system call open(2)
 	 *
