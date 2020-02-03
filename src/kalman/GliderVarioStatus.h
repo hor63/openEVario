@@ -176,8 +176,8 @@ public:
         STATUS_IND_GRAVITY      ,  ///< The gravity, initialized to #::GRAVITY
 
         // Position and altitude
-        STATUS_IND_LATITUDE_OFFS	,  ///< Latitude offset in meter North of \ref latitudeBaseArcSec
-        STATUS_IND_LONGITUDE_OFFS	,  ///< Longitude offset in meter East of \ref latitudeBaseArcSec
+        STATUS_IND_LATITUDE_OFFS	,  ///< Latitude offset in meter North of GliderVarioStatus::latitudeBaseArcSec
+        STATUS_IND_LONGITUDE_OFFS	,  ///< Longitude offset in meter East of GliderVarioStatus::latitudeBaseArcSec
         STATUS_IND_ALT_MSL   		,  ///< Altitude in m over Mean Sea Level
 
         // Attitude of the body to the world coordinate system
@@ -195,11 +195,11 @@ public:
         STATUS_IND_THERMAL_SPEED	, ///< The true reason for the whole exercise! :). As always in Z axis direction downward.
 
         // Accelerations in direction of the heading, vertical and perpendicular to heading.
-        STATUS_IND_ACC_HEADING		, ///< Acceleration in m/s^2 horizontally along the heading of the plane
-        STATUS_IND_ACC_CROSS		, ///< Acceleration in m/s^2 horizontally perpendicular to the heading
+        STATUS_IND_ACC_HEADING		, ///< Acceleration in m/s&sup2; horizontally along the heading of the plane
+        STATUS_IND_ACC_CROSS		, ///< Acceleration in m/s&sup2; horizontally perpendicular to the heading
         								///< Note that this does *not* include centrifugal force!!!
         								///< This is only residual acceleration not accounted by turning.
-        STATUS_IND_ACC_VERTICAL		, ///< Acceleration in m/s^2 along body Z axis
+        STATUS_IND_ACC_VERTICAL		, ///< Acceleration in m/s&sup2; along body Z axis
 
         // Turn rates in reference to the world coordinate system
         STATUS_IND_ROTATION_X	, ///< Roll rate in deg/s to the right around the X axis
@@ -295,8 +295,8 @@ public:
      * -Yaw: 0<= yaw < 360; 360 deg counts as 0.
      * Note that pitch must be normalized fist. It may flip roll and yaw around. Yaw and roll are independent from the other angles.
      *
-     * Updating the status may lead to an overflow of \ref longitudeOffs and \ref latitudeOffs offset beyond one arc second.
-     * When that happens \ref latitudeBaseArcSec and/or \ref longitudeBaseArcSec are updated until the offsets are < 1sec.
+     * Updating the status may lead to an overflow of GliderVarioStatus::longitudeOffs and GliderVarioStatus::latitudeOffs offset beyond one arc second.
+     * When that happens GliderVarioStatus::latitudeBaseArcSec and/or GliderVarioStatus::longitudeBaseArcSec are updated until the offsets are < 1sec.
      *
      */
     void normalizeStatus();
@@ -307,8 +307,8 @@ public:
     FloatType& gravity  = statusVector_x [ STATUS_IND_GRAVITY ];  ///< The gravity, initialized to #::GRAVITY
 
     /// Position and altitude
-    const FloatType& longitudeOffsC = statusVector_x[ STATUS_IND_LONGITUDE_OFFS	];  ///< Latitude offset in meter North of \ref latitudeBaseArcSec
-    const FloatType& latitudeOffsC	 = statusVector_x[ STATUS_IND_LATITUDE_OFFS  	];  ///< Longitude offset in meter East of \ref latitudeBaseArcSec
+    const FloatType& longitudeOffsC = statusVector_x[ STATUS_IND_LONGITUDE_OFFS	];  ///< Latitude offset in meter North of GliderVarioStatus::latitudeBaseArcSec
+    const FloatType& latitudeOffsC	 = statusVector_x[ STATUS_IND_LATITUDE_OFFS  	];  ///< Longitude offset in meter East of GliderVarioStatus::latitudeBaseArcSec
     FloatType& altMSL = statusVector_x[ STATUS_IND_ALT_MSL   	    ];  ///< Altitude in m over Mean Sea Level
 
     /// Attitude of the body to the world coordinate system
@@ -326,11 +326,11 @@ public:
     FloatType& thermalSpeed = statusVector_x[ STATUS_IND_THERMAL_SPEED	    ]; ///< The true reason for the whole exercise! :)
 
     /// Accelerations in reference to the body (plane) coordinate system.
-    FloatType& accelHeading = statusVector_x[ STATUS_IND_ACC_HEADING ]; ///< Acceleration in m/s^2 horizontally along the heading of the plane
-    FloatType& accelCross = statusVector_x[ STATUS_IND_ACC_CROSS	 ];///< Acceleration in m/s^2 horizontally perpendicular to the heading
+    FloatType& accelHeading = statusVector_x[ STATUS_IND_ACC_HEADING ]; ///< Acceleration in m/s&sup2; horizontally along the heading of the plane
+    FloatType& accelCross = statusVector_x[ STATUS_IND_ACC_CROSS	 ];///< Acceleration in m/s&sup2; horizontally perpendicular to the heading
     ///< Note that this does *not* include centrifugal force!!!
     ///< This is only residual acceleration not accounted by turning.
-    FloatType& accelVertical = statusVector_x[ STATUS_IND_ACC_VERTICAL]; ///< Acceleration in m/s^2 along body Z axis
+    FloatType& accelVertical = statusVector_x[ STATUS_IND_ACC_VERTICAL]; ///< Acceleration in m/s&sup2; along body Z axis
 
     /// Turn rates in reference to the body (plane) coordinate system
     FloatType& rollRateX = statusVector_x[ STATUS_IND_ROTATION_X	]; ///< Roll rate in deg/s to the right around the X axis
@@ -368,7 +368,7 @@ public:
      * Converts the latitude into the integer latitude base in arc sec and the remainder offset in m.
      * Calculates also the length of an arc second longitude at this latitude
      *
-     * Type of \ref lat is double to the large range
+     * Type of \p lat is double due to the large range
      *
      * @param lat Latitude in degrees
      */
@@ -388,7 +388,7 @@ public:
      *
      * Converts the longitude into the integer longitude base in arc sec and the remainder offset in m.
      *
-     * Type of \ref lon is double to the large range
+     * Type of \p lon is double due to the large range
      *
      * @param lon Longitude in degrees
      */
@@ -415,12 +415,12 @@ protected:
     StatusCoVarianceType systemNoiseCovariance_Q;
     StatusCoVarianceType errorCovariance_P;
 
-    FloatType& longitudeOffs;  ///< Latitude offset in meter North of \ref latitudeBaseArcSec
-    FloatType& latitudeOffs;  ///< Longitude offset in meter East of \ref latitudeBaseArcSec
+    FloatType& longitudeOffs;  ///< Latitude offset in meter North of GliderVarioStatus::latitudeBaseArcSec
+    FloatType& latitudeOffs;  ///< Longitude offset in meter East of GliderVarioStatus::latitudeBaseArcSec
 
     /** \brief Base value of the latitude in arc sec
      *
-     * \ref STATUS_IND_LATITUDE and \ref latitude are the offset in *meter* whereas the latitude here is in *arc seconds*
+     * GliderVarioStatus::STATUS_IND_LATITUDE and GliderVarioStatus::latitude are the offset in *meter* whereas the latitude here is in *arc seconds*
      *
      * Also note that the type is long, i.e. only the neareast full arc second is used.
      *
@@ -429,16 +429,16 @@ protected:
 
     /** \brief Base value of the latitude in arc sec
      *
-     * \ref STATUS_IND_LATITUDE and \ref latitude are the offset in *meter* whereas the latitude here is in *arc seconds*
+     * GliderVarioStatus::STATUS_IND_LATITUDE and GliderVarioStatus::latitude are the offset in *meter* whereas the latitude here is in *arc seconds*
      *
      * Also note that the type is long, i.e. only the nearest full arc second is used.
      *
      */
     long				 longitudeBaseArcSec = 0l;
 
-    /** \ref Length of a longitude arc second at the current latitude in m
+    /** \brief Length of a longitude arc second at the current latitude in m
      *
-     * This value is calculated from current latitudeBaseArcSec when it is initialized or updated by \ref normalizeStatus()
+     * This value is calculated from current latitudeBaseArcSec when it is initialized or updated by normalizeStatus()
      *
      */
     FloatType lenLongitudeArcSec = LEN_LAT_ARC_SEC ;

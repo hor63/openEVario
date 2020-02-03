@@ -62,11 +62,11 @@ public:
 	 * The default implementation calls ::read() to read any available data up to bufLen bytes into the provided buffer
 	 * When no data is available the call will block until data is available
 	 *
-	 * Like all I/O operations access to the \ref deviceHandle is synchronized with an object of class \ref PortBase::DeviceHandleAccess
+	 * Like all I/O operations access to the \p deviceHandle is synchronized with an object of class \ref PortBase::DeviceHandleAccess
 	 *
 	 * @param buffer Buffer to receive the data
 	 * @param bufLen Size of the buffer. This is the maximum number bytes which can be received
-	 * @return Number of bytes read into \ref buffer. Unless an exception was encountered
+	 * @return Number of bytes read into \p buffer. Unless an exception was encountered
 	 * @throws GliderVarioPortReadException
 	 *
 	 * \see Linux Programmer's Manual: [read(2)](http://man7.org/linux/man-pages/man2/read.2.html)
@@ -75,14 +75,14 @@ public:
 
 	/** \brief Read an exact amount of data
 	 *
-	 * This function calls \ref read() in a loop until the requested number of bytes \ref bufLen
+	 * This function calls read() in a loop until the requested number of bytes \p bufLen
 	 * have been read. Note that read() is virtual and can be overridden.
 	 *
-	 * Like all I/O operations access to the \ref deviceHandle is synchronized with an object of class \ref PortBase::DeviceHandleAccess
+	 * Like all I/O operations access to the \p deviceHandle is synchronized with an object of class \ref PortBase::DeviceHandleAccess
 	 *
 	 * @param buffer Buffer to receive the data
 	 * @param bufLen Size of the buffer. This is the target number bytes to be received
-	 * @return Number of bytes read into \ref buffer. Unless an exception was thrown the function always returns \ref bufLen
+	 * @return Number of bytes read into \p buffer. Unless an exception was thrown the function always returns \p bufLen
 	 * @throws GliderVarioPortReadException
 	 *
 	 * \see StreamPort::read()
@@ -94,12 +94,11 @@ public:
 	 * The default implementation calls ::write() to write the entire buffer to the destination port/device/file...
 	 * Data is written in a loop if only a part of the buffer is written until the entire buffer is written unless an error occurs.
 	 *
-	 * Like all I/O operations access to the \ref deviceHandle is synchronized with an object of class \ref PortBase::DeviceHandleAccess
+	 * Like all I/O operations access to the device handle is synchronized with an object of class \ref PortBase::DeviceHandleAccess
 	 *
 	 * @param buffer Buffer containing the data to be written
 	 * @param bufLen Number of bytes in the buffer
-	 * @param readExactLen
-	 * @return Number of bytes written. Is always the same as \ref bufLen. Else an error occurred and an exception is thrown.
+	 * @return Number of bytes written. Is always the same as \p bufLen. Else an error occurred and an exception is thrown.
 	 * @throws GliderVarioPortWriteException
 	 *
 	 * \see Linux Programmer's Manual: [read(2)](http://man7.org/linux/man-pages/man2/write.2.html)
@@ -108,14 +107,14 @@ public:
 
 	/** \brief write an exact amount of data
 	 *
-	 * This function calls \ref write() in a loop until the requested number of bytes \ref bufLen
+	 * This function calls write() in a loop until the requested number of bytes \p bufLen
 	 * have been written. Note that write() is virtual and can be overridden.
 	 *
-	 * Like all I/O operations access to the \ref deviceHandle is synchronized with an object of class \ref PortBase::DeviceHandleAccess
+	 * Like all I/O operations access to the \p deviceHandle is synchronized with an object of class \ref PortBase::DeviceHandleAccess
 	 *
 	 * @param buffer Buffer containing the data to be sent
 	 * @param bufLen Size of the buffer. This is the target number bytes to be sent
-	 * @return Number of bytes sent. Unless an exception was thrown the function always returns \ref bufLen
+	 * @return Number of bytes sent. Unless an exception was thrown the function always returns \p bufLen
 	 * @throws GliderVarioPortWriteException
 	 *
 	 * \see StreamPort::write()

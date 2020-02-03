@@ -161,7 +161,7 @@ public:
 		return deviceName;
 	}
 
-	/// Name of the port type. The port type name is one registered in \ref typeMap.
+	/// Name of the port type. The port type name is one registered in #typeMap.
 	std::string const &getPortType() const {
 		return portType;
 	}
@@ -183,7 +183,7 @@ public:
 	 *
 	 * Read the properties. Scan the sub-node "IOPorts" when it exists. If not issue a warning.
 	 *
-	 * Try to create all ports listed in the section by calling \ref loadSinglePort()
+	 * Try to create all ports listed in the section by calling loadSinglePort()
 	 * If one port creation fails write error messages into the log file but continue scanning the section.
 	 * An erroneous port will not be added to the list however.
 	 * A device which uses the port may raise a fatal error when it cannot get the port it requires.
@@ -197,7 +197,7 @@ public:
 	 *
 	 * This is the public wrapper function.
 	 * It handles the status handling, and locking the mutex.
-	 * If needed it calls the device specific \ref openInternal().
+	 * If needed it calls the device specific openInternal().
 	 *
 	 * @throws GliderVarioPortOpenException
 	 * @throws GliderVarioPortDontExistException
@@ -208,53 +208,53 @@ public:
 	 *
 	 * Tries to close the port if it was open before.
 	 * When the port was not open before no action is taken.
-	 * Regardless of the previous status the \ref status is reset in any case to CLOSED.
+	 * Regardless of the previous #status is reset in any case to CLOSED.
 	 * No exception is thrown in any case. This function is also a cleanup.
 	 *
 	 * This is the public wrapper function.
 	 * It handles the status handling, and locking the mutex.
-	 * If needed it calls the device specific \ref openInternal().
+	 * If needed it calls the device specific closeInternal().
 	 */
 	void close() noexcept;
 
 	/** \brief Read a block of data from the device
 	 *
 	 * This is the common read function which handles mutex locking, and part of error handling
-	 * The actual read function is implemented by the device dependent function \ref readInternal()
+	 * The actual read function is implemented by the device dependent function readInternal()
 	 *
 	 * @param[out] buf Pointer to the buffer which receives the data
 	 * @param bufLen Length of the buffer in bytes
-	 * @param readFullBufSize When true the function will keep reading until \ref buf is filled
-	 * up to \ref bufLen bytes unless an error occurs
+	 * @param readFullBufSize When true the function will keep reading until \p buf is filled
+	 * up to \p bufLen bytes unless an error occurs
 	 * @return Number of bytes read. If non-blocking mode is assumed it returns 0 when no data is available.
 	 * An end-of-file condition is here signaled by a GliderVarioPortReadEndOfFileException instead of returning 0.
 	 * @throws GliderVarioPortNotOpenException, GliderVarioPortReadException, GliderVarioPortReadEndOfFileException
 	 *
-	 * \see \ref readInternal()
+	 * \see readInternal()
 	 */
 	ssize_t read(void *buf,size_t bufLen,bool readFullBufSize = true);
 
 	/** \brief Write a block of data to the device
 	 *
 	 * This is the common write function which handles mutex locking, and part of error handling
-	 * The actual write function is implemented by the device dependent function \ref writeInternal()
+	 * The actual write function is implemented by the device dependent function writeInternal()
 	 *
 	 * @param[in] buf Pointer to the buffer which contains the data
 	 * @param bufLen Length of the data in buf in bytes
-	 * @param writeFullBufSize When true the function will keep writing until \ref bufLen bytes are written.
+	 * @param writeFullBufSize When true the function will keep writing until \p bufLen bytes are written.
 	 * @return Number of bytes written. If non-blocking mode is assumed it returns 0 when no data could be written
 	 * without blocking.
 	 * An end-of-file condition is signaled by a GliderVarioPortReadEndOfFileException instead of returning 0.
 	 * @throws GliderVarioPortNotOpenException, GliderVarioPortWriteException, GliderVarioPortWriteEndOfFileException
 	 *
-	 * \see \ref writeInternal()
+	 * \see writeInternal()
 	 */
 	ssize_t write(void const *buf,size_t bufLen,bool writeFullBufSize = true);
 
 	/** \brief Tries to recover the status of the port in case of an error.
 	 *
 	 * The actions taken depend on the operational status of the port.
-	 * Default action is to \ref close(), and ignore any exceptions, and then \ref open() again.
+	 * Default action is to close(), and ignore any exceptions, and then open() again.
 	 */
 	virtual void recoverError();
 
@@ -279,7 +279,7 @@ private:
 	/// The device name of the port.
 	std::string deviceName;
 
-	/// Name of the port type. The port type name is one registered in \ref typeMap.
+	/// Name of the port type. The port type name is one registered in #typeMap.
 	std::string portType;
 
 	/// Are read request blocking when no data is available?
@@ -293,9 +293,9 @@ private:
 	 */
 	DeviceHandleType deviceHandle = 0;
 
-	/** \brief Synchronization object to serialize access to \ref deviceHandle.
+	/** \brief Synchronization object to serialize access to #deviceHandle.
 	 *
-	 * This object is employed by class \ref DeviceHandleAccess to synchronize concurrent access to \ref devicehandle.
+	 * This object is employed by class \ref DeviceHandleAccess to synchronize concurrent access to #deviceHandle.
 	 */
 	std::recursive_mutex devHandleMutex;
 
@@ -329,7 +329,7 @@ protected:
 
 	/** \brief Add a port to the portMap.
 	 *
-	 * Usually called by \ref loadSinglePort, but can be called from elsewhere in the program.
+	 * Usually called by loadSinglePort(), but can be called from elsewhere in the program.
 	 *
 	 * @param port Shared pointer to the port. Management of the PortBase object is assumed by me here.
 	 * Never delete the object yourself. Let the share pointer take care of it.
@@ -340,7 +340,7 @@ protected:
 	/** \brief Device specific open function
 	 *
 	 * This function is the device specific open function. It is intended to be overridden.
-	 * The status handling, and locking the mutex is handled by the wrapper function \ref open()
+	 * The status handling, and locking the mutex is handled by the wrapper function open()
 	 *
 	 * The default implementation opens the device with ::open().
 	 *
@@ -354,7 +354,7 @@ protected:
 	/** \brief Device specific close function
 	 *
 	 * This function is the device specific close function. It is intended to be overridden.
-	 * The status handling, and locking the mutex is handled by the wrapper function \ref close()
+	 * The status handling, and locking the mutex is handled by the wrapper function close()
 	 *
 	 * The default implementation calls ::close()
 	 *
@@ -366,40 +366,40 @@ protected:
 	/** \brief Device specific read function
 	 *
 	 * This is the device specific read function. It is intended to be overridden.
-	 * The status handling, and locking the mutex is handled by the wrapper function \ref read()
+	 * The status handling, and locking the mutex is handled by the wrapper function read()
 	 *
 	 * The default implementation calls ::read().
 	 *
 	 * @param[out] buf Pointer to the buffer which receives the data
 	 * @param bufLen Length of the buffer in bytes
-	 * @param readFullBufSize When true the function will keep reading until \ref buf is filled
-	 * up to \ref bufLen bytes unless an error occurs
+	 * @param readFullBufSize When true the function will keep reading until \p buf is filled
+	 * up to \p bufLen bytes unless an error occurs
 	 * @return Number of bytes read. If non-blocking mode is assumed it returns 0 when no data is available.
 	 * An end-of-file condition is here signaled by a GliderVarioPortReadEndOfFileException instead of returning 0.
 	 * @throws GliderVarioPortReadException, GliderVarioPortReadEndOfFileException
 	 *
 	 * \see Linux Programmer's Manual: [read(2)](http://man7.org/linux/man-pages/man2/read.2.html)
-	 * \see \ref read()
+	 * \see read()
 	 */
 	virtual ssize_t readInternal(void *buf,size_t bufLen,bool readFullBufSize);
 
 	/** \brief Device specific write function
 	 *
 	 * This is the device specific write function. It is intended to be overridden.
-	 * The status handling, and locking the mutex is handled by the wrapper function \ref write()
+	 * The status handling, and locking the mutex is handled by the wrapper function write()
 	 *
 	 * The default implementation calls ::write().
 	 *
 	 * @param[in] buf Pointer to the buffer which contains the data
 	 * @param bufLen Length of the data in buf in bytes
-	 * @param writeFullBufSize When true the function will keep writing until \ref bufLen bytes are written.
+	 * @param writeFullBufSize When true the function will keep writing until \p bufLen bytes are written.
 	 * @return Number of bytes written. If non-blocking mode is assumed it returns 0 when no data could be written
 	 * without blocking.
 	 * An end-of-file condition is signaled by a GliderVarioPortReadEndOfFileException instead of returning 0.
 	 * @throws GliderVarioPortWriteException, GliderVarioPortWriteEndOfFileException
 	 *
 	 * \see Linux Programmer's Manual: [write(2)](http://man7.org/linux/man-pages/man2/write.2.html)
-	 * \see \ref write()
+	 * \see write()
 	 */
 	virtual ssize_t writeInternal(void const *buf,size_t bufLen,bool writeFullBufSize);
 

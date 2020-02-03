@@ -54,8 +54,9 @@ class GliderVarioMainPriv {
 
 public:
 
-	/** \ref Convenience class which implements a synchronized access to the current status of vario
-	 * Use instead of \ref GliderVarioMainPriv::getCurrentStatusAndLock and GliderVarioMainPriv::releaseCurrentStatus whenever possible
+	/** \brief Convenience class which implements a synchronized access to GliderVarioMainPriv::CurrentStatus
+	 *
+	 * Use instead of GliderVarioMainPriv::getCurrentStatusAndLock() and GliderVarioMainPriv::releaseCurrentStatus() whenever possible
 	 * The current status will be locked as long as the object exists but automatically released when the object is deleted.
 	 * Therefore it is used best directly declared in a code block with limited scope.
 	 */

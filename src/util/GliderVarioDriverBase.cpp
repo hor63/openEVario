@@ -67,7 +67,9 @@ void GliderVarioDriverBase::stop() {
 }
 
 
+#if !defined DOXYGEN
 GliderVarioDriverBase::SensorCapabilityHelperClass GliderVarioDriverBase::SensorCapabilityHelperObj;
+#endif
 
 }
 

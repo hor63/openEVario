@@ -99,14 +99,14 @@ public:
 
 	virtual ~BRecordSectionProcessor();
 
-	/** \brief Scan a B-record of the IGC file, and return the result in \ref bRecord
+	/** \brief Scan a B-record of the IGC file, and return the result in \p bRecord
 	 *
-	 * If the timestamp in Seconds after midnight of the current record is smaller than \startTimeDay I assume that I crossed midnight UTC.
-	 * In this case I decrement \ref startTimeDay by 86400 sec (24h).
+	 * If the timestamp in Seconds after midnight of the current record is smaller than \p startTimeDay I assume that I crossed midnight UTC.
+	 * In this case I decrement \p startTimeDay by 86400 sec (24h).
 	 * This case is not very likely in time zones far away from GMT, e.g. Pacific time, or Hawaii or Far East like Japan.
 	 *
 	 * @param[in] recordString A B-record string from the IGC file including the leading 'B' character, but excluding the line terminator CR-LF
-	 * @param[in] recordLen Length of the record. \ref recordString is not NULL-terminated.
+	 * @param[in] recordLen Length of the record. \p recordString is not NULL-terminated.
 	 * @param[out] bRecord The BRecord structure filled with the parsed values
 	 * @param[in,out] startTimeDay Timestamp of the first B-Record after midnight.
 	 */
@@ -120,8 +120,7 @@ public:
 	/** \brief Process an I-Record which defines the type and location of optional fields in the following B-Records
 	 *
 	 * @param recordString The entire I-record string including the leading character I, but excluding the line terminator CR-LF.
-	 * @param recordLen Length of the record. \ref recordString is not NULL-terminated.
-	 * @param[in,out] startTimeDay Timestamp of the first B-record in the IGC file in seconds after midnight.
+	 * @param recordLen Length of the record. \p recordString is not NULL-terminated.
 	 */
 	void processIRecord (
 			char *const recordString,

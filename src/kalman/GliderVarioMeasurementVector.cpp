@@ -32,7 +32,9 @@
 
 namespace openEV {
 
+#if !defined DOXYGEN
 GliderVarioMeasurementVector::MeasureComponentIndexHelperClass GliderVarioMeasurementVector::MeasureComponentIndexHelperObj;
+#endif
 
 GliderVarioMeasurementVector::GliderVarioMeasurementVector() :
 		measureVector {MeasureVectorType::Zero()},

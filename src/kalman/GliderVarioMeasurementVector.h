@@ -57,9 +57,9 @@ public:
         MEASURE_IND_GPS_SPEED, ///< Speed in m/s
 
         // Accelerometer
-        MEASURE_IND_ACC_X, ///< Acceleration along the X axis in m/s^2
-        MEASURE_IND_ACC_Y, ///< Acceleration along the Y axis in m/s^2
-        MEASURE_IND_ACC_Z, ///< Acceleration along the Z axis in m/s^2
+        MEASURE_IND_ACC_X, ///< Acceleration along the X axis in m/s&sup2;
+        MEASURE_IND_ACC_Y, ///< Acceleration along the Y axis in m/s&sup2;
+        MEASURE_IND_ACC_Z, ///< Acceleration along the Z axis in m/s&sup2;
 
         // Gyro
         MEASURE_IND_GYRO_RATE_X, ///< Turn rate around the X axis in Deg/s
@@ -97,9 +97,9 @@ public:
     FloatType &gpsSpeed; ///< Speed in m/s
 
     // Accelerometer
-    FloatType &accelX; ///< Acceleration along the X axis in m/s^2
-    FloatType &accelY; ///< Acceleration along the Y axis in m/s^2
-    FloatType &accelZ; ///< Acceleration along the Z axis in m/s^2
+    FloatType &accelX; ///< Acceleration along the X axis in m/s&sup2;
+    FloatType &accelY; ///< Acceleration along the Y axis in m/s&sup2;
+    FloatType &accelZ; ///< Acceleration along the Z axis in m/s&sup2;
 
     // Gyro
     FloatType &gyroRateX; ///< Turn rate around the X axis in Deg/s

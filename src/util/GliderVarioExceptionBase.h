@@ -51,7 +51,7 @@ public:
 	 * Constructor
 	 *
 	 * @param source Source file where the exception is thrown
-	 * @param Line where the exception is thrown
+	 * @param line where the exception is thrown
 	 * @param description Description of the exception
 	 */
 	GliderVarioExceptionBase(
@@ -82,7 +82,7 @@ protected:
 	int line;
 	/// Description of the exception
 	std::string description;
-	/// Prepared string returned by \ref what()
+	/// Prepared string returned by what()
 	std::string whatString;
 };
 
@@ -180,7 +180,7 @@ public:
 		return errNo;
 	}
 
-	/** \brief Obtain the string of the error code \ref errno.
+	/** \brief Obtain the string of the error code \a errno.
 	 *
 	 * @return System error string
 	 *

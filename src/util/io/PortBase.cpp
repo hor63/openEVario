@@ -50,7 +50,9 @@ namespace io {
 static std::string const DevicePropertyName = "device";
 static std::string const BlockingPropertyName = "blocking";
 
+#if !defined DOXYGEN
 PortBase::StatusEnumHelperClass PortBase::StatusEnumHelperObj;
+#endif
 PortBase::PortTypeMap PortBase::typeMap;
 PortBase::PortMap PortBase::portMap;
 

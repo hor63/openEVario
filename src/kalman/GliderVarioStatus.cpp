@@ -37,7 +37,9 @@ namespace openEV
 
 FloatType MAG_INCLINATION = -67.0f;
 
+#if !defined DOXYGEN
 GliderVarioStatus::StatusComponentIndexHelperClass GliderVarioStatus::StatusComponentIndexHelperObj;
+#endif
 
 GliderVarioStatus::GliderVarioStatus () :
 		statusVector_x{StatusVectorType::Zero()},

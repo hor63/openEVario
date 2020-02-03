@@ -205,8 +205,9 @@ static void usage(std::ostream& outStr){
 /**
  * Reads command line arguments and extracts options
  *
- * @param argc
- * @param argv
+ * @param argc Number of arguments
+ * @param argv Array of C strings containing the arguments
+ * @param programOptions Reference to struct openEV::ProgramOptions which will receive the option values.
  * @return
  */
 static int readOptions (int& argc, char*argv[],openEV::ProgramOptions &programOptions) {

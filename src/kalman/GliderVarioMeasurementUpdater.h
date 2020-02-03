@@ -49,16 +49,16 @@ public:
     /**
      * \brief Update the status vector with a new measurement of the latitude
      *
-     * In contrast to most functions here \ref measuredLatitude is double not FloatType (i.e. float)
+     * In contrast to most functions here \p measuredLatitude is double not FloatType (i.e. float)
      * because the latitude scale is from 90deg to 1mm, requiring about 10 decimals, much larger than float
      * Internally the Kalman filter splits the latitude in long whole seconds base and
      * an offset in m which is actually part of the Kalman filter.
      *
-     * Note that \ref latitudeVariance is in meter^2, not degrees because GPS receivers report the
+     * Note that \p latitudeVariance is in meter&sup2;, not degrees because GPS receivers report the
      * uncertainty in m, and internally the filter uses m for the latitude offset
      *
      * @param[in] measuredLatitude Latitude in degrees North from the GPS receiver
-     * @param[in] latitudeVariance Variance of the latitude in meter^2
+     * @param[in] latitudeVariance Variance of the latitude in meter&sup2;
      * @param[in,out] measurementVector The applicable column is updated for information purposes.
      * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
      */
@@ -72,16 +72,16 @@ public:
     /**
      * \brief Update the status vector with a new measurement of the longitude
      *
-     * In contrast to most functions here \ref measuredLongitude is double not FloatType (i.e. float)
+     * In contrast to most functions here \p measuredLongitude is double not FloatType (i.e. float)
      * because the latitude scale is from 180deg to 1mm, requiring about 11 decimals, much larger than float
      * Internally the Kalman filter splits the latitude in long whole seconds base and
      * an offset in m which is actually part of the Kalman filter.
      *
-     * Note that \ref longitudeVariance is in meter^2, not degrees because GPS receivers report the
+     * Note that \p longitudeVariance is in meter&sup2;, not degrees because GPS receivers report the
      * uncertainty in m, and internally the filter uses m for the longitude offset
      *
      * @param[in] measuredLongitude Longitude in degrees East
-     * @param[in] longitudeVariance variance of the longitude measurement in meter^2
+     * @param[in] longitudeVariance variance of the longitude measurement in meter&sup2;
      * @param[in,out] measurementVector The applicable column is updated for information purposes.
      * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
      */
@@ -221,7 +221,7 @@ public:
      * Update the status vector with a new measurement of the pressure altitude
      *
      * Converting static pressure to altitude uses formulas from
-     * <a href="https://en.wikipedia.org/wiki/Barometric_formula" >Wikipedia: Barometric formula</a>. Use formula 1 which includes a temperature gradient
+     * [Wikipedia: Barometric formula](https://en.wikipedia.org/wiki/Barometric_formula). Use formula 1 which includes a temperature gradient
      * In contrast to the standard atmosphere I am using a gradient of 1K/100m. In the boundary layer which we glider pilots populate during thermal flight the air is usually
      * thoroughly mixed by the thermals, and the gradient approaches an dry adiabatic indifferent gradient, i.e 1K/100m.
      * *Beware*, this assumption is true for thermal flights only where the boundary layer is pretty thoroughly mixed, and practically indifferent.
@@ -231,7 +231,7 @@ public:
      * I am ignoring water vapor in all calculations.
      * @param[in] measuredStaticPressure Static pressure in Pascal
      * @param[in] measuredTemperature Ambient temperature in Degrees Celsius at the current altitude
-     * @param[in] Variance of the pressure measurement
+     * @param[in] staticPressureVariance Variance of the pressure measurement
      * @param[in,out] measurementVector The applicable column is updated for information purposes.
      * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
      */

@@ -262,7 +262,7 @@ protected:
      */
     virtual void driverThreadFunction() = 0;
 
-    /** \brief Static function required for \ref std::thread implementation.
+    /** \brief Static function required for std::thread implementation.
      *
      * @param tis Pointer to the object to which the thread belongs
      */

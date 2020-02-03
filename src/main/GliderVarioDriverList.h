@@ -101,7 +101,7 @@ public:
 
 	/** \brief Load the drivers defined in the configuration.
 	 *
-	 * Iterate over the list of driver instances "drivers" in the \ref configuration.
+	 * Iterate over the list of driver instances "drivers" in \p configuration.
 	 * Call \ref loadDriverInstance() for each instance name.
 	 *
 	 */
@@ -137,7 +137,7 @@ public:
 
 	/** \brief Is any driver implementing the idle loop internally for debugging purposes?
 	 *
-	 * Run through the list of drivers, and check if any implements the capability \ref GliderVarioDriverBase::SensorCapability::RUN_IDLE_LOOP
+	 * Run through the list of drivers, and check if any implements the capability GliderVarioDriverBase::RUN_IDLE_LOOP
 	 *
 	 * @return
 	 */
