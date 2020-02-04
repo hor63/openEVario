@@ -132,17 +132,6 @@ public:
 
 };
 
-class OEV_UTILS_PUBLIC GliderVarioPortNotOpenException :public GliderVarioPortException {
-public:
-	GliderVarioPortNotOpenException (
-			char const *source,
-			int line,
-			char const *description)
-		:GliderVarioPortException {source,line,description}
-	{}
-
-};
-
 class OEV_UTILS_PUBLIC GliderVarioPortIOException :public GliderVarioPortException {
 public:
 	/**
@@ -203,6 +192,16 @@ protected:
 	 * \see [strerror()](https://en.cppreference.com/w/cpp/string/byte/strerror)
 	 */
 	std::string errStr;
+
+};
+
+class OEV_UTILS_PUBLIC GliderVarioPortNotOpenException :public GliderVarioPortIOException {
+public:
+	GliderVarioPortNotOpenException (
+			char const *source,
+			int line)
+		:GliderVarioPortIOException {source,line,"Port has not been opened.",EBADF}
+	{}
 
 };
 
