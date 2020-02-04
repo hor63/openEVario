@@ -258,6 +258,7 @@ AC_CONFIG_FILES(Makefile
                 src/Makefile
                 src/drivers/simul/Makefile
                 src/drivers/IGCReader/Makefile
+                src/drivers/BoschBMXSensorBoard/Makefile
                 test/src/Makefile)
 
 AC_OUTPUT
