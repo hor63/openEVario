@@ -70,15 +70,34 @@ ssize_t StreamPort::read(uint8_t* buffer,size_t bufLen) {
 
 		if (ret == -1) {
 			err = errno;
-			if (err == EINTR) {
+			switch (err) {
+
+			case EINTR:
 				LOG4CXX_DEBUG (logger,"Port" << getPortName() << ':' << getPortType() << ": Read interrupted with EINTR. Repeat ::read() ")
-			} else {
+				break;
+
+			case EWOULDBLOCK:
+#if EWOULDBLOCK != EAGAIN
+			case EAGAIN:
+#endif
+				ret = 0;
+				break;
+			default:
 				std::ostringstream str;
 
 				str << "Port" << getPortName() << ':' << getPortType() << ": Read error " << err << ":" << strerror(err);
 				LOG4CXX_ERROR (logger,str.str());
 				throw GliderVarioPortReadException(__FILE__,__LINE__,str.str().c_str(),err);
 			}
+		} else if (ret == 0) {
+			// End-of-file condition
+			std::ostringstream str;
+
+			close();
+
+			str << "Port" << getPortName() << ':' << getPortType() << ": End of file condition upon read";
+			LOG4CXX_ERROR (logger,str.str());
+			throw GliderVarioPortReadEndOfFileException(__FILE__,__LINE__,str.str().c_str());
 		}
 
 	} while (err == EINTR);
@@ -108,22 +127,48 @@ ssize_t StreamPort::write(uint8_t *buffer, size_t bufLen) {
 
 				throw GliderVarioPortWriteException(__FILE__,__LINE__,str.str().c_str());
 			}
-		} else {
-			bytesWritten += ret;
-			bufLen -= ret;
-			buffer += ret;
+
+			switch (err) {
+
+			case EINTR:
+				LOG4CXX_DEBUG (logger,"Port" << getPortName() << ':' << getPortType() << ": Write interrupted with EINTR. Repeat ::read() ")
+				break;
+
+			case EWOULDBLOCK:
+#if EWOULDBLOCK != EAGAIN
+			case EAGAIN:
+#endif
+				ret = 0;
+				break;
+			default:
+				std::ostringstream str;
+
+				str << "Port" << getPortName() << ':' << getPortType() << ": Write error " << err << ":" << strerror(err);
+				LOG4CXX_ERROR (logger,str.str());
+				throw GliderVarioPortWriteException(__FILE__,__LINE__,str.str().c_str(),err);
+			}
+		} else if (ret == 0) {
+			// End-of-file condition or undefined condition
+			err = errno;
+			std::ostringstream str;
+
+			close();
+
+			str << "Port" << getPortName() << ':' << getPortType() << ": Write returned 0. Error = " << err << ":" << strerror(err);
+			LOG4CXX_ERROR (logger,str.str());
+			throw GliderVarioPortReadEndOfFileException(__FILE__,__LINE__,str.str().c_str());
 		}
 
 	} while (bufLen > 0);
 
-	return bytesWritten;
+	return ret;
 }
 
 ssize_t StreamPort::readExactLen(uint8_t *buffer, size_t bufLen) {
 	ssize_t rc = read(buffer,bufLen);
 	ssize_t bytesRead = 0;
 
-	while (rc != -1 ) {
+	while (rc > 0 ) {
 		bytesRead += rc;
 		if (bytesRead >= bufLen) {
 			break;
@@ -140,7 +185,7 @@ ssize_t StreamPort::writeExactLen(uint8_t *buffer, size_t bufLen) {
 	ssize_t rc = write(buffer,bufLen);
 	ssize_t bytesWritten = 0;
 
-	while (rc != -1 ) {
+	while (rc > 0 ) {
 		bytesWritten += rc;
 		if (bytesWritten >= bufLen) {
 			break;
