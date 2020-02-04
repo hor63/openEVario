@@ -59,15 +59,20 @@ public:
 
 	/** \brief Read the next available block of data into the buffer
 	 *
-	 * The default implementation calls ::read() to read any available data up to bufLen bytes into the provided buffer
-	 * When no data is available the call will block until data is available
+	 * The default implementation calls ::read() to read any available data up to \p bufLen bytes into the provided \p buffer
 	 *
-	 * Like all I/O operations access to the \p deviceHandle is synchronized with an object of class \ref PortBase::DeviceHandleAccess
+	 * Like all I/O operations access to the PortBase::deviceHandle is synchronized with an object of class \ref PortBase::DeviceHandleAccess
 	 *
-	 * @param buffer Buffer to receive the data
-	 * @param bufLen Size of the buffer. This is the maximum number bytes which can be received
-	 * @return Number of bytes read into \p buffer. Unless an exception was encountered
-	 * @throws GliderVarioPortReadException
+	 * When no data is available the call will block until data is available unless non-blocking mode is active
+	 * with PortBase::isBlocking() = \a false. \n
+	 * The function returns 0 when non-blocking mode is active, and no data is available. \n
+	 * This is unlike ::read() which returns 0 when the channel is closed by the other side or end-of-file.
+	 * In this case this function throws a \ref GliderVarioPortReadEndOfFileException.
+	 *
+	 * @param[out] buffer Buffer to receive the data
+	 * @param[in] bufLen Size of the buffer. This is the maximum number bytes which can be received
+	 * @return Number of bytes read into \p buffer.
+	 * @throws GliderVarioPortReadException, GliderVarioPortReadEndOfFileException, GliderVarioPortNotOpenException
 	 *
 	 * \see Linux Programmer's Manual: [read(2)](http://man7.org/linux/man-pages/man2/read.2.html)
 	 */
@@ -80,42 +85,56 @@ public:
 	 *
 	 * Like all I/O operations access to the \p deviceHandle is synchronized with an object of class \ref PortBase::DeviceHandleAccess
 	 *
+	 * **Note:** If non-blocking mode is active, and there is no data available the function will return immediately
+	 * returning 0. *Non-blocking mode and waiting until all data arrived is a contradiction in itself.*
+	 *
 	 * @param buffer Buffer to receive the data
 	 * @param bufLen Size of the buffer. This is the target number bytes to be received
 	 * @return Number of bytes read into \p buffer. Unless an exception was thrown the function always returns \p bufLen
-	 * @throws GliderVarioPortReadException
+	 * @throws GliderVarioPortReadException, GliderVarioPortReadEndOfFileException, GliderVarioPortNotOpenException
 	 *
-	 * \see StreamPort::read()
+	 * \see read()
 	 */
 	ssize_t readExactLen(uint8_t* buffer,size_t bufLen);
 
 	/** \brief write the buffer content to the port device
 	 *
-	 * The default implementation calls ::write() to write the entire buffer to the destination port/device/file...
-	 * Data is written in a loop if only a part of the buffer is written until the entire buffer is written unless an error occurs.
+	 * The default implementation calls ::write() to write the buffer content to the destination port/device/file...
+	 *
+	 * Note that write() is virtual and can be overridden.
 	 *
 	 * Like all I/O operations access to the device handle is synchronized with an object of class \ref PortBase::DeviceHandleAccess
+	 *
+	 * The call will block until all data is written unless non-blocking mode is active
+	 * with PortBase::isBlocking() = \a false. \n
+	 * The function returns 0 when non-blocking mode is active, and no data can be written. \n
+	 * This is unlike ::write() which returns 0 when the channel is closed by the other side or end-of-file.
+	 * In this case this function throws a \ref GliderVarioPortReadEndOfFileException.
 	 *
 	 * @param buffer Buffer containing the data to be written
 	 * @param bufLen Number of bytes in the buffer
 	 * @return Number of bytes written. Is always the same as \p bufLen. Else an error occurred and an exception is thrown.
-	 * @throws GliderVarioPortWriteException
+	 * @throws GliderVarioPortWriteException, GliderVarioPortWriteEndOfFileException, GliderVarioPortNotOpenException
 	 *
-	 * \see Linux Programmer's Manual: [read(2)](http://man7.org/linux/man-pages/man2/write.2.html)
+	 * \see Linux Programmer's Manual: [write(2)](http://man7.org/linux/man-pages/man2/write.2.html)
 	 */
 	virtual ssize_t write (uint8_t* buffer,size_t bufLen);
 
 	/** \brief write an exact amount of data
 	 *
 	 * This function calls write() in a loop until the requested number of bytes \p bufLen
-	 * have been written. Note that write() is virtual and can be overridden.
+	 * have been written.
 	 *
 	 * Like all I/O operations access to the \p deviceHandle is synchronized with an object of class \ref PortBase::DeviceHandleAccess
+	 *
+	 * **Note:** If non-blocking mode is active, and no data can be written the function will return immediately
+	 * returning 0. *Non-blocking mode and waiting until all data are written is a contradiction in itself.*
+	 *
 	 *
 	 * @param buffer Buffer containing the data to be sent
 	 * @param bufLen Size of the buffer. This is the target number bytes to be sent
 	 * @return Number of bytes sent. Unless an exception was thrown the function always returns \p bufLen
-	 * @throws GliderVarioPortWriteException
+	 * @throws GliderVarioPortWrite, ExceptionGliderVarioPortwriteEndOfFileException, GliderVarioPortNotOpenException
 	 *
 	 * \see StreamPort::write()
 	 */
