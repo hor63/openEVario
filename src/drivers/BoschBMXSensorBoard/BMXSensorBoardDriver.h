@@ -39,7 +39,13 @@ namespace openEV {
 
 /** \brief Driver for Bosch BMX160 IMU which is mounted on the hovImuBoard sensor board
  *
- * This driver communicates with the BMX SensorBoard to obtain accelerometer, gyroscope, and magnetometer
+ * This driver communicates with the BMX SensorBoard to obtain accelerometer, gyroscope, and magnetometer.
+ *
+ * The hardware of sensor board is available as KiCad schematics and BOM in my GitHub repository [hovImuBoard](https://github.com/hor63/hovImuBoard)
+ * The firmware for the AVR micro controller on the board is in my GitHub repository [horOvIp-I2C-Bridge](https://github.com/hor63/horOvIp-I2C-Bridge)
+ *
+ * Communications with the sensor board is via TCP/IP. The board connects to the computer via serial line using SLIP.
+ *
  */
 class BMXSensorBoardDriver  : public GliderVarioDriverBase {
 public:
