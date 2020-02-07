@@ -23,7 +23,7 @@ openEVBMXSensorBoard_la_SOURCES=BMXSensorBoardMain.cpp BMXSensorBoardLib.cpp BMX
 openEVBMXSensorBoard_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT) $(LOG4CXX_LDFLAGS) -module
 openEVBMXSensorBoard_la_LIBADD = ../../main/libopenEVMain.la $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
 
-AM_CXXFLAGS = -I../../.. -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen \
+AM_CXXFLAGS = -I../../.. -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen -I$(top_srcdir)/3rdParty/horOvIp-I2C-Bridge \
 	$(LOG4CXX_CXXFLAGS) \
 	$(PTHREAD_CFLAGS) \
 	$(DLL_VISIBLE_CFLAGS)
