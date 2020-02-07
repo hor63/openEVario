@@ -33,7 +33,6 @@
 #include "kalman/GliderVarioTransitionMatrix.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
 
-
 #if defined HAVE_LOG4CXX_H
 static log4cxx::LoggerPtr logger = 0;
 
@@ -59,27 +58,37 @@ BMXSensorBoardDriver::BMXSensorBoardDriver(
 	initLogger();
 #endif /* HAVE_LOG4CXX_H */
 
-	setSensorCapability(GPS_LATITUDE	);
-	setSensorCapability(GPS_LONGITUDE	);
-	setSensorCapability(GPS_ALTITUDE_MSL);
-	setSensorCapability(STATIC_PRESSURE	);
-	setSensorCapability(RUN_IDLE_LOOP	);
+	setSensorCapability(ACCEL_X);
+	setSensorCapability(ACCEL_Y);
+	setSensorCapability(ACCEL_Z);
+	setSensorCapability(GYRO_X);
+	setSensorCapability(GYRO_Y);
+	setSensorCapability(GYRO_Z);
+	setSensorCapability(COMPASS_X);
+	setSensorCapability(COMPASS_Y);
+	setSensorCapability(COMPASS_Z);
 
+	memset (&magTrimData,0,sizeof(magTrimData));
 }
 
 
 BMXSensorBoardDriver::~BMXSensorBoardDriver() {
 
-	/// todo fill me
 
 }
 
 
 void BMXSensorBoardDriver::driverInit() {
 
+	/// todo fill me
+
 }
 
 void BMXSensorBoardDriver::readConfiguration (Properties4CXX::Properties const &configuration) {
+
+	std::string portName;
+
+	portName = configuration.getPropertyValue("PortName",nullptr);
 
 	/// todo fill me
 
