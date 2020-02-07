@@ -32,8 +32,12 @@
 
 #include "OEVCommon.h"
 
+// Shared structures and constants with the sensor board MCU firmware.
+#include "horOvIp-I2C-Bridge/BMX160net.h"
+
 #include "drivers/GliderVarioDriverBase.h"
 #include "BMXSensorBoardLib.h"
+#include "util/io/StreamPort.h"
 
 namespace openEV {
 
@@ -111,6 +115,16 @@ protected:
      *
      */
     void driverThreadFunction() override;
+
+private:
+
+    std::string portName;
+
+    /// \brief The I/O port. Typically this is a TCP port.
+    io::StreamPort *ioPort = nullptr;
+
+    /// BMX160 magnetometer trim data structure
+    struct bmm150_trim_registers magTrimData;
 
 };
 
