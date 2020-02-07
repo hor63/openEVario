@@ -308,7 +308,7 @@ protected:
 	 * This function is the device specific open function. It is intended to be overridden.
 	 * The status handling, and locking the mutex is handled by the wrapper function open()
 	 *
-	 * The default implementation opens the device with ::open().
+	 * The default implementation opens the device with [::open()](http://man7.org/linux/man-pages/man2/open.2.html).
 	 *
 	 * @throws GliderVarioPortOpenException
 	 * @throws GliderVarioPortDontExistException
@@ -322,7 +322,7 @@ protected:
 	 * This function is the device specific close function. It is intended to be overridden.
 	 * The status handling, and locking the mutex is handled by the wrapper function close()
 	 *
-	 * The default implementation calls ::close()
+	 * The default implementation calls [::close()](http://man7.org/linux/man-pages/man2/close.2.html)
 	 *
 	 * \see Linux Programmer's Manual: [close(2)](http://man7.org/linux/man-pages/man2/close.2.html)
 	 */
