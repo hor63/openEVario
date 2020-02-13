@@ -186,7 +186,7 @@ public:
      *
      * @param varioMain Reference to the vario main object
      */
-    virtual void start(GliderVarioMainPriv &varioMain);
+    virtual void run(GliderVarioMainPriv &varioMain);
 
     /** \brief Stop capturing data from the sensor
      *

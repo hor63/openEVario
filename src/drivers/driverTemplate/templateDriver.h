@@ -76,7 +76,7 @@ public:
      *
      * \see GliderVarioDriverBase::start()
      */
-    void start(GliderVarioMainPriv &varioMain) override;
+    void run(GliderVarioMainPriv &varioMain) override;
 
     /** \brief Suspend the driver temporarily
      *

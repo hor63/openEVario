@@ -102,9 +102,9 @@ void BMXSensorBoardDriver::initializeStatus(
 
 }
 
-void BMXSensorBoardDriver::start(GliderVarioMainPriv &varioMain) {
+void BMXSensorBoardDriver::run(GliderVarioMainPriv &varioMain) {
 
-	GliderVarioDriverBase::start(varioMain);
+	GliderVarioDriverBase::run(varioMain);
 
 }
 

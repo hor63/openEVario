@@ -93,9 +93,9 @@ void templateDriver::initializeStatus(
 
 }
 
-void templateDriver::start(GliderVarioMainPriv &varioMain) {
+void templateDriver::run(GliderVarioMainPriv &varioMain) {
 
-	GliderVarioDriverBase::start(varioMain);
+	GliderVarioDriverBase::run(varioMain);
 
 }
 

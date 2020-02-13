@@ -274,12 +274,12 @@ void IGCReaderDriver::initializeStatus(
 
 }
 
-void IGCReaderDriver::start(GliderVarioMainPriv &varioMain) {
+void IGCReaderDriver::run(GliderVarioMainPriv &varioMain) {
 
 	if (runSingleThreadDebug) {
 		runDebugSingleThread (varioMain);
 	} else {
-		GliderVarioDriverBase::start(varioMain);
+		GliderVarioDriverBase::run(varioMain);
 	}
 
 }

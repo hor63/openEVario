@@ -38,15 +38,14 @@ void GliderVarioDriverBase::driverThreadEntry (GliderVarioDriverBase* tis) {
 }
 
 
-void GliderVarioDriverBase::start(GliderVarioMainPriv &varioMain) {
+void GliderVarioDriverBase::run(GliderVarioMainPriv &varioMain) {
 
-	if (isRunning) {
-		stop();
-	}
 
 	isRunning = true;
-	driverThread = std::thread(GliderVarioDriverBase::driverThreadEntry,this);
-	this->varioMain = &varioMain;
+	if (!driverThread.joinable()){
+		this->varioMain = &varioMain;
+		driverThread = std::thread(GliderVarioDriverBase::driverThreadEntry,this);
+	}
 
 }
 

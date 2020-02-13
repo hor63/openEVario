@@ -86,7 +86,7 @@ public:
     		GliderVarioStatus &varioStatus,
 			GliderVarioMainPriv &varioMain) override;
 
-    void start(GliderVarioMainPriv &varioMain) override;
+    void run(GliderVarioMainPriv &varioMain) override;
 
     virtual void suspend() override;
 
