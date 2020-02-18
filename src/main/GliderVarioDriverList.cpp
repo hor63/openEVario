@@ -365,7 +365,7 @@ void GliderVarioDriverList::stopDrivers () {
 	auto iter = driverInstanceList.begin();
 
 	while (iter != driverInstanceList.end()) {
-		iter->second->stop();
+		iter->second->shutdown();
 
 		iter ++;
 	}

@@ -63,14 +63,7 @@ public:
 			char const *description,
 			char const *instanceName,
 			GliderVarioDriverLibBase &driverLib
-			)
-    : sensorCapabilities {0},
-	  driverName {driverName},
-	  description {description},
-	  instanceName {instanceName},
-	  driverLib {driverLib}
-    {
-    }
+			);
 
     virtual ~GliderVarioDriverBase () {}
 
@@ -148,7 +141,7 @@ public:
     	return driverLib;
     }
 
-    // start of the abstract interface which must be implemented by each driver.
+    // The abstract interface which must be implemented by each driver.
 
     /**
      * Initialize the driver
@@ -161,15 +154,42 @@ public:
      */
     virtual void readConfiguration (Properties4CXX::Properties const &configuration) = 0;
 
+    /** \brief todo Don't know if I really need this...
+     *
+     * @param varioStatus The current Kalman status to update
+     */
+    virtual void updateKalmanStatus (GliderVarioStatus &varioStatus) = 0;
+
+    // Interface with default implementations by the base class
+
+    /** \brief Startup the driver thread
+     *
+     * This call starts the internal thread of the driver instance and returns immediately.
+     *
+     * The standard implementation should suffice in most cases. It can be overridden if necessary.
+     * Usually the driver thread will open the communication port, and start acquiring data.
+     *
+     * The initial data can be used to acquire an initial status for use with \ref initializeStatus().
+     *
+     * When \ref run() starts updating the Kalman filter the thread is already running.
+     *
+     * @param varioMain Reference to the vario main object
+     * @see run()
+     * @see stop()
+     */
+    virtual void startup(GliderVarioMainPriv &varioMain);
+
     /** \brief Initialize the status components which can be directly initialized from sensor values.
      *
-     * Open and run the sensor to initialize the vario status. Initialize the components of the status which can be directly initialized,
+     * Run the sensor to initialize the vario status. Initialize the components of the status which can be directly initialized,
      * e.g. the position and altitude from initial GPS readings, or the altitude from the pressure sensor.
      * In addition derived status values like the QFF can be initialized from the GPS altitude, and pressure altitude once both are known.
      *
-     * It is in the discretion of the driver if it leaves the sensor connection open or it closes it until \ref start() is called.
+     * It is in the discretion of the driver if it leaves the sensor connection open or it closes it until \ref run() is called.
      *
      * This call is synchronous. It should return ASAP in order to not make other initializations of the status invalid.
+     *
+     * This call is invoked after \ref startup(). So you can expect that the driver thread is up and running already.
      *
      * @param varioStatus Status and Co-variance of the Kalman filter to be initialized.
 	 * @param varioMain mainVario object; provides all additional information like program parameters, and the parsed properties.
@@ -180,7 +200,9 @@ public:
 
     /** \brief Start capturing data from the sensor, and updating the Kalman filter
      *
-     * This call starts the internal thread of the driver instance and returns immediately.
+     * This call comes after \ref startup() and \ref initializeStatus().
+     *
+     * The standard implementation just sets \ref isRunning \p true.
      *
      * The standard implementation should suffice in most cases. It can be overridden if necessary
      *
@@ -198,25 +220,29 @@ public:
      * The standard implementation should suffice in most cases. It can be overridden if necessary
      *
      */
-    virtual void stop();
+    virtual void shutdown();
 
     /** \brief Suspend data capturing temporarily
      *
-     * If a data capturing and Kalman update cycle is underway it will complete even if this function alreadz returned.
+     * If a data capturing and Kalman update cycle is underway it will complete even if this function already returned.
      * It is in the discretion of the driver if data capturing continues (e.g. capturing GPS data).
      *
      * In any case updating of the Kalman filter is suspended.
+     *
+     * The standard implementation just sets \ref isRunning \p false.
+     *
      */
-    virtual void suspend() = 0;
+    virtual void suspend();
 
     /** \brief Data capturing and updating of the Kalman filter resumes
      *
-     * When data capturing and Kalman filter updates were suspended before this call resumes operations.
+     * When data capturing and Kalman filter updates were suspended before this call resumes Kalman filter updating.
+     *
+     *
+     * The standard implementation just sets \ref isRunning \p true.
      *
      */
-    virtual void resume() = 0;
-
-    virtual void updateKalmanStatus (GliderVarioStatus &varioStatus) = 0;
+    virtual void resume();
 
 protected:
 
@@ -232,11 +258,24 @@ protected:
     /// Pointer to the main object. Is being set by \ref start() and set NULL by \ref stop()
     GliderVarioMainPriv *varioMain = 0;
 
-    /** \brief Flag if the processing thread is (or should) be running.
+    /** \brief Flag if sensor data should update the Kalman filter.
      *
-     * Serves also as signal to the processing thread if it should stop
+     * If \p true the Kalman filter is being updated \n
+     * If \p false the Kalman filter is not to be updated. The driver thread will keep running and acquire data.
      */
-    bool isRunning = false;
+    bool isKalmanUpdateRunning = false;
+
+    /** \brief Communication flag to the driver thread to shut itself down
+     *
+     * When the flag is \p true the driver thread will close the port and shut itself down.
+     */
+    bool isDriverThreadRunning = false;
+
+    /** \brief Communication flag to the driver thread to shut itself down
+     *
+     * When the flag is \p true the driver thread will close the port and shut itself down.
+     */
+    bool stopDriverThread = false;
 
     /// \brief The sensor driver thread
     std::thread driverThread;
@@ -257,7 +296,7 @@ protected:
      *
      * Must be overridden by the driver implementation
      *
-     * This function *must* regularly check if \ref isRunning is set false, and then immediately exit.
+     * This function *must* regularly check if \ref isKalmanUpdateRunning is set false, and then immediately exit.
      * This check must occur within a reasonable interval, typically < 1 sec
      */
     virtual void driverThreadFunction() = 0;

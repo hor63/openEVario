@@ -22,37 +22,102 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
 
 #define BUILDING_OEV_DRIVER 1
 
 #include <system_error>
+#include <sstream>
 
 #include "OEVCommon.h"
 #include "drivers/GliderVarioDriverBase.h"
 
+#if defined HAVE_LOG4CXX_H
+static log4cxx::LoggerPtr logger = 0;
+
+static inline void initLogger() {
+	if (!logger) {
+		logger = log4cxx::Logger::getLogger("openEV.Drivers.GliderVarioDriverBase");
+	}
+}
+#endif
+
 namespace openEV {
 
-void GliderVarioDriverBase::driverThreadEntry (GliderVarioDriverBase* tis) {
-	tis->driverThreadFunction();
+GliderVarioDriverBase::GliderVarioDriverBase (
+	    char const *driverName,
+		char const *description,
+		char const *instanceName,
+		GliderVarioDriverLibBase &driverLib
+		)
+: sensorCapabilities {0},
+  driverName {driverName},
+  description {description},
+  instanceName {instanceName},
+  driverLib {driverLib}
+{
+	initLogger();
 }
 
+void GliderVarioDriverBase::startup(GliderVarioMainPriv &varioMain) {
 
-void GliderVarioDriverBase::run(GliderVarioMainPriv &varioMain) {
-
-
-	isRunning = true;
-	if (!driverThread.joinable()){
+	if (!isDriverThreadRunning && !driverThread.joinable()){
 		this->varioMain = &varioMain;
 		driverThread = std::thread(GliderVarioDriverBase::driverThreadEntry,this);
 	}
 
 }
 
-void GliderVarioDriverBase::stop() {
 
-	if (isRunning) {
-		isRunning = false;
+void GliderVarioDriverBase::driverThreadEntry (GliderVarioDriverBase* tis) {
+
+	tis->isDriverThreadRunning = true;
+	try {
+		tis->driverThreadFunction();
+	}
+	catch (std::exception &e) {
+		std::ostringstream str;
+		str << "Uncought exception in driver "
+				<< tis->driverName << ":" << tis->instanceName
+				<< ". Message = " << e.what();
+		LOG4CXX_ERROR(logger,str.str());
+	}
+	catch (...) {
+		std::ostringstream str;
+		str << "Uncought unknown exception in driver "
+				<< tis->driverName << ":" << tis->instanceName;
+		LOG4CXX_ERROR(logger,str.str());
+	}
+
+	tis->isDriverThreadRunning = false;
+	tis->stopDriverThread = false;
+}
+
+
+void GliderVarioDriverBase::run(GliderVarioMainPriv &varioMain) {
+
+	isKalmanUpdateRunning = true;
+
+}
+
+void GliderVarioDriverBase::suspend() {
+
+	isKalmanUpdateRunning = false;
+
+}
+
+void GliderVarioDriverBase::resume() {
+
+	isKalmanUpdateRunning = true;
+
+}
+
+void GliderVarioDriverBase::shutdown() {
+
+	if (!stopDriverThread) {
+		stopDriverThread = true;
 		if (driverThread.joinable()) {
 			try {
 				driverThread.join();
