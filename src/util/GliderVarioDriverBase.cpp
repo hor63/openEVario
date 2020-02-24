@@ -63,8 +63,9 @@ GliderVarioDriverBase::GliderVarioDriverBase (
 
 void GliderVarioDriverBase::startup(GliderVarioMainPriv &varioMain) {
 
+	this->varioMain = &varioMain;
+
 	if (!isDriverThreadRunning && !driverThread.joinable()){
-		this->varioMain = &varioMain;
 		driverThread = std::thread(GliderVarioDriverBase::driverThreadEntry,this);
 	}
 
@@ -96,7 +97,7 @@ void GliderVarioDriverBase::driverThreadEntry (GliderVarioDriverBase* tis) {
 }
 
 
-void GliderVarioDriverBase::run(GliderVarioMainPriv &varioMain) {
+void GliderVarioDriverBase::run() {
 
 	isKalmanUpdateRunning = true;
 
@@ -127,6 +128,8 @@ void GliderVarioDriverBase::shutdown() {
 			}
 		}
 	}
+
+	varioMain = nullptr;
 
 }
 

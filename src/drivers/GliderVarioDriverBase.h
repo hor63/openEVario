@@ -208,7 +208,7 @@ public:
      *
      * @param varioMain Reference to the vario main object
      */
-    virtual void run(GliderVarioMainPriv &varioMain);
+    virtual void run();
 
     /** \brief Stop capturing data from the sensor
      *
@@ -255,7 +255,7 @@ protected:
 
     GliderVarioDriverLibBase &driverLib;
 
-    /// Pointer to the main object. Is being set by \ref start() and set NULL by \ref stop()
+    /// Pointer to the main object. Is being set by \ref startup() and set NULL by \ref shutdown()
     GliderVarioMainPriv *varioMain = 0;
 
     /** \brief Flag if sensor data should update the Kalman filter.
@@ -263,19 +263,19 @@ protected:
      * If \p true the Kalman filter is being updated \n
      * If \p false the Kalman filter is not to be updated. The driver thread will keep running and acquire data.
      */
-    bool isKalmanUpdateRunning = false;
+    volatile bool isKalmanUpdateRunning = false;
 
     /** \brief Communication flag to the driver thread to shut itself down
      *
      * When the flag is \p true the driver thread will close the port and shut itself down.
      */
-    bool isDriverThreadRunning = false;
+    volatile bool isDriverThreadRunning = false;
 
     /** \brief Communication flag to the driver thread to shut itself down
      *
      * When the flag is \p true the driver thread will close the port and shut itself down.
      */
-    bool stopDriverThread = false;
+    volatile bool stopDriverThread = false;
 
     /// \brief The sensor driver thread
     std::thread driverThread;
