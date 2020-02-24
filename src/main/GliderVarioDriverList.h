@@ -113,6 +113,12 @@ public:
 	 */
 	void OEV_MAIN_PUBLIC addDriver (DriverListItem const& driverListItem);
 
+	/** \brief Startup the driver threads of all drivers
+	 *
+	 * @param varioMain mainVario object; provides all additional information like program parameters, and the parsed properties.
+	 */
+	void startupDrivers (GliderVarioMainPriv &varioMain);
+
 	/** \brief Each driver initializes a part of the Kalman filter with initial sensor readings
 	 *
 	 * @param currentStatus Kalman status to be initialized
@@ -126,7 +132,7 @@ public:
 	 *
 	 * @param varioMain mainVario object; provides all additional information like program parameters, and the parsed properties.
 	 */
-	void startDrivers (GliderVarioMainPriv &varioMain);
+	void runDrivers ();
 
 	/** \brief Stop data capturing from all drivers
 	 *

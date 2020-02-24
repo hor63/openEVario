@@ -334,6 +334,18 @@ void GliderVarioDriverList::loadDriverInstance(char const *driverInstanceName, P
 
 }
 
+void GliderVarioDriverList::startupDrivers (GliderVarioMainPriv &varioMain) {
+
+	auto iter = driverInstanceList.begin();
+
+	while (iter != driverInstanceList.end()) {
+		iter->second->startup(varioMain);
+
+		iter ++;
+	}
+
+}
+
 void GliderVarioDriverList::initializeKalmanStatus(
 		GliderVarioStatus &currentStatus,
 		GliderVarioMainPriv &varioMain) {
@@ -348,12 +360,12 @@ void GliderVarioDriverList::initializeKalmanStatus(
 
 }
 
-void GliderVarioDriverList::startDrivers (GliderVarioMainPriv &varioMain) {
+void GliderVarioDriverList::runDrivers () {
 
 	auto iter = driverInstanceList.begin();
 
 	while (iter != driverInstanceList.end()) {
-		iter->second->run(varioMain);
+		iter->second->run();
 
 		iter ++;
 	}

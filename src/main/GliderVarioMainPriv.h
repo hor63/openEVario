@@ -201,6 +201,9 @@ public:
 			GliderVarioMeasurementVector *&measurementVector
 			) OEV_MAIN_PUBLIC ;
 
+
+
+
 private:
 
 	int argc;

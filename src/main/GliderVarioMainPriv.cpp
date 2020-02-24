@@ -403,6 +403,9 @@ void GliderVarioMainPriv::startup () {
 	// Register the drivers implemented by the libraries
     driverList.loadDriverLibs(configuration);
 
+    // Start the internal threads of the drivers. These will open the ports, and start acquiring sensor data
+    driverList.startupDrivers(*this);
+
     // Read the driver instances from the configuration, and create them for the specified drivers.
 	driverList.loadDriverInstances(configuration);
 
@@ -748,7 +751,7 @@ void GliderVarioMainPriv::intializeStatus() {
 
 void GliderVarioMainPriv::startMainLoop() {
 
-	driverList.startDrivers(*this);
+	driverList.runDrivers();
 
 	if (!driverList.isDriverRunningIdleLoop()) {
 		if (!idleLoopRunning) {
