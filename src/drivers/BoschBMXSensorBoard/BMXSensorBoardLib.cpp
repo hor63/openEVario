@@ -35,7 +35,7 @@
 
 namespace openEV {
 
-static std::string const BMXSensorBoardDriverName = "BMXSensorBoard";
+static std::string const BMXSensorBoardDriverName = "BMX160SensorBoard";
 static std::string const BMXSensorBoardDriverLibName = "BMXSensorBoardLib";
 
 BMXSensorBoardLib BMXSensorBoardLib::theOneAndOnly;
