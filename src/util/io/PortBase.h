@@ -193,6 +193,16 @@ public:
 	 */
 	static void loadPorts(Properties4CXX::Properties const &properties);
 
+	/** \brief Return a port identified by its name
+	 *
+	 * Returns a port which was loaded before, typically by \ref loadPorts().
+	 *
+	 * @param portName Name of the port
+	 * @return Pointer to the port. The instance is managed locally, do not delete it yourself!
+	 * @throws GliderVarioPortDontExistException
+	 */
+	static PortBase* getPortByName(std::string const & portName);
+
 	/** \brief Open the device port
 	 *
 	 * This is the public wrapper function.
@@ -236,7 +246,7 @@ public:
 private:
 	/// Map of all port types. All port type classes register themselves here.
 	static PortTypeMap typeMap;
-	/// Mao of all ports. Ports are defined in the configuration.
+	/// Map of all ports. Ports are defined in the configuration.
 	static PortMap portMap;
 
 	/// Name of the port as defined in the configuration

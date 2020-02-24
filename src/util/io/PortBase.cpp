@@ -29,6 +29,7 @@
 #include <sstream>
 #include <cstring>
 
+#include <OEVCommon.h>
 #include "util/io/PortBase.h"
 
 
@@ -201,6 +202,21 @@ void PortBase::loadPorts(Properties4CXX::Properties const &properties) {
 	} catch (Properties4CXX::ExceptionPropertyNotFound const& e) {
 		LOG4CXX_WARN(logger,"Properties section 'IOPorts' does not exist. No I/O ports will be created.");
 	}
+
+}
+
+PortBase* PortBase::getPortByName(std::string const & portName) {
+
+	auto rc = portMap.find(portName);
+
+	if (rc == portMap.end()) {
+		std::ostringstream str;
+		str << "Cannot find IO port \"" << portName << "\"";
+		LOG4CXX_ERROR (logger,str.str());
+		throw GliderVarioPortConfigException(__FILE__,__LINE__,str.str().c_str());
+	}
+
+	return rc->second.get();
 
 }
 
