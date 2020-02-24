@@ -29,7 +29,7 @@
 
 #include <fstream>
 
-#include "IGCReaderDriver.h"
+#include "drivers/IGCReader/IGCReaderDriver.h"
 #include "kalman/GliderVarioTransitionMatrix.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
 
@@ -274,22 +274,22 @@ void IGCReaderDriver::initializeStatus(
 
 }
 
-void IGCReaderDriver::run(GliderVarioMainPriv &varioMain) {
+void IGCReaderDriver::startup(GliderVarioMainPriv &varioMain) {
 
-	if (runSingleThreadDebug) {
-		runDebugSingleThread (varioMain);
+	if (!runSingleThreadDebug) {
+		GliderVarioDriverBase::startup(varioMain);
 	} else {
-		GliderVarioDriverBase::run(varioMain);
+		// store the pointer here. I need it for run()
+		this->varioMain = &varioMain;
 	}
 
 }
 
-void IGCReaderDriver::suspend() {
+void IGCReaderDriver::run() {
 
-}
-
-void IGCReaderDriver::resume() {
-
+	if (runSingleThreadDebug) {
+		runDebugSingleThread (*varioMain);
+	}
 }
 
 void IGCReaderDriver::updateKalmanStatus (GliderVarioStatus &varioStatus) {

@@ -33,9 +33,9 @@
 #include "OEVCommon.h"
 
 #include "drivers/GliderVarioDriverBase.h"
-#include "IGCReaderLib.h"
-#include "BRecord.h"
-#include "BRecordSection.h"
+#include "drivers/IGCReader/IGCReaderLib.h"
+#include "drivers/IGCReader/BRecord.h"
+#include "drivers/IGCReader/BRecordSection.h"
 
 namespace openEV {
 
@@ -86,11 +86,9 @@ public:
     		GliderVarioStatus &varioStatus,
 			GliderVarioMainPriv &varioMain) override;
 
-    void run(GliderVarioMainPriv &varioMain) override;
+    virtual void startup(GliderVarioMainPriv &varioMain) override;
 
-    virtual void suspend() override;
-
-    virtual void resume() override;
+    virtual void run() override;
 
     virtual void updateKalmanStatus (GliderVarioStatus &varioStatus) override;
 
