@@ -33,6 +33,8 @@
 #include "kalman/GliderVarioTransitionMatrix.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
 
+#include "horOvIp-I2C-Bridge/BMX160net.h"
+
 #if defined HAVE_LOG4CXX_H
 static log4cxx::LoggerPtr logger = 0;
 
@@ -86,35 +88,35 @@ void BMXSensorBoardDriver::driverInit() {
 
 void BMXSensorBoardDriver::readConfiguration (Properties4CXX::Properties const &configuration) {
 
-	std::string portName;
 
-	portName = configuration.getPropertyValue("PortName",nullptr);
+	try {
+		auto portNameConfig = configuration.searchProperty("PortName");
 
-	/// todo fill me
+		if (portNameConfig->isList() || portNameConfig->isStruct()) {
+			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"Configuration variable \"PortName\" is a struct or a string list.");
+		}
+
+		portName = portNameConfig->getStringValue();
+
+		ioPort = dynamic_cast<io::StreamPort*> (io::PortBase::getPortByName(portName));
+		if (ioPort == nullptr) {
+			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"I/O Port is not a stream port.");
+		}
+	} catch (std::exception const& e) {
+		LOG4CXX_ERROR(logger, "Read configuration of driver \"" << driverName
+				<< "\" failed:"
+				<< e.what());
+	}
+
+    errorTimeout = (long long)(configuration.getPropertyValue(std::string("errorTimeout"),(long long)(10)));
+    errorMaxNumRetries = (long long)(configuration.getPropertyValue(std::string("errorTimeout"),(long long)(0)));
+
 
 }
 
 void BMXSensorBoardDriver::initializeStatus(
 		GliderVarioStatus &varioStatus,
 		GliderVarioMainPriv &varioMain) {
-
-	/// todo fill me
-
-}
-
-void BMXSensorBoardDriver::run(GliderVarioMainPriv &varioMain) {
-
-	GliderVarioDriverBase::run(varioMain);
-
-}
-
-void BMXSensorBoardDriver::suspend() {
-
-	/// todo fill me
-
-}
-
-void BMXSensorBoardDriver::resume() {
 
 	/// todo fill me
 
@@ -129,7 +131,22 @@ void BMXSensorBoardDriver::updateKalmanStatus (GliderVarioStatus &varioStatus) {
 
 void BMXSensorBoardDriver::driverThreadFunction() {
 
-	/// todo fill me
+	if (ioPort == nullptr) {
+		LOG4CXX_ERROR (logger,"No valid I/O port for driver " << getDriverName()
+				<< ". The driver is not operable");
+	} else {
+		while (1) {
+			try {
+				ioPort->open();
+				/// todo Read from port and update Kalman filter.
+			} catch (std::exception const& e) {
+				LOG4CXX_ERROR(logger,"Error in main loop of driver \"" << getDriverName()
+						<< "\":" << e.what());
+				ioPort->close();
+
+			}
+		}
+	}
 }
 
 

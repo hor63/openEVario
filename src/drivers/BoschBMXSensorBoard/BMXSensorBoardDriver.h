@@ -82,24 +82,6 @@ public:
     		GliderVarioStatus &varioStatus,
 			GliderVarioMainPriv &varioMain) override;
 
-    /** \brief Start data acquisition
-     *
-     * \see GliderVarioDriverBase::start()
-     */
-    void run(GliderVarioMainPriv &varioMain) override;
-
-    /** \brief Suspend the driver temporarily
-     *
-     * \see GliderVarioDriverBase::suspend()
-     */
-    virtual void suspend() override;
-
-    /** \brief Resume data acquisition when it was suspended before by suspend()
-     *
-     * \see GliderVarioDriverBase::resume()
-     */
-    virtual void resume() override;
-
     /** \brief Callback to update the Kalman filter status based on received data.
      *
      * \see GliderVarioDriverBase::updateKalmanStatus()
@@ -118,7 +100,29 @@ protected:
 
 private:
 
+    /** \brief Name of the communications port.
+     *
+     * I/O ports are defined in the IOPorts section of the configuration
+     */
+
     std::string portName;
+
+    /** \brief Timeout in seconds between recovery attempts when an error in the main loop occurs.
+     *
+     * Configuration parameter is "errorTimeout" in the driver section.
+     */
+    int32_t errorTimeout = 10;
+
+    /** \brief Maximum number of retries upon consecutive errors in the main loop.
+     *
+     * A value <= 0 means that the number of retries is unlimited.
+     *
+     * When the maximum number of retries is exceeded the main loop terminates and the driver ceases to operate
+     *
+     * Configuration parameter is "errorMaxNumRetries" in the driver section.
+     *
+     */
+    int32_t errorMaxNumRetries = 0;
 
     /// \brief The I/O port. Typically this is a TCP port.
     io::StreamPort *ioPort = nullptr;
