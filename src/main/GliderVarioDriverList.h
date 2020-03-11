@@ -130,7 +130,6 @@ public:
 
 	/** \brief Start data capturing from all drivers
 	 *
-	 * @param varioMain mainVario object; provides all additional information like program parameters, and the parsed properties.
 	 */
 	void runDrivers ();
 

@@ -202,11 +202,10 @@ public:
      *
      * This call comes after \ref startup() and \ref initializeStatus().
      *
-     * The standard implementation just sets \ref isRunning \p true.
+     * The standard implementation just sets \ref isKalmanUpdateRunning \p true.
      *
      * The standard implementation should suffice in most cases. It can be overridden if necessary
      *
-     * @param varioMain Reference to the vario main object
      */
     virtual void run();
 
@@ -214,7 +213,7 @@ public:
      *
      * This calls returns when the internal thread is stopped and data capturing actually stopped.
      * Connections are closed when necessary.
-     * This requires that the implementation of \ref driverThreadFunction regularly checks \ref isRunning and exits in time
+     * This requires that the implementation of \ref driverThreadFunction regularly checks \ref isKalmanUpdateRunning and exits in time
      * Otherwise this function would be stuck forever.
      *
      * The standard implementation should suffice in most cases. It can be overridden if necessary
@@ -229,7 +228,7 @@ public:
      *
      * In any case updating of the Kalman filter is suspended.
      *
-     * The standard implementation just sets \ref isRunning \p false.
+     * The standard implementation just sets \ref isKalmanUpdateRunning \p false.
      *
      */
     virtual void suspend();
@@ -239,10 +238,63 @@ public:
      * When data capturing and Kalman filter updates were suspended before this call resumes Kalman filter updating.
      *
      *
-     * The standard implementation just sets \ref isRunning \p true.
+     * The standard implementation just sets \ref isKalmanUpdateRunning \p true.
      *
      */
     virtual void resume();
+
+    /** \brief Flag if sensor data should update the Kalman filter.
+     *
+     * If \p true the Kalman filter is being updated \n
+     * If \p false the Kalman filter is not to be updated. The driver thread will keep running and acquire data.
+     *
+     * \see isKalmanUpdateRunning
+     */
+    volatile bool getIsKalmanUpdateRunning() {
+    	return isKalmanUpdateRunning;
+    }
+
+    /** \brief Communication flag if the driver thread is running
+     *
+     * When the flag is \p true the driver thread is running.
+     *
+     * \see isDriverThreadRunning
+     */
+    volatile bool getIsDriverThreadRunning(){
+    	return isDriverThreadRunning;
+    }
+
+    /** \brief Communication flag to the driver thread to shut itself down
+     *
+     * When the flag is \p true the driver thread will close the port and shut itself down.
+     *
+     * \see stopDriverThread
+     */
+    volatile bool getStopDriverThread() {
+    	return stopDriverThread;
+    }
+
+private:
+
+    /** \brief Flag if sensor data should update the Kalman filter.
+     *
+     * If \p true the Kalman filter is being updated \n
+     * If \p false the Kalman filter is not to be updated. The driver thread will keep running and acquire data.
+     */
+    volatile bool isKalmanUpdateRunning = false;
+
+    /** \brief Communication flag if the driver thread is running
+     *
+     * When the flag is \p true the driver thread is running.
+     */
+    volatile bool isDriverThreadRunning = false;
+
+    /** \brief Communication flag to the driver thread to shut itself down
+     *
+     * When the flag is \p true the driver thread will close the port and shut itself down.
+     */
+    volatile bool stopDriverThread = false;
+
 
 protected:
 
@@ -257,25 +309,6 @@ protected:
 
     /// Pointer to the main object. Is being set by \ref startup() and set NULL by \ref shutdown()
     GliderVarioMainPriv *varioMain = 0;
-
-    /** \brief Flag if sensor data should update the Kalman filter.
-     *
-     * If \p true the Kalman filter is being updated \n
-     * If \p false the Kalman filter is not to be updated. The driver thread will keep running and acquire data.
-     */
-    volatile bool isKalmanUpdateRunning = false;
-
-    /** \brief Communication flag to the driver thread to shut itself down
-     *
-     * When the flag is \p true the driver thread will close the port and shut itself down.
-     */
-    volatile bool isDriverThreadRunning = false;
-
-    /** \brief Communication flag to the driver thread to shut itself down
-     *
-     * When the flag is \p true the driver thread will close the port and shut itself down.
-     */
-    volatile bool stopDriverThread = false;
 
     /// \brief The sensor driver thread
     std::thread driverThread;
@@ -296,8 +329,12 @@ protected:
      *
      * Must be overridden by the driver implementation
      *
-     * This function *must* regularly check if \ref isKalmanUpdateRunning is set false, and then immediately exit.
+     * This function *must* regularly check if \ref stopDriverThread is set false, and then immediately exit.
      * This check must occur within a reasonable interval, typically < 1 sec
+     * Internally it also must check \ref isKalmanUpdateRunning to determine if Kalman updates are suspended, or not yet
+     * started.
+     * Data acquisition should start immediately to be ready for answering \ref initializeStatus() ASAP.
+     *
      */
     virtual void driverThreadFunction() = 0;
 
