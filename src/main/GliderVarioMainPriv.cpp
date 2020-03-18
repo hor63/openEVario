@@ -528,7 +528,7 @@ void GliderVarioMainPriv::intializeStatus() {
 	if (currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GRAVITY,currentStatus->STATUS_IND_GRAVITY) == 0.0f) {
 		currentStatus->gravity = GRAVITY;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GRAVITY,currentStatus->STATUS_IND_GRAVITY) = 0.01f;
-		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ALT_MSL,currentStatus->STATUS_IND_ALT_MSL) =
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_GRAVITY,currentStatus->STATUS_IND_GRAVITY) =
 				SQUARE(0.01) * baseIntervalSec;
 	}
 
