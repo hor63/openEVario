@@ -59,7 +59,7 @@ namespace openEV
  * Constant of gravity acceleration.
  * exact values for Germany can be obtained for the German gravity base mesh
  * Deutsches Schweregrundnetz 1994 (DSGN 94) from
- * <a href="https://www.bkg.bund.de/SharedDocs/Downloads/BKG/DE/Downloads-DE-Flyer/BKG-DSGN94-DE.pdf?__blob=publicationFile&v=4" >DSGN94-Punktbeschreibung</a>
+ * <a href="https://www.bkg.bund.de/SharedDocs/Downloads/BKG/DE/Downloads-DE-Flyer/BKG-DSGN94-DE.pdf?__blob=publicationFile&v=5" >DSGN94-Punktbeschreibung</a>
  * The constant here is a rough average between Hamburg and Munich (I live in Northern Germany).
  * Since a Kalman filter is not exact numeric science any inaccuracy should be covered by the process variance.
  *
