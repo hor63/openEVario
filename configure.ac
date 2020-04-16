@@ -50,6 +50,15 @@ AC_SUBST([LIBTOOL_DEPS])
 
 AC_LANG([C++])
 
+
+# Explicitly define _GNU_SOURCE under CYGWIN.
+# Some features are not included OOTB in Cygwin as of 16-Apr-2020 with gcc v9
+# Particularly missing were fileno() and getaddrinfo() and its companions
+if test "$host_os" = cygwin
+then
+    AC_DEFINE([_GNU_SOURCE],[1],[Define to 1 if you want to enable GNU and all other extensions.])
+fi
+
 AC_CHECK_HEADER([linux/i2c-dev.h],[AC_DEFINE([HAVE_I2C_DEV_H],[1],[Define to 1 if you have the <linux/i2c-dev.h> header file.])],[])
 AC_CHECK_HEADER([linux/i2c.h],[AC_DEFINE([HAVE_I2C_H],[1],[Define to 1 if you have the <linux/i2c.h> header file.])],[])
 
