@@ -20,13 +20,14 @@ pkglib_LTLIBRARIES = openEVIGCReader.la
 
 openEVIGCReader_la_SOURCES=IGCReaderMain.cpp IGCReaderLib.cpp IGCReaderDriver.cpp BRecordSection.cpp
  
-openEVIGCReader_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT) $(LOG4CXX_LDFLAGS) -module
-openEVIGCReader_la_LIBADD = ../../main/libopenEVMain.la $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
+openEVIGCReader_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT) $(MAIN_LDFLAGS) $(LOG4CXX_LDFLAGS) -module
+openEVIGCReader_la_LIBADD = ../../main/libopenEVMain.la ../../kalman/libopenEVKalman.la ../../util/libopenEVUtil.la $(LOG4CXX_LIBS) $(MAIN_LIBS) $(PTHREAD_LIBS)
 
 AM_CXXFLAGS = -I../../.. -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen \
 	$(LOG4CXX_CXXFLAGS) \
 	$(PTHREAD_CFLAGS) \
-	$(DLL_VISIBLE_CFLAGS)
+	$(DLL_VISIBLE_CFLAGS) \
+	-DBUILDING_OEV_DRIVER=1
 	
 libopenEVIGCReader_la_CXXFLAGS=$(AM_CXXFLAGS) -DBUILDING_OEV_DRIVER=1
 

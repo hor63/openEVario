@@ -217,12 +217,15 @@ void TCPPort::openInternal() {
 
 	if (sock != -1) {
 		int flag = 1;
+#if TCP_NODELAY
 		rc = ::setsockopt(sock,IPPROTO_TCP,TCP_NODELAY,&flag, sizeof(flag));
 		if (rc == -1) {
 			rc = errno;
 			LOG4CXX_WARN(logger,"Open port " << getPortName()
 					<< ": setsockopt TCP_NODELAY error:" << strerror(rc));
 		}
+#endif // #if TCP_NODELAY
+#if TCP_QUICKACK
 		flag = 1;
 		rc = ::setsockopt(sock,IPPROTO_TCP,TCP_QUICKACK,&flag, sizeof(flag));
 		if (rc == -1) {
@@ -230,6 +233,7 @@ void TCPPort::openInternal() {
 			LOG4CXX_WARN(logger,"Open port " << getPortName()
 					<< ": setsockopt TCP_QUICKACK error:" << strerror(rc));
 		}
+#endif // #if TCP_QUICKACK
 
 	}
 
