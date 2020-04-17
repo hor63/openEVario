@@ -16,14 +16,7 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-if OS_IS_CYGWIN
-# Under Cywin always build shared libs.
-# Otherwise I have linking issues due to dllimport/dllexport discrepancies
 pkglib_LTLIBRARIES=libopenEVUtil.la
-else
-# Build a static lib only to be linked to the main shared lib.
-noinst_LTLIBRARIES=libopenEVUtil.la
-endif
 
 libopenEVUtil_la_SOURCES=RotationMatrix.cpp FastMath.cpp FastMathSineTable.cpp \
 	GliderVarioDriverBase.cpp GliderVarioDriverLibBase.cpp \

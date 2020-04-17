@@ -15,14 +15,7 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-if OS_IS_CYGWIN
-# Under Cywin always build shared libs.
-# Otherwise I have linking issues due to dllimport/dllexport discrepancies
 pkglib_LTLIBRARIES=libopenEVKalman.la
-else
-# Build a static lib only to be linked to the main share lib.
-noinst_LTLIBRARIES = libopenEVKalman.la
-endif
 
 libopenEVKalman_la_SOURCES = GliderVarioStatus.cpp GliderVarioTransitionMatrix.cpp MeasureMatrix.cpp \
  GliderVarioMeasurementVector.cpp GliderVarioMeasurementUpdater.cpp
