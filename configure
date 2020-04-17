@@ -684,6 +684,8 @@ LOG4CXX_MAKE_SUBDIRS
 subdirs
 LD_NO_UNDEFINED_OPT
 DLL_VISIBLE_CFLAGS
+OS_IS_CYGWIN_FALSE
+OS_IS_CYGWIN_TRUE
 LIBTOOL_DEPS
 LT_SYS_LIBRARY_PATH
 OTOOL64
@@ -19651,6 +19653,28 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
 
 
+# Explicitly define _GNU_SOURCE under CYGWIN.
+# Some features are not included OOTB in Cygwin as of 16-Apr-2020 with gcc v9
+# Particularly missing were fileno() and getaddrinfo() and its companions
+if test "$host_os" = cygwin
+then
+
+$as_echo "#define _GNU_SOURCE 1" >>confdefs.h
+
+fi
+
+# Enable specific library handling for Cygwin
+ if test "$host_os" = cygwin; then
+  OS_IS_CYGWIN_TRUE=
+  OS_IS_CYGWIN_FALSE='#'
+else
+  OS_IS_CYGWIN_TRUE='#'
+  OS_IS_CYGWIN_FALSE=
+fi
+
+
+
+
 ac_fn_cxx_check_header_mongrel "$LINENO" "linux/i2c-dev.h" "ac_cv_header_linux_i2c_dev_h" "$ac_includes_default"
 if test "x$ac_cv_header_linux_i2c_dev_h" = xyes; then :
 
@@ -22669,6 +22693,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${am__fastdepCXX_TRUE}" && test -z "${am__fastdepCXX_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepCXX\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${OS_IS_CYGWIN_TRUE}" && test -z "${OS_IS_CYGWIN_FALSE}"; then
+  as_fn_error $? "conditional \"OS_IS_CYGWIN\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 

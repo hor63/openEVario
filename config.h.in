@@ -151,3 +151,6 @@
 
 /* Version number of package */
 #undef VERSION
+
+/* Define to 1 if you want to enable GNU and all other extensions. */
+#undef _GNU_SOURCE

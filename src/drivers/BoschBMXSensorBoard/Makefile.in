@@ -152,7 +152,9 @@ am__installdirs = "$(DESTDIR)$(pkglibdir)"
 LTLIBRARIES = $(pkglib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 openEVBMXSensorBoard_la_DEPENDENCIES = ../../main/libopenEVMain.la \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+	../../kalman/libopenEVKalman.la ../../util/libopenEVUtil.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 am_openEVBMXSensorBoard_la_OBJECTS = BMXSensorBoardMain.lo \
 	BMXSensorBoardLib.lo BMXSensorBoardDriver.lo
 openEVBMXSensorBoard_la_OBJECTS =  \
@@ -408,12 +410,13 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 pkglib_LTLIBRARIES = openEVBMXSensorBoard.la
 openEVBMXSensorBoard_la_SOURCES = BMXSensorBoardMain.cpp BMXSensorBoardLib.cpp BMXSensorBoardDriver.cpp
-openEVBMXSensorBoard_la_LDFLAGS = $(LD_NO_UNDEFINED_OPT) $(LOG4CXX_LDFLAGS) -module
-openEVBMXSensorBoard_la_LIBADD = ../../main/libopenEVMain.la $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
+openEVBMXSensorBoard_la_LDFLAGS = $(LD_NO_UNDEFINED_OPT) $(MAIN_LDFLAGS) $(LOG4CXX_LDFLAGS) -module
+openEVBMXSensorBoard_la_LIBADD = ../../main/libopenEVMain.la ../../kalman/libopenEVKalman.la ../../util/libopenEVUtil.la $(LOG4CXX_LIBS) $(MAIN_LIBS) $(PTHREAD_LIBS)
 AM_CXXFLAGS = -I../../.. -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen -I$(top_srcdir)/3rdParty/horOvIp-I2C-Bridge \
 	$(LOG4CXX_CXXFLAGS) \
 	$(PTHREAD_CFLAGS) \
-	$(DLL_VISIBLE_CFLAGS)
+	$(DLL_VISIBLE_CFLAGS) \
+	-DBUILDING_OEV_DRIVER=1
 
 libopenEVBMXSensorBoard_la_CXXFLAGS = $(AM_CXXFLAGS) -DBUILDING_OEV_DRIVER=1
 all: all-am
