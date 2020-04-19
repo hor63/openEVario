@@ -42,6 +42,7 @@
 #include "kalman/GliderVarioStatus.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
 #include "drivers/GliderVarioDriverLibBase.h"
+#include "main/GliderVarioMainPriv.h"
 
 namespace openEV {
 
