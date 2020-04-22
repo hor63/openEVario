@@ -96,7 +96,13 @@ protected:
      * \see GliderVarioDriverBase::driverThreadFunction()
      *
      */
-    void driverThreadFunction() override;
+    virtual void driverThreadFunction() override;
+
+    /** \brief The main loop of the driver after the port was opened
+     *
+     * Read data from the sensor, process them, and update the Kalman filter.
+     */
+    virtual void processingMainLoop ();
 
 private:
 
@@ -127,8 +133,114 @@ private:
     /// \brief The I/O port. Typically this is a TCP port.
     io::StreamPort *ioPort = nullptr;
 
-    /// BMX160 magnetometer trim data structure
+    /// \brief BMX160 magnetometer trim data structure
     struct bmm150_trim_registers magTrimData;
+
+    /// \brief Is the status initialization done
+    bool statusInitDone = false;
+
+    /// \brief Size of the array \ref sensorDataArr
+    static constexpr int SIZE_SENSOR_DATA_ARRAY = 16;
+
+    /** \brief Structure holding one set of sensor data
+     *
+     */
+    struct SensorData {
+		bool accelDataValid; ///< \brief Are \p accelX, \p accelY, and \p accelZ valid?
+		float accelX; ///< \brief Acceleration along the X axis in g. X is forward.
+		float accelY; ///< \brief Acceleration along the Y axis in g. Y is to the right.
+		float accelZ; ///< \brief Acceleration along the Z axis in g. Z is *downward*! Gravitation measures as -1g!
+
+		bool gyroDataValid; ///< \brief Are \p gyroX, \p gyroY, and \p gyroZ valid?
+		float gyroX; ///< \brief Roll rate around the X axis in deg/sec. Positive value is rolling right.
+		float gyroY; ///< \brief Pitch rate around the Y axis in deg/sec. Positive value is pitching up.
+		float gyroZ; ///< \brief Yaw rate around the Z axis in deg/sec. Positive value is yawing/turning right.
+
+		bool magDataValid; ///< \brief Are \p magX, \p magY, and \p magZ valid?
+		float magX; ///< \brief Magnetic field strength along the X axis in uT.
+		float magY; ///< \brief Magnetic field strength along the Y axis in uT.
+		float magZ; ///< \brief Magnetic field strength along the Z axis in uT.
+    } sensorDataArr [SIZE_SENSOR_DATA_ARRAY];
+
+    /** \brief Index of current sensor data into sensorDataArr
+     *
+     * The array is filled in ring buffer fashion. For status initialization the average is used.
+     * For continuous updates only the current record is used.
+     */
+    int currSensorDataIndex = 0;
+
+    /**
+     * @brief This internal API is used to obtain the compensated
+     * magnetometer x axis data(micro-tesla) in float.
+     */
+    float compensate_x(int16_t mag_data_x, uint16_t data_rhall);
+
+    /**
+     * @brief This internal API is used to obtain the compensated
+     * magnetometer y axis data(micro-tesla) in float.
+     */
+    float compensate_y(int16_t mag_data_y, uint16_t data_rhall);
+
+    /*!
+     * @brief This internal API is used to obtain the compensated
+     * magnetometer z axis data(micro-tesla) in float.
+     */
+    float compensate_z(int16_t mag_data_z, uint16_t data_rhall);
+
+    /** \brief Initialize the Kalman status from the accelerometer measurements
+     *
+     * Actually I am *not* initializing the acceleration values of the Kalman status.
+     * Reason is that the acceleration of the model is not exacly the accelerometer measurements of the IMU when the body
+     * is not perfectly flat, i.e. neither pitch nor roll applies. Particularly the roll angle is anything but 0 in a glider on the ground.
+     *
+     * Instead I am initializing the roll and pitch angle assuming that the plane is stationary during the initialization which usually happens
+     * when the plane is sitting on the ground. But even in level flight that should work to a certain degree.
+     *
+     * @param varioStatus The Kalman status to be initialized
+     * @param varioMain Vario main object
+     * @param sumSensorData Sensor data summed up over \p numAccelData times.
+     * @param numAccelData Number of accelerometer measurements summed up in \p numSensorData
+     */
+    void initializeStatusAccel(
+    		GliderVarioStatus &varioStatus,
+    		GliderVarioMainPriv &varioMain,
+    		struct SensorData const &sumSensorData,
+    		int numAccelData
+    		);
+
+    /** \brief Initialize the Kalman status with the gyroscope measurements
+     *
+     * Initialize the gyroscope bias which is in body coordinates anyway. So no issues with non-flat attitudes whatsoever.
+     *
+     * @param varioStatus The Kalman status to be initialized
+     * @param varioMain Vario main object
+     * @param sumSensorData Sensor data summed up over \p numGyroData times.
+     * @param numGyroData Number of gyroscope measurements summed up in \p numSensorData
+     */
+    void initializeStatusGyro(
+    		GliderVarioStatus &varioStatus,
+    		GliderVarioMainPriv &varioMain,
+    		struct SensorData const &avgSensorData,
+    		int numGyroData
+    		);
+
+    /** \brief Initialize the Kalman status with the magnetometer measurements
+     *
+     * Rotate the measured vector into the world plane, and calculate the yaw angle (direction) from the horizontal component
+     *
+     * This function requires that \ref initializeStatusAccel was called before to determine the roll and pitch angle.
+     *
+     * @param varioStatus The Kalman status to be initialized
+     * @param varioMain Vario main object
+     * @param sumSensorData Sensor data summed up over \p numMagData times.
+     * @param numMagData Number of magnetometer measurements summed up in \p numSensorData
+     */
+    void initializeStatusMag(
+    		GliderVarioStatus &varioStatus,
+    		GliderVarioMainPriv &varioMain,
+    		struct SensorData const &sumSensorData,
+    		int numMagData
+    		);
 
 };
 
