@@ -827,13 +827,16 @@ uninstall-am: uninstall-binPROGRAMS
 .PRECIOUS: Makefile
 
 
-all: $(abs_builddir)/openEVario.properties $(abs_builddir)/openEVario.logger.properties
+all: $(abs_builddir)/openEVario.properties $(abs_builddir)/openEVario.logger.properties $(abs_builddir)/BMX160SensorBoardCalib.properties
 
 $(abs_builddir)/openEVario.properties: $(srcdir)/openEVario.properties
 	cp $(srcdir)/openEVario.properties $(abs_builddir)/openEVario.properties
 
 $(abs_builddir)/openEVario.logger.properties: $(srcdir)/openEVario.logger.properties
 	cp $(srcdir)/openEVario.logger.properties $(abs_builddir)/openEVario.logger.properties
+
+$(abs_builddir)/BMX160SensorBoardCalib.properties: $(srcdir)/BMX160SensorBoardCalib.properties
+	cp $(srcdir)/BMX160SensorBoardCalib.properties $(abs_builddir)/BMX160SensorBoardCalib.properties
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
