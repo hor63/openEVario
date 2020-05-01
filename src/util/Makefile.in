@@ -155,7 +155,7 @@ libopenEVUtil_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am_libopenEVUtil_la_OBJECTS = libopenEVUtil_la-RotationMatrix.lo \
 	libopenEVUtil_la-FastMath.lo \
-	libopenEVUtil_la-FastMathSineTable.lo \
+	libopenEVUtil_la-FastMathSineTable.lo libopenEVUtil_la-crc.lo \
 	libopenEVUtil_la-GliderVarioDriverBase.lo \
 	libopenEVUtil_la-GliderVarioDriverLibBase.lo \
 	libopenEVUtil_la-GliderVarioExceptionBase.lo \
@@ -412,7 +412,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 pkglib_LTLIBRARIES = libopenEVUtil.la
-libopenEVUtil_la_SOURCES = RotationMatrix.cpp FastMath.cpp FastMathSineTable.cpp \
+libopenEVUtil_la_SOURCES = RotationMatrix.cpp FastMath.cpp FastMathSineTable.cpp crc.cpp \
 	GliderVarioDriverBase.cpp GliderVarioDriverLibBase.cpp \
 	GliderVarioExceptionBase.cpp \
 	io/PortBase.cpp io/StreamPort.cpp io/SerialPort.cpp io/TCPPort.cpp
@@ -516,6 +516,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopenEVUtil_la-SerialPort.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopenEVUtil_la-StreamPort.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopenEVUtil_la-TCPPort.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopenEVUtil_la-crc.Plo@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -558,6 +559,13 @@ libopenEVUtil_la-FastMathSineTable.lo: FastMathSineTable.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='FastMathSineTable.cpp' object='libopenEVUtil_la-FastMathSineTable.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVUtil_la_CXXFLAGS) $(CXXFLAGS) -c -o libopenEVUtil_la-FastMathSineTable.lo `test -f 'FastMathSineTable.cpp' || echo '$(srcdir)/'`FastMathSineTable.cpp
+
+libopenEVUtil_la-crc.lo: crc.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVUtil_la_CXXFLAGS) $(CXXFLAGS) -MT libopenEVUtil_la-crc.lo -MD -MP -MF $(DEPDIR)/libopenEVUtil_la-crc.Tpo -c -o libopenEVUtil_la-crc.lo `test -f 'crc.cpp' || echo '$(srcdir)/'`crc.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libopenEVUtil_la-crc.Tpo $(DEPDIR)/libopenEVUtil_la-crc.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='crc.cpp' object='libopenEVUtil_la-crc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVUtil_la_CXXFLAGS) $(CXXFLAGS) -c -o libopenEVUtil_la-crc.lo `test -f 'crc.cpp' || echo '$(srcdir)/'`crc.cpp
 
 libopenEVUtil_la-GliderVarioDriverBase.lo: GliderVarioDriverBase.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVUtil_la_CXXFLAGS) $(CXXFLAGS) -MT libopenEVUtil_la-GliderVarioDriverBase.lo -MD -MP -MF $(DEPDIR)/libopenEVUtil_la-GliderVarioDriverBase.Tpo -c -o libopenEVUtil_la-GliderVarioDriverBase.lo `test -f 'GliderVarioDriverBase.cpp' || echo '$(srcdir)/'`GliderVarioDriverBase.cpp
