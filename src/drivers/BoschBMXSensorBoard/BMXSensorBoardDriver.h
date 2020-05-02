@@ -134,6 +134,10 @@ private:
     /// \brief The I/O port. Typically this is a TCP port.
     io::StreamPort *ioPort = nullptr;
 
+    /// Name of the calibration data parameter file
+    std::string calibrationDataFileName;
+    Properties4CXX::Properties *calibrationDataParameters = nullptr;
+
     /// \brief BMX160 magnetometer trim data structure
     struct bmm150_trim_registers magTrimData;
 

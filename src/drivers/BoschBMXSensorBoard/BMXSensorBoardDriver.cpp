@@ -97,15 +97,34 @@ BMXSensorBoardDriver::BMXSensorBoardDriver(
 
 BMXSensorBoardDriver::~BMXSensorBoardDriver() {
 
-
+	if (calibrationDataParameters) {
+		delete calibrationDataParameters;
+	}
 }
 
 
 void BMXSensorBoardDriver::driverInit(GliderVarioMainPriv &varioMain) {
 
+	// Read the calibration data file, and extract the initial parameters
+	if (calibrationDataParameters) {
+		try {
+			calibrationDataParameters->readConfiguration();
+		} catch (std::exception const &e) {
+			LOG4CXX_ERROR(logger,"Driver " << driverName
+					<< ": Error reading calibration data from file " << calibrationDataFileName
+					<< ": " << e.what());
+			// The file does not exist, or it has unexpected/undefined content.
+			// Therefore I am not going to overwrite it with updated calibration data later on.
+			delete calibrationDataParameters;
+			calibrationDataParameters = nullptr;
+		}
+	}
+
 }
 
 void BMXSensorBoardDriver::readConfiguration (Properties4CXX::Properties const &configuration) {
+
+	LOG4CXX_DEBUG(logger,"Driver" << driverName << " read configuraion");
 
 
 	try {
@@ -129,6 +148,19 @@ void BMXSensorBoardDriver::readConfiguration (Properties4CXX::Properties const &
 
     errorTimeout = (long long)(configuration.getPropertyValue(std::string("errorTimeout"),(long long)(10)));
     errorMaxNumRetries = (long long)(configuration.getPropertyValue(std::string("errorTimeout"),(long long)(0)));
+
+    try {
+    	auto fileNameProp = configuration.searchProperty("calibrationDataFile");
+
+		if (!fileNameProp->isList() && !fileNameProp->isStruct()) {
+	    	calibrationDataFileName = fileNameProp->getStringValue();
+	    	calibrationDataParameters = new Properties4CXX::Properties(calibrationDataFileName);
+		}
+
+
+    } catch (...) {
+    	LOG4CXX_WARN(logger,"Driver" << driverName << ": No calibration data file specified");
+    }
 
 
 }
