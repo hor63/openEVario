@@ -71,14 +71,14 @@ public:
 	typedef std::map<std::string,DriverListItem> DriverList;
 
 
-	typedef void (*DriverInitProc) ();
+	typedef void (*DriverLibInitProc) ();
 	typedef GliderVarioDriverLibBase* (*GetDriverLibProc)();
 
 	typedef struct {
 		GliderVarioDriverLibBase* libObj;
 		std::string shLibName;
 		void *shLibHandle;
-		DriverInitProc driverInit;
+		DriverLibInitProc driverLibInit;
 		GetDriverLibProc getDriverLib;
 	} DriverLibListItem;
 
@@ -112,6 +112,17 @@ public:
 	 * @param driverListItem Driver list item to be added to \ref driverList.
 	 */
 	void OEV_MAIN_PUBLIC addDriver (DriverListItem const& driverListItem);
+
+	/** Initialize drivers
+	 *
+	 * Some drivers may need more initialization after loading the configuration.
+	 * This call is called between \ref loadDriverInstances which also loads the configuration,
+	 * and \ref startupDrivers.
+	 * Thus this function is called after all driver instances have been loaded.
+	 *
+	 * @param varioMain mainVario object; provides all additional information like program parameters, and the parsed properties.
+	 */
+	void initDrivers (GliderVarioMainPriv &varioMain);
 
 	/** \brief Startup the driver threads of all drivers
 	 *

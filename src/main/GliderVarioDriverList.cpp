@@ -207,7 +207,7 @@ void GliderVarioDriverList::loadDriverLib(const char* driverLibName) {
 
 	}
 
-	listItem.driverInit = DriverInitProc (sym);
+	listItem.driverLibInit = DriverLibInitProc (sym);
 
 
 	symName = "getDriverLib";
@@ -227,7 +227,7 @@ void GliderVarioDriverList::loadDriverLib(const char* driverLibName) {
 
 	listItem.getDriverLib = GetDriverLibProc(sym);
 
-	listItem.driverInit();
+	listItem.driverLibInit();
 	listItem.libObj = listItem.getDriverLib();
 
 	if (!listItem.libObj) {
@@ -332,6 +332,16 @@ void GliderVarioDriverList::loadDriverInstance(char const *driverInstanceName, P
 		programOptions.runIdleLoop = false;
 	}
 
+}
+
+void GliderVarioDriverList::initDrivers (GliderVarioMainPriv &varioMain) {
+	auto iter = driverInstanceList.begin();
+
+	while (iter != driverInstanceList.end()) {
+		iter->second->driverInit(varioMain);
+
+		iter ++;
+	}
 }
 
 void GliderVarioDriverList::startupDrivers (GliderVarioMainPriv &varioMain) {

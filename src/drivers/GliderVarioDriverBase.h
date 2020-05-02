@@ -144,10 +144,14 @@ public:
 
     // The abstract interface which must be implemented by each driver.
 
-    /**
-     * Initialize the driver
+    /** \brief Initialize the driver
+     *
+     * This method is called between calls to \ref readConfiguration and \ref startup.
+     * Most drivers will probably choose to do nothing here :)
+     *
+	 * @param varioMain mainVario object; provides all additional information like program parameters, and the parsed properties.
      */
-    virtual void driverInit() = 0;
+    virtual void driverInit(GliderVarioMainPriv &varioMain) = 0;
 
     /** \brief Read the configuration for the driver
      *

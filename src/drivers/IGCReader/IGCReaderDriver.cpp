@@ -75,7 +75,7 @@ IGCReaderDriver::~IGCReaderDriver() {
 }
 
 
-void IGCReaderDriver::driverInit() {
+void IGCReaderDriver::driverInit(GliderVarioMainPriv &varioMain) {
 
 }
 

@@ -63,9 +63,10 @@ public:
 
     /** \brief Initialize the driver
      *
+	 * @param varioMain mainVario object; provides all additional information like program parameters, and the parsed properties.
      * \see GliderVarioDriverBase::driverInit()
      */
-    virtual void driverInit() override;
+    virtual void driverInit(GliderVarioMainPriv &varioMain) override;
 
 
     /** \brief Read the configuration
@@ -160,14 +161,87 @@ private:
 		float magX; ///< \brief Magnetic field strength along the X axis in uT.
 		float magY; ///< \brief Magnetic field strength along the Y axis in uT.
 		float magZ; ///< \brief Magnetic field strength along the Z axis in uT.
-    } sensorDataArr [SIZE_SENSOR_DATA_ARRAY];
+    };
+
+    /** \brief Array of sensor data
+     *
+     * Ring buffer of sensor data.
+     * For continuous operation only the recent record which is indicated by \ref currSensorDataIndex is being used.
+     * During initialization I use the whole array to get a recent average to prime the Kalman status.
+     *
+     */
+    SensorData sensorDataArr [SIZE_SENSOR_DATA_ARRAY];
 
     /** \brief Index of current sensor data into sensorDataArr
      *
-     * The array is filled in ring buffer fashion. For status initialization the average is used.
+     * The array \ref sensorDataArr is filled in ring buffer fashion. For status initialization the average is calculated.
      * For continuous updates only the current record is used.
      */
     int currSensorDataIndex = 0;
+
+    /** \brief
+     *
+     * Calibration data for the BMX160 sensor box
+     * Except for the accelerometer these are bias and standard deviation values only.
+     *
+     */
+    struct SensorCalibrationData {
+
+    	/**
+    	 * Magnetometer bias can be measured for the magnetometer
+    	 * measuring the magnetic field in an arbitrary direction as val1,
+    	 * then turn the box 180 degrees that the measured axis points opposite and measure again as val2.
+    	 * The bias is now = (val1 + val2) / 2
+    	 *
+    	 */
+    	double magXBias = 0.0;
+    	double magYBias = 0.0;
+    	double magZBias = 0.0;
+
+    	/// Standard deviation of the magnetometer measurements
+    	double magXSigma = 25.0;
+    	double magYSigma = 25.0;
+    	double magZSigma = 25.0;
+
+    	/// Gyro bias is the easiest: Let the box rest and measure the gyro values. These are the bias.
+    	double gyrXBias = 0.0;
+    	double gyrYBias = 0.0;
+    	double gyrZBias = 0.0;
+
+    	/// Standard deviation of the gyro measurements
+    	/// Just leave the sensor box
+    	double gyrXSigma = 5.0;
+    	double gyrYSigma = 5.0;
+    	double gyrZSigma = 5.0;
+
+    	/**
+    	 * Accel bias is measured mostly the same way as magnetometer bias.
+    	 * However the measured axis should point straight up for val1,
+    	 * and straight down for val2. The formula is the same.
+    	 */
+    	double accelXBias = 0.0;
+    	double accelYBias = 0.0;
+    	double accelZBias = 0.0;
+
+    	/**
+    	 *
+    	 * For the accelerometer factor you can get the same measurements val1 and val2 at the same time
+    	 * when measuring the bias.
+    	 * I actually have a calibrated value for the Accelerometer, i.e. the gravity.
+    	 * Val1 is the positive gravitation, and val 2 is negative gravity.
+    	 * The formula is: 2 / (val1 - val2)
+    	 * Please note that the expected value should always be 1.0g
+    	 */
+    	double accelXFactor = 1.0;
+    	double accelYFactor = 1.0;
+    	double accelZFactor = 1.0;
+
+    	/// Standard deviation of the accelerometer measurements
+    	double accelXSigma = 0.1;
+    	double accelYSigma = 0.1;
+    	double accelZSigma = 0.1;
+
+    } calibrationData;
 
     /**
      * @brief This internal API is used to obtain the compensated

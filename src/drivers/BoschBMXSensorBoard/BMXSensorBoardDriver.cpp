@@ -101,9 +101,7 @@ BMXSensorBoardDriver::~BMXSensorBoardDriver() {
 }
 
 
-void BMXSensorBoardDriver::driverInit() {
-
-	/// todo fill me
+void BMXSensorBoardDriver::driverInit(GliderVarioMainPriv &varioMain) {
 
 }
 

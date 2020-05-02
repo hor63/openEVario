@@ -76,8 +76,10 @@ public:
 
     /**
      * Initialize the driver
+     *
+	 * @param varioMain mainVario object; provides all additional information like program parameters, and the parsed properties.
      */
-    virtual void driverInit() override;
+	virtual void driverInit(GliderVarioMainPriv &varioMain) override;
 
 
     virtual void readConfiguration (Properties4CXX::Properties const &configuration) override;

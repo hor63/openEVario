@@ -406,6 +406,9 @@ void GliderVarioMainPriv::startup () {
     // Read the driver instances from the configuration, and create them for the specified drivers.
 	driverList.loadDriverInstances(configuration);
 
+	// Perform additional initialization of drivers which depend on all drivers been loaded.
+	driverList.initDrivers(*this);
+
     // Start the internal threads of the drivers. These will open the ports, and start acquiring sensor data
     driverList.startupDrivers(*this);
 
