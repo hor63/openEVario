@@ -203,9 +203,9 @@ private:
     	double magZBias = 0.0;
 
     	/// Standard deviation of the magnetometer measurements
-    	double magXSigma = 25.0;
-    	double magYSigma = 25.0;
-    	double magZSigma = 25.0;
+    	double magXSigma = 50.0;
+    	double magYSigma = 50.0;
+    	double magZSigma = 50.0;
 
     	/// Gyro bias is the easiest: Let the box rest and measure the gyro values. These are the bias.
     	double gyrXBias = 0.0;
