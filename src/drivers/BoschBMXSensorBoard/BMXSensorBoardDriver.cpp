@@ -31,6 +31,8 @@
 #include <chrono>
 #include <thread>
 
+#include "Properties4CXX/Property.h"
+
 #include "BMXSensorBoardDriver.h"
 #include "kalman/GliderVarioTransitionMatrix.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
@@ -102,6 +104,44 @@ BMXSensorBoardDriver::~BMXSensorBoardDriver() {
 	}
 }
 
+/** \brief Little helper to reduce code size
+ *
+ * If the property \p parameterName does not exist in the properties set \value will be unchanged.
+ *
+ * @param[in] calibrationDataParameters Properties which were read from the calibration parameter file
+ * @param[in] parameterName Name of the calibration value
+ * @param[in out] value Value of the calibration value
+ */
+static void readConfigValue(
+		Properties4CXX::Properties const* calibrationDataParameters,
+		char const* parameterName,
+		double& value
+		) {
+
+	try {
+		Properties4CXX::Property const * prop = calibrationDataParameters->searchProperty("magXBias");
+		value = prop->getDoubleValue();
+	} catch (std::exception const &e) {}
+
+}
+
+/** \brief Little helper to reduce code size
+ *
+ * New values are written by an existing property when it exists, and write a new one.
+ *
+ * @param[in out] calibrationDataParameters Properties which hold the calibration data
+ * @param[in] parameterName Name of the calibration value
+ * @param[in] value New value of the calibration value
+ */
+static void writeConfigValue (
+		Properties4CXX::Properties* calibrationDataParameters,
+		char const* parameterName,
+		double value
+		) {
+	calibrationDataParameters->deletePropery(parameterName);
+	calibrationDataParameters->addProperty(new Properties4CXX::PropertyDouble(parameterName,value));
+}
+
 
 void BMXSensorBoardDriver::driverInit(GliderVarioMainPriv &varioMain) {
 
@@ -114,11 +154,39 @@ void BMXSensorBoardDriver::driverInit(GliderVarioMainPriv &varioMain) {
 					<< ": Error reading calibration data from file " << calibrationDataFileName
 					<< ": " << e.what());
 			// The file does not exist, or it has unexpected/undefined content.
-			// Therefore I am not going to overwrite it with updated calibration data later on.
+			// Therefore I am initializing the calibration parameters fresh.
 			delete calibrationDataParameters;
-			calibrationDataParameters = nullptr;
+	    	calibrationDataParameters = new Properties4CXX::Properties(calibrationDataFileName);
+
+	    	// The Properties collection is empty now. No need trying to the the values. There are none.
+	    	return;
 		}
 	}
+
+	readConfigValue(calibrationDataParameters,"magXBias",calibrationData.magXBias);
+	readConfigValue(calibrationDataParameters,"magYBias",calibrationData.magYBias);
+	readConfigValue(calibrationDataParameters,"magZBias",calibrationData.magZBias);
+	readConfigValue(calibrationDataParameters,"magXSigma",calibrationData.magXSigma);
+	readConfigValue(calibrationDataParameters,"magYSigma",calibrationData.magYSigma);
+	readConfigValue(calibrationDataParameters,"magZSigma",calibrationData.magZSigma);
+
+	readConfigValue(calibrationDataParameters,"gyrXBias",calibrationData.gyrXBias);
+	readConfigValue(calibrationDataParameters,"gyrYBias",calibrationData.gyrYBias);
+	readConfigValue(calibrationDataParameters,"gyrZBias",calibrationData.gyrZBias);
+	readConfigValue(calibrationDataParameters,"gyrXSigma",calibrationData.gyrXSigma);
+	readConfigValue(calibrationDataParameters,"gyrYSigma",calibrationData.gyrYSigma);
+	readConfigValue(calibrationDataParameters,"gyrZSigma",calibrationData.gyrZSigma);
+
+	readConfigValue(calibrationDataParameters,"accelXBias",calibrationData.accelXBias);
+	readConfigValue(calibrationDataParameters,"accelYBias",calibrationData.accelYBias);
+	readConfigValue(calibrationDataParameters,"accelZBias",calibrationData.accelZBias);
+	readConfigValue(calibrationDataParameters,"accelXFactor",calibrationData.accelXFactor);
+	readConfigValue(calibrationDataParameters,"accelYFactor",calibrationData.accelYFactor);
+	readConfigValue(calibrationDataParameters,"accelZFactor",calibrationData.accelZFactor);
+	readConfigValue(calibrationDataParameters,"accelXSigma",calibrationData.accelXSigma);
+	readConfigValue(calibrationDataParameters,"accelYSigma",calibrationData.accelYSigma);
+	readConfigValue(calibrationDataParameters,"accelZSigma",calibrationData.accelZSigma);
+
 
 }
 
@@ -176,7 +244,7 @@ void BMXSensorBoardDriver::initializeStatusAccel(
 
 	// Assume that you are on the ground, but maybe tilted to the side
 	// (remember this instrument is primarily for gliders)
-	// and slightly pitched up
+	// and slightly pitched up compared to level flight
 	auto avgAccelX = sumSensorData.accelX / float(numAccelData);
 	auto avgAccelY = sumSensorData.accelY / float(numAccelData);
 	auto avgAccelZ = sumSensorData.accelZ / float(numAccelData);
@@ -263,9 +331,15 @@ void BMXSensorBoardDriver::initializeStatusMag(
 		int numMagData
 		) {
 
-	// Assume that you are on the ground, but maybe tilted to the side
-	// (remember this instrument is primarily for gliders)
-	// and slightly pitched up
+	/*
+	 *
+	 * Assume that you are on the ground, but maybe tilted to the side
+	 * (remember this instrument is primarily for gliders)
+	 * and slightly pitched up
+	 *
+	 * Another precondition is that initializeStatusAccel() has been called before so that roll and pitch angle are
+	 * already determined, and I can calculate the yaw (i.e. the direction)
+	 */
 	auto avgMagX = sumSensorData.magX / float(numMagData);
 	auto avgMagY = sumSensorData.magY / float(numMagData);
 	auto avgMagZ = sumSensorData.magZ / float(numMagData);
@@ -279,6 +353,7 @@ void BMXSensorBoardDriver::initializeStatusMag(
 	LOG4CXX_DEBUG(logger,"avgMagZ = " << avgMagZ);
 
 	// If the pitch angle is nearly perpendicular to the flat plane the roll angle cannot be determined with any accuracy
+	// Albeit a more than unlikely scenario :D
 	if (fabsf(varioStatus.pitchAngle) < 80 &&
 			varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) != 0.0f) {
 		RotationMatrix rotMatrix (0.0f,varioStatus.pitchAngle,varioStatus.rollAngle);
