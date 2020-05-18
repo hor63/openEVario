@@ -60,12 +60,12 @@ namespace openEV
  * exact values for Germany can be obtained for the German gravity base mesh
  * Deutsches Schweregrundnetz 1994 (DSGN 94) from
  * <a href="https://www.bkg.bund.de/SharedDocs/Downloads/BKG/DE/Downloads-DE-Flyer/BKG-DSGN94-DE.pdf?__blob=publicationFile&v=5" >DSGN94-Punktbeschreibung</a>
- * The constant here is a rough average between Hamburg and Munich (I live in Northern Germany).
+ * The constant here is a rough average around the Northern German plains (I live in Northern Germany ;) ).
  * Since a Kalman filter is not exact numeric science any inaccuracy should be covered by the process variance.
  *
  * \sa <a href="https://www.bkg.bund.de/DE/Ueber-das-BKG/Geodaesie/Schwere/Schwere-Deutschland/schwere-deutsch.html#doc57358bodyText1" >Deutsches Schweregrundnetz 1994 (DSGN94)</a>
  */
-static FloatType constexpr GRAVITY = 9.811;
+static FloatType constexpr GRAVITY = 9.813;
 
 /**
  * difference between K(elvin) and C(elsius)
