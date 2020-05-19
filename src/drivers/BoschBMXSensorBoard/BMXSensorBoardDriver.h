@@ -29,6 +29,7 @@
 #include <fstream>
 #include <string>
 #include <map>
+#include <thread>
 
 #include "OEVCommon.h"
 
@@ -186,7 +187,7 @@ private:
     /** \brief
      *
      * Calibration data for the BMX160 sensor box
-     * Except for the accelerometer these are bias and standard deviation values only.
+     * Except for the accelerometer these are bias and standard Variance values only.
      *
      */
     struct SensorCalibrationData {
@@ -202,21 +203,21 @@ private:
     	double magYBias = 0.0;
     	double magZBias = 0.0;
 
-    	/// Standard deviation of the magnetometer measurements
-    	double magXSigma = 50.0;
-    	double magYSigma = 50.0;
-    	double magZSigma = 50.0;
+    	/// Standard Variance of the magnetometer measurements
+    	double magXVariance = 50.0;
+    	double magYVariance = 50.0;
+    	double magZVariance = 50.0;
 
     	/// Gyro bias is the easiest: Let the box rest and measure the gyro values. These are the bias.
     	double gyrXBias = 0.0;
     	double gyrYBias = 0.0;
     	double gyrZBias = 0.0;
 
-    	/// Standard deviation of the gyro measurements
-    	/// Just leave the sensor box
-    	double gyrXSigma = 5.0;
-    	double gyrYSigma = 5.0;
-    	double gyrZSigma = 5.0;
+    	/// Standard Variance of the gyro measurements
+    	/// Just leave the sensor box sitting still and measure a series of values and calculate the standard devition, and square it
+    	double gyrXVariance = 5.0;
+    	double gyrYVariance = 5.0;
+    	double gyrZVariance = 5.0;
 
     	/**
     	 * Accel bias is measured mostly the same way as magnetometer bias.
@@ -240,12 +241,19 @@ private:
     	double accelYFactor = 1.0;
     	double accelZFactor = 1.0;
 
-    	/// Standard deviation of the accelerometer measurements
-    	double accelXSigma = 0.1;
-    	double accelYSigma = 0.1;
-    	double accelZSigma = 0.1;
+    	/// Standard Variance of the accelerometer measurements
+    	double accelXVariance = 0.1;
+    	double accelYVariance = 0.1;
+    	double accelZVariance = 0.1;
+
+
+    	/// Value of the local gravity
+    	double gravity = GRAVITY;
+    	double gravityVariance = 0.1;
 
     } calibrationData;
+
+    std::thread calibrationDataWriteThread;
 
     /**
      * @brief This internal API is used to obtain the compensated
@@ -320,6 +328,21 @@ private:
     		int numMagData
     		);
 
+    /** \brief Thread function of \ref calibrationDataWriteThread
+     *
+     * Analyze the current status.
+     *   - When the variance of the gyro bias is smaller than the one of the calibration data update the gyro calibration data.
+     *   - When the variance of the magnetic bias (incl. Variance) is smaller than the calibration data update the mag bias data.
+     *   - Accelerometer calibration data are not being touched. I presume they are stable.
+     *   There is also no accelerometer bias and factor in the model. The Gravity parameter in the model actually applies only to the
+     *   Z axis.
+     *
+     * If any calibration data was updated write out the updated configuration back into the configuration parameter file.
+     *
+     * *Note*: This function runs in an own thread!
+     *
+     */
+    void calibrationDataWriteFunc();
 };
 
 } /* namespace openEV */
