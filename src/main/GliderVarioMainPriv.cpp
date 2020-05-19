@@ -648,21 +648,21 @@ void GliderVarioMainPriv::intializeStatus() {
 		currentStatus->rollRateX = 0.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ROTATION_X,currentStatus->STATUS_IND_ROTATION_X) = 10.0f * 10.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ROTATION_X,currentStatus->STATUS_IND_ROTATION_X) =
-				SQUARE(10.0) * baseIntervalSec;
+				SQUARE(30.0) * baseIntervalSec;
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_ROTATION_Y,currentStatus->STATUS_IND_ROTATION_Y) == 0.0f) {
 		currentStatus->pitchRateY = 0.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ROTATION_Y,currentStatus->STATUS_IND_ROTATION_Y) = 10.0f * 10.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ROTATION_Y,currentStatus->STATUS_IND_ROTATION_Y) =
-				SQUARE(10.0) * baseIntervalSec;
+				SQUARE(40.0) * baseIntervalSec;
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_ROTATION_Z,currentStatus->STATUS_IND_ROTATION_Z) == 0.0f) {
 		currentStatus->yawRateZ = 0.0f;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ROTATION_Z,currentStatus->STATUS_IND_ROTATION_Z) = 10.0f * 10.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ROTATION_Z,currentStatus->STATUS_IND_ROTATION_Z) =
-				SQUARE(10.0) * baseIntervalSec;
+				SQUARE(30.0) * baseIntervalSec;
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeff(currentStatus->STATUS_IND_GYRO_BIAS_X,currentStatus->STATUS_IND_GYRO_BIAS_X) == 0.0f) {
