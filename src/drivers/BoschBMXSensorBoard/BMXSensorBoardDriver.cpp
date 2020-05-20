@@ -29,7 +29,6 @@
 
 #include <fstream>
 #include <chrono>
-#include <thread>
 
 #include "Properties4CXX/Property.h"
 
@@ -112,8 +111,8 @@ BMXSensorBoardDriver::~BMXSensorBoardDriver() {
  * @param[in] parameterName Name of the calibration value
  * @param[in out] value Value of the calibration value
  */
-static void readConfigValue(
-		Properties4CXX::Properties const* calibrationDataParameters,
+static void readOrCreateConfigValue(
+		Properties4CXX::Properties* calibrationDataParameters,
 		char const* parameterName,
 		double& value
 		) {
@@ -121,7 +120,10 @@ static void readConfigValue(
 	try {
 		Properties4CXX::Property const * prop = calibrationDataParameters->searchProperty("magXBias");
 		value = prop->getDoubleValue();
-	} catch (std::exception const &e) {}
+	} catch (Properties4CXX::ExceptionPropertyNotFound const &e) {
+		calibrationDataParameters->addProperty(new Properties4CXX::PropertyDouble(parameterName,value));
+	}
+	catch (std::exception const &e) {}
 
 }
 
@@ -156,37 +158,37 @@ void BMXSensorBoardDriver::driverInit(GliderVarioMainPriv &varioMain) {
 			// The file does not exist, or it has unexpected/undefined content.
 			// Therefore I am initializing the calibration parameters fresh.
 			delete calibrationDataParameters;
-	    	calibrationDataParameters = new Properties4CXX::Properties(calibrationDataFileName);
+			calibrationDataParameters = new Properties4CXX::Properties(calibrationDataFileName);
 
-	    	// The Properties collection is empty now. No need trying to the the values. There are none.
-	    	return;
 		}
 	}
 
-	readConfigValue(calibrationDataParameters,"magXBias",calibrationData.magXBias);
-	readConfigValue(calibrationDataParameters,"magYBias",calibrationData.magYBias);
-	readConfigValue(calibrationDataParameters,"magZBias",calibrationData.magZBias);
-	readConfigValue(calibrationDataParameters,"magXSigma",calibrationData.magXSigma);
-	readConfigValue(calibrationDataParameters,"magYSigma",calibrationData.magYSigma);
-	readConfigValue(calibrationDataParameters,"magZSigma",calibrationData.magZSigma);
+	readOrCreateConfigValue(calibrationDataParameters,"magXBias",calibrationData.magXBias);
+	readOrCreateConfigValue(calibrationDataParameters,"magYBias",calibrationData.magYBias);
+	readOrCreateConfigValue(calibrationDataParameters,"magZBias",calibrationData.magZBias);
+	readOrCreateConfigValue(calibrationDataParameters,"magXVariance",calibrationData.magXVariance);
+	readOrCreateConfigValue(calibrationDataParameters,"magYVariance",calibrationData.magYVariance);
+	readOrCreateConfigValue(calibrationDataParameters,"magZVariance",calibrationData.magZVariance);
 
-	readConfigValue(calibrationDataParameters,"gyrXBias",calibrationData.gyrXBias);
-	readConfigValue(calibrationDataParameters,"gyrYBias",calibrationData.gyrYBias);
-	readConfigValue(calibrationDataParameters,"gyrZBias",calibrationData.gyrZBias);
-	readConfigValue(calibrationDataParameters,"gyrXSigma",calibrationData.gyrXSigma);
-	readConfigValue(calibrationDataParameters,"gyrYSigma",calibrationData.gyrYSigma);
-	readConfigValue(calibrationDataParameters,"gyrZSigma",calibrationData.gyrZSigma);
+	readOrCreateConfigValue(calibrationDataParameters,"gyrXBias",calibrationData.gyrXBias);
+	readOrCreateConfigValue(calibrationDataParameters,"gyrYBias",calibrationData.gyrYBias);
+	readOrCreateConfigValue(calibrationDataParameters,"gyrZBias",calibrationData.gyrZBias);
+	readOrCreateConfigValue(calibrationDataParameters,"gyrXVariance",calibrationData.gyrXVariance);
+	readOrCreateConfigValue(calibrationDataParameters,"gyrYVariance",calibrationData.gyrYVariance);
+	readOrCreateConfigValue(calibrationDataParameters,"gyrZVariance",calibrationData.gyrZVariance);
 
-	readConfigValue(calibrationDataParameters,"accelXBias",calibrationData.accelXBias);
-	readConfigValue(calibrationDataParameters,"accelYBias",calibrationData.accelYBias);
-	readConfigValue(calibrationDataParameters,"accelZBias",calibrationData.accelZBias);
-	readConfigValue(calibrationDataParameters,"accelXFactor",calibrationData.accelXFactor);
-	readConfigValue(calibrationDataParameters,"accelYFactor",calibrationData.accelYFactor);
-	readConfigValue(calibrationDataParameters,"accelZFactor",calibrationData.accelZFactor);
-	readConfigValue(calibrationDataParameters,"accelXSigma",calibrationData.accelXSigma);
-	readConfigValue(calibrationDataParameters,"accelYSigma",calibrationData.accelYSigma);
-	readConfigValue(calibrationDataParameters,"accelZSigma",calibrationData.accelZSigma);
+	readOrCreateConfigValue(calibrationDataParameters,"accelXBias",calibrationData.accelXBias);
+	readOrCreateConfigValue(calibrationDataParameters,"accelYBias",calibrationData.accelYBias);
+	readOrCreateConfigValue(calibrationDataParameters,"accelZBias",calibrationData.accelZBias);
+	readOrCreateConfigValue(calibrationDataParameters,"accelXFactor",calibrationData.accelXFactor);
+	readOrCreateConfigValue(calibrationDataParameters,"accelYFactor",calibrationData.accelYFactor);
+	readOrCreateConfigValue(calibrationDataParameters,"accelZFactor",calibrationData.accelZFactor);
+	readOrCreateConfigValue(calibrationDataParameters,"accelXVariance",calibrationData.accelXVariance);
+	readOrCreateConfigValue(calibrationDataParameters,"accelYVariance",calibrationData.accelYVariance);
+	readOrCreateConfigValue(calibrationDataParameters,"accelZVariance",calibrationData.accelZVariance);
 
+	readOrCreateConfigValue(calibrationDataParameters,"gravityValue",calibrationData.gravity);
+	readOrCreateConfigValue(calibrationDataParameters,"gravityVariance",calibrationData.gravityVariance);
 
 }
 
@@ -271,11 +273,19 @@ void BMXSensorBoardDriver::initializeStatusAccel(
 			varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL) == 0.0f) {
 		varioStatus.rollAngle = FastMath::fastASin(-avgAccelY / FastMath::fastCos(varioStatus.pitchAngle));
 		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL) =
-				(3.0f/ FastMath::fastCos(varioStatus.pitchAngle)) * (3.0f/ FastMath::fastCos(varioStatus.pitchAngle));
+				SQUARE(3.0f/ FastMath::fastCos(varioStatus.pitchAngle));
 		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL) =
 				SQUARE(4.0) * baseIntervalSec;
 	}
 
+	// Gravity and accelerometers are siamese twins. So I handle gravity here too.
+
+	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_GRAVITY,varioStatus.STATUS_IND_GRAVITY) == 0.0f) {
+		varioStatus.gravity = calibrationData.gravity;
+		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_GRAVITY,varioStatus.STATUS_IND_GRAVITY) = calibrationData.gravityVariance;
+		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_GRAVITY,varioStatus.STATUS_IND_GRAVITY) =
+				SQUARE(0.01) * baseIntervalSec;
+	}
 
 }
 
@@ -622,9 +632,12 @@ void BMXSensorBoardDriver::processingMainLoop () {
 								LOG4CXX_DEBUG(logger,"gyrY (deg/s) = " << currSensorData.gyroY);
 								LOG4CXX_DEBUG(logger,"gyrZ (deg/s) = " << currSensorData.gyroZ);
 
-								currSensorData.accelX = (double)(bmxData.accGyrMagData.accX)/ accFactor;
-								currSensorData.accelY = -(double)(bmxData.accGyrMagData.accY)/ accFactor;
-								currSensorData.accelZ = -(double)(bmxData.accGyrMagData.accZ)/ accFactor;
+								currSensorData.accelX = (double)(bmxData.accGyrMagData.accX) *
+										calibrationData.accelXFactor / accFactor;
+								currSensorData.accelY = -(double)(bmxData.accGyrMagData.accY) *
+										calibrationData.accelYFactor / accFactor;
+								currSensorData.accelZ = -(double)(bmxData.accGyrMagData.accZ) *
+										calibrationData.accelZFactor / accFactor;
 								currSensorData.accelDataValid = true;
 
 								LOG4CXX_DEBUG(logger,"accX (deg/s) = " << currSensorData.accelX);
@@ -669,9 +682,12 @@ void BMXSensorBoardDriver::processingMainLoop () {
 								LOG4CXX_DEBUG(logger,"gyrY (deg/s) = " << currSensorData.gyroY);
 								LOG4CXX_DEBUG(logger,"gyrZ (deg/s) = " << currSensorData.gyroZ);
 
-								currSensorData.accelX = (double)(bmxData.accGyrData.accX)/ accFactor;
-								currSensorData.accelY = -(double)(bmxData.accGyrData.accY)/ accFactor;
-								currSensorData.accelZ = -(double)(bmxData.accGyrData.accZ)/ accFactor;
+								currSensorData.accelX = (double)(bmxData.accGyrMagData.accX) *
+										calibrationData.accelXFactor / accFactor;
+								currSensorData.accelY = -(double)(bmxData.accGyrMagData.accY) *
+										calibrationData.accelYFactor / accFactor;
+								currSensorData.accelZ = -(double)(bmxData.accGyrMagData.accZ) *
+										calibrationData.accelZFactor / accFactor;
 								currSensorData.accelDataValid = true;
 
 								LOG4CXX_DEBUG(logger,"accX (g) = " << currSensorData.accelX);
@@ -815,5 +831,92 @@ float BMXSensorBoardDriver::compensate_z(int16_t mag_data_z, uint16_t data_rhall
 	return retval;
 }
 
+void BMXSensorBoardDriver::calibrationDataWriteFunc() {
+
+
+	if (!varioMain) {
+		return;
+	}
+
+	{
+		// Lock the current status as briefly as possible.
+		GliderVarioMainPriv::LockedCurrentStatus currentLockedStatus(*varioMain);
+		GliderVarioStatus* currentStatus = currentLockedStatus.getCurrentStatus();
+		GliderVarioStatus::StatusCoVarianceType &coVariance = currentStatus->getErrorCovariance_P();
+
+		// If the estimated error is in a similar range or better than the current Variance update the estimated bias.
+		// Allow for fluctuations of the variance otherwise necessary updates may never happen
+		auto currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_GYRO_BIAS_X,
+				GliderVarioStatus::STATUS_IND_GYRO_BIAS_X);
+		if (currVariance <= calibrationData.gyrXVariance * 1.5f) {
+			calibrationData.gyrXBias = currentStatus->gyroBiasX;
+			calibrationData.gyrXVariance = currVariance;
+			writeConfigValue(calibrationDataParameters,"gyrXBias",calibrationData.gyrXBias);
+			writeConfigValue(calibrationDataParameters,"gyrXVariance",currVariance);
+		}
+		currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Y,
+				GliderVarioStatus::STATUS_IND_GYRO_BIAS_Y);
+		if (currVariance <= calibrationData.gyrYVariance * 1.5f) {
+			calibrationData.gyrYBias = currentStatus->gyroBiasY;
+			calibrationData.gyrYVariance = currVariance;
+			writeConfigValue(calibrationDataParameters,"gyrYBias",calibrationData.gyrYBias);
+			writeConfigValue(calibrationDataParameters,"gyrYVariance",currVariance);
+		}
+		currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Z,
+				GliderVarioStatus::STATUS_IND_GYRO_BIAS_Z);
+		if (currVariance <= calibrationData.gyrZVariance * 1.5f) {
+			calibrationData.gyrZBias = currentStatus->gyroBiasZ;
+			calibrationData.gyrZVariance = currVariance;
+			writeConfigValue(calibrationDataParameters,"gyrZBias",calibrationData.gyrZBias);
+			writeConfigValue(calibrationDataParameters,"gyrZVariance",currVariance);
+		}
+
+		currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_X,
+				GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_X);
+		if (currVariance <= calibrationData.magXVariance * 1.5f) {
+			calibrationData.magXBias = currentStatus->compassDeviationX;
+			calibrationData.magXVariance = currVariance;
+			writeConfigValue(calibrationDataParameters,"magXBias",calibrationData.magXBias);
+			writeConfigValue(calibrationDataParameters,"magXVariance",currVariance);
+		}
+		currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Y,
+				GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Y);
+		if (currVariance <= calibrationData.magYVariance * 1.5f) {
+			calibrationData.magYBias = currentStatus->compassDeviationY;
+			calibrationData.magYVariance = currVariance;
+			writeConfigValue(calibrationDataParameters,"magYBias",calibrationData.magYBias);
+			writeConfigValue(calibrationDataParameters,"magYVariance",currVariance);
+		}
+		currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Z,
+				GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Z);
+		if (currVariance <= calibrationData.magZVariance * 1.5f) {
+			calibrationData.magZBias = currentStatus->compassDeviationZ;
+			calibrationData.magZVariance = currVariance;
+			writeConfigValue(calibrationDataParameters,"magZBias",calibrationData.magZBias);
+			writeConfigValue(calibrationDataParameters,"magZVariance",currVariance);
+		}
+
+#error : Re-think the factor: Is is correctly calculated? Anyway, Define it that only a multiplication is required.
+		currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_GRAVITY,
+				GliderVarioStatus::STATUS_IND_GRAVITY);
+		if (currVariance <= calibrationData.accelZVariance * 1.5f) {
+			calibrationData.accelZFactor = currentStatus->gravity / GRAVITY;
+			calibrationData.accelZVariance = currVariance;
+			writeConfigValue(calibrationDataParameters,"accelZFactor",calibrationData.accelZFactor);
+			writeConfigValue(calibrationDataParameters,"accelZVariance",currVariance);
+		}
+
+		currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_GRAVITY,
+				GliderVarioStatus::STATUS_IND_GRAVITY);
+		if (currVariance <= calibrationData.gravityVariance * 1.5f) {
+			calibrationData.gravity = currentStatus->gravity;
+			calibrationData.gravityVariance = currVariance;
+			writeConfigValue(calibrationDataParameters,"gravityValue",calibrationData.gravity);
+			writeConfigValue(calibrationDataParameters,"gravityVariance",currVariance);
+		}
+}
+
+
+}
 
 } // namespace openEV
