@@ -896,16 +896,6 @@ void BMXSensorBoardDriver::calibrationDataWriteFunc() {
 			writeConfigValue(calibrationDataParameters,"magZVariance",currVariance);
 		}
 
-#error : Re-think the factor: Is is correctly calculated? Anyway, Define it that only a multiplication is required.
-		currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_GRAVITY,
-				GliderVarioStatus::STATUS_IND_GRAVITY);
-		if (currVariance <= calibrationData.accelZVariance * 1.5f) {
-			calibrationData.accelZFactor = currentStatus->gravity / GRAVITY;
-			calibrationData.accelZVariance = currVariance;
-			writeConfigValue(calibrationDataParameters,"accelZFactor",calibrationData.accelZFactor);
-			writeConfigValue(calibrationDataParameters,"accelZVariance",currVariance);
-		}
-
 		currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_GRAVITY,
 				GliderVarioStatus::STATUS_IND_GRAVITY);
 		if (currVariance <= calibrationData.gravityVariance * 1.5f) {
