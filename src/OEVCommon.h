@@ -29,6 +29,10 @@
 #ifndef OEVCOMMON_H_
 #define OEVCOMMON_H_
 
+#if defined HAVE_CONFIG_H
+#	include "config.h"
+#endif
+
 #include <ostream>
 #include <sstream>
 #include <string>
@@ -36,6 +40,7 @@
 #include <unordered_map>
 #include <stdlib.h>
 #include <cstdlib>
+#include <cstdint>
 #include <chrono>
 
 #if HAVE_TIME_H == 1
@@ -44,10 +49,6 @@
 
 #if HAVE_SYS_TIME_H == 1
 #	include <sys/time.h>
-#endif
-
-#if defined HAVE_CONFIG_H
-#	include "config.h"
 #endif
 
 #if defined HAVE_LOG4CXX_H
