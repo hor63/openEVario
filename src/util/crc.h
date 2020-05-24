@@ -28,8 +28,11 @@
 
 #include "OEVCommon.h"
 
+namespace openEV {
+
 OEV_UTILS_PUBLIC uint16_t crc16CCIT(uint16_t crc, const void* const block,uint16_t len);
 
+}
 /*
  * Values for FCS calculations.
  */
