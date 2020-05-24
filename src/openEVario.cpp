@@ -46,6 +46,6 @@ int main (int argc, char *argv[]) {
     oevMain.startup();
     oevMain.runMainLoop();
 
-    // oevMain.runMainLoop();
+/// todo: Do something useful here. Otherwise the program ends right here :)
 
 }
