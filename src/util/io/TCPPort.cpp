@@ -161,7 +161,7 @@ void TCPPort::openInternal() {
 
 			auto sockType = ad->ai_socktype;
 
-			if (isBlocking()) {
+			if (!isBlocking()) {
 				sockType |= SOCK_NONBLOCK;
 			}
 
@@ -170,7 +170,7 @@ void TCPPort::openInternal() {
 			if (sock == -1) {
 				rc = errno;
 				LOG4CXX_ERROR(logger,"Open port " << getPortName()
-						<< ": socket() error: %s\n" << strerror(rc));
+						<< ": socket() error: " << rc << '=' << strerror(rc));
 				throw GliderVarioPortOpenException (
 						__FILE__,
 						__LINE__,
@@ -183,7 +183,7 @@ void TCPPort::openInternal() {
 				if (rc == -1) {
 					rc = errno;
 					LOG4CXX_ERROR(logger,"Open port " << getPortName()
-							<< ": connect() error: %s\n" << strerror(rc));
+							<< ": connect() error: " << rc << '=' << strerror(rc));
 					::close (sock);
 					sock = -1;
 					throw GliderVarioPortOpenException (
