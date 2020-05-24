@@ -201,8 +201,9 @@ public:
 			GliderVarioMeasurementVector *&measurementVector
 			) OEV_MAIN_PUBLIC ;
 
-
-
+	std::chrono::system_clock::time_point getLastPredictionUpdate() {
+		return lastPredictionUpdate;
+	}
 
 private:
 
