@@ -30,6 +30,7 @@
 #include <string>
 #include <map>
 #include <thread>
+#include <chrono>
 
 #include "OEVCommon.h"
 
@@ -137,6 +138,8 @@ private:
 
     /// Name of the calibration data parameter file
     std::string calibrationDataFileName;
+
+    /// Loaded and parsed calibration data
     Properties4CXX::Properties *calibrationDataParameters = nullptr;
 
     /// \brief BMX160 magnetometer trim data structure
@@ -253,7 +256,24 @@ private:
 
     } calibrationData;
 
+    /** \brief Thread object for the calibration data writer thread
+     *
+     * Writing out the calibration data is a fairly time consuming I/O operation.
+     * Therefore it is implemented as a one-shot thread which is re-started every
+     * \ref calibrationDataUpdateCycle seconds.
+     */
     std::thread calibrationDataWriteThread;
+
+    /// \brief Cycle time of calibration data updates when the Kalman filter is running.
+    std::chrono::system_clock::duration calibrationDataUpdateCycle;
+    /// \brief Time of the last calibration data update, or the initial load
+    std::chrono::system_clock::time_point lastUpdateTime;
+    /** \brief Indicator if the previous calibration write run is still active or finished.
+     *
+     * Indicator if the thread code actually ran to the end.
+     * This prevents blocking the driver thread when it joins the last thread run.
+     */
+    volatile bool calibrationWriterRunning = false;
 
     /**
      * @brief This internal API is used to obtain the compensated

@@ -58,7 +58,8 @@ BMXSensorBoardDriver::BMXSensorBoardDriver(
 		char const *description,
 		char const *instanceName
 		)
-: GliderVarioDriverBase {driverName,description,instanceName,BMXSensorBoardLib::theOneAndOnly}
+: GliderVarioDriverBase {driverName,description,instanceName,BMXSensorBoardLib::theOneAndOnly},
+  calibrationDataUpdateCycle{0}
 {
 
 #if defined HAVE_LOG4CXX_H
@@ -198,7 +199,7 @@ void BMXSensorBoardDriver::readConfiguration (Properties4CXX::Properties const &
 
 
 	try {
-		auto portNameConfig = configuration.searchProperty("PortName");
+		auto portNameConfig = configuration.searchProperty("portName");
 
 		if (portNameConfig->isList() || portNameConfig->isStruct()) {
 			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"Configuration variable \"PortName\" is a struct or a string list.");
@@ -216,8 +217,8 @@ void BMXSensorBoardDriver::readConfiguration (Properties4CXX::Properties const &
 				<< e.what());
 	}
 
-    errorTimeout = (long long)(configuration.getPropertyValue(std::string("errorTimeout"),(long long)(10)));
-    errorMaxNumRetries = (long long)(configuration.getPropertyValue(std::string("errorTimeout"),(long long)(0)));
+    errorTimeout = configuration.getPropertyValue(std::string("errorTimeout"),(long long)(10));
+    errorMaxNumRetries = configuration.getPropertyValue(std::string("errorTimeout"),(long long)(0));
 
     try {
     	auto fileNameProp = configuration.searchProperty("calibrationDataFile");
@@ -227,9 +228,10 @@ void BMXSensorBoardDriver::readConfiguration (Properties4CXX::Properties const &
 	    	calibrationDataParameters = new Properties4CXX::Properties(calibrationDataFileName);
 		}
 
+		calibrationDataUpdateCycle = std::chrono::seconds(configuration.getPropertyValue("calibrationDataUpdateCycle",(long long)(0)));
 
     } catch (...) {
-    	LOG4CXX_WARN(logger,"Driver" << driverName << ": No calibration data file specified");
+    	LOG4CXX_INFO(logger,"Driver" << driverName << ": No calibration data file specified");
     }
 
 
@@ -448,9 +450,8 @@ void BMXSensorBoardDriver::initializeStatus(
 
 	} // for (int i = 0; i < 20;i++)
 
-	if (!statusInitDone) {
-		// Full initialization seemed impossible
-	}
+	lastUpdateTime = std::chrono::system_clock::now();
+
 }
 
 void BMXSensorBoardDriver::updateKalmanStatus (GliderVarioStatus &varioStatus) {
@@ -495,7 +496,7 @@ void BMXSensorBoardDriver::processingMainLoop () {
 	 *  Range on the BMX 160 is set from -4g - +4g. This range is 0x8000 in raw values
 	 *
 	 */
-	static constexpr double accFactor = double(0x8000) / 4.0;
+	static constexpr double accFactor = 1 / double(0x8000) / 4.0;
 
 	/** \brief Factor to divide the raw gyroscope values by to get the actual deg/s value.
 	 *
@@ -532,11 +533,11 @@ void BMXSensorBoardDriver::processingMainLoop () {
 			currSensorData.gyroDataValid = false;
 			currSensorData.magDataValid = false;
 
-			LOG4CXX_DEBUG(logger,"bmxData.header.unionCode    = " << bmxData.header.unionCode);
+			LOG4CXX_DEBUG(logger,"bmxData.header.unionCode    = " << int(bmxData.header.unionCode));
 			LOG4CXX_DEBUG(logger,"bmxData.header.length       = " << bmxData.header.length);
-			LOG4CXX_DEBUG(logger,"bmxData.header.versionMajor = " << bmxData.header.versionMajor);
-			LOG4CXX_DEBUG(logger,"bmxData.header.versionMinor = " << bmxData.header.versionMinor);
-			LOG4CXX_DEBUG(logger,"bmxData.header.crc          = " << std::hex << bmxData.header.crc << std::dec);
+			LOG4CXX_DEBUG(logger,"bmxData.header.versionMajor = " << int(bmxData.header.versionMajor));
+			LOG4CXX_DEBUG(logger,"bmxData.header.versionMinor = " << int(bmxData.header.versionMinor));
+			LOG4CXX_DEBUG(logger,"bmxData.header.crc          = " << std::hex << uint16_t(bmxData.header.crc) << std::dec);
 
 			if (bmxData.header.versionMajor == BMX160_SENSORBOX_MSG_VERSION_MAJOR &&
 					bmxData.header.versionMinor == BMX160_SENSORBOX_MSG_VERSION_MINOR)
@@ -545,23 +546,23 @@ void BMXSensorBoardDriver::processingMainLoop () {
 				case BMX160DATA_TRIM:
 					if (bmxData.header.length == (sizeof(bmxData.header)+sizeof(bmxData.trimData))) {
 						if (ioPort->readExactLen((uint8_t *)(&bmxData.trimData),sizeof(bmxData.trimData)) == sizeof(bmxData.trimData)) {
-							uint16_t msgCrc, crc;
+							uint16_t msgCrc;
 							msgCrc = bmxData.header.crc;
 							bmxData.header.crc = 0U;
-							crc = crc16CCIT(PPP_INITFCS,&bmxData,bmxData.header.length);
-							if (crc == msgCrc) {
+
+							if (msgCrc == 0xffff || msgCrc == crc16CCIT(PPP_INITFCS,&bmxData,bmxData.header.length)) {
 								magTrimData = bmxData.trimData;
 								LOG4CXX_DEBUG(logger, "TrimData = \n"
-										<< "\tdig_x1   = " << magTrimData.dig_x1 << "\n"
-										<< "\tdig_y1   = " << magTrimData.dig_y1 << "\n"
+										<< "\tdig_x1   = " << int16_t(magTrimData.dig_x1) << "\n"
+										<< "\tdig_y1   = " << int16_t(magTrimData.dig_y1) << "\n"
 										<< "\tdig_z1   = " << magTrimData.dig_z1 << "\n"
-										<< "\tdig_x2   = " << magTrimData.dig_x2 << "\n"
-										<< "\tdig_y2   = " << magTrimData.dig_y2 << "\n"
+										<< "\tdig_x2   = " << int16_t(magTrimData.dig_x2) << "\n"
+										<< "\tdig_y2   = " << int16_t(magTrimData.dig_y2) << "\n"
 										<< "\tdig_z2   = " << magTrimData.dig_z2 << "\n"
 										<< "\tdig_z3   = " << magTrimData.dig_z3 << "\n"
 										<< "\tdig_z4   = " << magTrimData.dig_z4 << "\n"
-										<< "\tdig_xy1  = " << magTrimData.dig_xy1 << "\n"
-										<< "\tdig_xy2  = " << magTrimData.dig_xy2 << "\n"
+										<< "\tdig_xy1  = " << uint16_t(magTrimData.dig_xy1) << "\n"
+										<< "\tdig_xy2  = " << int16_t(magTrimData.dig_xy2) << "\n"
 										<< "\tdig_xyz1 = " << magTrimData.dig_xyz1);
 
 								// Essential trim data is missing.
@@ -591,11 +592,11 @@ void BMXSensorBoardDriver::processingMainLoop () {
 				case BMX160DATA_ACC_GYR_MAG:
 					if (bmxData.header.length == (sizeof(bmxData.header)+sizeof(bmxData.accGyrMagData))) {
 						if (ioPort->readExactLen((uint8_t*)(&bmxData.accGyrMagData),sizeof(bmxData.accGyrMagData)) == sizeof(bmxData.accGyrMagData)) {
-							uint16_t msgCrc, crc;
+							uint16_t msgCrc;
 							msgCrc = bmxData.header.crc;
 							bmxData.header.crc = 0U;
-							crc = crc16CCIT(PPP_INITFCS,&bmxData,bmxData.header.length);
-							if (crc == msgCrc) {
+
+							if (msgCrc == 0xffff || msgCrc == crc16CCIT(PPP_INITFCS,&bmxData,bmxData.header.length)) {
 								GliderVarioMainPriv::LockedCurrentStatus currStatus(*varioMain);
 
 								// advance the index, and wrap it around if necessary
@@ -633,16 +634,16 @@ void BMXSensorBoardDriver::processingMainLoop () {
 								LOG4CXX_DEBUG(logger,"gyrZ (deg/s) = " << currSensorData.gyroZ);
 
 								currSensorData.accelX = (double)(bmxData.accGyrMagData.accX) *
-										calibrationData.accelXFactor / accFactor;
+										calibrationData.accelXFactor * accFactor;
 								currSensorData.accelY = -(double)(bmxData.accGyrMagData.accY) *
-										calibrationData.accelYFactor / accFactor;
+										calibrationData.accelYFactor * accFactor;
 								currSensorData.accelZ = -(double)(bmxData.accGyrMagData.accZ) *
-										calibrationData.accelZFactor / accFactor;
+										calibrationData.accelZFactor * accFactor;
 								currSensorData.accelDataValid = true;
 
-								LOG4CXX_DEBUG(logger,"accX (deg/s) = " << currSensorData.accelX);
-								LOG4CXX_DEBUG(logger,"accY (deg/s) = " << currSensorData.accelY);
-								LOG4CXX_DEBUG(logger,"accZ (deg/s) = " << currSensorData.accelZ);
+								LOG4CXX_DEBUG(logger,"accX (g) = " << currSensorData.accelX);
+								LOG4CXX_DEBUG(logger,"accY (g) = " << currSensorData.accelY);
+								LOG4CXX_DEBUG(logger,"accZ (g) = " << currSensorData.accelZ);
 							} else { // if (crc == msgCrc)
 								LOG4CXX_ERROR(logger,
 										"CRC error of received acc/gyr/mag sensor data message");
@@ -657,11 +658,11 @@ void BMXSensorBoardDriver::processingMainLoop () {
 				case BMX160DATA_ACC_GYR:
 					if (bmxData.header.length == (sizeof(bmxData.header)+sizeof(bmxData.accGyrData))) {
 						if (ioPort->readExactLen((uint8_t*)(&bmxData.accGyrData),sizeof(bmxData.accGyrData)) == sizeof(bmxData.accGyrData)) {
-							uint16_t msgCrc, crc;
+							uint16_t msgCrc;
 							msgCrc = bmxData.header.crc;
 							bmxData.header.crc = 0U;
-							crc = crc16CCIT(PPP_INITFCS,&bmxData,bmxData.header.length);
-							if (crc == msgCrc) {
+
+							if (msgCrc == 0xffff || msgCrc == crc16CCIT(PPP_INITFCS,&bmxData,bmxData.header.length)) {
 								// advance the index, and wrap it around if necessary
 								currSensorDataIndex++;
 								currSensorDataIndex &= SIZE_SENSOR_DATA_ARRAY - 1;
@@ -683,11 +684,11 @@ void BMXSensorBoardDriver::processingMainLoop () {
 								LOG4CXX_DEBUG(logger,"gyrZ (deg/s) = " << currSensorData.gyroZ);
 
 								currSensorData.accelX = (double)(bmxData.accGyrMagData.accX) *
-										calibrationData.accelXFactor / accFactor;
+										calibrationData.accelXFactor * accFactor;
 								currSensorData.accelY = -(double)(bmxData.accGyrMagData.accY) *
-										calibrationData.accelYFactor / accFactor;
+										calibrationData.accelYFactor * accFactor;
 								currSensorData.accelZ = -(double)(bmxData.accGyrMagData.accZ) *
-										calibrationData.accelZFactor / accFactor;
+										calibrationData.accelZFactor * accFactor;
 								currSensorData.accelDataValid = true;
 
 								LOG4CXX_DEBUG(logger,"accX (g) = " << currSensorData.accelX);
@@ -727,6 +728,16 @@ void BMXSensorBoardDriver::processingMainLoop () {
 				if (currSensorData.magDataValid) {
 					GliderVarioMeasurementUpdater::compassUpd(currSensorData.magX,currSensorData.magY,currSensorData.magZ,
 							4.0f,4.0f,4.0f,*currStatus.getMeasurementVector(),*currStatus.getCurrentStatus());
+				}
+
+				auto lastPredictionUpdate = varioMain->getLastPredictionUpdate();
+				auto timeSinceLastCalibrationWrite = lastPredictionUpdate - lastUpdateTime;
+				if (!calibrationWriterRunning && (timeSinceLastCalibrationWrite >= calibrationDataUpdateCycle)) {
+					calibrationWriterRunning = true;
+					if (calibrationDataWriteThread.joinable()) {
+						calibrationDataWriteThread.join();
+					}
+					calibrationDataWriteThread = std::thread(&BMXSensorBoardDriver::calibrationDataWriteFunc,this);
 				}
 			}
 		} // if (readLen == sizeof(bmxData.header))
@@ -835,6 +846,7 @@ void BMXSensorBoardDriver::calibrationDataWriteFunc() {
 
 
 	if (!varioMain) {
+		calibrationWriterRunning = false;
 		return;
 	}
 
@@ -904,8 +916,16 @@ void BMXSensorBoardDriver::calibrationDataWriteFunc() {
 			writeConfigValue(calibrationDataParameters,"gravityValue",calibrationData.gravity);
 			writeConfigValue(calibrationDataParameters,"gravityVariance",currVariance);
 		}
-}
+	}
 
+	try {
+		std::ofstream of(calibrationDataFileName,of.out | of.trunc);
+		if (of.good()) {
+			calibrationDataParameters->writeOut(of);
+		}
+	} catch (...) {}
+
+	calibrationWriterRunning = false;
 
 }
 
