@@ -36,7 +36,7 @@ namespace io {
 class TCPPort: public StreamPort {
 public:
 
-	static constexpr char const* TcpPortType = "TCP-Port";
+	static constexpr char const* TcpPortType = "TCPClient";
 
 	TCPPort(char const* portName);
 	virtual ~TCPPort();
