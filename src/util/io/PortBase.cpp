@@ -118,7 +118,8 @@ void PortBase::addPort (PortBasePtr port) {
 
 void PortBase::loadSinglePort (
 		Properties4CXX::Properties const &globalProperties,
-		Properties4CXX::Property const &portProperty) {
+		Properties4CXX::Property const &portProperty,
+		std::string const &portName) {
 
 	PortBase* newPort = nullptr;
 	LOG4CXX_INFO(logger,"Load port '" << portProperty.getPropertyName() << '\'');
@@ -138,7 +139,7 @@ void PortBase::loadSinglePort (
 				LOG4CXX_ERROR(logger,"  Port '" << portProperty.getPropertyName() << "' will not be created.");
 			} else { // if (portTypeIter == typeMap.end())
 				PortConstructor portConstructor = portTypeIter->second;
-				newPort = portConstructor(portProperty.getStrValue(),portStruct);
+				newPort = portConstructor(portName.c_str(),portStruct);
 			} // if (portTypeIter == typeMap.end())
 
 		} catch (Properties4CXX::ExceptionPropertyNotFound const &) {
@@ -187,7 +188,8 @@ void PortBase::loadPorts(Properties4CXX::Properties const &properties) {
 			while (portPropIter != portList.getListEnd()) {
 				try {
 					Properties4CXX::Property const &portProp = portList.getPropertyFromIterator(portPropIter);
-					loadSinglePort(properties,portProp);
+					auto portName = portPropIter->first;
+					loadSinglePort(properties,portProp,portName);
 				} catch (GliderVarioPortConfigException const& e) {
 					LOG4CXX_ERROR (logger, "Exception when loading port "
 							<< portPropIter->second->getPropertyName()

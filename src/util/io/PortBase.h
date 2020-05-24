@@ -290,7 +290,8 @@ private:
 	 */
 	static void loadSinglePort (
 			Properties4CXX::Properties const &globalProperties,
-			Properties4CXX::Property const &portProperty);
+			Properties4CXX::Property const &portProperty,
+			std::string const &portName);
 
 
 protected:
