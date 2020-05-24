@@ -102,6 +102,8 @@ ssize_t StreamPort::read(uint8_t* buffer,size_t bufLen) {
 
 	} while (err == EINTR);
 
+	LOG4CXX_DEBUG(logger,"StreamPort::read: ret = " << ret);
+
 	return ret;
 }
 
@@ -159,7 +161,9 @@ ssize_t StreamPort::write(uint8_t *buffer, size_t bufLen) {
 			throw GliderVarioPortReadEndOfFileException(__FILE__,__LINE__,str.str().c_str());
 		}
 
-	} while (bufLen > 0);
+	} while (err == EINTR);
+
+	LOG4CXX_DEBUG(logger,"StreamPort::write: ret = " << ret);
 
 	return ret;
 }
