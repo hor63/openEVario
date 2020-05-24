@@ -633,6 +633,7 @@ void BMXSensorBoardDriver::processingMainLoop () {
 								LOG4CXX_DEBUG(logger,"gyrY (deg/s) = " << currSensorData.gyroY);
 								LOG4CXX_DEBUG(logger,"gyrZ (deg/s) = " << currSensorData.gyroZ);
 
+								/// todo: Apply accel calibration data directly here.
 								currSensorData.accelX = (double)(bmxData.accGyrMagData.accX) *
 										calibrationData.accelXFactor * accFactor;
 								currSensorData.accelY = -(double)(bmxData.accGyrMagData.accY) *
