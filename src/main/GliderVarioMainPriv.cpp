@@ -473,9 +473,7 @@ GliderVarioStatus *GliderVarioMainPriv::getCurrentStatusAndLock(GliderVarioMeasu
 
 	currentStatusLock.lock();
 
-	if ((lastPredictionUpdate + programOptions.maxTimeBetweenPredictionAndMeasurementUpdate) >= std::chrono::system_clock::now()) {
-		predictAndSwapStatus();
-	}
+	predictAndSwapStatus();
 
 	measurementVector = &(this->measurementVector);
 
@@ -494,21 +492,23 @@ void GliderVarioMainPriv::predictAndSwapStatus() {
 
 	auto timeDiff = timeBeforePredict - lastPredictionUpdate;
 
-	// Calculate fractional seconds from the system clock ticks with double arithmetic
-	FloatType timeDiffSec = double(timeDiff.count()) * (double(std::chrono::system_clock::period::num)/double(std::chrono::system_clock::period::den));
+	if (timeDiff >= programOptions.maxTimeBetweenPredictionAndMeasurementUpdate) {
 
-	transitionMatrix.updateStatus(
-			*currentStatus,
-			*nextStatus,
-			timeDiffSec);
+		// Calculate fractional seconds from the system clock ticks with double arithmetic
+		FloatType timeDiffSec = double(timeDiff.count()) * (double(std::chrono::system_clock::period::num)/double(std::chrono::system_clock::period::den));
 
-	lastPredictionUpdate = timeBeforePredict;
+		transitionMatrix.updateStatus(
+				*currentStatus,
+				*nextStatus,
+				timeDiffSec);
 
-	// Swap status buffers
-	auto tempStatus = currentStatus;
-	currentStatus = nextStatus;
-	nextStatus = tempStatus;
+		lastPredictionUpdate = timeBeforePredict;
 
+		// Swap status buffers
+		auto tempStatus = currentStatus;
+		currentStatus = nextStatus;
+		nextStatus = tempStatus;
+	}
 
 }
 
