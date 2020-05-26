@@ -30,8 +30,12 @@
 #endif
 
 #include "GliderVarioMain.h"
+#include <chrono>
+#include <thread>
 
 using namespace openEV;
+using namespace std::chrono;
+using namespace std::chrono_literals;
 
 /**
  * \brief The one and only main() function
@@ -42,10 +46,20 @@ using namespace openEV;
  */
 int main (int argc, char *argv[]) {
     GliderVarioMain oevMain (argc, (const char**)( argv));
+    system_clock::duration waitTime = 10s;
 
     oevMain.startup();
     oevMain.runMainLoop();
 
+    system_clock::time_point nextTime = system_clock::now() + waitTime;
+    while (1) {
+
+    	std::this_thread::sleep_until(nextTime);
+
+    	nextTime += waitTime;
+
+    }
 /// todo: Do something useful here. Otherwise the program ends right here :)
 
+    return 0;
 }
