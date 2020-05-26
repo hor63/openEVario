@@ -131,7 +131,7 @@ GliderVarioMeasurementUpdater::GPSLongitudeUpd (
         measRowTTst1 = measRowT;
     }
 
-    LOG4CXX_DEBUG(logger,"GPSLongitudeUpd: measured longitudeOffset(m) = " <<  measuredLongitude
+    LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measured longitudeOffset(m) = " <<  measuredLongitude
     		<< ", calculated latitudeOffset = " << calculatedValue << ", variance = " << longitudeVariance);
 
     calcSingleMeasureUpdate (
@@ -166,7 +166,7 @@ GliderVarioMeasurementUpdater::GPSAltitudeUpd (
         measRowTTst1 = measRowT;
     }
 
-    LOG4CXX_DEBUG(logger,"GPSAltitudeUpd: measuredAltitude = " <<  measuredAltitudeMSL
+    LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measuredAltitude = " <<  measuredAltitudeMSL
     		<< ", calculated Altitude = " << calculatedValue << ", variance = " << altitudeVariance);
 
     calcSingleMeasureUpdate (
@@ -209,6 +209,9 @@ GliderVarioMeasurementUpdater::GPSHeadingUpd (
         calculatedValueTst1 = calculatedValue;
         measRowTTst1 = measRowT;
     }
+
+    LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measuredCourseOverGround = " <<  measuredCourseOverGround
+    		<< ", calculated Course = " << calculatedValue << ", variance = " << courseOverGroundVariance);
 
     calcSingleMeasureUpdate (
             measuredCourseOverGround,
@@ -257,6 +260,9 @@ GliderVarioMeasurementUpdater::GPSSpeedUpd (
         calculatedValueTst1 = calculatedValue;
         measRowTTst1 = measRowT;
         }
+
+    LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measuredSpeedOverGround = " <<  measuredSpeedOverGround
+    		<< ", calculated speed = " << calculatedValue << ", variance = " << speedOverGroundVariance);
 
     calcSingleMeasureUpdate (
             measuredSpeedOverGround,
@@ -344,6 +350,9 @@ GliderVarioMeasurementUpdater::accelUpd (
         measRowTTst1 = measRowT;
     }
 
+    LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measuredAccelX = " <<  measuredAccelX
+    		<< ", calcAccel = " << calcAccel << ", variance = " << accelXVariance);
+
     calcSingleMeasureUpdate (
             measuredAccelX,
             calcAccel,
@@ -377,6 +386,9 @@ GliderVarioMeasurementUpdater::accelUpd (
         measRowTTst2 = measRowT;
     }
 
+    LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measuredAccelY = " <<  measuredAccelY
+    		<< ", calcAccel = " << calcAccel << ", variance = " << accelYVariance);
+
     calcSingleMeasureUpdate (
             measuredAccelY,
             calcAccel,
@@ -409,6 +421,9 @@ GliderVarioMeasurementUpdater::accelUpd (
         calculatedValueTst3 = calcAccel;
         measRowTTst3 = measRowT;
     }
+
+    LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measuredAccelZ = " <<  measuredAccelZ
+    		<< ", calcAccel = " << calcAccel << ", variance = " << accelZVariance);
 
     calcSingleMeasureUpdate (
             measuredAccelZ,
@@ -492,6 +507,9 @@ GliderVarioMeasurementUpdater::gyroUpd (
         measRowTTst1 = measRowT;
     }
 
+    LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measuredRollRateX = " <<  measuredRollRateX
+    		<< ", calcRotationX = " << calcRotationX << ", variance = " << rollRateXVariance);
+
     calcSingleMeasureUpdate (
             measuredRollRateX,
             calcRotationX,
@@ -522,6 +540,9 @@ GliderVarioMeasurementUpdater::gyroUpd (
         measRowTTst2 = measRowT;
     }
 
+    LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measuredPitchRateY = " <<  measuredPitchRateY
+    		<< ", calcRotationY = " << calcRotationY << ", variance = " << pitchRateYVariance);
+
     calcSingleMeasureUpdate (
             measuredPitchRateY,
             calcRotationY,
@@ -551,6 +572,9 @@ GliderVarioMeasurementUpdater::gyroUpd (
         calculatedValueTst3 = calcRotationZ;
         measRowTTst3 = measRowT;
     }
+
+    LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measuredYawRateZ = " <<  measuredYawRateZ
+    		<< ", calcRotationZ = " << calcRotationZ << ", variance = " << yawRateZVariance);
 
     calcSingleMeasureUpdate (
             measuredYawRateZ,
@@ -653,6 +677,9 @@ GliderVarioMeasurementUpdater::compassUpd (
         measRowTTst1 = measRowT;
     }
 
+    LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measuredMagFlowX = " <<  measuredMagFlowX
+    		<< ", calculatedValueX = " << calculatedValueX << ", variance = " << magFlowXVariance);
+
     calcSingleMeasureUpdate (
             measuredMagFlowX,
             calculatedValueX,
@@ -678,6 +705,9 @@ GliderVarioMeasurementUpdater::compassUpd (
         measRowTTst2 = measRowT;
     }
 
+    LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measuredMagFlowY = " <<  measuredMagFlowY
+    		<< ", calculatedValueY = " << calculatedValueY << ", variance = " << magFlowYVariance);
+
     calcSingleMeasureUpdate (
             measuredMagFlowY,
             calculatedValueY,
@@ -702,6 +732,9 @@ GliderVarioMeasurementUpdater::compassUpd (
         calculatedValueTst3 = calculatedValueZ;
         measRowTTst3 = measRowT;
     }
+
+    LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measuredMagFlowZ = " <<  measuredMagFlowZ
+    		<< ", calculatedValueZ = " << calculatedValueZ << ", variance = " << magFlowZVariance);
 
     calcSingleMeasureUpdate (
             measuredMagFlowZ,
@@ -807,6 +840,9 @@ GliderVarioMeasurementUpdater::dynamicPressureUpd (
         calculatedValueTst1 = dynPressure;
         measRowTTst1 = measRowT;
     }
+
+    LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measuredDynamicPressure = " <<  measuredDynamicPressure
+    		<< ", calculated dynPressure = " << dynPressure << ", variance = " << dynamicPressureVariance);
 
     calcSingleMeasureUpdate (
             measuredDynamicPressure,
