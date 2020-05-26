@@ -207,9 +207,9 @@ private:
     	double magZBias = 0.0;
 
     	/// Standard Variance of the magnetometer measurements
-    	double magXVariance = 50.0;
-    	double magYVariance = 50.0;
-    	double magZVariance = 50.0;
+    	double magXVariance = 50.0 * 50.0;
+    	double magYVariance = 50.0 * 50.0;
+    	double magZVariance = 50.0 * 50.0;
 
     	/// Gyro bias is the easiest: Let the box rest and measure the gyro values. These are the bias.
     	double gyrXBias = 0.0;
@@ -218,9 +218,9 @@ private:
 
     	/// Standard Variance of the gyro measurements
     	/// Just leave the sensor box sitting still and measure a series of values and calculate the standard devition, and square it
-    	double gyrXVariance = 5.0;
-    	double gyrYVariance = 5.0;
-    	double gyrZVariance = 5.0;
+    	double gyrXVariance = 9.0;
+    	double gyrYVariance = 9.0;
+    	double gyrZVariance = 9.0;
 
     	/**
     	 * Accel bias is measured mostly the same way as magnetometer bias.
