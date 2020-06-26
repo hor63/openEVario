@@ -223,7 +223,7 @@ public:
     	static FloatType constexpr exponent = (GRAVITY * M) / (R * tempLapse);
 
 
-    	FloatType measuredTempK = measuredTemp + KtoC;
+    	FloatType measuredTempK = measuredTemp + CtoK;
 
     	FloatType base = (measuredTempK - altMSL * tempLapse) / measuredTempK;
 
@@ -1003,7 +1003,7 @@ TEST_F(MeasurementUpdaterTest, DynamicPressure) {
 
 	st1.lastPressure = calculatedPressure;
 
-	const FloatType density = calculatedPressure / Rspec / (measuredTemp + KtoC);
+	const FloatType density = calculatedPressure / Rspec / (measuredTemp + CtoK);
 
 	const FloatType dynPressure = density * st1.trueAirSpeed * st1.trueAirSpeed / 2.0f;
 

@@ -35,7 +35,7 @@
 #include "OEVCommon.h"
 
 /**
- * This namespace includes a complex extended kalman filter (EKF) for implementing a complete electronic compensated variometer, and artificial horizon.
+ * This namespace includes a complex Extended Kalman Filter (EKF) for implementing a complete electronic compensated variometer, and artificial horizon.
  *
  * Input to this model are inertial measurements from 3-D accelerometer and gyroscopes, a barometric precision altimeter,
  * IAS and TAS measurement from dynamic pressure and GPS coordinates, heading and speed over ground
@@ -47,25 +47,29 @@
  * the non-linear function at the latest status. To make my life easier I am using a numeric forward derivation with a small step.
  * For numeric derivation of angles I use an increment of 1 degree. This is small enough for an approximation of sin and cos, and large enough
  * not to create undue numeric issues with scale factors in single precision floats. It has the additional advantage that the increment is
- * 1.0 (degrees), i.e. I am saving myself a division by the increment if it were != 0.
- * \sa <a href="http://www.iue.tuwien.ac.at/phd/khalil/node14.html" >Numerical differentiations of Jacobian matrixes</a>
+ * 1.0 (degrees), i.e. I am saving myself a division by the increment if it were != 1.
+ * \sa [Numerical differentiations of Jacobian matrixes](http://www.iue.tuwien.ac.at/phd/khalil/node14.html)
  *
  */
 namespace openEV
 {
 
 
-/**
- * Constant of gravity acceleration.
- * exact values for Germany can be obtained for the German gravity base mesh
- * Deutsches Schweregrundnetz 1994 (DSGN 94) from
- * <a href="https://www.bkg.bund.de/SharedDocs/Downloads/BKG/DE/Downloads-DE-Flyer/BKG-DSGN94-DE.pdf?__blob=publicationFile&v=5" >DSGN94-Punktbeschreibung</a>
- * The constant here is a rough average around the Northern German plains (I live in Northern Germany ;) ).
- * Since a Kalman filter is not exact numeric science any inaccuracy should be covered by the process variance.
+/** \brief Constant of gravity acceleration.
  *
- * \sa <a href="https://www.bkg.bund.de/DE/Ueber-das-BKG/Geodaesie/Schwere/Schwere-Deutschland/schwere-deutsch.html#doc57358bodyText1" >Deutsches Schweregrundnetz 1994 (DSGN94)</a>
+ * Here I am using the [conventional value of Earth gravity](https://en.wikipedia.org/wiki/Gravity_of_Earth#Conventional_value) as basis.
+ * This value should also be used for accelerometers which measure "g" instead m/s^2, and you are asking yourself "What the heck is the absolute value of 1g?"
+ * Drivers can adjust the initial gravity value in the status matrix from the calibration file.
+ *
+ * Exact values for Germany can be obtained for the German gravity base mesh
+ * Deutsches Schweregrundnetz 1994 (DSGN 94) from
+ * [DSGN94-Punktbeschreibung](https://www.bkg.bund.de/SharedDocs/Downloads/BKG/DE/Downloads-DE-Flyer/BKG-DSGN94-DE.pdf?__blob=publicationFile)
+ *
+ * \sa [Wikipedia: Gravity of Earth](https://en.wikipedia.org/wiki/Gravity_of_Earth)
+ * \sa [Deutsches Schweregrundnetz 1994 (DSGN94)](https://www.bkg.bund.de/DE/Ueber-das-BKG/Geodaesie/Schwere/Schwere-Deutschland/schwere-deutsch.html#doc57358bodyText1)
+ * \sa [Online gravity calculator within Germany](http://gibs.bkg.bund.de/geoid/gscomp.php?p=s)
  */
-static FloatType constexpr GRAVITY = 9.813;
+static FloatType constexpr GRAVITY = 9.80665;
 
 /**
  * difference between K(elvin) and C(elsius)
