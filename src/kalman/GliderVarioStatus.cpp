@@ -98,8 +98,13 @@ GliderVarioStatus::GliderVarioStatus () :
     // Changed to sparse matrixes which start empty by default
     // they are initialized to their dimensions in the initialization section of the constructor
     // above.
-    //systemNoiseCovariance_Q.setZero();
-    //errorCovariance_P.setZero();
+	// Reserve enough memory for the sparse matrixes to avoid realloc() and heap fragmentation
+	// Usually the system error matrix is diagonal only
+    systemNoiseCovariance_Q.reserve(STATUS_NUM_ROWS*2);
+
+    // This one also contains the dependencies of the factors outside the diagonal, but not all are used.
+    errorCovariance_P.reserve(STATUS_NUM_ROWS*STATUS_NUM_ROWS/2);
+
 
     statusVector_x(STATUS_IND_GRAVITY)= GRAVITY;
     statusVector_x(STATUS_IND_LAST_PRESSURE) = pressureStdMSL;
