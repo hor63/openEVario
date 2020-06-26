@@ -28,6 +28,7 @@
 
 #include "GliderVarioStatus.h"
 #include "GliderVarioMeasurementVector.h"
+#include "util/RotationMatrix.h"
 
 namespace openEV {
 
@@ -283,8 +284,24 @@ public:
 
 protected:
 
-    /**
-     * Calculates the status update for one measurement value
+    /** \brief Calculate the inverse of a 3x3 matrix
+     *
+     * The algorithm has been taken from
+     * [How to Calculate the Inverse Matrix for 2×2 and 3×3 Matrices](https://aaronschlegel.me/calculate-matrix-inverse-2x2-3x3.html)
+     * by [Aaron Schlegel](https://aaronschlegel.me/author/aaron-schlegel.html)
+     *
+     * @param[out] inverse The inverted matrix
+     * @param[in] org The original 3x3 matrix
+     * @return \p true when successful, \p false when the determinate of the matrix is 0, and the inverse cannot be calculated.
+     * @see [Matrix Inverse](https://mathworld.wolfram.com/MatrixInverse.html) by Wolfram MathWorld
+     */
+    OEV_LOCAL static bool calcInverse3D (
+    		Eigen::SparseMatrix <FloatType> &inverse,
+			Eigen::SparseMatrix <FloatType> const &org);
+
+
+    /** \brief Calculate the status update for one measurement value
+     *
      * This is the generic part which deals with calculating the Kalman gain, and updates the state estimate and the status covariance.
      * This routine requires some preparation by the specific update routines which apply the (usually non-linear) measurement function
      * to the latest state estimate to calculate the expected measurement value as well as the Jacobian of the measurement matrix.
@@ -306,7 +323,37 @@ protected:
     OEV_LOCAL static void calcSingleMeasureUpdate (
             FloatType measuredValue,
             FloatType calculatedValue,
-            FloatType measurementVariance,
+            FloatType measurementVariance_R,
+            Eigen::SparseMatrix<FloatType> const &measRowT,
+            GliderVarioStatus &varioStatus
+    );
+
+    /** \brief Calculate the status update for three measurement values at once
+     *
+     * This is the generic part which deals with calculating the Kalman gain, and updates the state estimate and the status covariance.
+     * This routine requires some preparation by the specific update routines which apply the (usually non-linear) measurement function
+     * to the latest state estimate to calculate the expected measurement value as well as the Jacobian of the measurement matrix.
+     *
+     * This function is used to correct the status simultaneouslz with threee measurements which are typical for 3-axis sensors.
+     *
+     * @param[in] measuredValue The measured values as they were measured by a sensor. These values may be heavily pre-processed, e.g. the IAS or TAS from the
+     *   dynamic pressure, and static pressure, or altitude from the absolute pressure sensor
+     * @param[in] calculatedValue The theoretical measurement values as they calculated from the current extrapolated system status.
+     * @param[in] measurementVariance The variance of the measure. I assume the measurement variances are independent, i.e. the measurement covariance matrix is diagonal.
+     *   This assumption is particularly important for the simplifications of the calculation of the inverse
+     * @param[in] measRowT The transposed measurement matrix. It is calculated or approximated as the Jacobian partial derivates each time.
+     *   The matrix row is not used to calculate the theoretical measured value. This is already done by the calling function by directly using the not-linear
+     *   measurement function and passing the result as \p calculatedValue.
+     *   The transposed Jacobian is used here to calculate the Kalman gain for this measurement, and applying it to the updated status and covariance.
+     *   The matrix is passed in the transposed form because in the calculation it is used transposed twice, and only once in the original form. So I have to
+     *   transpose only once (back to the original form).
+     * @param[in,out] varioStatus The system status and covariance before and after the measurement update. The status and covariance are directly updated from the difference of the actually measured, and the
+     * theoretical value.
+     */
+    OEV_LOCAL static void calc3DMeasureUpdate (
+            Vector3DType const &measuredValue,
+			Vector3DType const &calculatedValue,
+			RotationMatrix3DType const &measurementVariance_R,
             Eigen::SparseMatrix<FloatType> const &measRowT,
             GliderVarioStatus &varioStatus
     );

@@ -29,7 +29,6 @@
 
 #include "GliderVarioMeasurementUpdater.h"
 #include "util/FastMath.h"
-#include "util/RotationMatrix.h"
 
 #if defined HAVE_LOG4CXX_H
 
@@ -626,13 +625,13 @@ GliderVarioMeasurementUpdater::compassUpd (
     RotationMatrix attitudeRotMatrixIncRoll  (varioStatus.heading       ,varioStatus.pitchAngle       ,varioStatus.rollAngle + 1.0f);
 
     // The resulting rotation matrix from unit vector to the magnetic vector as seen in the plane
-    RotationMatrix3DType compassMatrix = magRotMatrix.getMatrixPlaneToGlo() * attitudeRotMatrix.getMatrixGloToPlane();
+    RotationMatrix3DType compassMatrix = attitudeRotMatrix.getMatrixGloToPlane() * magRotMatrix.getMatrixPlaneToGlo();
     // The resulting rotation matrixes with the 5 increments
-    RotationMatrix3DType compassMatrixIncDeclination = magRotMatrixIncDeclination.getMatrixPlaneToGlo() * attitudeRotMatrix.getMatrixGloToPlane();
-    RotationMatrix3DType compassMatrixIncInclination = magRotMatrixIncInclination.getMatrixPlaneToGlo() * attitudeRotMatrix.getMatrixGloToPlane();
-    RotationMatrix3DType compassMatrixIncYaw  = magRotMatrix.getMatrixPlaneToGlo() * attitudeRotMatrixIncYaw.getMatrixGloToPlane();
-    RotationMatrix3DType compassMatrixIncPitch = magRotMatrix.getMatrixPlaneToGlo() * attitudeRotMatrixIncPitch.getMatrixGloToPlane();
-    RotationMatrix3DType compassMatrixIncRoll  = magRotMatrix.getMatrixPlaneToGlo() * attitudeRotMatrixIncRoll.getMatrixGloToPlane();
+    RotationMatrix3DType compassMatrixIncDeclination = attitudeRotMatrix.getMatrixGloToPlane() * magRotMatrixIncDeclination.getMatrixPlaneToGlo() ;
+    RotationMatrix3DType compassMatrixIncInclination = attitudeRotMatrix.getMatrixGloToPlane() * magRotMatrixIncInclination.getMatrixPlaneToGlo();
+    RotationMatrix3DType compassMatrixIncYaw  = attitudeRotMatrixIncYaw.getMatrixGloToPlane() * magRotMatrix.getMatrixPlaneToGlo();
+    RotationMatrix3DType compassMatrixIncPitch = attitudeRotMatrixIncPitch.getMatrixGloToPlane() * magRotMatrix.getMatrixPlaneToGlo();
+    RotationMatrix3DType compassMatrixIncRoll  = attitudeRotMatrixIncRoll.getMatrixGloToPlane() * magRotMatrix.getMatrixPlaneToGlo();
 
     Vector3DType magVecLength (compensatedMagVectorLength,0.0f,0.0f);
 
@@ -852,6 +851,110 @@ GliderVarioMeasurementUpdater::dynamicPressureUpd (
             varioStatus
     );
 }
+
+bool GliderVarioMeasurementUpdater::calcInverse3D (
+		Eigen::SparseMatrix <FloatType> &inverse,
+		Eigen::SparseMatrix <FloatType> const &org) {
+	// The reciprocal of the determinant
+	FloatType det,detReci;
+	FloatType org00,org01,org02,org10,org11,org12,org20,org21,org22;
+
+	org00 = org.coeff(0,0);
+	org01 = org.coeff(0,1);
+	org02 = org.coeff(0,2);
+	org10 = org.coeff(1,0);
+	org11 = org.coeff(1,1);
+	org12 = org.coeff(1,2);
+	org20 = org.coeff(2,0);
+	org21 = org.coeff(2,1);
+	org22 = org.coeff(2,2);
+
+
+	det = org00*(org11*org22-org12*org21) - org01*(org10*org22-org12*org20) + org02*(org10*org21-org11*org20);
+	if (det == 0.0) {
+		return false;
+	}
+
+	detReci = 1/det;
+
+	inverse.coeffRef(0,0) =  (org11 * org22 - org12 * org21) * detReci;
+	inverse.coeffRef(0,1) = -(org01 * org22 - org02 * org21) * detReci;
+	inverse.coeffRef(0,2) =  (org01 * org12 - org02 * org11) * detReci;
+	inverse.coeffRef(1,0) = -(org10 * org22 - org12 * org20) * detReci;
+	inverse.coeffRef(1,1) =  (org00 * org22 - org02 * org20) * detReci;
+	inverse.coeffRef(1,2) = -(org00 * org12 - org02 * org10) * detReci;
+	inverse.coeffRef(2,0) =  (org10 * org21 - org11 * org20) * detReci;
+	inverse.coeffRef(2,1) = -(org00 * org21 - org01 * org20) * detReci;
+	inverse.coeffRef(2,2) =  (org00 * org11 - org01 * org10) * detReci;
+
+	return true;
+}
+
+
+void GliderVarioMeasurementUpdater::calc3DMeasureUpdate (
+        Vector3DType const &measuredValue,
+		Vector3DType const &calculatedValue,
+		RotationMatrix3DType const &measurementVariance_R,
+        Eigen::SparseMatrix<FloatType> const &measRowT,
+        GliderVarioStatus &varioStatus
+) {
+    GliderVarioStatus::StatusCoVarianceType &coVariance_P = varioStatus.getErrorCovariance_P();
+    GliderVarioStatus::StatusVectorType &statusVector_x = varioStatus.getStatusVector_x();
+
+    Eigen::SparseMatrix <FloatType> kalmanGain_K(GliderVarioStatus::STATUS_NUM_ROWS,3);
+    Eigen::SparseMatrix <FloatType> denominatorMatrix(3,3);
+    Eigen::SparseMatrix <FloatType> denominator(3,3);
+
+    kalmanGain_K.reserve(GliderVarioStatus::STATUS_NUM_ROWS * 2);
+    denominatorMatrix.reserve(9);
+    denominator.reserve(9);
+
+    // Intermediate because a term is used twice
+    Eigen::SparseMatrix <FloatType> hTimesP(3,GliderVarioStatus::STATUS_NUM_ROWS);
+    hTimesP.reserve(GliderVarioStatus::STATUS_NUM_ROWS * 2);
+
+    Vector3DType valueDiff = measuredValue - calculatedValue;
+
+    hTimesP = measRowT.transpose() * coVariance_P;
+    denominatorMatrix = hTimesP * measRowT + measurementVariance_R;
+
+    calcInverse3D (denominator, denominatorMatrix);
+
+    kalmanGain_K = coVariance_P * measRowT * denominator;
+
+    LOG4CXX_DEBUG(logger ,"calcSingleMeasureUpdate: valueDiff = " << valueDiff
+    		<< ", denominator = " << denominator);
+#if HAVE_LOG4CXX_H
+
+    if (logger->isDebugEnabled()) {
+    	for (Eigen::SparseMatrix <FloatType>::InnerIterator it(kalmanGain_K,0); it; ++it) {
+    		LOG4CXX_DEBUG(logger ,"    kalmanGain_K[" << GliderVarioStatus::StatusComponentIndex(it.row()) << "] = " << it.value());
+    	}
+    }
+
+#endif // HAVE_LOG4CXX_H
+
+
+    // substitute direct assignment by iterating over the sparse kalman gain vector, and perform the correct element wise.
+    // Eigen does not take mixing dense and sparse matrixes lightly.
+    GliderVarioStatus::StatusComponentIndex index;
+    FloatType kalmanGain;
+    FloatType val;
+    for (int i = 0; i<3; ++i) {
+        for (Eigen::SparseMatrix<FloatType>::InnerIterator iter(kalmanGain_K,i); iter ; ++iter){
+            index = GliderVarioStatus::StatusComponentIndex(iter.row());
+            kalmanGain = iter.value();
+            kalmanGain *= valueDiff(i);
+            val = statusVector_x(index);
+            statusVector_x(index) = val + kalmanGain;
+            LOG4CXX_DEBUG(logger ,"Update " << index << "," << i << ": previous value = " << val << ", Correction value = " << kalmanGain);
+        }
+    }
+
+    coVariance_P -=  (kalmanGain_K * hTimesP);
+
+}
+
 
 
 void
