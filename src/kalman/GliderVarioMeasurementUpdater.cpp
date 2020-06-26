@@ -78,7 +78,7 @@ GliderVarioMeasurementUpdater::GPSLatitudeUpd (
     FloatType calculatedValue;
     Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,1);
 
-    // measRowT.setZero();
+    measRowT.reserve(GliderVarioStatus::STATUS_NUM_ROWS);
 
     // calculate and fill in local variables here.
     measuredLatitude *= 3600.0; // to arc seconds
@@ -115,7 +115,7 @@ GliderVarioMeasurementUpdater::GPSLongitudeUpd (
     FloatType calculatedValue;
     Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,1);
 
-    // measRowT.setZero();
+    measRowT.reserve(GliderVarioStatus::STATUS_NUM_ROWS);
 
     // calculate and fill in local variables here.
     measuredLongitude *= 3600.0; // to arc seconds
@@ -152,7 +152,7 @@ GliderVarioMeasurementUpdater::GPSAltitudeUpd (
     FloatType calculatedValue;
     Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,1);
 
-    // measRowT.setZero();
+    measRowT.reserve(GliderVarioStatus::STATUS_NUM_ROWS);
 
     // calculate and fill in local variables here.
     measurementVector.gpsMSL = measuredAltitudeMSL;
@@ -188,7 +188,7 @@ GliderVarioMeasurementUpdater::GPSHeadingUpd (
     Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,1);
     FloatType temp1;
 
-    // measRowT.setZero();
+    measRowT.reserve(GliderVarioStatus::STATUS_NUM_ROWS);
 
     // calculate and fill in local variables here.
     measurementVector.gpsHeading = measuredCourseOverGround;
@@ -234,7 +234,7 @@ GliderVarioMeasurementUpdater::GPSSpeedUpd (
     FloatType groundSpeedNSquare = varioStatus.groundSpeedNorth * varioStatus.groundSpeedNorth;
     FloatType groundSpeedESquare = varioStatus.groundSpeedEast  * varioStatus.groundSpeedEast;
 
-    // measRowT.setZero();
+    measRowT.reserve(GliderVarioStatus::STATUS_NUM_ROWS);
 
     // calculate and fill in local variables here.
     measuredSpeedOverGround *= NM_TO_M / 3600.0f;
@@ -290,7 +290,7 @@ GliderVarioMeasurementUpdater::accelUpd (
     Vector3DType modelAccelVector,calcAccelVector,calcAccelVectorIncX,calcAccelVectorIncY; // calcAccelVectorIncZ;
     FloatType calcAccel;
 
-    // measRowT.setZero();
+    measRowT.reserve(GliderVarioStatus::STATUS_NUM_ROWS);
 
     // calculate and fill in local variables here.
     measurementVector.accelX = measuredAccelX;
@@ -450,7 +450,7 @@ GliderVarioMeasurementUpdater::gyroUpd (
     Vector3DType modelRotVector,calcRotVector,calcRotVectorIncX,calcRotVectorIncY,calcRotVectorIncZ;
     FloatType calcRotationX,calcRotationY,calcRotationZ;
 
-    // measRowT.setZero();
+    measRowT.reserve(GliderVarioStatus::STATUS_NUM_ROWS);
 
     // calculate and fill in local variables here.
     measurementVector.gyroRateX = measuredRollRateX;
@@ -598,6 +598,8 @@ GliderVarioMeasurementUpdater::compassUpd (
     FloatType calculatedValueX,calculatedValueY, calculatedValueZ;
     Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,1);
     FloatType tempX, tempY, tempZ;
+
+    measRowT.reserve(GliderVarioStatus::STATUS_NUM_ROWS);
 
     // Compensated magnetic flow, i.e. measurement - deviation flow vector
     FloatType magFlowCompensatedX = measuredMagFlowX - varioStatus.compassDeviationX;
@@ -768,7 +770,7 @@ GliderVarioMeasurementUpdater::staticPressureUpd (
     measurementVector.staticPressure = measuredStaticPressure;
 
     // Temperature in Kelvin
-    measuredTemperature += KtoC;
+    measuredTemperature += CtoK;
 
     // This is used to calculate the pressure and at the same time the derivate for Qff.
     pFactor = powf ((measuredTemperature - (tempLapse * varioStatus.altMSL)) / measuredTemperature,exponent);
@@ -788,7 +790,7 @@ GliderVarioMeasurementUpdater::staticPressureUpd (
     }
 
     LOG4CXX_DEBUG(logger,"staticPressureUpd: measured static pressure = " <<  measuredStaticPressure
-    		<< ", measured temperature = " <<  (measuredTemperature - KtoC)
+    		<< ", measured temperature = " <<  (measuredTemperature - CtoK)
     		<< ", calculated pressure = " << p << ", variance = " << staticPressureVariance);
 
     LOG4CXX_DEBUG(logger,"		QFF derivate = " << pFactor << ", altitude derivate = " << measRowT.coeff(GliderVarioStatus::STATUS_IND_ALT_MSL,0));
@@ -816,12 +818,12 @@ GliderVarioMeasurementUpdater::dynamicPressureUpd (
     static FloatType constexpr RspecTimes2     = Rspec * 2.0f;     // Specific R for dry air
 
     // This term is used repeatedly
-    FloatType pressRspecTemp = varioStatus.lastPressure / RspecTimes2 / (measuredTemperature + KtoC);
+    FloatType pressRspecTemp = varioStatus.lastPressure / RspecTimes2 / (measuredTemperature + CtoK);
     FloatType tmp1;
     FloatType dynPressure;
     Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,1);
 
-    // measRowT.setZero();
+    measRowT.reserve(GliderVarioStatus::STATUS_NUM_ROWS);
 
     // calculate and fill in local variables here.
     // Develop the dynamic pressure gradually to get the derivates of the variables most efficiently
@@ -905,13 +907,13 @@ void GliderVarioMeasurementUpdater::calc3DMeasureUpdate (
     Eigen::SparseMatrix <FloatType> denominatorMatrix(3,3);
     Eigen::SparseMatrix <FloatType> denominator(3,3);
 
-    kalmanGain_K.reserve(GliderVarioStatus::STATUS_NUM_ROWS * 2);
+    kalmanGain_K.reserve(GliderVarioStatus::STATUS_NUM_ROWS * 3);
     denominatorMatrix.reserve(9);
     denominator.reserve(9);
 
     // Intermediate because a term is used twice
     Eigen::SparseMatrix <FloatType> hTimesP(3,GliderVarioStatus::STATUS_NUM_ROWS);
-    hTimesP.reserve(GliderVarioStatus::STATUS_NUM_ROWS * 2);
+    hTimesP.reserve(GliderVarioStatus::STATUS_NUM_ROWS * 3);
 
     Vector3DType valueDiff = measuredValue - calculatedValue;
 
@@ -972,8 +974,12 @@ GliderVarioMeasurementUpdater::calcSingleMeasureUpdate (
     FloatType denominator;
     Eigen::SparseMatrix<FloatType> denominatorMatrix;
 
+    kalmanGain_K.reserve(GliderVarioStatus::STATUS_NUM_ROWS);
+    denominatorMatrix.reserve(4);
+
     // Intermediate because a term is used twice
     Eigen::SparseMatrix <FloatType> hTimesP(1,GliderVarioStatus::STATUS_NUM_ROWS);
+    hTimesP.reserve(GliderVarioStatus::STATUS_NUM_ROWS);
 
     FloatType valueDiff = measuredValue - calculatedValue;
 
