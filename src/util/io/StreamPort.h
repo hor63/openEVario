@@ -59,7 +59,7 @@ public:
 
 	/** \brief Read the next available block of data into the buffer
 	 *
-	 * The default implementation calls [::read()](http://man7.org/linux/man-pages/man2/read.2.html)
+	 * The default implementation calls ::[read()](http://man7.org/linux/man-pages/man2/read.2.html)
 	 * to read any available data up to \p bufLen bytes into the provided \p buffer
 	 *
 	 * Like all I/O operations access to the PortBase::deviceHandle is synchronized with an object of class \ref PortBase::DeviceHandleAccess
@@ -67,7 +67,7 @@ public:
 	 * When no data is available the call will block until data is available unless non-blocking mode is active
 	 * with PortBase::isBlocking() = \a false. \n
 	 * The function returns 0 when non-blocking mode is active, and no data is available. \n
-	 * This is unlike [::read()](http://man7.org/linux/man-pages/man2/read.2.html)
+	 * This is unlike ::[read()](http://man7.org/linux/man-pages/man2/read.2.html)
 	 * which returns 0 when the channel is closed by the other side or end-of-file.
 	 * In this case this function throws a \ref GliderVarioPortReadEndOfFileException.
 	 *
@@ -102,7 +102,7 @@ public:
 
 	/** \brief write the buffer content to the port device
 	 *
-	 * The default implementation calls [::write()](http://man7.org/linux/man-pages/man2/write.2.html)
+	 * The default implementation calls ::[write()](http://man7.org/linux/man-pages/man2/write.2.html)
 	 * to write the buffer content to the destination port/device/file...
 	 *
 	 * Note that write() is virtual and can be overridden.
@@ -113,7 +113,7 @@ public:
 	 * with PortBase::isBlocking() = \a false. \n
 	 *
 	 * The function returns 0 when non-blocking mode is active, and no data can be written. \n
-	 * This is unlike ::write() which returns 0 when the channel is closed by the other side or end-of-file.
+	 * This is unlike \p ::write() which returns 0 when the channel is closed by the other side or end-of-file.
 	 * In this case this function throws a \ref GliderVarioPortReadEndOfFileException.
 	 *
 	 * @param buffer Buffer containing the data to be written

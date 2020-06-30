@@ -76,7 +76,7 @@
 /**
  * Define OV_DLL_IMPORT, OV_DLL_EXPORT, and OV_DLL_LOCAL for Windows and Linux (ELF) ports of gcc and non-gcc compilers
  *
- * The macro definitions are highly inspired from the <a href="https://gcc.gnu.org/wiki/Visibility">GCC Wiki: Visibility</a>
+ * The macro definitions are highly inspired from the [GCC Wiki: Visibility](https://gcc.gnu.org/wiki/Visibility)
  */
 #if defined _WIN32 || defined __CYGWIN__
     #ifdef __GNUC__

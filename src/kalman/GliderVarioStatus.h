@@ -41,7 +41,9 @@
  * IAS and TAS measurement from dynamic pressure and GPS coordinates, heading and speed over ground
  *
  * Invaluable inputs for understanding Kalman filters in general, and practical implementation hints came from
- * \sa <a href="http://www.artechhouse.com/static/sample/groves-005_ch03.pdf" >Groves - CHAPTER 3 Kalman Filter-Based Estimation</a>
+ * [Groves - Kalman Filter-Based Estimation](http://www.artechhouse.com/static/sample/groves-005_ch03.pdf),
+ * page 107, 3.2.7  Sequential Measurement Update (link is defunct \emoji :unamused:)
+ * \sa [Principles of GNSS, Inertial, and Multisensor Integrated Navigation Systems, Second Edition from Artechhouse](https://us.artechhouse.com/Principles-of-GNSS-Inertial-and-Multisensor-Integrated-Navigation-Systems-Second-Edition-P2046.aspx)
  *
  * For an EKF I need a Jacobian matrix with the partial derivates at the point of the last status to approximate a linearization of
  * the non-linear function at the latest status. To make my life easier I am using a numeric forward derivation with a small step.
@@ -82,7 +84,7 @@ static FloatType constexpr KtoC = 273.15f;
 
 /**
  * Standard sea level pressure according to ICAO standard atmosphere in Pascal
- * \sa <a href="https://en.wikipedia.org/wiki/International_Standard_Atmosphere#ICAO_Standard_Atmosphere" >ICAO Standard atmosphere</a>
+ * \sa [ICAO Standard atmosphere](https://en.wikipedia.org/wiki/International_Standard_Atmosphere#ICAO_Standard_Atmosphere)
  */
 static FloatType constexpr pressureStdMSL = 101325.0f;
 
@@ -90,22 +92,23 @@ static FloatType constexpr pressureStdMSL = 101325.0f;
  * Initialization value for magnetic inclination.
  * Rough Average value for Germany is about 67 degrees downward (pitch angle is measured upward).
  *
- * \sa <a href="http://www.gfz-potsdam.de/sektion/erdmagnetfeld/infrastruktur/deutsche-saekularpunktmessungen/inklination" >Inklinationskarten für Deutschland von 1982 bis 2012</a>
- * \sa To calculate inclination and declination at any point on earth use <a href="http://www.gfz-potsdam.de/deklinationsrechner" >IGRF-Deklinationsrechner</a>
- * or <a href="http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html" >International Geomagnetic Reference Field</a> and <a href="http://www.ngdc.noaa.gov/geomag-web/?model=igrf" >NOAA Magnetic Field Calculators</a>
+ * \sa [Inklinationskarten für Deutschland von 1982 bis 2012](http://www.gfz-potsdam.de/sektion/erdmagnetfeld/infrastruktur/deutsche-saekularpunktmessungen/inklination)
+ * \sa To calculate inclination and declination at any point on earth use [IGRF-Deklinationsrechner](http://www.gfz-potsdam.de/deklinationsrechner)
+ * or [International Geomagnetic Reference Field](http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html) and
+ * [NOAA Magnetic Field Calculators](http://www.ngdc.noaa.gov/geomag-web/?model=igrf)
  */
 extern OEV_PUBLIC FloatType MAG_INCLINATION; // = -67.0f;
 
 /**
  * Nautical mile to m
  *
- * \sa <a href="https://en.wikipedia.org/wiki/Nautical_mile" >Wikipedia: Nautical mile</a>
+ * \sa [Wikipedia: Nautical mile](https://en.wikipedia.org/wiki/Nautical_mile)
  */
 static FloatType constexpr NM_TO_M = 1852.0f;
 
 /**
  * The rough length of a arc second latitude in meter at 45deg North.
- * \sa <a href="https://en.wikipedia.org/wiki/Longitude#Length_of_a_degree_of_longitude" >Length of a degree of longitude</a>
+ * \sa [Length of a degree of longitude](https://en.wikipedia.org/wiki/Longitude#Length_of_a_degree_of_longitude)
  */
 double constexpr LEN_LAT_ARC_SEC = 111132.0 / 3600.0;
 
@@ -114,35 +117,35 @@ double constexpr LEN_LAT_ARC_SEC = 111132.0 / 3600.0;
  */
 
 /// Universal gas constant = 8.3144598 J/mol/K
-/// \sa <a href="https://en.wikipedia.org/wiki/Gas_constant" >Universal Gas Constant</a>
+/// \sa [Universal Gas Constant](https://en.wikipedia.org/wiki/Gas_constant)
 static FloatType constexpr R         = 8.3144598f;
 /// Molar mass of dry air = 0.0289644 kg/mol
 static FloatType constexpr M         = 0.0289644f;
 /// Specific gas constant for dry air = R/M
-/// \sa <a href="https://en.wikipedia.org/wiki/Gas_constant#Specific_gas_constant" >Specific Gas Constant for dry air</a>
+/// \sa [Specific Gas Constant for dry air](https://en.wikipedia.org/wiki/Gas_constant#Specific_gas_constant)
 static FloatType constexpr Rspec     = R/M;
 
 static FloatType constexpr P0StdAtmosphere = 1013.25f	; ///< Pressure at MSL according to ICAO standard atmosphere
 
 /** \brief Calculate the pressure from the altitude above MSL with the Barometric formula at standard temperature 15C.
  *
- * Constants and barometric formula from < a href="https://en.wikipedia.org/wiki/Barometric_formula#Pressure_equations">Barometric formula:Pressure equations</a>
- * The simplified formual is taken from
- * <a href="https://de.wikipedia.org/wiki/Barometrische_H%C3%B6henformel#Internationale_H%C3%B6henformel">Barometrische Höhenformel:Internationale Höhenformel</a>
+ * Constants and barometric formula from [Barometric formula:Pressure equations](https://en.wikipedia.org/wiki/Barometric_formula#Pressure_equations)
+ * The simplified formula is taken from
+ * [Barometrische Höhenformel:Internationale Höhenformel](https://de.wikipedia.org/wiki/Barometrische_H%C3%B6henformel#Internationale_H%C3%B6henformel)
  *
  * @param altitude Altitude above MSL in m
  * @param temperatureLapse Temperature lapse in K/m. Default is the standard atmosphere lapse of 0.65K/100m
- * @return
+ * @return Pressure in Pascal
  */
 static inline double altToPressureStdTemp (double altitude,double temperatureLapse = 0.65/100.0) {
 
-	static double constexpr R  = 8.3144598	; ///< Universal gas constant: 8.3144598 J/mol/K
-	static double constexpr g0 = 9.80665	; ///< Gravitational acceleration: 9.80665 m/s2
-	static double constexpr M  = 0.0289644	; ///< Molar mass of Earth's air: 0.0289644 kg/mol
+	static double constexpr R  = 8.3144598	; // Universal gas constant: 8.3144598 J/mol/K
+	static double constexpr g0 = 9.80665	; // Gravitational acceleration: 9.80665 m/s2
+	static double constexpr M  = 0.0289644	; // Molar mass of Earth's air: 0.0289644 kg/mol
 	// Exponent term
-	double const exp = g0*M/(R*temperatureLapse); ///< Exponential term of the Barometric formula
+	double const exp = g0*M/(R*temperatureLapse); // Exponential term of the Barometric formula
 
-	static double constexpr T0 = 288.15		; ///< 15C at MSL according to the standard atmosphere
+	static double constexpr T0 = 288.15		; // 15C at MSL according to the standard atmosphere
 
 	return  (P0StdAtmosphere * pow(1 - ((temperatureLapse * altitude ) / T0),exp));
 

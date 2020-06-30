@@ -106,11 +106,11 @@ BMXSensorBoardDriver::~BMXSensorBoardDriver() {
 
 /** \brief Little helper to reduce code size
  *
- * If the property \p parameterName does not exist in the properties set \value will be unchanged.
+ * If the property \p parameterName does not exist in the properties set \p value will be unchanged.
  *
  * @param[in] calibrationDataParameters Properties which were read from the calibration parameter file
  * @param[in] parameterName Name of the calibration value
- * @param[in out] value Value of the calibration value
+ * @param[in,out] value Value of the calibration value
  */
 static void readOrCreateConfigValue(
 		Properties4CXX::Properties* calibrationDataParameters,
@@ -132,7 +132,7 @@ static void readOrCreateConfigValue(
  *
  * New values are written by an existing property when it exists, and write a new one.
  *
- * @param[in out] calibrationDataParameters Properties which hold the calibration data
+ * @param[in,out] calibrationDataParameters Properties which hold the calibration data
  * @param[in] parameterName Name of the calibration value
  * @param[in] value New value of the calibration value
  */

@@ -148,10 +148,14 @@ public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 protected:
-    MeasureVectorType measureError; ///< I am not using a measurement covariance matrix here as in classic Kalman theory.
-    ///< The error variances are supposed to be independent, i.e. a matrix would be diagonal.
-    ///< In addition I am using the sequential measurement method according to
-    ///< <a href="http://www.artechhouse.com/static/sample/groves-005_ch03.pdf" >Groves - Kalman Filter-Based Estimation</a>, page 107
+	/**
+	 * I am not using a measurement covariance matrix here as in classic Kalman theory.
+	 * The error variances are supposed to be independent, i.e. a matrix would be diagonal.
+	 * In addition I am using the sequential measurement method described in more detail in \ref GliderVarioMeasurementUpdater.
+	 *
+	 * \sa \ref openEV::GliderVarioMeasurementUpdater
+	 */
+    MeasureVectorType measureError;
 
 
 };

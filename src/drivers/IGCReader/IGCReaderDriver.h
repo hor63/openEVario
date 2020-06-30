@@ -45,10 +45,10 @@ namespace openEV {
  * This means that the Kalman filter updates occur with the exact intervals as the B (GPS fix) records were recorded in the IGC file
  * The IGC file format is defined by the FAI (FÉDÉRATION AÉRONAUTIQUE INTERNATIONALE) INTERNATIONAL GLIDING COMMISSION.
  *
- * Please find the latest version of the specification at <a href="https://www.fai.org/igc-documents" >IGC documents</a>.
+ * Please find the latest version of the specification at [IGC documents](https://www.fai.org/igc-documents).
  * There look for FLIGHT RECORDERS->"IGC-approved Flight Recorders - Technical Specification".
- * The document version used for this driver is
- * <a href="https://www.fai.org/sites/default/files/documents/igc_fr_spec_with_al4a_2016-4-10.pdf">Second Edition with Amendment 4a</a>
+ * The document version used for this driver is the
+ * [Second Edition with Amendment 4a](https://www.fai.org/sites/default/files/documents/igc_fr_spec_with_al4a_2016-4-10.pdf)
  *
  * The driver reads the I and B records.
  * It updates these measurements in the Kalman filter:
@@ -61,8 +61,8 @@ namespace openEV {
  * - Speed over ground (optional)
  *
  * Static pressure is calculated back from the pressure altitude in the B records according to the ICAO standard atmosphere.
- * \see <a href="https://de.wikipedia.org/wiki/Barometrische_H%C3%B6henformel#Internationale_H%C3%B6henformel" >Wikipedia: Internationale Höhenformel</a>
- * or <a href="https://en.wikipedia.org/wiki/Barometric_formula#Pressure_equations" >Wikipedia: Barometric formula</a>
+ * \see [Wikipedia: Internationale Höhenformel](https://de.wikipedia.org/wiki/Barometrische_H%C3%B6henformel#Internationale_H%C3%B6henformel)
+ * or [Wikipedia: Barometric formula](https://en.wikipedia.org/wiki/Barometric_formula#Pressure_equations)
  */
 class IGCReaderDriver  : public GliderVarioDriverBase {
 public:

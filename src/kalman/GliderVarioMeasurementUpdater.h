@@ -34,9 +34,12 @@ namespace openEV {
 
 /***
  * \brief Functional class which performs sequential status updates. This class is stateless.
- * Functional class which performs sequential status updates. This class is stateless.
+ *
  * The idea is taken from
- * <a href="http://www.artechhouse.com/static/sample/groves-005_ch03.pdf" >Groves - Kalman Filter-Based Estimation</a>, page 107, 3.2.7  Sequential Measurement Update
+ * [Groves - Kalman Filter-Based Estimation]http://www.artechhouse.com/static/sample/groves-005_ch03.pdf),
+ * page 107, 3.2.7  Sequential Measurement Update (link is defunct, buy
+ * [Principles of GNSS, Inertial, and Multisensor Integrated Navigation Systems, Second Edition from Artechhouse](https://us.artechhouse.com/Principles-of-GNSS-Inertial-and-Multisensor-Integrated-Navigation-Systems-Second-Edition-P2046.aspx)
+ * \emoji :smirk: ) \n
  * The functionality is split into two parts:
  * - A specific function for each measurement which performs necessary conversions into the model units of measurement, and prepares the
  * Jacobian of the measure matrix row of the concerned measurement.
@@ -248,8 +251,8 @@ public:
      * \brief Update the status vector with a new measurement of the true air speed.
      * Update the status vector with a new measurement of the true air speed.
      * Converting dynamic pressure to IAS and finally TAS I am using formulas from
-     * <a href="https://en.wikipedia.org/wiki/Dynamic_pressure" >Wikipedia: Dynamic pressure</a>. The required air density comes from
-     * <a href="https://en.wikipedia.org/wiki/Density_of_air" >Wikipedia: Density of air</a>
+     * [Wikipedia: Dynamic pressure](https://en.wikipedia.org/wiki/Dynamic_pressure). The required air density comes from
+     * [Wikipedia: Density of air](https://en.wikipedia.org/wiki/Density_of_air)
      * I am ignoring water vapor in all calculations.
      * @param[in] measuredDynamicPressure Dynamic (pitot) pressure in Pascal (difference between static and total pressure).
      * @param[in] measuredTemperature Ambient temperature in Degrees Celsius at the current altitude
@@ -309,7 +312,7 @@ protected:
      * @param[in] measuredValue The measured value as it was measured by a sensor. This value may be heavily pre-processed, e.g. the IAS or TAS from the
      * dynamic pressure, and static pressure, or altitude from the absolute pressure sensor
      * @param[in] calculatedValue The theoretical measurement value as it is calculated from the current extrapolated system status.
-     * @param[in] measurementVariance The variance of the measure. I assume the measurement variances are independent, i.e. the measurement covariance matrix is diagonal. So for one
+     * @param[in] measurementVariance_R The variance of the measure. I assume the measurement variances are independent, i.e. the measurement covariance matrix is diagonal. So for one
      * measurement I can simply pass the variance of the current measurement.
      * @param[in] measRowT The transposed measurement matrix row. This row is calculated or approximated as the Jacobian partial derivates each time.
      * The matrix row is not used to calculate the theoretical measured value. This is already done by the calling function by directly using the not-linear
@@ -339,7 +342,7 @@ protected:
      * @param[in] measuredValue The measured values as they were measured by a sensor. These values may be heavily pre-processed, e.g. the IAS or TAS from the
      *   dynamic pressure, and static pressure, or altitude from the absolute pressure sensor
      * @param[in] calculatedValue The theoretical measurement values as they calculated from the current extrapolated system status.
-     * @param[in] measurementVariance The variance of the measure. I assume the measurement variances are independent, i.e. the measurement covariance matrix is diagonal.
+     * @param[in] measurementVariance_R The variance of the measure. I assume the measurement variances are independent, i.e. the measurement covariance matrix is diagonal.
      *   This assumption is particularly important for the simplifications of the calculation of the inverse
      * @param[in] measRowT The transposed measurement matrix. It is calculated or approximated as the Jacobian partial derivates each time.
      *   The matrix row is not used to calculate the theoretical measured value. This is already done by the calling function by directly using the not-linear

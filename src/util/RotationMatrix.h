@@ -46,11 +46,11 @@ typedef Eigen::Matrix<FloatType, 3, 3> RotationMatrix3DType;
  * \brief Rotation matrix to transform the global coordinate system into the plane's coordinate system.
  *
  * Rotation matrix to transform the global coordinate system into the plane's coordinate system
- * References are <a href="https://en.wikipedia.org/wiki/Euler_angles#Vehicles_and_moving_frames">Wikipedia: Vehicles and moving frames</a>.
+ * References are [Wikipedia: Vehicles and moving frames](https://en.wikipedia.org/wiki/Euler_angles#Vehicles_and_moving_frames).
  *
  * The matrix used is Tait-Bryan angles from
  * [Wikipedia: Euler angles - Rotation_matrix](https://en.wikipedia.org/wiki/Euler_angles#Rotation_matrix).
- * A IMHO more concise description is in German
+ * A IMHO more concise description is in German:
  * [Wikipedia: Eulersche Winkel - Roll-, Nick- und Gierwinkel: z-y-x-Konvention](https://de.wikipedia.org/wiki/Eulersche_Winkel#Roll-,_Nick-_und_Gierwinkel:_z-y%E2%80%B2-x%E2%80%B3-Konvention).
  *
  * I am using the z-y'-x'' order as defined in DIN 9300 for aircraft rotational order to transfer world
@@ -60,8 +60,8 @@ typedef Eigen::Matrix<FloatType, 3, 3> RotationMatrix3DType;
  * - y = horizontal East
  * - z = perpendicular *down*; moving up decreases z, but on the other hand earth gravity is +9.81m/s&sup2; in z direction.
  *
- * I am using the common names of the angles. In the description you find the greek designations from DIN 9300
- * (see the [German Wikipedia](https://de.wikipedia.org/wiki/Eulersche_Winkel#Roll-,_Nick-_und_Gierwinkel:_z-y%E2%80%B2-x%E2%80%B3-Konvention) )
+ * I am using the common names of the angles. In the description you find the greek designations from DIN 9300.
+ * \sa [Wikipedia: Eulersche Winkel - Roll-, Nick- und Gierwinkel](https://de.wikipedia.org/wiki/Eulersche_Winkel#Roll-,_Nick-_und_Gierwinkel:_z-y%E2%80%B2-x%E2%80%B3-Konvention)
  */
 class OEV_UTILS_PUBLIC RotationMatrix
 {

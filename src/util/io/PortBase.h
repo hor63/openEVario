@@ -286,6 +286,7 @@ private:
 	 * @param globalProperties List of global properties. Allows access to the complete configuration.
 	 * Comes handy to retrieve global options
 	 * @param portProperty Property node containing the port Property structure
+	 * @param portName Name of the port \emoji :wink:
 	 * @throws GliderVarioPortConfigException
 	 */
 	static void loadSinglePort (
@@ -317,9 +318,9 @@ protected:
 	/** \brief Device specific open function
 	 *
 	 * This function is the device specific open function. It is intended to be overridden.
-	 * The status handling, and locking the mutex is handled by the wrapper function open()
+	 * The status handling, and locking the mutex is handled by the wrapper function PortBase::open()
 	 *
-	 * The default implementation opens the device with [::open()](http://man7.org/linux/man-pages/man2/open.2.html).
+	 * The default implementation opens the device with ::[open()](http://man7.org/linux/man-pages/man2/open.2.html).
 	 *
 	 * @throws GliderVarioPortOpenException
 	 * @throws GliderVarioPortDontExistException
@@ -331,7 +332,7 @@ protected:
 	/** \brief Device specific close function
 	 *
 	 * This function is the device specific close function. It is intended to be overridden.
-	 * The status handling, and locking the mutex is handled by the wrapper function close()
+	 * The status handling, and locking the mutex is handled by the wrapper function PortBase::close()
 	 *
 	 * The default implementation calls [::close()](http://man7.org/linux/man-pages/man2/close.2.html)
 	 *

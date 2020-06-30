@@ -100,10 +100,11 @@ public:
      *
      * Please note that x and y here are counted as in mathematics on the unit circle.
      * Meaning x to the left, y up. Angle from x axis counterclockwise to the y axis.
-     * If you wonder how that fits with the world coordinate system which I am using, remember that the z axis points *down* not against you
+     * If you wonder how that fits with the world coordinate system which I am using,
+     * remember that the z axis points *down* (i.e. away from you) not toward you
      * like in the unit circle
      *
-     * \sa <a href="https://en.wikipedia.org/wiki/Unit_circle" >Wikipedia: Unit circle</a>
+     * \sa [Wikipedia: Unit circle](https://en.wikipedia.org/wiki/Unit_circle)
      *
      * @param[in] x component
      * @param[in] y component
@@ -135,9 +136,9 @@ public:
      * @param y The ratio of the opposite (German Gegenkathete) to hypotenuse. Precondition is -1.0 <= x <= 1.0
      * @return The angle in Degrees where the opposite on a unit circle is y. Return range is -90 to +90 degrees.
      *
-     * \sa <a href="https://en.wikipedia.org/wiki/Sine">Wikipedia: Sine</a> or
-     * <a href="https://de.wikipedia.org/wiki/Sinus_und_Kosinus">Sinus und Cosinus</a>
-     * \sa <a href="https://en.wikipedia.org/wiki/Unit_circle" >Unit Circle</a>
+     * \sa [Wikipedia: Sine](https://en.wikipedia.org/wiki/Sine) or
+     * [Sinus und Cosinus](https://de.wikipedia.org/wiki/Sinus_und_Kosinus)
+     * \sa [Unit Circle](https://en.wikipedia.org/wiki/Unit_circle)
      *
      */
     static inline FloatType fastASin(FloatType y) {
@@ -171,9 +172,9 @@ public:
      * @param x The ratio of the adjacent (German Ankathete) to hypotenuse. Precondition is -1.0 <= x <= 1.0
      * @return The angle in Degrees where the opposite on a unit circle is x. Return range is 0.0 to 180.0 degrees.
      *
-     * \sa <a href="https://en.wikipedia.org/wiki/Sine">Wikipedia: Sine</a> or
-     * <a href="https://de.wikipedia.org/wiki/Sinus_und_Kosinus">Sinus und Cosinus</a>
-     * \sa <a href="https://en.wikipedia.org/wiki/Unit_circle" >Unit Circle</a>
+     * \sa [Wikipedia: Sine](https://en.wikipedia.org/wiki/Sine) or
+     * [Sinus und Cosinus](https://de.wikipedia.org/wiki/Sinus_und_Kosinus)
+     * \sa [Unit Circle](https://en.wikipedia.org/wiki/Unit_circle)
      *
      */
     static inline FloatType fastACos(FloatType x) {

@@ -320,8 +320,8 @@ private:
      *
      * @param varioStatus The Kalman status to be initialized
      * @param varioMain Vario main object
-     * @param sumSensorData Sensor data summed up over \p numGyroData times.
-     * @param numGyroData Number of gyroscope measurements summed up in \p numSensorData
+     * @param avgSensorData Sensor data summed up over \p numGyroData times.
+     * @param numGyroData Number of gyroscope measurements summed up in \p avgSensorData
      */
     void initializeStatusGyro(
     		GliderVarioStatus &varioStatus,
