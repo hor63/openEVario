@@ -65,9 +65,13 @@ namespace openEV
  * Deutsches Schweregrundnetz 1994 (DSGN 94) from
  * [DSGN94-Punktbeschreibung](https://www.bkg.bund.de/SharedDocs/Downloads/BKG/DE/Downloads-DE-Flyer/BKG-DSGN94-DE.pdf?__blob=publicationFile)
  *
+ * If you cannot find detailed gravity values in you county you can look up the
+ * [Absolute Gravity Database](http://agrav.bkg.bund.de/agrav-meta/) and look up the gravity nearest you.
+ *
  * \sa [Wikipedia: Gravity of Earth](https://en.wikipedia.org/wiki/Gravity_of_Earth)
  * \sa [Deutsches Schweregrundnetz 1994 (DSGN94)](https://www.bkg.bund.de/DE/Ueber-das-BKG/Geodaesie/Schwere/Schwere-Deutschland/schwere-deutsch.html#doc57358bodyText1)
  * \sa [Online gravity calculator within Germany](http://gibs.bkg.bund.de/geoid/gscomp.php?p=s)
+ * \sa [AGrav: Absolute Gravity Database](http://agrav.bkg.bund.de/agrav-meta)
  */
 static FloatType constexpr GRAVITY = 9.80665;
 
