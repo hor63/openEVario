@@ -80,7 +80,7 @@ static FloatType constexpr GRAVITY = 9.80665;
 /**
  * difference between K(elvin) and C(elsius)
  */
-static FloatType constexpr KtoC = 273.15f;
+static FloatType constexpr CtoK = 273.15f;
 
 /**
  * Standard sea level pressure according to ICAO standard atmosphere in Pascal
