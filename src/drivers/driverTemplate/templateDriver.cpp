@@ -75,7 +75,9 @@ templateDriver::~templateDriver() {
 }
 
 
-void templateDriver::driverInit() {
+void templateDriver::driverInit(GliderVarioMainPriv &varioMain) {
+
+	/// todo fill me
 
 }
 
@@ -93,9 +95,9 @@ void templateDriver::initializeStatus(
 
 }
 
-void templateDriver::run(GliderVarioMainPriv &varioMain) {
+void templateDriver::run() {
 
-	GliderVarioDriverBase::run(varioMain);
+	GliderVarioDriverBase::run();
 
 }
 
