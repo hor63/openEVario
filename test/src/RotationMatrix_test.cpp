@@ -57,9 +57,9 @@ TEST_F(RotationMatrixTest, CoefficientTest) {
                 double psiRad = double(psi) * M_PI / 180.0;
                 double thetaRad = double(theta) * M_PI / 180.0;
                 double phiRad = double(phi) * M_PI / 180.0;
-                rotMatrix.setYaw(psi);
-                rotMatrix.setPitch(theta);
-                rotMatrix.setRoll(phi);
+                rotMatrix.setYaw(-psi);
+                rotMatrix.setPitch(-theta);
+                rotMatrix.setRoll(-phi);
                 RotationMatrix3DType& glo2Plane = rotMatrix.getMatrixGloToPlane();
 
                 EXPECT_NEAR ( glo2Plane(0,0) , cos(thetaRad) * cos(psiRad) 		, 0.00001 );
