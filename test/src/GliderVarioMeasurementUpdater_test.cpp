@@ -804,12 +804,12 @@ TEST_F(MeasurementUpdaterTest, Magnetometer) {
 
     Vector3DType magVectUnit (48.0f,0.0f,0.0f);
 
-    Vector3DType magVect        = (rotMatMagVect.getMatrixPlaneToGlo()        * rotMat.getMatrixGloToPlane()    ) * magVectUnit;
-    Vector3DType magVectIncX    = (rotMatMagVect.getMatrixPlaneToGlo()        * rotMatIncX.getMatrixGloToPlane()) * magVectUnit;
-    Vector3DType magVectIncY    = (rotMatMagVect.getMatrixPlaneToGlo()        * rotMatIncY.getMatrixGloToPlane()) * magVectUnit;
-    Vector3DType magVectIncZ    = (rotMatMagVect.getMatrixPlaneToGlo()        * rotMatIncZ.getMatrixGloToPlane()) * magVectUnit;
-    Vector3DType magVectIncDecl = (rotMatMagVectIncDecl.getMatrixPlaneToGlo() * rotMat.getMatrixGloToPlane()    ) * magVectUnit;
-    Vector3DType magVectIncIncl = (rotMatMagVectIncIncl.getMatrixPlaneToGlo() * rotMat.getMatrixGloToPlane()    ) * magVectUnit;
+    Vector3DType magVect        = rotMat.getMatrixGloToPlane()     * rotMatMagVect.getMatrixPlaneToGlo()        * magVectUnit;
+    Vector3DType magVectIncX    = rotMatIncX.getMatrixGloToPlane() * rotMatMagVect.getMatrixPlaneToGlo()        * magVectUnit;
+    Vector3DType magVectIncY    = rotMatIncY.getMatrixGloToPlane() * rotMatMagVect.getMatrixPlaneToGlo()        * magVectUnit;
+    Vector3DType magVectIncZ    = rotMatIncZ.getMatrixGloToPlane() * rotMatMagVect.getMatrixPlaneToGlo()        * magVectUnit;
+    Vector3DType magVectIncDecl = rotMat.getMatrixGloToPlane()     * rotMatMagVectIncDecl.getMatrixPlaneToGlo() * magVectUnit;
+    Vector3DType magVectIncIncl = rotMat.getMatrixGloToPlane()     * rotMatMagVectIncIncl.getMatrixPlaneToGlo() * magVectUnit;
 
     FloatType calcMagX = magVect(0) + st1.compassDeviationX;
     FloatType calcMagY = magVect(1) + st1.compassDeviationY;
@@ -825,27 +825,27 @@ TEST_F(MeasurementUpdaterTest, Magnetometer) {
         switch (i) {
 
         case GliderVarioStatus::STATUS_IND_ROLL:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),magVectIncX(0) - magVect(0));
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),magVectIncX(0) - magVect(0),0.000001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_PITCH:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),magVectIncY(0) - magVect(0));
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),magVectIncY(0) - magVect(0),0.000001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_HEADING:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),magVectIncZ(0) - magVect(0));
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),magVectIncZ(0) - magVect(0),0.000001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),magVectIncDecl(0) - magVect(0));
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),magVectIncDecl(0) - magVect(0),0.000001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),magVectIncIncl(0) - magVect(0));
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),magVectIncIncl(0) - magVect(0),0.000001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_X:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),1.0f);
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),1.0f,0.000001f);
             break;
 
         default:
@@ -862,19 +862,19 @@ TEST_F(MeasurementUpdaterTest, Magnetometer) {
         switch (i) {
 
         case GliderVarioStatus::STATUS_IND_ROLL:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),magVectIncX(1) - magVect(1));
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),magVectIncX(1) - magVect(1),0.000001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_PITCH:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),magVectIncY(1) - magVect(1));
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),magVectIncY(1) - magVect(1),0.000001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_HEADING:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),magVectIncZ(1) - magVect(1));
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),magVectIncZ(1) - magVect(1),0.000001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),magVectIncDecl(1) - magVect(1));
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),magVectIncDecl(1) - magVect(1),0.000001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION:
@@ -882,7 +882,7 @@ TEST_F(MeasurementUpdaterTest, Magnetometer) {
             break;
 
         case GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Y:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),1.0f);
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),1.0f,0.00001f);
             break;
 
         default:
@@ -899,27 +899,27 @@ TEST_F(MeasurementUpdaterTest, Magnetometer) {
         switch (i) {
 
         case GliderVarioStatus::STATUS_IND_ROLL:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncX(2) - magVect(2));
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncX(2) - magVect(2),0.000001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_PITCH:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncY(2) - magVect(2));
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncY(2) - magVect(2),0.000001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_HEADING:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncZ(2) - magVect(2));
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncZ(2) - magVect(2),0.000001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncDecl(2) - magVect(2));
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncDecl(2) - magVect(2),0.000001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncIncl(2) - magVect(2));
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncIncl(2) - magVect(2),0.000001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Z:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),1.0f);
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),1.0f,0.00001f);
             break;
 
         default:
