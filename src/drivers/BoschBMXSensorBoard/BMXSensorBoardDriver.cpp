@@ -164,6 +164,9 @@ void BMXSensorBoardDriver::driverInit(GliderVarioMainPriv &varioMain) {
 		}
 	}
 
+	readOrCreateConfigValue(calibrationDataParameters,"magXFactor",calibrationData.magXFactor);
+	readOrCreateConfigValue(calibrationDataParameters,"magYFactor",calibrationData.magYFactor);
+	readOrCreateConfigValue(calibrationDataParameters,"magZFactor",calibrationData.magZFactor);
 	readOrCreateConfigValue(calibrationDataParameters,"magXBias",calibrationData.magXBias);
 	readOrCreateConfigValue(calibrationDataParameters,"magYBias",calibrationData.magYBias);
 	readOrCreateConfigValue(calibrationDataParameters,"magZBias",calibrationData.magZBias);
@@ -171,6 +174,9 @@ void BMXSensorBoardDriver::driverInit(GliderVarioMainPriv &varioMain) {
 	readOrCreateConfigValue(calibrationDataParameters,"magYVariance",calibrationData.magYVariance);
 	readOrCreateConfigValue(calibrationDataParameters,"magZVariance",calibrationData.magZVariance);
 
+	readOrCreateConfigValue(calibrationDataParameters,"gyrXFactor",calibrationData.gyrXFactor);
+	readOrCreateConfigValue(calibrationDataParameters,"gyrYFactor",calibrationData.gyrYFactor);
+	readOrCreateConfigValue(calibrationDataParameters,"gyrZFactor",calibrationData.gyrZFactor);
 	readOrCreateConfigValue(calibrationDataParameters,"gyrXBias",calibrationData.gyrXBias);
 	readOrCreateConfigValue(calibrationDataParameters,"gyrYBias",calibrationData.gyrYBias);
 	readOrCreateConfigValue(calibrationDataParameters,"gyrZBias",calibrationData.gyrZBias);
@@ -249,9 +255,9 @@ void BMXSensorBoardDriver::initializeStatusAccel(
 	// Assume that you are on the ground, but maybe tilted to the side
 	// (remember this instrument is primarily for gliders)
 	// and slightly pitched up compared to level flight
-	auto avgAccelX = sumSensorData.accelX / float(numAccelData);
-	auto avgAccelY = sumSensorData.accelY / float(numAccelData);
-	auto avgAccelZ = sumSensorData.accelZ / float(numAccelData);
+	auto avgAccelX = sumSensorData.accelX / float(numAccelData) * calibrationData.accelXFactor - calibrationData.accelXBias;
+	auto avgAccelY = sumSensorData.accelY / float(numAccelData) * calibrationData.accelYFactor - calibrationData.accelYBias;
+	auto avgAccelZ = sumSensorData.accelZ / float(numAccelData) * calibrationData.accelZFactor - calibrationData.accelZBias;
 	auto absoluteAccel = sqrtf(avgAccelX*avgAccelX + avgAccelY*avgAccelY + avgAccelZ*avgAccelZ);
 
 	double baseIntervalSec = std::chrono::duration_cast<std::chrono::duration<double>>(varioMain.getProgramOptions().idlePredictionCycle).count() ;
@@ -264,7 +270,6 @@ void BMXSensorBoardDriver::initializeStatusAccel(
 	LOG4CXX_DEBUG(logger,"absoluteAccel = " << absoluteAccel);
 
 	// Try to assess pitch and roll angle from the accelerometer.
-	// first the pitch angle:
 	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_PITCH,varioStatus.STATUS_IND_PITCH) == 0.0f) {
 		varioStatus.pitchAngle = FastMath::fastASin(avgAccelX/absoluteAccel);
 		LOG4CXX_DEBUG(logger,"Initial pitchAngle = " << varioStatus.pitchAngle);
@@ -273,10 +278,8 @@ void BMXSensorBoardDriver::initializeStatusAccel(
 				SQUARE(4.0) * baseIntervalSec;
 	}
 
-	// If the plane is tilted nearly perpendicular up I cannot calculate the roll from the accelerometer measurement any more.
-	if (fabsf(varioStatus.pitchAngle) < 80.0f &&
-			varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL) == 0.0f) {
-		varioStatus.rollAngle = FastMath::fastASin(-avgAccelY/absoluteAccel / FastMath::fastCos(varioStatus.pitchAngle));
+	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL) == 0.0f) {
+		varioStatus.rollAngle = -FastMath::fastASin(avgAccelY/absoluteAccel);
 		LOG4CXX_DEBUG(logger,"Initial rollAngle = " << varioStatus.rollAngle);
 		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL) =
 				SQUARE(3.0f/ FastMath::fastCos(varioStatus.pitchAngle));
@@ -309,9 +312,12 @@ void BMXSensorBoardDriver::initializeStatusGyro(
 	// Assume that you are on the ground, but maybe tilted to the side
 	// (remember this instrument is primarily for gliders)
 	// and slightly pitched up
-	auto avgGyroX = sumSensorData.gyroX / float(numGyroData);
-	auto avgGyroY = sumSensorData.gyroY / float(numGyroData);
-	auto avgGyroZ = sumSensorData.gyroZ / float(numGyroData);
+	auto avgGyroX = sumSensorData.gyroX / float(numGyroData) *
+			calibrationData.gyrXFactor - calibrationData.gyrXBias;
+	auto avgGyroY = sumSensorData.gyroY / float(numGyroData) *
+			calibrationData.gyrYFactor - calibrationData.gyrYBias;
+	auto avgGyroZ = sumSensorData.gyroZ / float(numGyroData) *
+			calibrationData.gyrZFactor - calibrationData.gyrZBias;
 
 	double baseIntervalSec = std::chrono::duration_cast<std::chrono::duration<double>>(varioMain.getProgramOptions().idlePredictionCycle).count() ;
 
@@ -322,44 +328,70 @@ void BMXSensorBoardDriver::initializeStatusGyro(
 	LOG4CXX_DEBUG(logger,"avgGyroZ = " << avgGyroZ);
 
 	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_GYRO_BIAS_X,varioStatus.STATUS_IND_GYRO_BIAS_X) == 0.0f) {
-		varioStatus.gyroBiasX = avgGyroX;
+		varioStatus.gyroBiasX = calibrationData.gyrXBias;
 		LOG4CXX_DEBUG(logger,"Initial gyroBiasX = " << varioStatus.gyroBiasX);
-		/* Multiply the variance by 2.0 for two reasons:
-		 * 1. The stored values may have shifted in the meantime
-		 * 2. Before updating the calibration data file the variance must have improved sufficiently to be updated.
-		 */
 		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_X,varioStatus.STATUS_IND_GYRO_BIAS_X) =
-				calibrationData.gyrXVariance * 2.0f;
+				1.0f;
 		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_X,varioStatus.STATUS_IND_GYRO_BIAS_X) =
 				SQUARE(0.1) * baseIntervalSec;
 	}
 
+	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_ROTATION_X,varioStatus.STATUS_IND_ROTATION_X) == 0.0f) {
+		varioStatus.rollRateX = avgGyroX;
+		LOG4CXX_DEBUG(logger,"Initial rollRateX = " << varioStatus.rollRateX);
+		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ROTATION_X,varioStatus.STATUS_IND_ROTATION_X) =
+				4.0f;
+		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ROTATION_X,varioStatus.STATUS_IND_ROTATION_X) =
+				SQUARE(30) * baseIntervalSec;
+	}
+
 	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_GYRO_BIAS_Y,varioStatus.STATUS_IND_GYRO_BIAS_Y) == 0.0f) {
-		varioStatus.gyroBiasY = avgGyroY;
+		varioStatus.gyroBiasY = calibrationData.gyrYBias;
 		LOG4CXX_DEBUG(logger,"Initial gyroBiasY = " << varioStatus.gyroBiasY);
 		/* Multiply the variance by 2.0 for two reasons:
 		 * 1. The stored values may have shifted in the meantime
 		 * 2. Before updating the calibration data file the variance must have improved sufficiently to be updated.
 		 */
 		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_Y,varioStatus.STATUS_IND_GYRO_BIAS_Y) =
-				calibrationData.gyrYVariance * 2.0f;
+				1.0f;
 		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_Y,varioStatus.STATUS_IND_GYRO_BIAS_Y) =
 				SQUARE(0.1) * baseIntervalSec;
 	}
 
+	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_ROTATION_Y,varioStatus.STATUS_IND_ROTATION_Y) == 0.0f) {
+		varioStatus.pitchRateY = avgGyroY;
+		LOG4CXX_DEBUG(logger,"Initial pitchRateY = " << varioStatus.pitchRateY);
+		/* Multiply the variance by 2.0 for two reasons:
+		 * 1. The stored values may have shifted in the meantime
+		 * 2. Before updating the calibration data file the variance must have improved sufficiently to be updated.
+		 */
+		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ROTATION_Y,varioStatus.STATUS_IND_ROTATION_Y) =
+				4.0f;
+		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ROTATION_Y,varioStatus.STATUS_IND_ROTATION_Y) =
+				SQUARE(30) * baseIntervalSec;
+	}
+
 	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_GYRO_BIAS_Z,varioStatus.STATUS_IND_GYRO_BIAS_Z) == 0.0f) {
-		varioStatus.gyroBiasZ = avgGyroZ;
+		varioStatus.gyroBiasZ = calibrationData.gyrZBias;
 		LOG4CXX_DEBUG(logger,"Initial gyroBiasZ = " << varioStatus.gyroBiasZ);
 		/* Multiply the variance by 2.0 for two reasons:
 		 * 1. The stored values may have shifted in the meantime
 		 * 2. Before updating the calibration data file the variance must have improved sufficiently to be updated.
 		 */
 		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_Z,varioStatus.STATUS_IND_GYRO_BIAS_Z) =
-				calibrationData.gyrZVariance * 2.0f;
+				1.0f;
 		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_Z,varioStatus.STATUS_IND_GYRO_BIAS_Z) =
 				SQUARE(0.1) * baseIntervalSec;
 	}
 
+	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_ROTATION_Z,varioStatus.STATUS_IND_ROTATION_Z) == 0.0f) {
+		varioStatus.yawRateZ = avgGyroZ;
+		LOG4CXX_DEBUG(logger,"Initial yawRateZ = " << varioStatus.yawRateZ);
+		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ROTATION_Z,varioStatus.STATUS_IND_ROTATION_Z) =
+				4.0f;
+		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ROTATION_Z,varioStatus.STATUS_IND_ROTATION_Z) =
+				SQUARE(30) * baseIntervalSec;
+	}
 
 }
 
@@ -654,16 +686,9 @@ void BMXSensorBoardDriver::processingMainLoop () {
 								currSensorDataIndex++;
 								currSensorDataIndex &= SIZE_SENSOR_DATA_ARRAY - 1;
 
-								/*
-								 * The Y and Z axis of the BMX160 are rotated 180deg around the X axis to my model,
-								 * i.e. the Y axis points left, and the Z axis point upward on the BMX160
-								 * Therefore all Y and Z values are negated to fit my model.
-								 * This is also true for all Y and Z rotations.
-								 */
-
 								currSensorData.magX = compensate_x(bmxData.accGyrMagData.magX,bmxData.accGyrMagData.magRHall);
-								currSensorData.magY = -compensate_y(bmxData.accGyrMagData.magY,bmxData.accGyrMagData.magRHall);
-								currSensorData.magZ = -compensate_z(bmxData.accGyrMagData.magZ,bmxData.accGyrMagData.magRHall);
+								currSensorData.magY = compensate_y(bmxData.accGyrMagData.magY,bmxData.accGyrMagData.magRHall);
+								currSensorData.magZ = compensate_z(bmxData.accGyrMagData.magZ,bmxData.accGyrMagData.magRHall);
 
 								LOG4CXX_DEBUG(logger,"magX (uT) = " << currSensorData.magX);
 								LOG4CXX_DEBUG(logger,"magY (uT) = " << currSensorData.magY);
@@ -676,8 +701,8 @@ void BMXSensorBoardDriver::processingMainLoop () {
 								}
 
 								currSensorData.gyroX = double(bmxData.accGyrMagData.gyrX)/ gyrFactor;
-								currSensorData.gyroY = -double(bmxData.accGyrMagData.gyrY)/ gyrFactor;
-								currSensorData.gyroZ = -double(bmxData.accGyrMagData.gyrZ)/ gyrFactor;
+								currSensorData.gyroY = double(bmxData.accGyrMagData.gyrY)/ gyrFactor;
+								currSensorData.gyroZ = double(bmxData.accGyrMagData.gyrZ)/ gyrFactor;
 								currSensorData.gyroDataValid = true;
 
 								LOG4CXX_DEBUG(logger,"gyrX (deg/s) = " << currSensorData.gyroX);
@@ -685,12 +710,9 @@ void BMXSensorBoardDriver::processingMainLoop () {
 								LOG4CXX_DEBUG(logger,"gyrZ (deg/s) = " << currSensorData.gyroZ);
 
 
-								currSensorData.accelX = (double)(bmxData.accGyrMagData.accX) *
-										calibrationData.accelXFactor * accFactor - calibrationData.accelXBias;
-								currSensorData.accelY = -(double)(bmxData.accGyrMagData.accY) *
-										calibrationData.accelYFactor * accFactor - calibrationData.accelYBias;
-								currSensorData.accelZ = -(double)(bmxData.accGyrMagData.accZ) *
-										calibrationData.accelZFactor * accFactor - calibrationData.accelZBias;
+								currSensorData.accelX = (double)(bmxData.accGyrMagData.accX) * accFactor;
+								currSensorData.accelY = (double)(bmxData.accGyrMagData.accY) * accFactor;
+								currSensorData.accelZ = (double)(bmxData.accGyrMagData.accZ) * accFactor;
 								currSensorData.accelDataValid = true;
 
 								LOG4CXX_DEBUG(logger,"accX (g) = " << currSensorData.accelX);
@@ -719,28 +741,18 @@ void BMXSensorBoardDriver::processingMainLoop () {
 								currSensorDataIndex++;
 								currSensorDataIndex &= SIZE_SENSOR_DATA_ARRAY - 1;
 
-								/*
-								 * The Y and Z axis of the BMX160 are rotated 180deg around the X axis to my model,
-								 * i.e. the Y axis points left, and the Z axis point upward on the BMX160
-								 * Therefore all Y and Z values are negated to fit my model.
-								 * This is also true for all Y and Z rotations.
-								 */
-
 								currSensorData.gyroX = double(bmxData.accGyrData.gyrX)/ gyrFactor;
-								currSensorData.gyroY = -double(bmxData.accGyrData.gyrY)/ gyrFactor;
-								currSensorData.gyroZ = -double(bmxData.accGyrData.gyrZ)/ gyrFactor;
+								currSensorData.gyroY = double(bmxData.accGyrData.gyrY)/ gyrFactor;
+								currSensorData.gyroZ = double(bmxData.accGyrData.gyrZ)/ gyrFactor;
 								currSensorData.gyroDataValid = true;
 
 								LOG4CXX_DEBUG(logger,"gyrX (deg/s) = " << currSensorData.gyroX);
 								LOG4CXX_DEBUG(logger,"gyrY (deg/s) = " << currSensorData.gyroY);
 								LOG4CXX_DEBUG(logger,"gyrZ (deg/s) = " << currSensorData.gyroZ);
 
-								currSensorData.accelX = (double)(bmxData.accGyrMagData.accX) *
-										calibrationData.accelXFactor * accFactor;
-								currSensorData.accelY = -(double)(bmxData.accGyrMagData.accY) *
-										calibrationData.accelYFactor * accFactor;
-								currSensorData.accelZ = -(double)(bmxData.accGyrMagData.accZ) *
-										calibrationData.accelZFactor * accFactor;
+								currSensorData.accelX = (double)(bmxData.accGyrMagData.accX) * accFactor;
+								currSensorData.accelY = (double)(bmxData.accGyrMagData.accY) * accFactor;
+								currSensorData.accelZ = (double)(bmxData.accGyrMagData.accZ) * accFactor;
 								currSensorData.accelDataValid = true;
 
 								LOG4CXX_DEBUG(logger,"accX (g) = " << currSensorData.accelX);

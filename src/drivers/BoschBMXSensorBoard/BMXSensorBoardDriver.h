@@ -153,6 +153,9 @@ private:
 
     /** \brief Structure holding one set of sensor data
      *
+     * This structure holds *raw* sensor data without considering bias or factor.
+     * Internal sensor compensation for the magnetometer is however applied,
+     * and raw A/D converted to physical units.
      */
     struct SensorData {
 		bool accelDataValid; ///< \brief Are \p accelX, \p accelY, and \p accelZ valid?
@@ -190,7 +193,6 @@ private:
     /** \brief
      *
      * Calibration data for the BMX160 sensor box
-     * Except for the accelerometer these are bias and standard Variance values only.
      *
      */
     struct SensorCalibrationData {
@@ -199,33 +201,71 @@ private:
     	 * Magnetometer bias can be measured for the magnetometer
     	 * measuring the magnetic field in an arbitrary direction as val1,
     	 * then turn the box 180 degrees that the measured axis points opposite and measure again as val2.
-    	 * The bias is now = (val1 + val2) / 2
+    	 * The raw bias is now:
+    	 * \f[\frac{(val1 + val2)}{2}\f]
     	 *
+    	 * *Note*: The Bias here is the result of multiplying the raw bias value with \ref magXFactor.
     	 */
     	double magXBias = 0.0;
+    	/// \see \ref magXBias
     	double magYBias = 0.0;
+    	/// \see \ref magXBias
     	double magZBias = 0.0;
 
-    	/// Standard Variance of the magnetometer measurements
-    	double magXVariance = 50.0 * 50.0;
-    	double magYVariance = 50.0 * 50.0;
-    	double magZVariance = 50.0 * 50.0;
+    	/**
+    	 * The magnetometer factors are relative to the Z axis magnetometer which itself has the assumed factor -1.0. \n
+    	 * This makes sense because I am using it only for directions, i.e. I am interested in the ratios of the different
+    	 * axis only. (remember the Y and Z axis' of the BMX160 are 180deg opposite to my coordinate system). \n
+    	 * To obtain the values I am pointing the measured axis once upward, and once downward. Thus I am measuring the same
+    	 * value with each of the three magnetometers, and can directly compare the readings. \n
+    	 * For the other axis' the factor is:
+    	 * \f[\frac{-rawValueZ-rawBiasZ}{rawValue-rawBias}\f]
+    	 *
+    	 */
+    	double magXFactor =  1.0;
+    	/// \see \ref magXFactor
+    	double magYFactor = -1.0;
+    	/// \see \ref magXFactor
+    	double magZFactor = -1.0;
 
-    	/// Gyro bias is the easiest: Let the box rest and measure the gyro values. These are the bias.
+    	/// Standard Variance of the magnetometer measurements
+    	double magXVariance = 2.0;
+    	/// Standard Variance of the magnetometer measurements
+    	double magYVariance = 2.0;
+    	/// Standard Variance of the magnetometer measurements
+    	double magZVariance = 2.0;
+
+    	/// Gyro bias is the easiest: Let the box rest and measure the gyro values. These are the raw bias.
+    	/// The bias used here is the result of multiplying the raw bias with the gyro factor.
     	double gyrXBias = 0.0;
+    	/// \see \ref gyrXBias
     	double gyrYBias = 0.0;
+    	/// \see \ref gyrXBias
     	double gyrZBias = 0.0;
 
-    	/// Standard Variance of the gyro measurements
-    	/// Just leave the sensor box sitting still and measure a series of values and calculate the standard devition, and square it
-    	double gyrXVariance = 9.0;
-    	double gyrYVariance = 9.0;
-    	double gyrZVariance = 9.0;
+    	/**
+    	 * Unless you have a very precise vinyl turn table, and can place the entire assembly onto it
+    	 * calibrating the gyro factor is not easily possible. Just rely on the factory trimming.
+    	 * However the factor also takes care of the flipped over coordinate systems between sensor and OpenEVario.
+    	 */
+    	double gyrXFactor =  1.0;
+    	/// \see \ref gyrXFactor
+    	double gyrYFactor = -1.0;
+    	/// \see \ref gyrXFactor
+    	double gyrZFactor = -1.0;
+
+    	/// Standard Variance of the gyro measurements. \n
+    	/// Just leave the sensor box sitting still and measure a series of values and calculate the standard devition, and square it.
+    	double gyrXVariance = 0.03;
+    	double gyrYVariance = 0.03;
+    	double gyrZVariance = 0.03;
 
     	/**
-    	 * Accel bias is measured mostly the same way as magnetometer bias.
+    	 * Accel bias is measured mostly the same way as magnetometer bias. \n
     	 * However the measured axis should point straight up for val1,
-    	 * and straight down for val2. The formula is the same.
+    	 * and straight down for val2. The formula for the raw bias is the same.
+    	 *
+    	 * *Note:* The Bias here the the product of the raw bias with the factor
     	 */
     	double accelXBias = 0.0;
     	double accelYBias = 0.0;
@@ -234,25 +274,31 @@ private:
     	/**
     	 *
     	 * For the accelerometer factor you can get the same measurements val1 and val2 at the same time
-    	 * when measuring the bias.
+    	 * when measuring the bias. \n
     	 * I actually have a calibrated value for the Accelerometer, i.e. the gravity.
-    	 * Val1 is the positive gravitation, and val 2 is negative gravity.
-    	 * The formula is: 2 / (val1 - val2)
-    	 * Please note that the expected value should always be 1.0g
+    	 * Val1 is the positive gravitation, and val 2 is negative gravity. \n
+    	 * The formula is:
+    	 * \f[\frac{GRAVITY}{val1 - val2}\f]
+    	 *
+    	 * *Note1:* The result must be \f$m/s^2\f$. Many sensors return *g* instead.
+    	 * The gravity is variable throughout the Earth. So \ref gravity is a calibration value here as well, and can affect the factor too.
+    	 *
+    	 * *Note2:* Note the different coordinate systems of sensord and OpenEVario! Y and Z Axsis are negative.
     	 */
-    	double accelXFactor = 1.0;
-    	double accelYFactor = 1.0;
-    	double accelZFactor = 1.0;
+    	double accelXFactor =  GRAVITY;
+    	double accelYFactor = -GRAVITY;
+    	double accelZFactor = -GRAVITY;
 
     	/// Standard Variance of the accelerometer measurements
-    	double accelXVariance = 0.1;
-    	double accelYVariance = 0.1;
-    	double accelZVariance = 0.1;
+    	double accelXVariance = 0.001;
+    	double accelYVariance = 0.001;
+    	double accelZVariance = 0.001;
 
 
     	/// Value of the local gravity
+    	/// \see \ref GRAVITY for more details of local gravity, and how to obtain your approximate local gravity value.
     	double gravity = GRAVITY;
-    	double gravityVariance = 0.1;
+    	double gravityVariance = 0.0001;
 
     } calibrationData;
 
