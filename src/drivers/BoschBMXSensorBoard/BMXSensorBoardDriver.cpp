@@ -680,7 +680,6 @@ void BMXSensorBoardDriver::processingMainLoop () {
 							bmxData.header.crc = 0U;
 
 							if (msgCrc == 0xffff || msgCrc == crc16CCIT(PPP_INITFCS,&bmxData,bmxData.header.length)) {
-								GliderVarioMainPriv::LockedCurrentStatus currStatus(*varioMain);
 
 								// advance the index, and wrap it around if necessary
 								currSensorDataIndex++;
