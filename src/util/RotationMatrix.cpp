@@ -48,11 +48,11 @@ RotationMatrix::calculateRotationMatrixGloToPlane ()
     }
 
     // Calculate the sin and cos values from the angles beforehand because they occur multiple times in the matrix.
-    FloatType sinYaw	= -FastMath::fastSin(yaw);
+    FloatType sinYaw	= FastMath::fastSin(yaw);
     FloatType cosYaw	= FastMath::fastCos(yaw);
-    FloatType sinPitch	= -FastMath::fastSin(pitch);
+    FloatType sinPitch	= FastMath::fastSin(pitch);
     FloatType cosPitch	= FastMath::fastCos(pitch);
-    FloatType sinRoll	= -FastMath::fastSin(roll);
+    FloatType sinRoll	= FastMath::fastSin(roll);
     FloatType cosRoll	= FastMath::fastCos(roll);
 
 
