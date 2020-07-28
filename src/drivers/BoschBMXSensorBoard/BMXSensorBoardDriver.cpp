@@ -255,9 +255,9 @@ void BMXSensorBoardDriver::initializeStatusAccel(
 	// Assume that you are on the ground, but maybe tilted to the side
 	// (remember this instrument is primarily for gliders)
 	// and slightly pitched up compared to level flight
-	auto avgAccelX = sumSensorData.accelX / float(numAccelData) * calibrationData.accelXFactor - calibrationData.accelXBias;
-	auto avgAccelY = sumSensorData.accelY / float(numAccelData) * calibrationData.accelYFactor - calibrationData.accelYBias;
-	auto avgAccelZ = sumSensorData.accelZ / float(numAccelData) * calibrationData.accelZFactor - calibrationData.accelZBias;
+	auto avgAccelX = sumSensorData.accelX / float(numAccelData);
+	auto avgAccelY = sumSensorData.accelY / float(numAccelData);
+	auto avgAccelZ = sumSensorData.accelZ / float(numAccelData);
 	auto absoluteAccel = sqrtf(avgAccelX*avgAccelX + avgAccelY*avgAccelY + avgAccelZ*avgAccelZ);
 
 	double baseIntervalSec = std::chrono::duration_cast<std::chrono::duration<double>>(varioMain.getProgramOptions().idlePredictionCycle).count() ;
@@ -747,9 +747,12 @@ void BMXSensorBoardDriver::processingMainLoop () {
 								LOG4CXX_DEBUG(logger,"gyrZ (deg/s) = " << currSensorData.gyroZ);
 
 
-								currSensorData.accelX = (double)(bmxData.accGyrMagData.accX) * accFactor;
-								currSensorData.accelY = (double)(bmxData.accGyrMagData.accY) * accFactor;
-								currSensorData.accelZ = (double)(bmxData.accGyrMagData.accZ) * accFactor;
+								currSensorData.accelX = (double)(bmxData.accGyrMagData.accX) * accFactor *
+										calibrationData.accelXFactor - calibrationData.accelXBias;
+								currSensorData.accelY = (double)(bmxData.accGyrMagData.accY) * accFactor *
+										calibrationData.accelYFactor - calibrationData.accelYBias;
+								currSensorData.accelZ = (double)(bmxData.accGyrMagData.accZ) * accFactor *
+										calibrationData.accelZFactor - calibrationData.accelZBias;
 								currSensorData.accelDataValid = true;
 
 								LOG4CXX_DEBUG(logger,"accX (g) = " << currSensorData.accelX);
@@ -787,9 +790,12 @@ void BMXSensorBoardDriver::processingMainLoop () {
 								LOG4CXX_DEBUG(logger,"gyrY (deg/s) = " << currSensorData.gyroY);
 								LOG4CXX_DEBUG(logger,"gyrZ (deg/s) = " << currSensorData.gyroZ);
 
-								currSensorData.accelX = (double)(bmxData.accGyrMagData.accX) * accFactor;
-								currSensorData.accelY = (double)(bmxData.accGyrMagData.accY) * accFactor;
-								currSensorData.accelZ = (double)(bmxData.accGyrMagData.accZ) * accFactor;
+								currSensorData.accelX = (double)(bmxData.accGyrMagData.accX) * accFactor *
+										calibrationData.accelXFactor - calibrationData.accelXBias;
+								currSensorData.accelY = (double)(bmxData.accGyrMagData.accY) * accFactor *
+										calibrationData.accelYFactor - calibrationData.accelYBias;
+								currSensorData.accelZ = (double)(bmxData.accGyrMagData.accZ) * accFactor *
+										calibrationData.accelZFactor - calibrationData.accelZBias;
 								currSensorData.accelDataValid = true;
 
 								LOG4CXX_DEBUG(logger,"accX (g) = " << currSensorData.accelX);
@@ -818,9 +824,9 @@ void BMXSensorBoardDriver::processingMainLoop () {
 
 				if (currSensorData.accelDataValid) {
 					GliderVarioMeasurementUpdater::accelUpd(
-							currSensorData.accelX * currStatus->gravity,0.01f,
-							currSensorData.accelY * currStatus->gravity,0.01f,
-							currSensorData.accelZ * currStatus->gravity,0.01f,
+							currSensorData.accelX,0.01f,
+							currSensorData.accelY,0.01f,
+							currSensorData.accelZ,0.01f,
 							*currStatus.getMeasurementVector(),*currStatus.getCurrentStatus());
 				}
 				if (currSensorData.gyroDataValid) {
