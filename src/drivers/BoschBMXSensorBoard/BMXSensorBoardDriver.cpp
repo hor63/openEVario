@@ -312,12 +312,9 @@ void BMXSensorBoardDriver::initializeStatusGyro(
 	// Assume that you are on the ground, but maybe tilted to the side
 	// (remember this instrument is primarily for gliders)
 	// and slightly pitched up
-	auto avgGyroX = sumSensorData.gyroX / float(numGyroData) *
-			calibrationData.gyrXFactor - calibrationData.gyrXBias;
-	auto avgGyroY = sumSensorData.gyroY / float(numGyroData) *
-			calibrationData.gyrYFactor - calibrationData.gyrYBias;
-	auto avgGyroZ = sumSensorData.gyroZ / float(numGyroData) *
-			calibrationData.gyrZFactor - calibrationData.gyrZBias;
+	auto avgGyroX = sumSensorData.gyroX / float(numGyroData);
+	auto avgGyroY = sumSensorData.gyroY / float(numGyroData);
+	auto avgGyroZ = sumSensorData.gyroZ / float(numGyroData);
 
 	double baseIntervalSec = std::chrono::duration_cast<std::chrono::duration<double>>(varioMain.getProgramOptions().idlePredictionCycle).count() ;
 
@@ -327,17 +324,19 @@ void BMXSensorBoardDriver::initializeStatusGyro(
 	LOG4CXX_DEBUG(logger,"avgGyroY = " << avgGyroY);
 	LOG4CXX_DEBUG(logger,"avgGyroZ = " << avgGyroZ);
 
+	// Assume the plane is static, and the measurement is the current gyro bias.
+
 	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_GYRO_BIAS_X,varioStatus.STATUS_IND_GYRO_BIAS_X) == 0.0f) {
-		varioStatus.gyroBiasX = calibrationData.gyrXBias;
+		varioStatus.gyroBiasX = avgGyroX;
 		LOG4CXX_DEBUG(logger,"Initial gyroBiasX = " << varioStatus.gyroBiasX);
 		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_X,varioStatus.STATUS_IND_GYRO_BIAS_X) =
-				1.0f;
+				0.5f;
 		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_X,varioStatus.STATUS_IND_GYRO_BIAS_X) =
 				SQUARE(0.1) * baseIntervalSec;
 	}
 
 	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_ROTATION_X,varioStatus.STATUS_IND_ROTATION_X) == 0.0f) {
-		varioStatus.rollRateX = avgGyroX;
+		varioStatus.rollRateX = 0;
 		LOG4CXX_DEBUG(logger,"Initial rollRateX = " << varioStatus.rollRateX);
 		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ROTATION_X,varioStatus.STATUS_IND_ROTATION_X) =
 				4.0f;
@@ -346,20 +345,16 @@ void BMXSensorBoardDriver::initializeStatusGyro(
 	}
 
 	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_GYRO_BIAS_Y,varioStatus.STATUS_IND_GYRO_BIAS_Y) == 0.0f) {
-		varioStatus.gyroBiasY = calibrationData.gyrYBias;
+		varioStatus.gyroBiasY = avgGyroY;
 		LOG4CXX_DEBUG(logger,"Initial gyroBiasY = " << varioStatus.gyroBiasY);
-		/* Multiply the variance by 2.0 for two reasons:
-		 * 1. The stored values may have shifted in the meantime
-		 * 2. Before updating the calibration data file the variance must have improved sufficiently to be updated.
-		 */
 		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_Y,varioStatus.STATUS_IND_GYRO_BIAS_Y) =
-				1.0f;
+				0.5f;
 		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_Y,varioStatus.STATUS_IND_GYRO_BIAS_Y) =
 				SQUARE(0.1) * baseIntervalSec;
 	}
 
 	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_ROTATION_Y,varioStatus.STATUS_IND_ROTATION_Y) == 0.0f) {
-		varioStatus.pitchRateY = avgGyroY;
+		varioStatus.pitchRateY = 0;
 		LOG4CXX_DEBUG(logger,"Initial pitchRateY = " << varioStatus.pitchRateY);
 		/* Multiply the variance by 2.0 for two reasons:
 		 * 1. The stored values may have shifted in the meantime
@@ -372,20 +367,20 @@ void BMXSensorBoardDriver::initializeStatusGyro(
 	}
 
 	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_GYRO_BIAS_Z,varioStatus.STATUS_IND_GYRO_BIAS_Z) == 0.0f) {
-		varioStatus.gyroBiasZ = calibrationData.gyrZBias;
+		varioStatus.gyroBiasZ = avgGyroZ;
 		LOG4CXX_DEBUG(logger,"Initial gyroBiasZ = " << varioStatus.gyroBiasZ);
 		/* Multiply the variance by 2.0 for two reasons:
 		 * 1. The stored values may have shifted in the meantime
 		 * 2. Before updating the calibration data file the variance must have improved sufficiently to be updated.
 		 */
 		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_Z,varioStatus.STATUS_IND_GYRO_BIAS_Z) =
-				1.0f;
+				0.5f;
 		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_Z,varioStatus.STATUS_IND_GYRO_BIAS_Z) =
 				SQUARE(0.1) * baseIntervalSec;
 	}
 
 	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_ROTATION_Z,varioStatus.STATUS_IND_ROTATION_Z) == 0.0f) {
-		varioStatus.yawRateZ = avgGyroZ;
+		varioStatus.yawRateZ = 0;
 		LOG4CXX_DEBUG(logger,"Initial yawRateZ = " << varioStatus.yawRateZ);
 		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ROTATION_Z,varioStatus.STATUS_IND_ROTATION_Z) =
 				4.0f;
@@ -466,7 +461,7 @@ void BMXSensorBoardDriver::initializeStatusMag(
 		LOG4CXX_DEBUG(logger,"Initial compassDeviationX = " << varioStatus.compassDeviationX);
 		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_X,varioStatus.STATUS_IND_COMPASS_DEVIATION_X) = calibrationData.magXVariance * 2.0f;
 		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_X,varioStatus.STATUS_IND_COMPASS_DEVIATION_X) =
-				SQUARE(0.1) * baseIntervalSec;
+				SQUARE(0.01) * baseIntervalSec;
 	}
 
 	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_COMPASS_DEVIATION_Y,varioStatus.STATUS_IND_COMPASS_DEVIATION_Y) == 0.0f) {
@@ -474,7 +469,7 @@ void BMXSensorBoardDriver::initializeStatusMag(
 		LOG4CXX_DEBUG(logger,"Initial compassDeviationY = " << varioStatus.compassDeviationY);
 		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_Y,varioStatus.STATUS_IND_COMPASS_DEVIATION_Y) = calibrationData.magYVariance * 2.0f;
 		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_Y,varioStatus.STATUS_IND_COMPASS_DEVIATION_Y) =
-				SQUARE(0.1) * baseIntervalSec;
+				SQUARE(0.01) * baseIntervalSec;
 	}
 
 	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_COMPASS_DEVIATION_Z,varioStatus.STATUS_IND_COMPASS_DEVIATION_Z) == 0.0f) {
@@ -482,7 +477,7 @@ void BMXSensorBoardDriver::initializeStatusMag(
 		LOG4CXX_DEBUG(logger,"Initial compassDeviationZ = " << varioStatus.compassDeviationZ);
 		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_Z,varioStatus.STATUS_IND_COMPASS_DEVIATION_Z) = calibrationData.magZVariance * 2.0f;
 		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_Z,varioStatus.STATUS_IND_COMPASS_DEVIATION_Z) =
-				SQUARE(0.1) * baseIntervalSec;
+				SQUARE(0.01) * baseIntervalSec;
 	}
 
 
@@ -737,9 +732,9 @@ void BMXSensorBoardDriver::processingMainLoop () {
 									currSensorData.magDataValid = true;
 								}
 
-								currSensorData.gyroX = double(bmxData.accGyrMagData.gyrX)/ gyrFactor;
-								currSensorData.gyroY = double(bmxData.accGyrMagData.gyrY)/ gyrFactor;
-								currSensorData.gyroZ = double(bmxData.accGyrMagData.gyrZ)/ gyrFactor;
+								currSensorData.gyroX = double(bmxData.accGyrMagData.gyrX)/ gyrFactor * calibrationData.gyrXFactor;
+								currSensorData.gyroY = double(bmxData.accGyrMagData.gyrY)/ gyrFactor * calibrationData.gyrYFactor;
+								currSensorData.gyroZ = double(bmxData.accGyrMagData.gyrZ)/ gyrFactor * calibrationData.gyrZFactor;
 								currSensorData.gyroDataValid = true;
 
 								LOG4CXX_DEBUG(logger,"gyrX (deg/s) = " << currSensorData.gyroX);
@@ -824,22 +819,22 @@ void BMXSensorBoardDriver::processingMainLoop () {
 
 				if (currSensorData.accelDataValid) {
 					GliderVarioMeasurementUpdater::accelUpd(
-							currSensorData.accelX,0.01f,
-							currSensorData.accelY,0.01f,
-							currSensorData.accelZ,0.01f,
+							currSensorData.accelX,0.1f,
+							currSensorData.accelY,0.1f,
+							currSensorData.accelZ,0.1f,
 							*currStatus.getMeasurementVector(),*currStatus.getCurrentStatus());
 				}
 				if (currSensorData.gyroDataValid) {
 					GliderVarioMeasurementUpdater::gyroUpd(
-							currSensorData.gyroX,0.01f,
-							currSensorData.gyroY,0.01f,
-							currSensorData.gyroZ,0.01f,
+							currSensorData.gyroX,0.1f,
+							currSensorData.gyroY,0.1f,
+							currSensorData.gyroZ,0.1f,
 							*currStatus.getMeasurementVector(),*currStatus.getCurrentStatus());
 				}
 				if (currSensorData.magDataValid) {
 					GliderVarioMeasurementUpdater::compassUpd(
 							currSensorData.magX,currSensorData.magY,currSensorData.magZ,
-							4.0f,4.0f,4.0f,
+							2.0f,2.0f,2.0f,
 							*currStatus.getMeasurementVector(),*currStatus.getCurrentStatus());
 				}
 
