@@ -425,8 +425,7 @@ void BMXSensorBoardDriver::initializeStatusMag(
 
 	// If the pitch angle is nearly perpendicular to the flat plane the roll angle cannot be determined with any accuracy
 	// Albeit a more than unlikely scenario :D
-	if (fabsf(varioStatus.pitchAngle) < 80 &&
-			varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) == 0.0f) {
+	if (fabsf(varioStatus.pitchAngle) < 80) {
 		RotationMatrix rotMatrix (0.0f,varioStatus.pitchAngle,varioStatus.rollAngle);
 		Vector3DType planeMagVector (avgMagX,avgMagY,avgMagZ);
 		Vector3DType worldMagVector;
@@ -439,11 +438,26 @@ void BMXSensorBoardDriver::initializeStatusMag(
 		LOG4CXX_DEBUG(logger,"worldMagY = " << worldMagVector[1]);
 		LOG4CXX_DEBUG(logger,"worldMagZ = " << worldMagVector[2]);
 
-		varioStatus.heading = FastMath::fastATan2(worldMagVector[0],worldMagVector[1]);
-		LOG4CXX_DEBUG(logger,"Initial heading = " << worldMagVector[0]);
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) = 5.0f * 5.0f;
-		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) =
-				SQUARE(4.0) * baseIntervalSec;
+		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) == 0.0f) {
+
+			varioStatus.heading = FastMath::fastATan2(-worldMagVector[1],worldMagVector[0]);
+			LOG4CXX_DEBUG(logger,"Initial heading = " << varioStatus.heading);
+			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) = 5.0f * 5.0f;
+			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) =
+					SQUARE(4.0) * baseIntervalSec;
+		}
+
+		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_MAGNETIC_INCLINATION,varioStatus.STATUS_IND_MAGNETIC_INCLINATION) == 0.0f) {
+			varioStatus.magneticInclination = FastMath::fastATan2(
+					-avgMagZ,sqrtf(avgMagX*avgMagX + avgMagY*avgMagY));
+			if (varioStatus.magneticInclination > 90.0f) {
+				varioStatus.magneticInclination -= 360.0f;
+			}
+			LOG4CXX_DEBUG(logger,"Initial magnetic inclination = " << varioStatus.magneticInclination);
+			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_MAGNETIC_INCLINATION,varioStatus.STATUS_IND_MAGNETIC_INCLINATION) = 5.0f * 5.0f;
+			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_MAGNETIC_INCLINATION,varioStatus.STATUS_IND_MAGNETIC_INCLINATION) =
+					SQUARE(0.1) * baseIntervalSec;
+		}
 	}
 
 	// Set the magnetometer bias unconditionally
@@ -594,6 +608,7 @@ void BMXSensorBoardDriver::processingMainLoop () {
 		auto readLen = ioPort->readExactLen((uint8_t *)(&bmxData.header),sizeof(bmxData.header));
 		LOG4CXX_DEBUG(logger,"Read " << readLen << "Bytes from the port. Expected " << sizeof(bmxData.header) << " bytes.");
 
+/*
 		// Answer the sensor board right away to eliminate the delayed acknowledge. Put the ack piggyback on the answer
 		struct BMX160RecvData sendMsg;
 
@@ -608,6 +623,7 @@ void BMXSensorBoardDriver::processingMainLoop () {
 		sendMsg.header.crc = crc16CCIT(PPP_INITFCS,&sendMsg,sendMsg.header.length);
 
 		ioPort->writeExactLen((uint8_t*)(&sendMsg),sizeof(sendMsg));
+*/
 
 		if (readLen == sizeof(bmxData.header)) {
 
@@ -654,7 +670,18 @@ void BMXSensorBoardDriver::processingMainLoop () {
 								// and re-send them to me.
 								if ((magTrimData.dig_z2 == 0) || (magTrimData.dig_z1 == 0)
 										|| (magTrimData.dig_xyz1 == 0) ) {
+									struct BMX160RecvData sendMsg;
+
 									sendMsg.header.unionCode = BMX160RECV_DATA_RESET_IMU;
+									sendMsg.header.filler = 0;
+									sendMsg.header.length = sizeof sendMsg;
+									sendMsg.header.versionMajor = BMX160_SENSORBOX_MSG_VERSION_MAJOR;
+									sendMsg.header.versionMinor = BMX160_SENSORBOX_MSG_VERSION_MINOR;
+									sendMsg.dummy = 0;
+
+									sendMsg.header.crc = 0U;
+									sendMsg.header.crc = crc16CCIT(PPP_INITFCS,&sendMsg,sendMsg.header.length);
+
 									ioPort->writeExactLen((uint8_t*)(&sendMsg),sizeof(sendMsg));
 
 								}
@@ -662,7 +689,18 @@ void BMXSensorBoardDriver::processingMainLoop () {
 								LOG4CXX_ERROR(logger,
 										"CRC error of received magnetometer trim data message");
 								// Send a request to send the trim data again
+								struct BMX160RecvData sendMsg;
+
 								sendMsg.header.unionCode = BMX160RECV_DATA_RESET_IMU;
+								sendMsg.header.filler = 0;
+								sendMsg.header.length = sizeof sendMsg;
+								sendMsg.header.versionMajor = BMX160_SENSORBOX_MSG_VERSION_MAJOR;
+								sendMsg.header.versionMinor = BMX160_SENSORBOX_MSG_VERSION_MINOR;
+								sendMsg.dummy = 0;
+
+								sendMsg.header.crc = 0U;
+								sendMsg.header.crc = crc16CCIT(PPP_INITFCS,&sendMsg,sendMsg.header.length);
+
 								ioPort->writeExactLen((uint8_t*)(&sendMsg),sizeof(sendMsg));
 							}
 						}
@@ -685,9 +723,9 @@ void BMXSensorBoardDriver::processingMainLoop () {
 								currSensorDataIndex++;
 								currSensorDataIndex &= SIZE_SENSOR_DATA_ARRAY - 1;
 
-								currSensorData.magX = compensate_x(bmxData.accGyrMagData.magX,bmxData.accGyrMagData.magRHall);
-								currSensorData.magY = compensate_y(bmxData.accGyrMagData.magY,bmxData.accGyrMagData.magRHall);
-								currSensorData.magZ = compensate_z(bmxData.accGyrMagData.magZ,bmxData.accGyrMagData.magRHall);
+								currSensorData.magX = compensate_x(bmxData.accGyrMagData.magX,bmxData.accGyrMagData.magRHall) * calibrationData.magXFactor;
+								currSensorData.magY = compensate_y(bmxData.accGyrMagData.magY,bmxData.accGyrMagData.magRHall) * calibrationData.magYFactor;
+								currSensorData.magZ = compensate_z(bmxData.accGyrMagData.magZ,bmxData.accGyrMagData.magRHall) * calibrationData.magZFactor;
 
 								LOG4CXX_DEBUG(logger,"magX (uT) = " << currSensorData.magX);
 								LOG4CXX_DEBUG(logger,"magY (uT) = " << currSensorData.magY);
@@ -806,6 +844,7 @@ void BMXSensorBoardDriver::processingMainLoop () {
 					if (calibrationDataWriteThread.joinable()) {
 						calibrationDataWriteThread.join();
 					}
+					lastUpdateTime = std::chrono::system_clock::now();
 					calibrationDataWriteThread = std::thread(&BMXSensorBoardDriver::calibrationDataWriteFunc,this);
 				}
 			}
@@ -992,7 +1031,11 @@ void BMXSensorBoardDriver::calibrationDataWriteFunc() {
 		if (of.good()) {
 			calibrationDataParameters->writeOut(of);
 		}
-	} catch (...) {}
+	} catch (std::exception const &e) {
+		LOG4CXX_ERROR(logger,"Error in " << __PRETTY_FUNCTION__
+				<< ". Cannot write calibration data. Error = " << e.what());
+	}
+	catch (...) {}
 
 	calibrationWriterRunning = false;
 

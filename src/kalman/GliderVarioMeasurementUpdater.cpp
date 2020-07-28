@@ -639,7 +639,10 @@ GliderVarioMeasurementUpdater::compassUpd (
 
     // The calculated vector of magnetic measurements.
     // This is the vector of compensated magnetic flows as calculated from the current attitude, inclination, and declination
-    Vector3DType compassVector               = compassMatrix               * magVecLength;
+    // Vector3DType compassVector               = compassMatrix               * magVecLength;
+    Vector3DType tmpCompassVector               = magRotMatrix.getMatrixPlaneToGlo()               * magVecLength;
+    Vector3DType compassVector               = attitudeRotMatrix.getMatrixGloToPlane()               * tmpCompassVector;
+    compassVector               = compassMatrix               * magVecLength;
 
     // Variations of the vector with increments of the 5 participating factors.
     Vector3DType compassVectorIncDeclination = compassMatrixIncDeclination * magVecLength;
