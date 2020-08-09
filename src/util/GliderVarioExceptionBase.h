@@ -205,6 +205,36 @@ public:
 
 };
 
+class OEV_UTILS_PUBLIC GliderVarioPortLocalPortUndefined :public GliderVarioPortIOException {
+public:
+	GliderVarioPortLocalPortUndefined (
+			char const *source,
+			int line)
+		:GliderVarioPortIOException {source,line,"Local port number is undefined.",EBADF}
+	{}
+
+};
+
+class OEV_UTILS_PUBLIC GliderVarioPortPeerPortUndefined :public GliderVarioPortIOException {
+public:
+	GliderVarioPortPeerPortUndefined (
+			char const *source,
+			int line)
+		:GliderVarioPortIOException {source,line,"Peer port number is undefined.",EBADF}
+	{}
+
+};
+
+class OEV_UTILS_PUBLIC GliderVarioPortPeerAddressUndefined :public GliderVarioPortIOException {
+public:
+	GliderVarioPortPeerAddressUndefined (
+			char const *source,
+			int line)
+		:GliderVarioPortIOException {source,line,"Peer address is undefined.",EBADF}
+	{}
+
+};
+
 
 class OEV_UTILS_PUBLIC GliderVarioPortOpenException :public GliderVarioPortIOException {
 public:

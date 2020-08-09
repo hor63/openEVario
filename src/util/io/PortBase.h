@@ -54,6 +54,7 @@ namespace io {
  *
  * This class is **not** supposed to implement a comprehensive abstraction model for all I/O operations.
  * Some basic abstraction for streamed I/O is provided with the sub-class \ref StreamPort
+ * Some basic abstraction for datagram oriented I/O is provided with the sub-class \ref datagramPort
  * For others, particularly I2C the users of the port have to do the heavy lifting themselves.
  *
  */
@@ -177,6 +178,14 @@ public:
 	 */
 	bool isStreamPort() const {
 		return streamPort;
+	}
+
+	/** \brief Is the port descendant of class \ref DatagramPort?
+	 *
+	 * @return true when the port is a datagram port.
+	 */
+	bool isDatagramPort() const {
+		return datagramPort;
 	}
 
 	/** \brief Read the configuration and create all ports defined in the section "IOPorts"
@@ -362,6 +371,14 @@ protected:
 	 * This flag is being set only by the sub-class \ref StreamPort.
 	 */
 	bool streamPort = false;
+
+	/** \brief Is this port a datagram port?
+	 *
+	 * By default datagramPort is false.
+	 *
+	 * This flag is being set only by UDPPort or other datagram based classes.
+	 */
+	bool datagramPort = false;
 
 };
 
