@@ -35,7 +35,7 @@ static log4cxx::LoggerPtr logger = 0;
 
 static inline void initLogger() {
 	if (!logger) {
-		logger = log4cxx::Logger::getLogger("openEV.IO.PortBase");
+		logger = log4cxx::Logger::getLogger("openEV.IO.StreamPort");
 	}
 }
 
