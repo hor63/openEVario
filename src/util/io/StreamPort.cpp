@@ -120,15 +120,6 @@ ssize_t StreamPort::write(uint8_t *buffer, size_t bufLen) {
 
 		if (ret == -1) {
 			err = errno;
-			if (err == EINTR) {
-				LOG4CXX_DEBUG (logger,"Port" << getPortName() << ':' << getPortType() << ": Read interrupted with EINTR. Repeat ::write() ");
-			} else {
-				std::ostringstream str;
-				str << "Port" << getPortName() << ':' << getPortType() << ": Write error " << err << ":" << strerror(err);
-				LOG4CXX_ERROR (logger,str.str());
-
-				throw GliderVarioPortWriteException(__FILE__,__LINE__,str.str().c_str());
-			}
 
 			switch (err) {
 
