@@ -4,7 +4,7 @@
  *  Created on: Jul 16, 2019
  *      Author: hor
  *
- *  Definition of class PortBase, the base class of all IO ports
+ *  Definition of class StreamPort, the base class of all stream based port
  *
  *   This file is part of openEVario, an electronic variometer for glider planes
  *   Copyright (C) 2019  Kai Horstmann
