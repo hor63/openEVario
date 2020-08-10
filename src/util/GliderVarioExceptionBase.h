@@ -235,6 +235,16 @@ public:
 
 };
 
+class OEV_UTILS_PUBLIC GliderVarioPortBufferTooSmallForDatagram :public GliderVarioPortIOException {
+public:
+	GliderVarioPortBufferTooSmallForDatagram (
+			char const *source,
+			int line)
+		:GliderVarioPortIOException {source,line,"Buffer too small for datagram.",EBADF}
+	{}
+
+};
+
 
 class OEV_UTILS_PUBLIC GliderVarioPortOpenException :public GliderVarioPortIOException {
 public:
