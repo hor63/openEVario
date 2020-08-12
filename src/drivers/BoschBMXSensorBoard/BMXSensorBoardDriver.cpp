@@ -655,7 +655,7 @@ void BMXSensorBoardDriver::processingMainLoop () {
 							sendMsg.dummy = 0;
 
 							sendMsg.header.crc = 0U;
-							sendMsg.header.crc = crc16CCIT(PPP_INITFCS,&sendMsg,sendMsg.header.length);
+							sendMsg.header.crc = 0xffff; // crc16CCIT(PPP_INITFCS,&sendMsg,sendMsg.header.length);
 
 							ioPort->send((uint8_t*)(&sendMsg),sizeof(sendMsg));
 
@@ -696,18 +696,41 @@ void BMXSensorBoardDriver::processingMainLoop () {
 						currSensorDataIndex++;
 						currSensorDataIndex &= SIZE_SENSOR_DATA_ARRAY - 1;
 
-						currSensorData.magX = compensate_x(bmxData.accGyrMagData.magX,bmxData.accGyrMagData.magRHall) * calibrationData.magXFactor;
-						currSensorData.magY = compensate_y(bmxData.accGyrMagData.magY,bmxData.accGyrMagData.magRHall) * calibrationData.magYFactor;
-						currSensorData.magZ = compensate_z(bmxData.accGyrMagData.magZ,bmxData.accGyrMagData.magRHall) * calibrationData.magZFactor;
+						// Essential trim data is missing.
+						// compensate function would return BMM150_OVERFLOW_OUTPUT_FLOAT = 0.0.
+						// Therefore request a reset of the IMU, re-read the magnetometer trim data,
+						// and re-send them to me.
+						if ((magTrimData.dig_z2 == 0) || (magTrimData.dig_z1 == 0)
+								|| (magTrimData.dig_xyz1 == 0) ) {
+							struct BMX160RecvData sendMsg;
 
-						LOG4CXX_DEBUG(logger,"magX (uT) = " << currSensorData.magX);
-						LOG4CXX_DEBUG(logger,"magY (uT) = " << currSensorData.magY);
-						LOG4CXX_DEBUG(logger,"magZ (uT) = " << currSensorData.magZ);
-						if (currSensorData.magX != BMM150_OVERFLOW_OUTPUT_FLOAT &&
-								currSensorData.magY != -BMM150_OVERFLOW_OUTPUT_FLOAT &&
-								currSensorData.magZ != -BMM150_OVERFLOW_OUTPUT_FLOAT
-								) {
-							currSensorData.magDataValid = true;
+							sendMsg.header.unionCode = BMX160RECV_DATA_RESET_IMU;
+							sendMsg.header.filler = 0;
+							sendMsg.header.length = sizeof sendMsg;
+							sendMsg.header.versionMajor = BMX160_SENSORBOX_MSG_VERSION_MAJOR;
+							sendMsg.header.versionMinor = BMX160_SENSORBOX_MSG_VERSION_MINOR;
+							sendMsg.dummy = 0;
+
+							sendMsg.header.crc = 0U;
+							sendMsg.header.crc = 0xffff;
+
+							ioPort->send((uint8_t*)(&sendMsg),sizeof(sendMsg));
+
+						} else {
+
+							currSensorData.magX = compensate_x(bmxData.accGyrMagData.magX,bmxData.accGyrMagData.magRHall) * calibrationData.magXFactor;
+							currSensorData.magY = compensate_y(bmxData.accGyrMagData.magY,bmxData.accGyrMagData.magRHall) * calibrationData.magYFactor;
+							currSensorData.magZ = compensate_z(bmxData.accGyrMagData.magZ,bmxData.accGyrMagData.magRHall) * calibrationData.magZFactor;
+
+							LOG4CXX_DEBUG(logger,"magX (uT) = " << currSensorData.magX);
+							LOG4CXX_DEBUG(logger,"magY (uT) = " << currSensorData.magY);
+							LOG4CXX_DEBUG(logger,"magZ (uT) = " << currSensorData.magZ);
+							if (currSensorData.magX != BMM150_OVERFLOW_OUTPUT_FLOAT &&
+									currSensorData.magY != -BMM150_OVERFLOW_OUTPUT_FLOAT &&
+									currSensorData.magZ != -BMM150_OVERFLOW_OUTPUT_FLOAT
+									) {
+								currSensorData.magDataValid = true;
+							}
 						}
 
 						currSensorData.gyroX = double(bmxData.accGyrMagData.gyrX)/ gyrFactor * calibrationData.gyrXFactor;
