@@ -98,7 +98,6 @@ public:
 	 * GliderVarioPortPeerAddressUndefined
 	 *
 	 * \see Linux Programmer's Manual: [send(2)](http://man7.org/linux/man-pages/man2/send.2.html)
-	 * \see writeExactLen()
 	 */
 	virtual ssize_t send (uint8_t* buffer,size_t bufLen);
 
