@@ -66,6 +66,8 @@ ssize_t DatagramPort::recv(uint8_t *buffer, size_t bufLen) {
 		flags |= MSG_DONTWAIT;
 	}
 
+	LOG4CXX_DEBUG(logger,"DatagramPort::recv: for " << getPortName());
+
 	do {
 		err = 0;
 
@@ -152,7 +154,7 @@ ssize_t DatagramPort::send(uint8_t *buffer, size_t bufLen) {
 
 	} while (err == EINTR);
 
-	LOG4CXX_DEBUG(logger,"StreamPort::write: ret = " << ret);
+	LOG4CXX_DEBUG(logger,"DatagramPort::send: ret = " << ret);
 
 	return ret;
 }
