@@ -245,6 +245,16 @@ public:
 
 };
 
+class OEV_UTILS_PUBLIC GliderVarioPortNotConnected :public GliderVarioPortIOException {
+public:
+	GliderVarioPortNotConnected (
+			char const *source,
+			int line)
+		:GliderVarioPortIOException {source,line,"The port is not connected or the destination address is undefined.",EBADF}
+	{}
+
+};
+
 
 class OEV_UTILS_PUBLIC GliderVarioPortOpenException :public GliderVarioPortIOException {
 public:

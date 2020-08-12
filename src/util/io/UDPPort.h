@@ -46,12 +46,38 @@ public:
 			const Properties4CXX::Properties &globalConfiguration,
 			const Properties4CXX::Properties &portConfiguration) override;
 
+	/** \brief Write the buffer content at once as datagram to the peer address
+	 *
+	 * It turns out that ::send cannot be used for an UDP socket under Linux.
+	 * ::bind and ::connect on the UDP socket seem to be mutually exclusive.
+	 * Therefore I am calling ::bind only on the stocket,
+	 * storing the destination address in this class, and use ::sendto instead as implementing call.
+	 *
+	 * Like all I/O operations access to the device handle is synchronized with an object of class \ref PortBase::DeviceHandleAccess
+	 *
+	 * The call will block until data is written unless non-blocking mode is active
+	 * with PortBase::isBlocking() = \a false. \n
+	 *
+	 * The function returns 0 when non-blocking mode is active, and no data can be written. \n
+	 *
+	 * @param buffer Buffer containing the data to be written
+	 * @param bufLen Number of bytes in the buffer
+	 * @return Number of bytes written. May be less then \p bufLen when the write call is interrupted or the destination full.
+	 * @throws GliderVarioPortWriteException, GliderVarioPortNotOpenException, GliderVarioPortPeerPortUndefined,
+	 * GliderVarioPortPeerAddressUndefined
+	 *
+	 * \see datagramPort::send()
+	 */
+	virtual ssize_t send (uint8_t* buffer,size_t bufLen) override;
+
 	static PortBase* udpPortConstructor(
 			char const* portName,
 			Properties4CXX::Properties const &portProp);
 	static void registerTcpPortType();
 
 private:
+
+	struct addrinfo *peerAd = nullptr;
 
 protected:
 	std::string peerAddr;

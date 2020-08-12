@@ -103,6 +103,10 @@ UDPPort::UDPPort(char const* portName)
 
 UDPPort::~UDPPort() {
 
+	if (peerAd != NULL) {
+		::freeaddrinfo(peerAd);
+	}
+
 }
 
 PortBase* UDPPort::udpPortConstructor(
@@ -225,7 +229,6 @@ void UDPPort::openInternal() {
 
 	// For the peer address I need the IP address and the port.
 	if (peerPortDefined && peerAddrDefined) {
-		struct addrinfo *peerAd = nullptr;
 
 		rc = ::getaddrinfo(peerAddr.c_str(),peerPort.c_str(),&addrHint,&peerAd);
 
@@ -244,6 +247,7 @@ void UDPPort::openInternal() {
 				if (sock == -1) {
 					rc = errno;
 					::freeaddrinfo(peerAd);
+					peerAd = nullptr;
 					LOG4CXX_ERROR(logger,"Open port " << getPortName()
 							<< ": socket() error: " << rc << '=' << strerror(rc));
 					throw GliderVarioPortOpenException (
@@ -254,18 +258,7 @@ void UDPPort::openInternal() {
 				}
 			} // if (sock == -1)
 
-			if (sock != -1) {
-				rc = ::connect(sock,peerAd->ai_addr,peerAd->ai_addrlen);
-				if (rc == -1) {
-					rc = errno;
-					LOG4CXX_ERROR(logger,"Open port " << getPortName()
-							<< ": connect() peer address error: " << rc << '=' << strerror(rc));
-					::close (sock);
-					sock = -1;
-				} else {
-					socketBound = true;
-				}
-			}
+			socketConnected = true;
 
 		} else { // if (rc == 0)
 			std::ostringstream ostr;
@@ -274,9 +267,6 @@ void UDPPort::openInternal() {
 					<< ostr.str());
 		} // if (rc == 0)
 
-		if (peerAd != NULL) {
-			::freeaddrinfo(peerAd);
-		}
 	} // if (peerPortDefined && peerAddrDefined)
 
 	if (sock != -1) {
@@ -294,6 +284,53 @@ void UDPPort::openInternal() {
 	LOG4CXX_INFO(logger,"Open port " << getPortName() << " successful");
 
 
+}
+
+ssize_t UDPPort::send(uint8_t *buffer, size_t bufLen) {
+	ssize_t ret;
+	int err;
+	DeviceHandleAccess devHandleAccess (*this);
+	ssize_t bytesWritten = 0;
+	int flags = 0;
+
+	if (!isBlocking()) {
+		flags |= MSG_DONTWAIT;
+	}
+
+	do {
+		err = 0;
+
+		ret = ::sendto(devHandleAccess.deviceHandle,buffer,bufLen,flags,peerAd->ai_addr,peerAd->ai_addrlen);
+
+		if (ret == -1) {
+			err = errno;
+
+			switch (err) {
+
+			case EINTR:
+				LOG4CXX_DEBUG (logger,"Port" << getPortName() << ':' << getPortType() << ": sendto interrupted with EINTR. Repeat ::send() ");
+				break;
+
+			case EWOULDBLOCK:
+#if EWOULDBLOCK != EAGAIN
+			case EAGAIN:
+#endif
+				ret = 0;
+				break;
+			default:
+				std::ostringstream str;
+
+				str << "Port" << getPortName() << ':' << getPortType() << ": sendto error " << err << ":" << strerror(err);
+				LOG4CXX_ERROR (logger,str.str());
+				throw GliderVarioPortWriteException(__FILE__,__LINE__,str.str().c_str(),err);
+			}
+		}
+
+	} while (err == EINTR);
+
+	LOG4CXX_DEBUG(logger,"UDPPort::send: ret = " << ret);
+
+	return ret;
 }
 
 } /* namespace io */
