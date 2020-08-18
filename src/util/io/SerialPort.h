@@ -42,11 +42,25 @@ namespace io {
  */
 class SerialPort: public StreamPort {
 public:
+
+	static constexpr char const* SerialPortType = "serial";
+
 	SerialPort(
-			char const* portName,
-			char const* portType
+			char const* portName
 			);
 	virtual ~SerialPort();
+
+	virtual void openInternal() override;
+	virtual void configurePort(
+			const Properties4CXX::Properties &globalConfiguration,
+			const Properties4CXX::Properties &portConfiguration) override;
+
+	static PortBase* serialPortConstructor(
+			char const* portName,
+			Properties4CXX::Properties const &portProp);
+	static void registerSerialPortType();
+
+
 };
 
 } /* namespace io */
