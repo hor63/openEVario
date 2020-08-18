@@ -92,6 +92,12 @@
 /* Define to 1 if you have the <sys/types.h> header file. */
 #undef HAVE_SYS_TYPES_H
 
+/* Define to 1 if the function tcsetattr is available. */
+#undef HAVE_TCSETATTR
+
+/* Define to 1 if you have the <termios.h> header file. */
+#undef HAVE_TERMIOS_H
+
 /* Define to 1 if the function timespec_get is available. */
 #undef HAVE_TIMESPEC_GET
 

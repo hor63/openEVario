@@ -92,6 +92,12 @@ AC_SEARCH_LIBS([getaddrinfo],[],[AC_DEFINE([HAVE_GETADDRINFO],[1],[Define to 1 i
 AC_SEARCH_LIBS([gethostbyname_r],[],[AC_DEFINE([HAVE_GETHOSTBYNAME_R],[1],[Define to 1 if the function gethostbyname_r is available.])],[])
 AC_SEARCH_LIBS([gethostbyname],[],[AC_DEFINE([HAVE_GETHOSTBYNAME],[1],[Define to 1 if the function gethostbyname is available.])],[])
 
+# If termios is not available skip building the SerialPort driver
+AC_CHECK_HEADER([termios.h],[AC_DEFINE([HAVE_TERMIOS_H],[1],[Define to 1 if you have the <termios.h> header file.])],[])
+AC_SEARCH_LIBS([tcsetattr],[],[AC_DEFINE([HAVE_TCSETATTR],[1],[Define to 1 if the function tcsetattr is available.])],[])
+
+# If I have a usable termios.h and a working tcsetattr in the C library build the serial port driver
+AM_CONDITIONAL([BUILD_SERIAL_PORT_DRIVER],[test "x$HAVE_TERMIOS_H" = x1 -a "x$HAVE_TCSETATTR" = 1])
 
 AX_CHECK_COMPILE_FLAG([-fvisibility=internal],[DLL_VISIBLE_CFLAGS="-fvisibility=internal"])
 AC_SUBST([DLL_VISIBLE_CFLAGS])

@@ -684,6 +684,8 @@ LOG4CXX_MAKE_SUBDIRS
 subdirs
 LD_NO_UNDEFINED_OPT
 DLL_VISIBLE_CFLAGS
+BUILD_SERIAL_PORT_DRIVER_FALSE
+BUILD_SERIAL_PORT_DRIVER_TRUE
 OS_IS_CYGWIN_FALSE
 OS_IS_CYGWIN_TRUE
 LIBTOOL_DEPS
@@ -20147,6 +20149,83 @@ $as_echo "#define HAVE_GETHOSTBYNAME 1" >>confdefs.h
 fi
 
 
+# If termios is not available skip building the SerialPort driver
+ac_fn_cxx_check_header_mongrel "$LINENO" "termios.h" "ac_cv_header_termios_h" "$ac_includes_default"
+if test "x$ac_cv_header_termios_h" = xyes; then :
+
+$as_echo "#define HAVE_TERMIOS_H 1" >>confdefs.h
+
+fi
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing tcsetattr" >&5
+$as_echo_n "checking for library containing tcsetattr... " >&6; }
+if ${ac_cv_search_tcsetattr+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char tcsetattr ();
+int
+main ()
+{
+return tcsetattr ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' ; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_cxx_try_link "$LINENO"; then :
+  ac_cv_search_tcsetattr=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_tcsetattr+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_tcsetattr+:} false; then :
+
+else
+  ac_cv_search_tcsetattr=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_tcsetattr" >&5
+$as_echo "$ac_cv_search_tcsetattr" >&6; }
+ac_res=$ac_cv_search_tcsetattr
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+
+$as_echo "#define HAVE_TCSETATTR 1" >>confdefs.h
+
+fi
+
+
+# If I have a usable termios.h and a working tcsetattr in the C library build the serial port driver
+ if test "x$HAVE_TERMIOS_H" = x1 -a "x$HAVE_TCSETATTR" = 1; then
+  BUILD_SERIAL_PORT_DRIVER_TRUE=
+  BUILD_SERIAL_PORT_DRIVER_FALSE='#'
+else
+  BUILD_SERIAL_PORT_DRIVER_TRUE='#'
+  BUILD_SERIAL_PORT_DRIVER_FALSE=
+fi
+
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C++ compiler accepts -fvisibility=internal" >&5
 $as_echo_n "checking whether C++ compiler accepts -fvisibility=internal... " >&6; }
@@ -22510,6 +22589,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${OS_IS_CYGWIN_TRUE}" && test -z "${OS_IS_CYGWIN_FALSE}"; then
   as_fn_error $? "conditional \"OS_IS_CYGWIN\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${BUILD_SERIAL_PORT_DRIVER_TRUE}" && test -z "${BUILD_SERIAL_PORT_DRIVER_FALSE}"; then
+  as_fn_error $? "conditional \"BUILD_SERIAL_PORT_DRIVER\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
