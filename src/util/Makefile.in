@@ -107,6 +107,7 @@ build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
 @BUILD_SERIAL_PORT_DRIVER_TRUE@am__append_1 = io/SerialPort.cpp
+@BUILD_IP_PORT_DRIVERS_TRUE@am__append_2 = io/TCPPort.cpp io/UDPPort.cpp
 subdir = src/util
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps =  \
@@ -157,10 +158,13 @@ libopenEVUtil_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 am__libopenEVUtil_la_SOURCES_DIST = RotationMatrix.cpp FastMath.cpp \
 	FastMathSineTable.cpp crc.cpp GliderVarioDriverBase.cpp \
 	GliderVarioDriverLibBase.cpp GliderVarioExceptionBase.cpp \
-	io/PortBase.cpp io/StreamPort.cpp io/TCPPort.cpp \
-	io/DatagramPort.cpp io/UDPPort.cpp io/SerialPort.cpp
+	io/PortBase.cpp io/StreamPort.cpp io/DatagramPort.cpp \
+	io/SerialPort.cpp io/TCPPort.cpp io/UDPPort.cpp
 @BUILD_SERIAL_PORT_DRIVER_TRUE@am__objects_1 =  \
 @BUILD_SERIAL_PORT_DRIVER_TRUE@	libopenEVUtil_la-SerialPort.lo
+@BUILD_IP_PORT_DRIVERS_TRUE@am__objects_2 =  \
+@BUILD_IP_PORT_DRIVERS_TRUE@	libopenEVUtil_la-TCPPort.lo \
+@BUILD_IP_PORT_DRIVERS_TRUE@	libopenEVUtil_la-UDPPort.lo
 am_libopenEVUtil_la_OBJECTS = libopenEVUtil_la-RotationMatrix.lo \
 	libopenEVUtil_la-FastMath.lo \
 	libopenEVUtil_la-FastMathSineTable.lo libopenEVUtil_la-crc.lo \
@@ -168,8 +172,8 @@ am_libopenEVUtil_la_OBJECTS = libopenEVUtil_la-RotationMatrix.lo \
 	libopenEVUtil_la-GliderVarioDriverLibBase.lo \
 	libopenEVUtil_la-GliderVarioExceptionBase.lo \
 	libopenEVUtil_la-PortBase.lo libopenEVUtil_la-StreamPort.lo \
-	libopenEVUtil_la-TCPPort.lo libopenEVUtil_la-DatagramPort.lo \
-	libopenEVUtil_la-UDPPort.lo $(am__objects_1)
+	libopenEVUtil_la-DatagramPort.lo $(am__objects_1) \
+	$(am__objects_2)
 libopenEVUtil_la_OBJECTS = $(am_libopenEVUtil_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -322,6 +326,10 @@ FGREP = @FGREP@
 GREP = @GREP@
 HAVE_BUILD_CXX11 = @HAVE_BUILD_CXX11@
 HAVE_CXX14 = @HAVE_CXX14@
+HAVE_NETINET_IN_H = @HAVE_NETINET_IN_H@
+HAVE_NETINET_TCP_H = @HAVE_NETINET_TCP_H@
+HAVE_TCSETATTR = @HAVE_TCSETATTR@
+HAVE_TERMIOS_H = @HAVE_TERMIOS_H@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -437,8 +445,8 @@ pkglib_LTLIBRARIES = libopenEVUtil.la
 libopenEVUtil_la_SOURCES = RotationMatrix.cpp FastMath.cpp \
 	FastMathSineTable.cpp crc.cpp GliderVarioDriverBase.cpp \
 	GliderVarioDriverLibBase.cpp GliderVarioExceptionBase.cpp \
-	io/PortBase.cpp io/StreamPort.cpp io/TCPPort.cpp \
-	io/DatagramPort.cpp io/UDPPort.cpp $(am__append_1)
+	io/PortBase.cpp io/StreamPort.cpp io/DatagramPort.cpp \
+	$(am__append_1) $(am__append_2)
 libopenEVUtil_la_CXXFLAGS = $(AM_CXXFLAGS) -DBUILDING_OEV_UTILS=1 $(DLL_VISIBLE_CFLAGS)
 libopenEVUtil_la_LDFLAGS = $(LD_NO_UNDEFINED_OPT) $(MAIN_LDFLAGS) $(LOG4CXX_LDFLAGS)
 libopenEVUtil_la_LIBADD = $(LOG4CXX_LIBS) $(MAIN_LIBS) $(PTHREAD_LIBS)
@@ -632,13 +640,6 @@ libopenEVUtil_la-StreamPort.lo: io/StreamPort.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVUtil_la_CXXFLAGS) $(CXXFLAGS) -c -o libopenEVUtil_la-StreamPort.lo `test -f 'io/StreamPort.cpp' || echo '$(srcdir)/'`io/StreamPort.cpp
 
-libopenEVUtil_la-TCPPort.lo: io/TCPPort.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVUtil_la_CXXFLAGS) $(CXXFLAGS) -MT libopenEVUtil_la-TCPPort.lo -MD -MP -MF $(DEPDIR)/libopenEVUtil_la-TCPPort.Tpo -c -o libopenEVUtil_la-TCPPort.lo `test -f 'io/TCPPort.cpp' || echo '$(srcdir)/'`io/TCPPort.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libopenEVUtil_la-TCPPort.Tpo $(DEPDIR)/libopenEVUtil_la-TCPPort.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='io/TCPPort.cpp' object='libopenEVUtil_la-TCPPort.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVUtil_la_CXXFLAGS) $(CXXFLAGS) -c -o libopenEVUtil_la-TCPPort.lo `test -f 'io/TCPPort.cpp' || echo '$(srcdir)/'`io/TCPPort.cpp
-
 libopenEVUtil_la-DatagramPort.lo: io/DatagramPort.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVUtil_la_CXXFLAGS) $(CXXFLAGS) -MT libopenEVUtil_la-DatagramPort.lo -MD -MP -MF $(DEPDIR)/libopenEVUtil_la-DatagramPort.Tpo -c -o libopenEVUtil_la-DatagramPort.lo `test -f 'io/DatagramPort.cpp' || echo '$(srcdir)/'`io/DatagramPort.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libopenEVUtil_la-DatagramPort.Tpo $(DEPDIR)/libopenEVUtil_la-DatagramPort.Plo
@@ -646,19 +647,26 @@ libopenEVUtil_la-DatagramPort.lo: io/DatagramPort.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVUtil_la_CXXFLAGS) $(CXXFLAGS) -c -o libopenEVUtil_la-DatagramPort.lo `test -f 'io/DatagramPort.cpp' || echo '$(srcdir)/'`io/DatagramPort.cpp
 
-libopenEVUtil_la-UDPPort.lo: io/UDPPort.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVUtil_la_CXXFLAGS) $(CXXFLAGS) -MT libopenEVUtil_la-UDPPort.lo -MD -MP -MF $(DEPDIR)/libopenEVUtil_la-UDPPort.Tpo -c -o libopenEVUtil_la-UDPPort.lo `test -f 'io/UDPPort.cpp' || echo '$(srcdir)/'`io/UDPPort.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libopenEVUtil_la-UDPPort.Tpo $(DEPDIR)/libopenEVUtil_la-UDPPort.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='io/UDPPort.cpp' object='libopenEVUtil_la-UDPPort.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVUtil_la_CXXFLAGS) $(CXXFLAGS) -c -o libopenEVUtil_la-UDPPort.lo `test -f 'io/UDPPort.cpp' || echo '$(srcdir)/'`io/UDPPort.cpp
-
 libopenEVUtil_la-SerialPort.lo: io/SerialPort.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVUtil_la_CXXFLAGS) $(CXXFLAGS) -MT libopenEVUtil_la-SerialPort.lo -MD -MP -MF $(DEPDIR)/libopenEVUtil_la-SerialPort.Tpo -c -o libopenEVUtil_la-SerialPort.lo `test -f 'io/SerialPort.cpp' || echo '$(srcdir)/'`io/SerialPort.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libopenEVUtil_la-SerialPort.Tpo $(DEPDIR)/libopenEVUtil_la-SerialPort.Plo
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='io/SerialPort.cpp' object='libopenEVUtil_la-SerialPort.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVUtil_la_CXXFLAGS) $(CXXFLAGS) -c -o libopenEVUtil_la-SerialPort.lo `test -f 'io/SerialPort.cpp' || echo '$(srcdir)/'`io/SerialPort.cpp
+
+libopenEVUtil_la-TCPPort.lo: io/TCPPort.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVUtil_la_CXXFLAGS) $(CXXFLAGS) -MT libopenEVUtil_la-TCPPort.lo -MD -MP -MF $(DEPDIR)/libopenEVUtil_la-TCPPort.Tpo -c -o libopenEVUtil_la-TCPPort.lo `test -f 'io/TCPPort.cpp' || echo '$(srcdir)/'`io/TCPPort.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libopenEVUtil_la-TCPPort.Tpo $(DEPDIR)/libopenEVUtil_la-TCPPort.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='io/TCPPort.cpp' object='libopenEVUtil_la-TCPPort.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVUtil_la_CXXFLAGS) $(CXXFLAGS) -c -o libopenEVUtil_la-TCPPort.lo `test -f 'io/TCPPort.cpp' || echo '$(srcdir)/'`io/TCPPort.cpp
+
+libopenEVUtil_la-UDPPort.lo: io/UDPPort.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVUtil_la_CXXFLAGS) $(CXXFLAGS) -MT libopenEVUtil_la-UDPPort.lo -MD -MP -MF $(DEPDIR)/libopenEVUtil_la-UDPPort.Tpo -c -o libopenEVUtil_la-UDPPort.lo `test -f 'io/UDPPort.cpp' || echo '$(srcdir)/'`io/UDPPort.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libopenEVUtil_la-UDPPort.Tpo $(DEPDIR)/libopenEVUtil_la-UDPPort.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='io/UDPPort.cpp' object='libopenEVUtil_la-UDPPort.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVUtil_la_CXXFLAGS) $(CXXFLAGS) -c -o libopenEVUtil_la-UDPPort.lo `test -f 'io/UDPPort.cpp' || echo '$(srcdir)/'`io/UDPPort.cpp
 
 mostlyclean-libtool:
 	-rm -f *.lo

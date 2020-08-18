@@ -684,8 +684,14 @@ LOG4CXX_MAKE_SUBDIRS
 subdirs
 LD_NO_UNDEFINED_OPT
 DLL_VISIBLE_CFLAGS
+BUILD_IP_PORT_DRIVERS_FALSE
+BUILD_IP_PORT_DRIVERS_TRUE
+HAVE_NETINET_TCP_H
+HAVE_NETINET_IN_H
 BUILD_SERIAL_PORT_DRIVER_FALSE
 BUILD_SERIAL_PORT_DRIVER_TRUE
+HAVE_TCSETATTR
+HAVE_TERMIOS_H
 OS_IS_CYGWIN_FALSE
 OS_IS_CYGWIN_TRUE
 LIBTOOL_DEPS
@@ -20152,8 +20158,7 @@ fi
 # If termios is not available skip building the SerialPort driver
 ac_fn_cxx_check_header_mongrel "$LINENO" "termios.h" "ac_cv_header_termios_h" "$ac_includes_default"
 if test "x$ac_cv_header_termios_h" = xyes; then :
-
-$as_echo "#define HAVE_TERMIOS_H 1" >>confdefs.h
+  HAVE_TERMIOS_H=1
 
 fi
 
@@ -20211,20 +20216,42 @@ $as_echo "$ac_cv_search_tcsetattr" >&6; }
 ac_res=$ac_cv_search_tcsetattr
 if test "$ac_res" != no; then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
-
-$as_echo "#define HAVE_TCSETATTR 1" >>confdefs.h
+  HAVE_TCSETATTR=1
 
 fi
 
-
-# If I have a usable termios.h and a working tcsetattr in the C library build the serial port driver
- if test "x$HAVE_TERMIOS_H" = x1 -a "x$HAVE_TCSETATTR" = 1; then
+ if test "x$HAVE_TERMIOS_H" = x1 -a "x$HAVE_TCSETATTR" = x1; then
   BUILD_SERIAL_PORT_DRIVER_TRUE=
   BUILD_SERIAL_PORT_DRIVER_FALSE='#'
 else
   BUILD_SERIAL_PORT_DRIVER_TRUE='#'
   BUILD_SERIAL_PORT_DRIVER_FALSE=
 fi
+
+
+# If <netinet/in.h> or <netinet/tcp.h> are not available skip building the TCPPort and UDPPort driver
+ac_fn_cxx_check_header_mongrel "$LINENO" "netinet/in.h" "ac_cv_header_netinet_in_h" "$ac_includes_default"
+if test "x$ac_cv_header_netinet_in_h" = xyes; then :
+  HAVE_NETINET_IN_H=1
+
+fi
+
+
+ac_fn_cxx_check_header_mongrel "$LINENO" "netinet/tcp.h" "ac_cv_header_netinet_tcp_h" "$ac_includes_default"
+if test "x$ac_cv_header_netinet_tcp_h" = xyes; then :
+  HAVE_NETINET_TCP_H=1
+
+fi
+
+
+ if test "x$HAVE_NETINET_IN_H" = x1 -a "x$HAVE_NETINET_TCP_H" = x1; then
+  BUILD_IP_PORT_DRIVERS_TRUE=
+  BUILD_IP_PORT_DRIVERS_FALSE='#'
+else
+  BUILD_IP_PORT_DRIVERS_TRUE='#'
+  BUILD_IP_PORT_DRIVERS_FALSE=
+fi
+
 
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C++ compiler accepts -fvisibility=internal" >&5
@@ -22593,6 +22620,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${BUILD_SERIAL_PORT_DRIVER_TRUE}" && test -z "${BUILD_SERIAL_PORT_DRIVER_FALSE}"; then
   as_fn_error $? "conditional \"BUILD_SERIAL_PORT_DRIVER\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${BUILD_IP_PORT_DRIVERS_TRUE}" && test -z "${BUILD_IP_PORT_DRIVERS_FALSE}"; then
+  as_fn_error $? "conditional \"BUILD_IP_PORT_DRIVERS\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 

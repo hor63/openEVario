@@ -41,8 +41,13 @@
 #	include <netdb.h>
 #endif
 
-#include <netinet/in.h>
-#include <netinet/tcp.h>
+#if HAVE_NETINET_IN_H
+#	include <netinet/in.h>
+#endif
+
+#if HAVE_NETINET_TCP_H
+#	include <netinet/tcp.h>
+#endif
 
 #include <sstream>
 
