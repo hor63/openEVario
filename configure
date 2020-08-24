@@ -20220,6 +20220,12 @@ if test "$ac_res" != no; then :
 
 fi
 
+if test "x$HAVE_TERMIOS_H" = x1 -a "x$HAVE_TCSETATTR" = x1; then :
+
+$as_echo "#define WITH_SERIAL_PORT_DRIVER 1" >>confdefs.h
+
+
+fi
  if test "x$HAVE_TERMIOS_H" = x1 -a "x$HAVE_TCSETATTR" = x1; then
   BUILD_SERIAL_PORT_DRIVER_TRUE=
   BUILD_SERIAL_PORT_DRIVER_FALSE='#'
@@ -20244,6 +20250,12 @@ if test "x$ac_cv_header_netinet_tcp_h" = xyes; then :
 fi
 
 
+if test "x$HAVE_NETINET_IN_H" = x1 -a "x$HAVE_NETINET_TCP_H" = x1; then :
+
+$as_echo "#define WITH_IP_PORT_DRIVER 1" >>confdefs.h
+
+
+fi
  if test "x$HAVE_NETINET_IN_H" = x1 -a "x$HAVE_NETINET_TCP_H" = x1; then
   BUILD_IP_PORT_DRIVERS_TRUE=
   BUILD_IP_PORT_DRIVERS_FALSE='#'
@@ -20251,7 +20263,6 @@ else
   BUILD_IP_PORT_DRIVERS_TRUE='#'
   BUILD_IP_PORT_DRIVERS_FALSE=
 fi
-
 
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C++ compiler accepts -fvisibility=internal" >&5

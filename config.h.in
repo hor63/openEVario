@@ -152,5 +152,11 @@
 /* Version number of package */
 #undef VERSION
 
+/* Define to 1 if the TCP and UDP drivers are available. */
+#undef WITH_IP_PORT_DRIVER
+
+/* Define to 1 if the serial port driver is available. */
+#undef WITH_SERIAL_PORT_DRIVER
+
 /* Define to 1 if you want to enable GNU and all other extensions. */
 #undef _GNU_SOURCE
