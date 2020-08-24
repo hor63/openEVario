@@ -30,6 +30,9 @@
 
 #include "util/io/StreamPort.h"
 
+#include <termios.h>
+#include <unistd.h>
+
 namespace openEV {
 namespace io {
 
@@ -60,6 +63,26 @@ public:
 			Properties4CXX::Properties const &portProp);
 	static void registerSerialPortType();
 
+protected:
+
+	speed_t baud = B0; ///< Line speed in and out; Default keep setting
+
+	// c_cflag bits
+	tcflag_t numBits = CS8; ///< Number of data bits
+	tcflag_t numBitsMask = 0; ///< Mask to activate \ref numBits. \\n 0 when inactive \n CSIZE when active
+
+	tcflag_t stopBits = 0; ///< Number of stop bits Default 1 stop bit CSTOPB = 2 stop bits
+	tcflag_t stopBitsMask = 0; ///< Mask to activate \ref stopBits. \n \\0 when inactive \n CSTOPB when active
+
+	tcflag_t parity = 0; ///< Parity. Default no parity else PARENB|PARODD=odd, PARENB=even
+	tcflag_t parityMask = 0; ///< Mask to activate \ref parity. \n \\0 when inactive \n PARENB|PARODD when active
+
+	tcflag_t rtsCts = 0; ///< RTS/CTS flow control. Default off. CRTSCTS
+	tcflag_t rtsCtsMask = 0; ///< Mask to activate \ref rtsCts. \n \\0 when inactive. CRTSCTS when active
+
+	// c_iflag bits
+	tcflag_t xonXoff = 0; ///< XON/XOFF flow control. Default off. IXON|IXOFF
+	tcflag_t xonXoffMask = 0; ///< Mask to activate \ref xonXoff. \n \\0 when inactive \n IXON|IXOFF when active
 
 };
 
