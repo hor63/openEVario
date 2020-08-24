@@ -49,7 +49,7 @@ public:
 	static PortBase* tcpPortConstructor(
 			char const* portName,
 			Properties4CXX::Properties const &portProp);
-	static void registerTcpPortType();
+	static void registerTcpPortType() OEV_UTILS_PUBLIC;
 
 private:
 

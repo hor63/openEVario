@@ -239,6 +239,11 @@ private:
 
     bool idleLoopRunning = false;
 
+    /** \brief Register the communication drivers
+     *
+     * Register the communication drivers during startup.
+     */
+    void registerPortDrivers();
 
 	/// \brief Read the configuration file, and extract the base configuration values into \ref programOptions
 	void readConfiguration ();

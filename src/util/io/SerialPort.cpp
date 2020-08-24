@@ -50,30 +50,14 @@ static inline void initLogger() {
 namespace openEV {
 namespace io {
 
-/** \brief Helper class to automatically register TCP ports with \ref PortBase
- *
- */
-class SerialPortRegister {
-private:
-
-	SerialPortRegister() {
-#if defined HAVE_LOG4CXX_H
-		initLogger();
-#endif /* HAVE_LOG4CXX_H */
-
-		SerialPort::registerSerialPortType();
-	}
-
-	static SerialPortRegister theOneAndOnly;
-};
-
-SerialPortRegister SerialPortRegister::theOneAndOnly;
-
 SerialPort::SerialPort(
 		char const* portName
 		) :
 	StreamPort{portName,SerialPortType}
 {
+#if defined HAVE_LOG4CXX_H
+	initLogger();
+#endif
 	// Do not let the tty become the controling terminal of the process. I am only using it as a binary comminucations channel.
 	deviceOpenFlags |= O_NOCTTY;
 

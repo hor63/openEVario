@@ -74,26 +74,6 @@ static std::string const hostPropertyName = "host";
 /// (mandatory) Numeric or symbolic port numbers (/etc/services) are supported.
 static std::string const portPropertyName = "port";
 
-
-/** \brief Helper class to automatically register TCP ports with \ref PortBase
- *
- */
-class TCPPortRegister {
-private:
-
-	TCPPortRegister() {
-#if defined HAVE_LOG4CXX_H
-		initLogger();
-#endif /* HAVE_LOG4CXX_H */
-
-		TCPPort::registerTcpPortType();
-	}
-
-	static TCPPortRegister theOneAndOnly;
-};
-
-TCPPortRegister TCPPortRegister::theOneAndOnly;
-
 TCPPort::TCPPort(char const* portName)
 	: StreamPort(portName,TcpPortType)
 {
