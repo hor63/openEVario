@@ -61,7 +61,7 @@ public:
 	static PortBase* serialPortConstructor(
 			char const* portName,
 			Properties4CXX::Properties const &portProp);
-	static void registerSerialPortType();
+	static void registerSerialPortType() OEV_UTILS_PUBLIC;
 
 protected:
 

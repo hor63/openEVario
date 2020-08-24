@@ -73,26 +73,6 @@ static std::string const localAddressPropertyName = "localAddress";
 static std::string const peerPortPropertyName = "peerPort";
 static std::string const localPortPropertyName = "localPort";
 
-
-/** \brief Helper class to automatically register TCP ports with \ref PortBase
- *
- */
-class UDPPortRegister {
-private:
-
-	UDPPortRegister() {
-#if defined HAVE_LOG4CXX_H
-		initLogger();
-#endif /* HAVE_LOG4CXX_H */
-
-		UDPPort::registerTcpPortType();
-	}
-
-	static UDPPortRegister theOneAndOnly;
-};
-
-UDPPortRegister UDPPortRegister::theOneAndOnly;
-
 UDPPort::UDPPort(char const* portName)
 	: DatagramPort(portName,UdpPortType)
 {
@@ -121,7 +101,7 @@ PortBase* UDPPort::udpPortConstructor(
 	return new UDPPort(portName);
 }
 
-void UDPPort::registerTcpPortType() {
+void UDPPort::registerUdpPortType() {
 	addPortType(UdpPortType,udpPortConstructor);
 }
 

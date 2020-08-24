@@ -73,7 +73,7 @@ public:
 	static PortBase* udpPortConstructor(
 			char const* portName,
 			Properties4CXX::Properties const &portProp);
-	static void registerTcpPortType();
+	static void registerUdpPortType() OEV_UTILS_PUBLIC;
 
 private:
 
