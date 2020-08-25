@@ -21,7 +21,7 @@ bin_PROGRAMS=openEVario$(EXEEXT)
 
 openEVario_SOURCES=openEVario.cpp 
  
-openEVario_LDADD=main/libopenEVMain.la $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
+openEVario_LDADD=main/libopenEVMain.la util/libopenEVUtil.la $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
 
 AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen $(LOG4CXX_CXXFLAGS) \
 	$(PTHREAD_CFLAGS)

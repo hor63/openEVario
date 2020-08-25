@@ -126,8 +126,8 @@ PROGRAMS = $(bin_PROGRAMS)
 am_openEVario_OBJECTS = openEVario.$(OBJEXT)
 openEVario_OBJECTS = $(am_openEVario_OBJECTS)
 am__DEPENDENCIES_1 =
-openEVario_DEPENDENCIES = main/libopenEVMain.la $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+openEVario_DEPENDENCIES = main/libopenEVMain.la util/libopenEVUtil.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -423,7 +423,7 @@ top_srcdir = @top_srcdir@
 SUBDIRS = util kalman main drivers/simul drivers/IGCReader drivers/BoschBMXSensorBoard drivers/NmeaGPS
 bin_PROGRAMS = openEVario$(EXEEXT)
 openEVario_SOURCES = openEVario.cpp 
-openEVario_LDADD = main/libopenEVMain.la $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
+openEVario_LDADD = main/libopenEVMain.la util/libopenEVUtil.la $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
 AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen $(LOG4CXX_CXXFLAGS) \
 	$(PTHREAD_CFLAGS)
 
