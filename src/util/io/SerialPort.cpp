@@ -35,6 +35,8 @@
 #endif
 #include <unistd.h>
 
+#include <sstream>
+
 #if defined HAVE_LOG4CXX_H
 static log4cxx::LoggerPtr logger = 0;
 
@@ -49,6 +51,13 @@ static inline void initLogger() {
 
 namespace openEV {
 namespace io {
+
+// Names of serial port configuration properties
+static std::string const baudPropertyName = "baud";
+static std::string const bitsPropertyName = "bits";
+static std::string const stopBitsPropertyName = "stopbits";
+static std::string const parityPropertyName = "parity";
+static std::string const handshakePropertyName = "handshake";
 
 SerialPort::SerialPort(
 		char const* portName
@@ -73,6 +82,242 @@ void SerialPort::openInternal() {
 void SerialPort::configurePort(
 		const Properties4CXX::Properties &globalConfiguration,
 		const Properties4CXX::Properties &portConfiguration) {
+
+	Properties4CXX::Property const * propVal;
+
+	try {
+		baud = B0;
+
+		propVal = portConfiguration.searchProperty(baudPropertyName);
+		auto configVal = propVal->getIntVal();
+		LOG4CXX_DEBUG (logger,"Configure serial port \"" << getPortName() << ": baud rate = " << propVal->getStringValue());
+
+		switch (configVal) {
+		case 1200:
+		case 12:
+			baud = B1200;
+			break;
+		case 2400:
+		case 24:
+			baud = B2400;
+			break;
+		case 4800:
+		case 48:
+			baud = B4800;
+			break;
+		case 9600:
+		case 96:
+			baud = B9600;
+			break;
+		case 19200:
+		case 192:
+			baud = B19200;
+			break;
+		case 38400:
+		case 384:
+			baud = B38400;
+			break;
+// Going beyond POSIX from here on
+#if defined B57600
+		case 57600:
+		case 576:
+			baud = B57600;
+			break;
+#endif
+#if defined B115200
+		case 115200:
+		case 1152:
+			baud = B115200;
+			break;
+#endif
+#if defined B230400
+		case 230400:
+			baud = B230400;
+			break;
+#endif
+#if defined B460800
+		case 460800:
+			baud = B460800;
+			break;
+#endif
+#if defined B500000
+		case 500000:
+			baud = B500000;
+			break;
+#endif
+#if defined B576000
+		case 576000:
+			baud = B576000;
+			break;
+#endif
+#if defined B921600
+		case 921600:
+			baud = B921600;
+			break;
+#endif
+#if defined B1000000
+		case 1000000:
+			baud = B1000000;
+			break;
+#endif
+		default:
+			std::ostringstream errTxt;
+			errTxt << "Configure serial port \"" << getPortName() << ": Baud rate "<< propVal->getStringValue() <<
+					" is not recognized as a valid rate.";
+			LOG4CXX_ERROR(logger,errTxt.str());
+			throw GliderVarioPortConfigException (__FILE__,__LINE__,errTxt.str().c_str());
+		}
+	}
+	catch (Properties4CXX::ExceptionPropertyNotFound const&e) {
+		LOG4CXX_DEBUG (logger,"Configure serial port \"" << getPortName() << ": No baud rate specified. Keep existing setting.");
+	}
+	catch (Properties4CXX::ExceptionWrongPropertyType const& e) {
+		std::ostringstream errTxt;
+		errTxt << "Configure serial port \"" << getPortName() << ": Baud rate is not numeric: " << e.what();
+		LOG4CXX_ERROR(logger,errTxt.str());
+		throw GliderVarioPortConfigException (__FILE__,__LINE__,errTxt.str().c_str());
+	}
+
+	try {
+		numBits = CS8;
+		numBitsMask = 0;
+
+		propVal = portConfiguration.searchProperty(bitsPropertyName);
+		auto configVal = propVal->getIntVal();
+		LOG4CXX_DEBUG (logger,"Configure serial port \"" << getPortName() << ": number bits = " << propVal->getStringValue());
+
+		switch (configVal) {
+		case 7:
+			numBits = CS7;
+			numBitsMask = CSIZE;
+			break;
+		case 8:
+			numBits = CS8;
+			numBitsMask = CSIZE;
+			break;
+		default:
+			std::ostringstream errTxt;
+			errTxt << "Configure serial port \"" << getPortName() << ": Number bits "<< propVal->getStringValue() <<
+					" is invalid.";
+			LOG4CXX_ERROR(logger,errTxt.str());
+			throw GliderVarioPortConfigException (__FILE__,__LINE__,errTxt.str().c_str());
+		}
+
+	}
+	catch (Properties4CXX::ExceptionPropertyNotFound const&e) {
+		LOG4CXX_DEBUG (logger,"Configure serial port \"" << getPortName() << ": No bit number rate specified. Keep existing setting.");
+	}
+	catch (Properties4CXX::ExceptionWrongPropertyType const& e) {
+		std::ostringstream errTxt;
+		errTxt << "Configure serial port \"" << getPortName() << ": Number bits is not numeric: " << e.what();
+		LOG4CXX_ERROR(logger,errTxt.str());
+		throw GliderVarioPortConfigException (__FILE__,__LINE__,errTxt.str().c_str());
+	}
+
+	try {
+		parity = 0;
+		parityMask = 0;
+
+		propVal = portConfiguration.searchProperty(parityPropertyName);
+		auto configVal = propVal->getStringValue();
+		LOG4CXX_DEBUG (logger,"Configure serial port \"" << getPortName() << ": parity = " << propVal->getStringValue());
+
+		if (configVal == "n" || configVal == "none") {
+			parity = 0;
+			parityMask = PARENB|PARODD;
+		} else if (configVal == "e" || configVal == "even") {
+			parity = PARENB;
+			parityMask = PARENB|PARODD;
+		} else if (configVal == "o" || configVal == "odd") {
+			parity = PARENB|PARODD;
+			parityMask = PARENB|PARODD;
+		} else {
+			std::ostringstream errTxt;
+			errTxt << "Configure serial port \"" << getPortName() << ": Parity value "<< propVal->getStringValue() <<
+					" is invalid.";
+			LOG4CXX_ERROR(logger,errTxt.str());
+			throw GliderVarioPortConfigException (__FILE__,__LINE__,errTxt.str().c_str());
+		}
+
+	}
+	catch (Properties4CXX::ExceptionPropertyNotFound const&e) {
+		LOG4CXX_DEBUG (logger,"Configure serial port \"" << getPortName() << ": No parity specified. Keep existing setting.");
+	}
+
+	try {
+		stopBits = 0;
+		stopBitsMask = 0;
+
+		propVal = portConfiguration.searchProperty(stopBitsPropertyName);
+		auto configVal = propVal->getIntVal();
+		LOG4CXX_DEBUG (logger,"Configure serial port \"" << getPortName() << ": number stop bits = " << propVal->getStringValue());
+
+		switch (configVal) {
+		case 1:
+			stopBits = 0;
+			stopBitsMask = CSTOPB;
+			break;
+		case 2:
+			stopBits = CSTOPB;
+			stopBitsMask = CSTOPB;
+			break;
+		default:
+			std::ostringstream errTxt;
+			errTxt << "Configure serial port \"" << getPortName() << ": Number stop bits "<< propVal->getStringValue() <<
+					" is invalid.";
+			LOG4CXX_ERROR(logger,errTxt.str());
+			throw GliderVarioPortConfigException (__FILE__,__LINE__,errTxt.str().c_str());
+		}
+
+	}
+	catch (Properties4CXX::ExceptionPropertyNotFound const&e) {
+		LOG4CXX_DEBUG (logger,"Configure serial port \"" << getPortName() << ": No bit number rate specified. Keep existing setting.");
+		stopBits = 0;
+		stopBitsMask = 0;
+	}
+	catch (Properties4CXX::ExceptionWrongPropertyType const& e) {
+		std::ostringstream errTxt;
+		errTxt << "Configure serial port \"" << getPortName() << ": Number bits is not numeric: " << e.what();
+		LOG4CXX_ERROR(logger,errTxt.str());
+		throw GliderVarioPortConfigException (__FILE__,__LINE__,errTxt.str().c_str());
+	}
+
+	try {
+		rtsCts = 0;
+		rtsCtsMask = 0;
+
+		xonXoff = 0;
+		xonXoffMask = 0;
+
+		propVal = portConfiguration.searchProperty(handshakePropertyName);
+		auto configVal = propVal->getStringValue();
+		LOG4CXX_DEBUG (logger,"Configure serial port \"" << getPortName() << ": handshake = " << propVal->getStringValue());
+
+		if (configVal == "n" || configVal == "none") {
+			rtsCtsMask = CRTSCTS;
+			xonXoffMask = IXON|IXOFF;
+		} else if (configVal == "rtscts") {
+			rtsCts = CRTSCTS;
+			rtsCtsMask = CRTSCTS;
+			xonXoffMask = IXON|IXOFF;
+		} else if (configVal == "xonxoff") {
+			rtsCtsMask = CRTSCTS;
+			xonXoff = IXON|IXOFF;
+			xonXoffMask = IXON|IXOFF;
+		} else {
+			std::ostringstream errTxt;
+			errTxt << "Configure serial port \"" << getPortName() << ": handshake value "<< propVal->getStringValue() <<
+					" is invalid.";
+			LOG4CXX_ERROR(logger,errTxt.str());
+			throw GliderVarioPortConfigException (__FILE__,__LINE__,errTxt.str().c_str());
+		}
+
+	}
+	catch (Properties4CXX::ExceptionPropertyNotFound const&e) {
+		LOG4CXX_DEBUG (logger,"Configure serial port \"" << getPortName() << ": No handshake specified. Keep existing setting.");
+	}
+
+
 }
 
 PortBase* SerialPort::serialPortConstructor(const char *portName,

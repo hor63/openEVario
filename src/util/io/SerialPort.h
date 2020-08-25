@@ -65,7 +65,7 @@ public:
 
 protected:
 
-	speed_t baud = B0; ///< Line speed in and out; Default keep setting
+	speed_t baud = B0; ///< Line speed in and out; Default keep settings
 
 	// c_cflag bits
 	tcflag_t numBits = CS8; ///< Number of data bits
