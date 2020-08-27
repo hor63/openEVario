@@ -45,7 +45,7 @@
                             							
                             <targetPlatform id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.targetPlatform.1567578478" isAbstract="false" name="GNU Autotools Target Platform" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.targetPlatform"/>
                             							
-                            <builder arguments="-j4" buildPath="${workspace_loc:/openEVario}/build" command="make" id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.builder.1098367066" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Autotools Makefile Generator" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.builder">
+                            <builder arguments="-j8" buildPath="${workspace_loc:/openEVario}/build" command="make" id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.builder.1098367066" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Autotools Makefile Generator" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.builder">
                                 								
                                 <outputEntries>
                                     									
