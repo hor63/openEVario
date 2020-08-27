@@ -41,7 +41,6 @@ public:
 	TCPPort(char const* portName);
 	virtual ~TCPPort();
 
-	virtual void openInternal() override;
 	virtual void configurePort(
 			const Properties4CXX::Properties &globalConfiguration,
 			const Properties4CXX::Properties &portConfiguration) override;
@@ -56,6 +55,14 @@ private:
 protected:
 	std::string tcpAddr;
 	std::string tcpPort;
+
+	/** \brief Device specific open method
+	 *
+	 * Open a TCP socket, and connect to the server
+	 *
+	 * \see PortBase::openInteral
+	 */
+	virtual void openInternal() override;
 };
 
 } /* namespace io */

@@ -41,7 +41,6 @@ public:
 	UDPPort(char const* portName);
 	virtual ~UDPPort();
 
-	virtual void openInternal() override;
 	virtual void configurePort(
 			const Properties4CXX::Properties &globalConfiguration,
 			const Properties4CXX::Properties &portConfiguration) override;
@@ -95,6 +94,15 @@ protected:
 	/// true when the local address and port are defined. \n
 	/// Now you can receive data
 	bool socketBound = false;
+
+	/** \brief Device specific open method
+	 *
+	 * Open a UDP socket, and and bind it to the local address and port.
+	 * This is necessary to be able to receive datagrams.
+	 *
+	 * \see PortBase::openInteral
+	 */
+	virtual void openInternal() override;
 
 };
 
