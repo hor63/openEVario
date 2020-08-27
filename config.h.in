@@ -9,6 +9,12 @@
 /* define if the compiler supports basic C++11 syntax */
 #undef HAVE_BUILD_CXX11
 
+/* Define to 1 if the function tcsetattr is available. */
+#undef HAVE_CFMAKERAW
+
+/* Define to 1 if the function cfsetspeed is available. */
+#undef HAVE_CFSETSPEED
+
 /* define if the compiler supports basic C++14 syntax */
 #undef HAVE_CXX14
 
@@ -98,7 +104,7 @@
 /* Define to 1 if you have the <sys/types.h> header file. */
 #undef HAVE_SYS_TYPES_H
 
-/* Define to 1 when you have the function available in the C library */
+/* Define to 1 if the function tcsetattr is available. */
 #undef HAVE_TCSETATTR
 
 /* Define to 1 when you have the <termios.h> header file */

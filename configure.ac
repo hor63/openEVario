@@ -95,7 +95,7 @@ AC_SEARCH_LIBS([gethostbyname],[],[AC_DEFINE([HAVE_GETHOSTBYNAME],[1],[Define to
 # If termios is not available skip building the SerialPort driver
 AC_CHECK_HEADER([termios.h],[AC_DEFINE([HAVE_TERMIOS_H],[1],[Define to 1 when you have the <termios.h> header file])
 	AC_SUBST([HAVE_TERMIOS_H],[1])],[])
-AC_SEARCH_LIBS([tcsetattr],[],[AC_DEFINE([HAVE_TCSETATTR],[1],[Define to 1 when you have the function available in the C library])
+AC_SEARCH_LIBS([tcsetattr],[],[AC_DEFINE([HAVE_TCSETATTR],[1],[Define to 1 if the function tcsetattr is available.])
 	AC_SUBST([HAVE_TCSETATTR],[1])],[])
 AS_IF(
 [test "x$HAVE_TERMIOS_H" = x1 -a "x$HAVE_TCSETATTR" = x1],
@@ -103,6 +103,9 @@ AS_IF(
 	AC_SUBST([WITH_SERIAL_PORT_DRIVER],[1])]
 )
 AM_CONDITIONAL([BUILD_SERIAL_PORT_DRIVER],[test "x$WITH_SERIAL_PORT_DRIVER" = x1])
+AC_SEARCH_LIBS([cfmakeraw],[],[AC_DEFINE([HAVE_CFMAKERAW],[1],[Define to 1 if the function tcsetattr is available.])],[])
+AC_SEARCH_LIBS([cfsetspeed],[],[AC_DEFINE([HAVE_CFSETSPEED],[1],[Define to 1 if the function cfsetspeed is available.])],[])
+
 
 # If <netinet/in.h> or <netinet/tcp.h> are not available skip building the TCPPort and UDPPort driver
 AC_CHECK_HEADER([netinet/in.h],[AC_DEFINE([HAVE_NETINET_IN_H],[1],[Define to 1 when you have the <netinet/in.h> header file])
