@@ -92,6 +92,12 @@
 /* Define to 1 if you have the <sys/types.h> header file. */
 #undef HAVE_SYS_TYPES_H
 
+/* Define to 1 when you have the function available in the C library */
+#undef HAVE_TCSETATTR
+
+/* Define to 1 when you have a working <termios.h> header file */
+#undef HAVE_TERMIOS_H
+
 /* Define to 1 if the function timespec_get is available. */
 #undef HAVE_TIMESPEC_GET
 
@@ -155,7 +161,7 @@
 /* Define to 1 if the TCP and UDP drivers are available. */
 #undef WITH_IP_PORT_DRIVER
 
-/* Define to 1 if the serial port driver is available. */
+/* Define to 1 when the serial port driver is being built. */
 #undef WITH_SERIAL_PORT_DRIVER
 
 /* Define to 1 if you want to enable GNU and all other extensions. */

@@ -30,8 +30,12 @@
 
 #include "util/io/StreamPort.h"
 
-#include <termios.h>
-#include <unistd.h>
+#if HAVE_TERMIOS_H
+#	include <termios.h>
+#endif
+#if HAVE_UNISTD_H
+#	include <unistd.h>
+#endif
 
 namespace openEV {
 namespace io {

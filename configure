@@ -690,8 +690,6 @@ HAVE_NETINET_TCP_H
 HAVE_NETINET_IN_H
 BUILD_SERIAL_PORT_DRIVER_FALSE
 BUILD_SERIAL_PORT_DRIVER_TRUE
-HAVE_TCSETATTR
-HAVE_TERMIOS_H
 OS_IS_CYGWIN_FALSE
 OS_IS_CYGWIN_TRUE
 LIBTOOL_DEPS
@@ -20158,7 +20156,8 @@ fi
 # If termios is not available skip building the SerialPort driver
 ac_fn_cxx_check_header_mongrel "$LINENO" "termios.h" "ac_cv_header_termios_h" "$ac_includes_default"
 if test "x$ac_cv_header_termios_h" = xyes; then :
-  HAVE_TERMIOS_H=1
+
+$as_echo "#define HAVE_TERMIOS_H 1" >>confdefs.h
 
 fi
 
@@ -20216,7 +20215,8 @@ $as_echo "$ac_cv_search_tcsetattr" >&6; }
 ac_res=$ac_cv_search_tcsetattr
 if test "$ac_res" != no; then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
-  HAVE_TCSETATTR=1
+
+$as_echo "#define HAVE_TCSETATTR 1" >>confdefs.h
 
 fi
 
