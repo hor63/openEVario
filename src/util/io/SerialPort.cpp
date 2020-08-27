@@ -30,11 +30,6 @@
 
 #include "util/io/SerialPort.h"
 
-#if HAVE_TERMIOS_H
-#	include <termios.h>
-#endif
-#include <unistd.h>
-
 #include <sstream>
 
 #if defined HAVE_LOG4CXX_H
