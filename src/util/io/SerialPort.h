@@ -57,10 +57,20 @@ public:
 			);
 	virtual ~SerialPort();
 
-	virtual void openInternal() override;
 	virtual void configurePort(
 			const Properties4CXX::Properties &globalConfiguration,
 			const Properties4CXX::Properties &portConfiguration) override;
+
+	/** \brief Access the internal port configuration.
+	 *
+	 * @return Reference to the internal termios structure
+	 * which is used to setup the port.
+	 *
+	 * \see [termios(3)](https://man7.org/linux/man-pages/man3/termios.3.html)
+	 */
+	struct termios const &getTermios() const {
+		return tios;
+	}
 
 	static PortBase* serialPortConstructor(
 			char const* portName,
@@ -87,6 +97,26 @@ protected:
 	// c_iflag bits
 	tcflag_t xonXoff = 0; ///< XON/XOFF flow control. Default off. IXON|IXOFF
 	tcflag_t xonXoffMask = 0; ///< Mask to activate \ref xonXoff. \n \\0 when inactive \n IXON|IXOFF when active
+
+	/** \brief Device specific open method
+	 *
+	 * Open a TTY, i.e. a serial port. \n
+	 * Setup the TTY, at least set it to raw mode,
+	 * and set the parameters from the configuration,
+	 * like speed, parity, flow control...
+	 *
+	 * \see PortBase::openInteral
+	 */
+	virtual void openInternal() override;
+
+	/** \brief Setup the port during \ref openInternal() with the settings from \ref configurePort().
+	 *
+	 */
+	void setupPort();
+
+private:
+
+	struct termios tios;
 
 };
 

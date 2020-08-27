@@ -43,6 +43,48 @@ static inline void initLogger() {
 
 #endif
 
+#if !HAVE_CFMAKERAW || defined DOXYGEN
+/** \brief Mimic the non-standard function cfmakeraw when it is not available
+ *
+ * @param termios_p Pointer to the termios structure
+ *
+ * \see Settings are verbatim from the description of \p cfmakeraw in [termios(3)](https://man7.org/linux/man-pages/man3/termios.3.html)
+ */
+static void cfmakeraw(struct termios *termios_p){
+	termios_p->c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP
+			| INLCR | IGNCR | ICRNL | IXON);
+	termios_p->c_oflag &= ~OPOST;
+	termios_p->c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG | IEXTEN);
+	termios_p->c_cflag &= ~(CSIZE | PARENB);
+	termios_p->c_cflag |= CS8;
+
+}
+#endif
+
+#if !HAVE_CFSETSPEED || defined DOXYGEN
+/**
+ *
+ * @param[in,out] termios_p termios structure where the speed is written to
+ * @param speed Speed of the interface. Constants see \p cfsetospeed() in
+ * [termios(3)](https://man7.org/linux/man-pages/man3/termios.3.html)
+ * @return 0 if OK, else \p errno bears the error.
+ *
+ * \see [termios(3)](https://man7.org/linux/man-pages/man3/termios.3.html)
+ * \see [errno(3)](https://man7.org/linux/man-pages/man3/errno.3.html)
+ */
+static int cfsetspeed(struct termios *termios_p, speed_t speed) {
+	int rc;
+
+	rc = cfsetispeed(termios_p,speed);
+	if (rc == 0) {
+		rc = cfsetospeed(termios_p,speed);
+	}
+
+	return rc;
+}
+#endif
+
+
 
 namespace openEV {
 namespace io {
@@ -65,6 +107,7 @@ SerialPort::SerialPort(
 	// Do not let the tty become the controling terminal of the process. I am only using it as a binary comminucations channel.
 	deviceOpenFlags |= O_NOCTTY;
 
+	memset (&tios,0,sizeof(tios));
 }
 
 SerialPort::~SerialPort() {
@@ -72,6 +115,38 @@ SerialPort::~SerialPort() {
 }
 
 void SerialPort::openInternal() {
+
+	// Use the generic open method of the base classes
+	StreamPort::openInternal();
+	// No error checking. If the device cannot be opened it throws an exception.
+
+	setupPort();
+}
+
+void SerialPort::setupPort() {
+	std::ostringstream errTxt;
+	DeviceHandleAccess devHandleAcc (*this);
+	int rc;
+
+	LOG4CXX_DEBUG(logger,"Setup serial port \"" << getPortName());
+
+	rc = ::isatty(devHandleAcc.deviceHandle);
+	if (rc != 1) {
+		errTxt << getPortName() << " is not a TTY: " << ::strerror(rc);
+		LOG4CXX_ERROR(logger,errTxt.str());
+		throw GliderVarioPortIsNoTTY (__FILE__,__LINE__,errTxt.str().c_str());
+	}
+	LOG4CXX_DEBUG(logger,getPortName() << " is a TTY. OK");
+
+	rc = ::tcgetattr(devHandleAcc.deviceHandle,&tios);
+	if (rc != 0) {
+		errTxt << "Port "<< getPortName() << ": Error tcgetattr: " << ::strerror(rc);
+		LOG4CXX_ERROR(logger,errTxt.str());
+		throw GliderVarioPortIsNoTTY (__FILE__,__LINE__,errTxt.str().c_str());
+	}
+	LOG4CXX_DEBUG(logger,"Read struct termios for port " << getPortName());
+
+	cfmakeraw (&tios);
 }
 
 void SerialPort::configurePort(

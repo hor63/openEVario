@@ -282,6 +282,18 @@ public:
 
 };
 
+class OEV_UTILS_PUBLIC GliderVarioPortIsNoTTY :public GliderVarioPortIOException {
+public:
+	/// \see GliderVarioPortWriteException::GliderVarioPortWriteException()
+	GliderVarioPortIsNoTTY (
+			char const *source,
+			int line,
+			char const *description)
+		:GliderVarioPortIOException {source,line,description,ENOTTY}
+	{}
+
+};
+
 class OEV_UTILS_PUBLIC GliderVarioPortReadException :public GliderVarioPortIOException {
 public:
 	/// \see GliderVarioPortIOException::GliderVarioPortIOException()
