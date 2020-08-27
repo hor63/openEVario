@@ -54,7 +54,7 @@
 #include "main/GliderVarioMainPriv.h"
 #include "util/io/PortBase.h"
 
-#if WITH_IP_PORT_DRIVER
+#if WITH_IP_PORT_DRIVERS
 #	include "util/io/TCPPort.h"
 #	include "util/io/UDPPort.h"
 #endif
@@ -528,7 +528,7 @@ void GliderVarioMainPriv::predictAndSwapStatus() {
 
 void GliderVarioMainPriv::registerPortDrivers() {
 
-#if WITH_IP_PORT_DRIVER
+#if WITH_IP_PORT_DRIVERS
 	io::TCPPort::registerTcpPortType();
 	io::UDPPort::registerUdpPortType();
 #endif
