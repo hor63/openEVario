@@ -62,8 +62,6 @@ NmeaGPSDriver::NmeaGPSDriver(
 	setSensorCapability(GPS_LATITUDE	);
 	setSensorCapability(GPS_LONGITUDE	);
 	setSensorCapability(GPS_ALTITUDE_MSL);
-	setSensorCapability(STATIC_PRESSURE	);
-	setSensorCapability(RUN_IDLE_LOOP	);
 
 }
 
@@ -83,7 +81,32 @@ void NmeaGPSDriver::driverInit(GliderVarioMainPriv &varioMain) {
 
 void NmeaGPSDriver::readConfiguration (Properties4CXX::Properties const &configuration) {
 
-	/// todo fill me
+	LOG4CXX_DEBUG(logger,"Driver" << driverName << " read configuraion");
+
+
+	try {
+		auto portNameConfig = configuration.searchProperty("portName");
+
+		if (portNameConfig->isList() || portNameConfig->isStruct()) {
+			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"Configuration variable \"PortName\" is a struct or a string list.");
+		}
+
+		portName = portNameConfig->getStringValue();
+
+		ioPort = dynamic_cast<io::StreamPort*> (io::PortBase::getPortByName(portName));
+		if (ioPort == nullptr) {
+			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"I/O Port is not a stream port.");
+		}
+	} catch (std::exception const& e) {
+		LOG4CXX_ERROR(logger, "Read configuration of driver \"" << driverName
+				<< "\" failed:"
+				<< e.what());
+		throw;
+	}
+
+    errorTimeout = configuration.getPropertyValue(std::string("errorTimeout"),(long long)(10));
+    errorMaxNumRetries = configuration.getPropertyValue(std::string("errorTimeout"),(long long)(0));
+
 
 }
 
@@ -95,35 +118,50 @@ void NmeaGPSDriver::initializeStatus(
 
 }
 
-void NmeaGPSDriver::run() {
-
-	GliderVarioDriverBase::run();
-
-}
-
-void NmeaGPSDriver::suspend() {
-
-	/// todo fill me
-
-}
-
-void NmeaGPSDriver::resume() {
-
-	/// todo fill me
-
-}
-
 void NmeaGPSDriver::updateKalmanStatus (GliderVarioStatus &varioStatus) {
 
-	/// todo fill me
+	// Nothing to do here
 
 }
 
 
 void NmeaGPSDriver::driverThreadFunction() {
+	int numRetries = 0;
 
-	/// todo fill me
+	if (ioPort == nullptr) {
+		LOG4CXX_ERROR (logger,"No valid I/O port for driver " << getDriverName()
+				<< ". The driver is not operable");
+	} else {
+		while (!getStopDriverThread() && ( errorMaxNumRetries == 0 || numRetries <= errorMaxNumRetries)) {
+			try {
+				ioPort->open();
+				numRetries = 0;
+				processingMainLoop ();
+				ioPort->close();
+			} catch (std::exception const& e) {
+				numRetries ++;
+				LOG4CXX_ERROR(logger,"Error in main loop of driver \"" << getDriverName()
+						<< "\":" << e.what());
+				ioPort->close();
+
+				sleep(errorTimeout);
+			}
+		}
+	}
+
 }
 
+void NmeaGPSDriver::processingMainLoop () {
 
+	uint8_t buf [128];
+
+	while (!getStopDriverThread()) {
+		LOG4CXX_DEBUG (logger,"Driver " << driverName << ": Read max. " << sizeof (buf) << " bytes from the port");
+
+		auto rc = ioPort->read(buf,sizeof (buf));
+
+		LOG4CXX_DEBUG (logger,"Driver " << driverName << ": ioPort->read returned " << rc);
+
+	}
+}
 } /* namespace openEV */
