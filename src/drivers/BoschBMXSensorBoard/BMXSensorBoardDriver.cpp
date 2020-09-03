@@ -221,10 +221,11 @@ void BMXSensorBoardDriver::readConfiguration (Properties4CXX::Properties const &
 		LOG4CXX_ERROR(logger, "Read configuration of driver \"" << driverName
 				<< "\" failed:"
 				<< e.what());
+		throw;
 	}
 
     errorTimeout = configuration.getPropertyValue(std::string("errorTimeout"),(long long)(10));
-    errorMaxNumRetries = configuration.getPropertyValue(std::string("errorTimeout"),(long long)(0));
+    errorMaxNumRetries = configuration.getPropertyValue(std::string("errorMaxNumRetries"),(long long)(0));
 
     try {
     	auto fileNameProp = configuration.searchProperty("calibrationDataFile");
