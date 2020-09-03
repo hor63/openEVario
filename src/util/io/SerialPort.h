@@ -52,6 +52,19 @@ public:
 
 	static constexpr char const* SerialPortType = "serial";
 
+	/**
+	 * \brief Struct of the \ref lineSpeeds array
+	 */
+	struct LineSpeeds {
+		speed_t speed; //< Speed as defined in B... constants in [termios(3)](https://man7.org/linux/man-pages/man3/termios.3.html)
+		char const* speedStr; //< The speed as string
+	};
+	/**
+	 * \brief Array of defined line speeds consisting of records of \ref LineSpeeds.
+	 * The last entry marks the end of the array.
+	 */
+	static struct LineSpeeds const lineSpeeds [];
+
 	SerialPort(
 			char const* portName
 			);
@@ -72,9 +85,36 @@ public:
 		return tios;
 	}
 
+	/** \brief Get the line speed of a serial port as printable string
+	 *
+	 * @param speed Bxxx constant defined in [termios(3)](https://man7.org/linux/man-pages/man3/termios.3.html)
+	 * @return The speed as string.
+	 */
+	static char const *getSpeedStr(speed_t speed);
+
+	/** Get the line speed as Bxxx constant from a string with a speed value
+	 *
+	 * Defined speed values are defined in \ref lineSpeeds
+	 * Throws a \ref GliderVarioPortConfigException when \p speedStr does not match a valid speed value.
+	 *
+	 * @param speedStr The speed as string. Examples are 1200, 2400, 4800...
+	 * @return Bxxx constant defined in [termios(3)](https://man7.org/linux/man-pages/man3/termios.3.html)
+	 * @throws GliderVarioPortConfigException
+	 */
+	static speed_t getSpeedFromStr(char const * speedStr);
+
+	/** \brief Static member function which constructs a SerialPort object
+	 *
+	 * @param portName Name of the new serial port
+	 * @param portProp Properties structure of the serial port
+	 * @return
+	 */
 	static PortBase* serialPortConstructor(
 			char const* portName,
 			Properties4CXX::Properties const &portProp);
+	/**
+	 * Register \ref StreamPort of type name \ref SerialPortType ("serial") calling PortBase::addPortType()
+	 */
 	static void registerSerialPortType() OEV_UTILS_PUBLIC;
 
 protected:
@@ -113,6 +153,11 @@ protected:
 	 *
 	 */
 	void setupPort();
+
+	/** \brief Print the port configuration to the logger when LOG4CXX Debug mode is on.
+	 *
+	 */
+	void printPortConfiguration();
 
 private:
 

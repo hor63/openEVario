@@ -89,6 +89,92 @@ static int cfsetspeed(struct termios *termios_p, speed_t speed) {
 namespace openEV {
 namespace io {
 
+SerialPort::LineSpeeds const SerialPort::lineSpeeds [] = {
+			B0 , "0",
+			B50 , "50",
+			B75 , "75",
+			B110 , "110",
+			B134 , "134",
+			B150 , "150",
+			B200 , "200",
+			B300 , "300",
+			B600 , "600",
+			B1200 , "1200",
+			B1800 , "1800",
+			B2400 , "2400",
+			B4800 , "4800",
+			B9600 , "9600",
+			B19200 , "19200",
+			B38400 , "38400",
+#if defined B57600
+			B57600 , "57600",
+#endif
+#if defined B115200
+			B115200 , "115200",
+#endif
+#if defined B128000
+			B128000 , "128000",
+#endif
+#if defined B230400
+			B230400 , "230400",
+#endif
+#if defined B256000
+			B256000 , "256000",
+#endif
+#if defined B460800
+			B460800 , "460800",
+#endif
+#if defined B500000
+			B500000 , "500000",
+#endif
+#if defined B576000
+			B576000 , "576000",
+#endif
+#if defined B921600
+			B921600 , "921600",
+#endif
+#if defined B1000000
+			B1000000 , "1000000",
+#endif
+#if defined B1152000
+			B1152000 , "1152000",
+#endif
+#if defined B1500000
+			B1500000 , "1500000",
+#endif
+#if defined B2000000
+			B2000000 , "2000000",
+#endif
+#if defined B2500000
+			B2500000 , "2500000",
+#endif
+#if defined B3000000
+			B3000000 , "3000000",
+#endif
+			// Here are some convenience abbreviations like in the old MS-DOS MODE command which
+			// allowed serial speeds to be specified without the two trailing zeros. 9600 became 96
+			// Like MODE COM1:96,n,8,1
+			B110 , "11",
+			B150 , "15",
+			B300 , "30",
+			B600 , "60",
+			B1200 , "12",
+			B2400 , "24",
+			B4800 , "48",
+			B9600 , "96",
+			B19200 , "192",
+			B38400 , "384",
+#if defined B57600
+			B57600 , "576",
+#endif
+#if defined B115200
+			B115200 , "1152",
+#endif
+
+			// The end record to indicate the end of the array
+			0,nullptr
+	};
+
 // Names of serial port configuration properties
 static std::string const baudPropertyName = "baud";
 static std::string const bitsPropertyName = "bits";
@@ -132,7 +218,7 @@ void SerialPort::setupPort() {
 
 	rc = ::isatty(devHandleAcc.deviceHandle);
 	if (rc != 1) {
-		errTxt << getPortName() << " is not a TTY: " << ::strerror(rc);
+		errTxt << getPortName()<< ":" << getDeviceName() << " is not a TTY.";
 		LOG4CXX_ERROR(logger,errTxt.str());
 		throw GliderVarioPortIsNoTTY (__FILE__,__LINE__,errTxt.str().c_str());
 	}
@@ -146,7 +232,20 @@ void SerialPort::setupPort() {
 	}
 	LOG4CXX_DEBUG(logger,"Read struct termios for port " << getPortName());
 
+#if defined HAVE_LOG4CXX_H
+	if (logger->isDebugEnabled()) {
+		printPortConfiguration();
+	}
+#endif
+
+	LOG4CXX_DEBUG(logger,"Set raw mode for port " << getPortName());
 	cfmakeraw (&tios);
+
+#if defined HAVE_LOG4CXX_H
+	if (logger->isDebugEnabled()) {
+		printPortConfiguration();
+	}
+#endif
 }
 
 void SerialPort::configurePort(
@@ -399,6 +498,178 @@ void SerialPort::registerSerialPortType() {
 	addPortType(SerialPortType,serialPortConstructor);
 }
 
+char const * SerialPort::getSpeedStr(speed_t speed) {
+	char const *rc = "Unknown speed";
+
+	for (int i = 0; lineSpeeds[i].speedStr != nullptr; i++) {
+		if (speed == lineSpeeds[i].speed) {
+			rc = lineSpeeds[i].speedStr;
+			break;
+		}
+	}
+
+	return rc;
+}
+
+#define PRINT_FLAG(param,flag,flagName) \
+	' ' << (((param)&(flag) == (flag)) ? '+' : '-') << flagName
+
+speed_t SerialPort::getSpeedFromStr(const char *speedStr) {
+	std::ostringstream errTxt;
+
+	for (int i = 0; lineSpeeds[i].speedStr != nullptr; i++) {
+		if (! strcmp(speedStr,lineSpeeds[i].speedStr)) {
+			return lineSpeeds[i].speed;
+		}
+	}
+
+	errTxt << "Error in " << __PRETTY_FUNCTION__ << ": Speed value \"" << speedStr << "\" is undefined";
+	throw GliderVarioPortConfigException (__FILE__,__LINE__,errTxt.str().c_str());
+}
+
+void SerialPort::printPortConfiguration() {
+
+    tcflag_t const &iflag = tios.c_iflag;
+    tcflag_t const &oflag = tios.c_oflag;
+    tcflag_t const &cflag = tios.c_cflag;
+    tcflag_t const &lflag = tios.c_lflag;
+    std::ostringstream txt;
+
+    LOG4CXX_DEBUG(logger,"Configuration of port" << getPortName());
+	txt << "	iflag: "
+			<< PRINT_FLAG(iflag,IGNBRK,"IGNBRK")
+			<< PRINT_FLAG(iflag,BRKINT,"BRKINT")
+			<< PRINT_FLAG(iflag,IGNPAR,"IGNPAR")
+			<< PRINT_FLAG(iflag,PARMRK,"PARMRK")
+			<< PRINT_FLAG(iflag,INPCK,"INPCK")
+			<< PRINT_FLAG(iflag,ISTRIP,"ISTRIP")
+			<< PRINT_FLAG(iflag,INLCR,"INLCR")
+			<< PRINT_FLAG(iflag,IGNCR,"IGNCR")
+			<< PRINT_FLAG(iflag,ICRNL,"ICRNL")
+#if defined IUCLC
+			<< PRINT_FLAG(iflag,IUCLC,"IUCLC")
+#endif
+			<< PRINT_FLAG(iflag,IXON,"IXON")
+			<< PRINT_FLAG(iflag,IXANY,"IXANY")
+			<< PRINT_FLAG(iflag,IXOFF,"IXOFF")
+#if defined IMAXBEL
+			<< PRINT_FLAG(iflag,IMAXBEL,"IMAXBEL")
+#endif
+#if defined IUTF8
+			<< PRINT_FLAG(iflag,IUTF8,"IUTF8")
+#endif
+			;
+	LOG4CXX_DEBUG(logger,txt.str());
+
+	txt.str("");
+	txt << "	oflag: "
+			<< PRINT_FLAG(oflag,OPOST,"OPOST")
+#if defined OLCUC
+			<< PRINT_FLAG(oflag,OLCUC,"OLCUC")
+#endif
+			<< PRINT_FLAG(oflag,ONLCR,"ONLCR")
+			<< PRINT_FLAG(oflag,OCRNL,"OCRNL")
+			<< PRINT_FLAG(oflag,ONOCR,"ONOCR")
+			<< PRINT_FLAG(oflag,ONLRET,"ONLRET")
+			<< PRINT_FLAG(oflag,OFILL,"OFILL")
+			<< PRINT_FLAG(oflag,OFDEL,"OFDEL")
+			<< PRINT_FLAG(oflag,NL0,"NL0")
+			<< PRINT_FLAG(oflag,NL1,"NL1")
+#if defined CRDLY
+			<< PRINT_FLAG(oflag,CR0,"CR0")
+			<< PRINT_FLAG(oflag,CR1,"CR1")
+			<< PRINT_FLAG(oflag,CR2,"CR2")
+			<< PRINT_FLAG(oflag,CR3,"CR3")
+#endif
+#if defined TABDLY
+			<< PRINT_FLAG(oflag,TAB0,"TAB0")
+			<< PRINT_FLAG(oflag,TAB1,"TAB1")
+			<< PRINT_FLAG(oflag,TAB2,"TAB2")
+			<< PRINT_FLAG(oflag,TAB3,"TAB3")
+#endif
+#if defined BSDLY
+			<< PRINT_FLAG(oflag,BS0,"BS0")
+			<< PRINT_FLAG(oflag,BS1,"BS1")
+#endif
+			<< PRINT_FLAG(oflag,VT0,"VT0")
+			<< PRINT_FLAG(oflag,VT1,"VT1")
+			<< PRINT_FLAG(oflag,FF0,"FF0")
+			<< PRINT_FLAG(oflag,FF1,"FF1")
+			;
+	LOG4CXX_DEBUG(logger,txt.str());
+
+	txt.str("");
+	txt << "	cflag: "
+			<< PRINT_FLAG(cflag,CS5,"CS5")
+			<< PRINT_FLAG(cflag,CS6,"CS6")
+			<< PRINT_FLAG(cflag,CS7,"CS7")
+			<< PRINT_FLAG(cflag,CS8,"CS8")
+			<< PRINT_FLAG(cflag,CSTOPB,"CSTOPB")
+			<< PRINT_FLAG(cflag,CREAD,"CREAD")
+			<< PRINT_FLAG(cflag,PARENB,"PARENB")
+			<< PRINT_FLAG(cflag,PARODD,"PARODD")
+			<< PRINT_FLAG(cflag,HUPCL,"HUPCL")
+			<< PRINT_FLAG(cflag,CLOCAL,"CLOCAL")
+#if defined LOBLK
+			<< PRINT_FLAG(cflag,LOBLK,"LOBLK")
+#endif
+#if defined CMSPAR
+			<< PRINT_FLAG(cflag,CMSPAR,"CMSPAR")
+#endif
+#if defined CRTSCTS
+			<< PRINT_FLAG(cflag,CRTSCTS,"CRTSCTS")
+#endif
+			;
+	LOG4CXX_DEBUG(logger,txt.str());
+
+	txt.str("");
+	txt << "	lflag: "
+			<< PRINT_FLAG(lflag,ISIG,"ISIG")
+			<< PRINT_FLAG(lflag,ICANON,"ICANON")
+#if defined XCASE
+			<< PRINT_FLAG(lflag,XCASE,"XCASE")
+#endif
+			<< PRINT_FLAG(lflag,ECHO,"ECHO")
+			<< PRINT_FLAG(lflag,ECHOE,"ECHOE")
+			<< PRINT_FLAG(lflag,ECHOK,"ECHOK")
+			<< PRINT_FLAG(lflag,ECHONL,"ECHONL")
+#if defined ECHOCTL
+			<< PRINT_FLAG(lflag,ECHOCTL,"ECHOCTL")
+#endif
+#if defined ECHOPRT
+			<< PRINT_FLAG(lflag,ECHOPRT,"ECHOPRT")
+#endif
+#if defined ECHOKE
+			<< PRINT_FLAG(lflag,ECHOKE,"ECHOKE")
+#endif
+#if defined DEFECHO
+			<< PRINT_FLAG(lflag,DEFECHO,"DEFECHO")
+#endif
+#if defined FLUSHO
+			<< PRINT_FLAG(lflag,FLUSHO,"FLUSHO")
+#endif
+			<< PRINT_FLAG(lflag,NOFLSH,"NOFLSH")
+			<< PRINT_FLAG(lflag,TOSTOP,"TOSTOP")
+#if defined PENDIN
+			<< PRINT_FLAG(lflag,PENDIN,"PENDIN")
+#endif
+			<< PRINT_FLAG(lflag,IEXTEN,"IEXTEN")
+			;
+	LOG4CXX_DEBUG(logger,txt.str());
+
+	txt.str("");
+	txt << "	c_cc: "
+			<< "VMIN = " << int(tios.c_cc[VMIN])
+			<< " VTIME = " << int(tios.c_cc[VTIME])
+			<< " VSTART = " << int(tios.c_cc[VSTART])
+			<< " VSTOP = " << int(tios.c_cc[VSTOP])
+			;
+	LOG4CXX_DEBUG(logger,txt.str());
+
+	LOG4CXX_DEBUG(logger,"Output speed = " << getSpeedStr(cfgetospeed(&tios)));
+	LOG4CXX_DEBUG(logger,"Input speed = " << getSpeedStr(cfgetispeed(&tios)));
+
+}
 
 } /* namespace io */
 } /* namespace openEV */
