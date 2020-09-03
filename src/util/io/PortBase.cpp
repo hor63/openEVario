@@ -236,21 +236,21 @@ void PortBase::open() {
 		status = OPEN;
 	}
 
-	LOG4CXX_INFO(logger,"Port" << portName << ':' << portType << ": Opened port device \"" << portName << "\"");
+	LOG4CXX_INFO(logger,"Port" << portName << ':' << portType << ": Opened port device \"" << deviceName << "\"");
 
 	devHandleMutex.unlock();
 }
 
 void PortBase::openInternal() {
 
-	deviceHandle = ::open(portName.c_str(),deviceOpenFlags);
+	deviceHandle = ::open(getDeviceName().c_str(),deviceOpenFlags);
 
 	if (deviceHandle == -1) {
 		int err = errno;
 		std::ostringstream str;
 
-		str << "Port" << portName << ':' << portType << ": Cannot open device \"" << portName << "\"";
-		LOG4CXX_ERROR(logger,"Port" << portName << ':' << portType << ": Opening \"" << portName << "\" failed. errno = " << err << ": " << strerror(err));
+		str << "Port" << portName << ':' << portType << ": Cannot open device \"" << deviceName << "\"";
+		LOG4CXX_ERROR(logger,"Port" << portName << ':' << portType << ": Opening \"" << deviceName << "\" failed. errno = " << err << ": " << strerror(err));
 
 		if (err == ENOENT) {
 			status = ERR_NO_DEVICE;
@@ -259,6 +259,8 @@ void PortBase::openInternal() {
 			status = ERR_IO_TEMP;
 			throw GliderVarioPortDontExistException (__FILE__,__LINE__,str.str().c_str(),err);
 		}
+	} else {
+		LOG4CXX_DEBUG(logger,"Port " << portName << ":" << deviceName << " opened. Handle = " << deviceHandle);
 	}
 
 }
