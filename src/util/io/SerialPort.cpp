@@ -222,8 +222,10 @@ void SerialPort::setupPort() {
 		LOG4CXX_ERROR(logger,errTxt.str());
 		throw GliderVarioPortIsNoTTY (__FILE__,__LINE__,errTxt.str().c_str());
 	}
+
 	LOG4CXX_DEBUG(logger,getPortName() << " is a TTY. OK");
 
+	memset (&tios,0,sizeof(tios));
 	rc = ::tcgetattr(devHandleAcc.deviceHandle,&tios);
 	if (rc != 0) {
 		errTxt << "Port "<< getPortName() << ": Error tcgetattr: " << ::strerror(rc);
@@ -238,14 +240,180 @@ void SerialPort::setupPort() {
 	}
 #endif
 
+	// Some settings always required
+
 	LOG4CXX_DEBUG(logger,"Set raw mode for port " << getPortName());
 	cfmakeraw (&tios);
+
+	// Setup the port to read blocking
+	tios.c_cc[VMIN] = 1;
+	tios.c_cc[VTIME] = 0;
+	tios.c_cc[VSTART] = 021;
+	tios.c_cc[VSTOP] = 023;
+
+
+	// Flags to clear
+	tios.c_iflag &= ~ (
+			  IGNBRK	// Send \0 on BREAK condition, do not ignore
+			| BRKINT	// Do not flush queues, do not send SIGINT to controlled program
+			| IGNPAR	// Do not ignore framing and parity errors
+			| ISTRIP	// Do not strip the 8th bit
+			| INLCR		// Do not translate NL to CR
+			| IGNCR		// Do not ignore CR on input
+			| ICRNL		// Do not translate CR to NL
+#if defined IUCLC
+			| IUCLC		// Do not transform upper case characters to lower case
+#endif
+			| IXANY		// Disable typing any character will restart stopped output.
+#if defined IMAXBEL
+			| IMAXBEL	// Disable ring bell when input queue is full.
+#endif
+#if defined IUTF8
+			| IUTF8		// Disable Input is UTF8
+#endif
+			);
+
+	tios.c_oflag &= ~ (
+			  OPOST		//Enable implementation-defined output processing.
+#if defined OLCUC
+			| OLCUC		// Disable Map lowercase characters to uppercase on output.
+#endif
+			| ONLCR		// Disable Map NL to CR-NL on output.
+			| OCRNL		// Disable Map CR to NL on output.
+			| ONOCR		// Don't output CR at column 0.
+			| ONLRET 	// Do output CR.
+			| OFILL		// Disable Send fill characters for a delay
+			| OFDEL		// Disable Fill character is ASCII DEL (0177)
+			| NLDLY		// Disable Newline delay mask
+			| CRDLY		// Disable Carriage return delay mask
+			| TABDLY	// Disable Horizontal tab delay mask.
+			| BSDLY		// Disable Backspace delay mask.
+			| VTDLY		// Disable Vertical tab delay mask.
+			| FFDLY		// Disable Form feed delay mask.
+			);
+
+	// Clear control flags
+	tios.c_cflag &= ~ (
+			  CSIZE		// Character size mask. CS8 is set below
+			| CSTOPB	// One stop bit
+			| PARENB	// Enable parity generation on output and parity checking for input.
+			| PARODD	// Disable odd parity
+			| HUPCL		// Disable Lower modem control lines after last process closes the device
+#if defined LOBLK
+			| LOBLK		// Disable Block output from a noncurrent shell layer.
+#endif
+#if defined CMSPAR
+			| CMSPAR	// Disable "stick" (mark/space) parity
+#endif
+			| CRTSCTS	// Disable RTS/CTS (hardware) flow control.
+			);
+
+	// Set control flags
+	tios.c_cflag |= (
+			  CS8		// 8 Bits
+			| CREAD		// Enable receiver. This is a must on some devices. Others do not care.
+			| CLOCAL	// Ignore modem control lines.
+			);
+
+
+	// Clear local flags
+	tios.c_lflag &= ~ (
+			  ISIG		// Disable signal generation
+			| ICANON	// Disable canonical mode
+#if defined XCASE
+			| XCASE		// Disable uppercase mode
+#endif
+			| ECHO		// Disable Echo input characters.
+			| ECHOE		// Disable ERASE and WERASE characters
+			| ECHOK		// Disable KILL character
+			| ECHONL	// Disable echo NL character
+#if defined ECHOCTL
+			| ECHOCTL	// Disable echo special characters X as ^X
+#endif
+#if defined ECHOPRT
+			| ECHOPRT	// Disable printing deleted characters
+#endif
+#if defined ECHOKE
+			| ECHOKE	// Disable some weird echoing upon KILL which I do not understand from the doc ;)
+#endif
+#if defined DEFECHO
+			| DEFECHO	// Disable echo when a process is reading
+#endif
+#if defined FLUSHO
+			| FLUSHO	// Disable flushing when the DISCARD character is being sent.
+#endif
+			| TOSTOP	// Disable Send the SIGTTOU signal
+#if defined PENDIN
+			| PENDIN	// Disable All characters in
+						// the input queue are reprinted when the next character is read.
+#endif
+			| IEXTEN	// Disable implementation-defined input processing.
+			);
+
+	// Set local flags
+	tios.c_lflag |= (
+			NOFLSH	// Disable flushing the input and output queues when generating
+					// signals for the INT, QUIT, and SUSP characters.
+
+			);
+
+	// Base and default settings are done.
+	// Now set configuration settings.
+	if (baud != B0) {
+		cfsetspeed(&tios,baud);
+	}
+
+	tios.c_cflag =
+			(tios.c_cflag & ~numBitsMask) // Clear the bits if the mask is set
+			| (numBitsMask & numBits); // And set the bits, when the mask is set.
+
+	tios.c_cflag =
+			(tios.c_cflag & ~stopBitsMask) // Clear the bits if the mask is set
+			| (stopBitsMask & stopBits); // And set the bits, when the mask is set.
+
+	tios.c_cflag =
+			(tios.c_cflag & ~parityMask) // Clear the bits if the mask is set
+			| (parityMask & parity); // And set the bits, when the mask is set.
+
+	tios.c_cflag =
+			(tios.c_cflag & ~rtsCtsMask) // Clear the bits if the mask is set
+			| (rtsCtsMask & rtsCts); // And set the bits, when the mask is set.
+
+	tios.c_iflag =
+			(tios.c_iflag & ~xonXoffMask) // Clear the bits if the mask is set
+			| (xonXoffMask & xonXoff); // And set the bits, when the mask is set.
+
 
 #if defined HAVE_LOG4CXX_H
 	if (logger->isDebugEnabled()) {
 		printPortConfiguration();
 	}
 #endif
+
+	rc = ::tcsetattr(devHandleAcc.deviceHandle,TCSANOW,&tios);
+	if (rc != 0) {
+		errTxt << "Port "<< getPortName() << ": Error tcsetattr: " << ::strerror(rc);
+		LOG4CXX_ERROR(logger,errTxt.str());
+		throw GliderVarioPortIsNoTTY (__FILE__,__LINE__,errTxt.str().c_str());
+	}
+	LOG4CXX_DEBUG(logger,"Set struct termios for port " << getPortName());
+
+	// Re-read the configuration to obtain which changes actually took place
+	memset (&tios,0,sizeof(tios));
+	rc = ::tcgetattr(devHandleAcc.deviceHandle,&tios);
+	if (rc != 0) {
+		errTxt << "Port "<< getPortName() << ": Error tcgetattr: " << ::strerror(rc);
+		LOG4CXX_ERROR(logger,errTxt.str());
+		throw GliderVarioPortIsNoTTY (__FILE__,__LINE__,errTxt.str().c_str());
+	}
+	LOG4CXX_DEBUG(logger,"Re-read struct termios for port " << getPortName());
+
+#if defined HAVE_LOG4CXX_H
+	if (logger->isDebugEnabled()) {
+		printPortConfiguration();
+	}
+#endif
+
 }
 
 void SerialPort::configurePort(
@@ -255,87 +423,12 @@ void SerialPort::configurePort(
 	Properties4CXX::Property const * propVal;
 
 	try {
-		baud = B0;
 
 		propVal = portConfiguration.searchProperty(baudPropertyName);
 		auto configVal = propVal->getIntVal();
 		LOG4CXX_DEBUG (logger,"Configure serial port \"" << getPortName() << ": baud rate = " << propVal->getStringValue());
-
-		switch (configVal) {
-		case 1200:
-		case 12:
-			baud = B1200;
-			break;
-		case 2400:
-		case 24:
-			baud = B2400;
-			break;
-		case 4800:
-		case 48:
-			baud = B4800;
-			break;
-		case 9600:
-		case 96:
-			baud = B9600;
-			break;
-		case 19200:
-		case 192:
-			baud = B19200;
-			break;
-		case 38400:
-		case 384:
-			baud = B38400;
-			break;
-// Going beyond POSIX from here on
-#if defined B57600
-		case 57600:
-		case 576:
-			baud = B57600;
-			break;
-#endif
-#if defined B115200
-		case 115200:
-		case 1152:
-			baud = B115200;
-			break;
-#endif
-#if defined B230400
-		case 230400:
-			baud = B230400;
-			break;
-#endif
-#if defined B460800
-		case 460800:
-			baud = B460800;
-			break;
-#endif
-#if defined B500000
-		case 500000:
-			baud = B500000;
-			break;
-#endif
-#if defined B576000
-		case 576000:
-			baud = B576000;
-			break;
-#endif
-#if defined B921600
-		case 921600:
-			baud = B921600;
-			break;
-#endif
-#if defined B1000000
-		case 1000000:
-			baud = B1000000;
-			break;
-#endif
-		default:
-			std::ostringstream errTxt;
-			errTxt << "Configure serial port \"" << getPortName() << ": Baud rate "<< propVal->getStringValue() <<
-					" is not recognized as a valid rate.";
-			LOG4CXX_ERROR(logger,errTxt.str());
-			throw GliderVarioPortConfigException (__FILE__,__LINE__,errTxt.str().c_str());
-		}
+		// Exceptions from this call will not be cought by the catch block below, what is exactly what I want.
+		baud = getSpeedFromStr(propVal->getStrValue());
 	}
 	catch (Properties4CXX::ExceptionPropertyNotFound const&e) {
 		LOG4CXX_DEBUG (logger,"Configure serial port \"" << getPortName() << ": No baud rate specified. Keep existing setting.");
@@ -511,20 +604,31 @@ char const * SerialPort::getSpeedStr(speed_t speed) {
 	return rc;
 }
 
-#define PRINT_FLAG(param,flag,flagName) \
-	' ' << (((param)&(flag) == (flag)) ? '+' : '-') << flagName
-
 speed_t SerialPort::getSpeedFromStr(const char *speedStr) {
 	std::ostringstream errTxt;
 
 	for (int i = 0; lineSpeeds[i].speedStr != nullptr; i++) {
-		if (! strcmp(speedStr,lineSpeeds[i].speedStr)) {
+		if (!strcmp(speedStr,lineSpeeds[i].speedStr)) {
 			return lineSpeeds[i].speed;
 		}
 	}
 
 	errTxt << "Error in " << __PRETTY_FUNCTION__ << ": Speed value \"" << speedStr << "\" is undefined";
 	throw GliderVarioPortConfigException (__FILE__,__LINE__,errTxt.str().c_str());
+}
+
+static inline std::string printFlag(tcflag_t param,tcflag_t flag,char const *flagName) {
+	std::ostringstream txt;
+
+	txt << ' ';
+	if ((param & flag) ==  flag ) {
+		txt << '+';
+	} else {
+		txt << '-';
+	}
+	txt << flagName;
+
+	return txt.str();
 }
 
 void SerialPort::printPortConfiguration() {
@@ -537,123 +641,123 @@ void SerialPort::printPortConfiguration() {
 
     LOG4CXX_DEBUG(logger,"Configuration of port" << getPortName());
 	txt << "	iflag: "
-			<< PRINT_FLAG(iflag,IGNBRK,"IGNBRK")
-			<< PRINT_FLAG(iflag,BRKINT,"BRKINT")
-			<< PRINT_FLAG(iflag,IGNPAR,"IGNPAR")
-			<< PRINT_FLAG(iflag,PARMRK,"PARMRK")
-			<< PRINT_FLAG(iflag,INPCK,"INPCK")
-			<< PRINT_FLAG(iflag,ISTRIP,"ISTRIP")
-			<< PRINT_FLAG(iflag,INLCR,"INLCR")
-			<< PRINT_FLAG(iflag,IGNCR,"IGNCR")
-			<< PRINT_FLAG(iflag,ICRNL,"ICRNL")
+			<< printFlag(iflag,IGNBRK,"IGNBRK")
+			<< printFlag(iflag,BRKINT,"BRKINT")
+			<< printFlag(iflag,IGNPAR,"IGNPAR")
+			<< printFlag(iflag,PARMRK,"PARMRK")
+			<< printFlag(iflag,INPCK,"INPCK")
+			<< printFlag(iflag,ISTRIP,"ISTRIP")
+			<< printFlag(iflag,INLCR,"INLCR")
+			<< printFlag(iflag,IGNCR,"IGNCR")
+			<< printFlag(iflag,ICRNL,"ICRNL")
 #if defined IUCLC
-			<< PRINT_FLAG(iflag,IUCLC,"IUCLC")
+			<< printFlag(iflag,IUCLC,"IUCLC")
 #endif
-			<< PRINT_FLAG(iflag,IXON,"IXON")
-			<< PRINT_FLAG(iflag,IXANY,"IXANY")
-			<< PRINT_FLAG(iflag,IXOFF,"IXOFF")
+			<< printFlag(iflag,IXON,"IXON")
+			<< printFlag(iflag,IXANY,"IXANY")
+			<< printFlag(iflag,IXOFF,"IXOFF")
 #if defined IMAXBEL
-			<< PRINT_FLAG(iflag,IMAXBEL,"IMAXBEL")
+			<< printFlag(iflag,IMAXBEL,"IMAXBEL")
 #endif
 #if defined IUTF8
-			<< PRINT_FLAG(iflag,IUTF8,"IUTF8")
+			<< printFlag(iflag,IUTF8,"IUTF8")
 #endif
 			;
 	LOG4CXX_DEBUG(logger,txt.str());
 
 	txt.str("");
 	txt << "	oflag: "
-			<< PRINT_FLAG(oflag,OPOST,"OPOST")
+			<< printFlag(oflag,OPOST,"OPOST")
 #if defined OLCUC
-			<< PRINT_FLAG(oflag,OLCUC,"OLCUC")
+			<< printFlag(oflag,OLCUC,"OLCUC")
 #endif
-			<< PRINT_FLAG(oflag,ONLCR,"ONLCR")
-			<< PRINT_FLAG(oflag,OCRNL,"OCRNL")
-			<< PRINT_FLAG(oflag,ONOCR,"ONOCR")
-			<< PRINT_FLAG(oflag,ONLRET,"ONLRET")
-			<< PRINT_FLAG(oflag,OFILL,"OFILL")
-			<< PRINT_FLAG(oflag,OFDEL,"OFDEL")
-			<< PRINT_FLAG(oflag,NL0,"NL0")
-			<< PRINT_FLAG(oflag,NL1,"NL1")
+			<< printFlag(oflag,ONLCR,"ONLCR")
+			<< printFlag(oflag,OCRNL,"OCRNL")
+			<< printFlag(oflag,ONOCR,"ONOCR")
+			<< printFlag(oflag,ONLRET,"ONLRET")
+			<< printFlag(oflag,OFILL,"OFILL")
+			<< printFlag(oflag,OFDEL,"OFDEL")
+			<< printFlag(oflag,NL0,"NL0")
+			<< printFlag(oflag,NL1,"NL1")
 #if defined CRDLY
-			<< PRINT_FLAG(oflag,CR0,"CR0")
-			<< PRINT_FLAG(oflag,CR1,"CR1")
-			<< PRINT_FLAG(oflag,CR2,"CR2")
-			<< PRINT_FLAG(oflag,CR3,"CR3")
+			<< printFlag(oflag,CR0,"CR0")
+			<< printFlag(oflag,CR1,"CR1")
+			<< printFlag(oflag,CR2,"CR2")
+			<< printFlag(oflag,CR3,"CR3")
 #endif
 #if defined TABDLY
-			<< PRINT_FLAG(oflag,TAB0,"TAB0")
-			<< PRINT_FLAG(oflag,TAB1,"TAB1")
-			<< PRINT_FLAG(oflag,TAB2,"TAB2")
-			<< PRINT_FLAG(oflag,TAB3,"TAB3")
+			<< printFlag(oflag,TAB0,"TAB0")
+			<< printFlag(oflag,TAB1,"TAB1")
+			<< printFlag(oflag,TAB2,"TAB2")
+			<< printFlag(oflag,TAB3,"TAB3")
 #endif
 #if defined BSDLY
-			<< PRINT_FLAG(oflag,BS0,"BS0")
-			<< PRINT_FLAG(oflag,BS1,"BS1")
+			<< printFlag(oflag,BS0,"BS0")
+			<< printFlag(oflag,BS1,"BS1")
 #endif
-			<< PRINT_FLAG(oflag,VT0,"VT0")
-			<< PRINT_FLAG(oflag,VT1,"VT1")
-			<< PRINT_FLAG(oflag,FF0,"FF0")
-			<< PRINT_FLAG(oflag,FF1,"FF1")
+			<< printFlag(oflag,VT0,"VT0")
+			<< printFlag(oflag,VT1,"VT1")
+			<< printFlag(oflag,FF0,"FF0")
+			<< printFlag(oflag,FF1,"FF1")
 			;
 	LOG4CXX_DEBUG(logger,txt.str());
 
 	txt.str("");
 	txt << "	cflag: "
-			<< PRINT_FLAG(cflag,CS5,"CS5")
-			<< PRINT_FLAG(cflag,CS6,"CS6")
-			<< PRINT_FLAG(cflag,CS7,"CS7")
-			<< PRINT_FLAG(cflag,CS8,"CS8")
-			<< PRINT_FLAG(cflag,CSTOPB,"CSTOPB")
-			<< PRINT_FLAG(cflag,CREAD,"CREAD")
-			<< PRINT_FLAG(cflag,PARENB,"PARENB")
-			<< PRINT_FLAG(cflag,PARODD,"PARODD")
-			<< PRINT_FLAG(cflag,HUPCL,"HUPCL")
-			<< PRINT_FLAG(cflag,CLOCAL,"CLOCAL")
+			<< printFlag(cflag,CS5,"CS5")
+			<< printFlag(cflag,CS6,"CS6")
+			<< printFlag(cflag,CS7,"CS7")
+			<< printFlag(cflag,CS8,"CS8")
+			<< printFlag(cflag,CSTOPB,"CSTOPB")
+			<< printFlag(cflag,CREAD,"CREAD")
+			<< printFlag(cflag,PARENB,"PARENB")
+			<< printFlag(cflag,PARODD,"PARODD")
+			<< printFlag(cflag,HUPCL,"HUPCL")
+			<< printFlag(cflag,CLOCAL,"CLOCAL")
 #if defined LOBLK
-			<< PRINT_FLAG(cflag,LOBLK,"LOBLK")
+			<< printFlag(cflag,LOBLK,"LOBLK")
 #endif
 #if defined CMSPAR
-			<< PRINT_FLAG(cflag,CMSPAR,"CMSPAR")
+			<< printFlag(cflag,CMSPAR,"CMSPAR")
 #endif
 #if defined CRTSCTS
-			<< PRINT_FLAG(cflag,CRTSCTS,"CRTSCTS")
+			<< printFlag(cflag,CRTSCTS,"CRTSCTS")
 #endif
 			;
 	LOG4CXX_DEBUG(logger,txt.str());
 
 	txt.str("");
 	txt << "	lflag: "
-			<< PRINT_FLAG(lflag,ISIG,"ISIG")
-			<< PRINT_FLAG(lflag,ICANON,"ICANON")
+			<< printFlag(lflag,ISIG,"ISIG")
+			<< printFlag(lflag,ICANON,"ICANON")
 #if defined XCASE
-			<< PRINT_FLAG(lflag,XCASE,"XCASE")
+			<< printFlag(lflag,XCASE,"XCASE")
 #endif
-			<< PRINT_FLAG(lflag,ECHO,"ECHO")
-			<< PRINT_FLAG(lflag,ECHOE,"ECHOE")
-			<< PRINT_FLAG(lflag,ECHOK,"ECHOK")
-			<< PRINT_FLAG(lflag,ECHONL,"ECHONL")
+			<< printFlag(lflag,ECHO,"ECHO")
+			<< printFlag(lflag,ECHOE,"ECHOE")
+			<< printFlag(lflag,ECHOK,"ECHOK")
+			<< printFlag(lflag,ECHONL,"ECHONL")
 #if defined ECHOCTL
-			<< PRINT_FLAG(lflag,ECHOCTL,"ECHOCTL")
+			<< printFlag(lflag,ECHOCTL,"ECHOCTL")
 #endif
 #if defined ECHOPRT
-			<< PRINT_FLAG(lflag,ECHOPRT,"ECHOPRT")
+			<< printFlag(lflag,ECHOPRT,"ECHOPRT")
 #endif
 #if defined ECHOKE
-			<< PRINT_FLAG(lflag,ECHOKE,"ECHOKE")
+			<< printFlag(lflag,ECHOKE,"ECHOKE")
 #endif
 #if defined DEFECHO
-			<< PRINT_FLAG(lflag,DEFECHO,"DEFECHO")
+			<< printFlag(lflag,DEFECHO,"DEFECHO")
 #endif
 #if defined FLUSHO
-			<< PRINT_FLAG(lflag,FLUSHO,"FLUSHO")
+			<< printFlag(lflag,FLUSHO,"FLUSHO")
 #endif
-			<< PRINT_FLAG(lflag,NOFLSH,"NOFLSH")
-			<< PRINT_FLAG(lflag,TOSTOP,"TOSTOP")
+			<< printFlag(lflag,NOFLSH,"NOFLSH")
+			<< printFlag(lflag,TOSTOP,"TOSTOP")
 #if defined PENDIN
-			<< PRINT_FLAG(lflag,PENDIN,"PENDIN")
+			<< printFlag(lflag,PENDIN,"PENDIN")
 #endif
-			<< PRINT_FLAG(lflag,IEXTEN,"IEXTEN")
+			<< printFlag(lflag,IEXTEN,"IEXTEN")
 			;
 	LOG4CXX_DEBUG(logger,txt.str());
 

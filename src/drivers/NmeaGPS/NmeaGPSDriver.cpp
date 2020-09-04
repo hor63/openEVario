@@ -156,11 +156,17 @@ void NmeaGPSDriver::processingMainLoop () {
 	uint8_t buf [128];
 
 	while (!getStopDriverThread()) {
-		LOG4CXX_DEBUG (logger,"Driver " << driverName << ": Read max. " << sizeof (buf) << " bytes from the port");
+		// LOG4CXX_DEBUG (logger,"Driver " << driverName << ": Read max. " << sizeof (buf) << " bytes from the port");
 
-		auto rc = ioPort->read(buf,sizeof (buf));
+		// auto rc = ioPort->read(buf,sizeof (buf));
+		auto rc = ioPort->read(buf,sizeof(buf)-1);
 
-		LOG4CXX_DEBUG (logger,"Driver " << driverName << ": ioPort->read returned " << rc);
+		if (rc > 0 && rc < sizeof(buf)) {
+			buf [rc] = 0;
+			LOG4CXX_DEBUG (logger,"Driver " << driverName << ": ioPort->read returned '" << buf << '\'');
+		} else {
+			LOG4CXX_DEBUG (logger,"Driver " << driverName << ": ioPort->read returned " << rc);
+		}
 
 	}
 }
