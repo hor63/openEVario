@@ -18,7 +18,7 @@
 
 pkglib_LTLIBRARIES = openEVNmeaGPS.la
 
-openEVNmeaGPS_la_SOURCES=NmeaGPSMain.cpp NmeaGPSLib.cpp NmeaGPSDriver.cpp
+openEVNmeaGPS_la_SOURCES=NmeaGPSMain.cpp NmeaGPSLib.cpp NmeaGPSDriver.cpp NMEA0813.cpp
  
 openEVNmeaGPS_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT) $(MAIN_LDFLAGS) $(LOG4CXX_LDFLAGS) -module
 openEVNmeaGPS_la_LIBADD = ../../main/libopenEVMain.la ../../kalman/libopenEVKalman.la ../../util/libopenEVUtil.la $(LOG4CXX_LIBS) $(MAIN_LIBS) $(PTHREAD_LIBS)

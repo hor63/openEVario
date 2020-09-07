@@ -30,6 +30,7 @@
 #include <fstream>
 
 #include "NmeaGPSDriver.h"
+#include "NMEA0813.h"
 #include "kalman/GliderVarioTransitionMatrix.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
 
@@ -153,19 +154,23 @@ void NmeaGPSDriver::driverThreadFunction() {
 
 void NmeaGPSDriver::processingMainLoop () {
 
-	uint8_t buf [128];
+	uint8_t buf [NMEA0813::maxLenSentence];
+	NMEA0813 nmeaProcessor;
 
 	while (!getStopDriverThread()) {
 		// LOG4CXX_DEBUG (logger,"Driver " << driverName << ": Read max. " << sizeof (buf) << " bytes from the port");
 
 		// auto rc = ioPort->read(buf,sizeof (buf));
 		auto rc = ioPort->read(buf,sizeof(buf)-1);
-
 		if (rc > 0 && rc < sizeof(buf)) {
 			buf [rc] = 0;
 			LOG4CXX_DEBUG (logger,"Driver " << driverName << ": ioPort->read returned '" << buf << '\'');
+			// Consume and process received data.
+			nmeaProcessor.processSensorData(buf,rc);
 		} else {
 			LOG4CXX_DEBUG (logger,"Driver " << driverName << ": ioPort->read returned " << rc);
+			// Either nothing was received or something implausible
+			// Ignore and/or throw away.
 		}
 
 	}

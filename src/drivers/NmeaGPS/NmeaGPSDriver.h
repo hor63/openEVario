@@ -26,7 +26,6 @@
 #ifndef NMEAGPSDRIVER_H_
 #define NMEAGPSDRIVER_H_
 
-#include <fstream>
 #include <string>
 #include <map>
 
