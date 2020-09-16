@@ -56,7 +56,7 @@ public:
 	/** \brief Max. number of fields in a NMEA sentence
 	 *
 	 */
-	static constexpr int maxNumFields   = 20;
+	static constexpr int maxNumFields   = 30;
 
 	struct NMEASentence {
 		/** \brief Complete string of the sentence.
@@ -82,20 +82,6 @@ public:
 	void processSensorData (uint8_t const *data,uint32_t dataLen);
 
 private:
-	/** \brief Look-ahead buffer for the next sentence
-	 *
-	 * When I read a block of data it may contain the remainder of a pending message
-	 * and the first part of the next one.
-	 * The tail of the pending message will go to NMEASentence::buf together with the first part which resided up to now in \p lAhBuffer.
-	 * The head of the next message goes to \p lAhBuffer waiting for the remainder.
-	 */
-	uint8_t lAhBuffer [maxLenSentence];
-
-	/** \brief Number of bytes in \ref lAhBuffer
-	 *
-	 */
-	uint32_t lAhBufferLen = 0;
-
 	/** \brief The current sentence which is being assembled
 	 *
 	 */
