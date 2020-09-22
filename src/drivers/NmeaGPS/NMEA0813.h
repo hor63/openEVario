@@ -56,7 +56,7 @@ public:
 	/** \brief Max. number of fields in a NMEA sentence
 	 *
 	 */
-	static constexpr int maxNumFields   = 20;
+	static constexpr int maxNumFields   = 30;
 
 	struct NMEASentence {
 		/** \brief Complete string of the sentence.
@@ -67,9 +67,9 @@ public:
 		/// Number of bytes in \ref buf.
 		uint32_t bufLen;
 		/// \brief Talker ID from the first field. It is actually copied here.
-		uint8_t TalkerID[4];
+		uint8_t talkerID[4];
 		/// \brief Points to the character in the first field behind the talker ID designating the sentence type.
-		uint8_t *SentenceType;
+		uint8_t *sentenceType;
 		/// \brief The data fields of the sentence. The strings themselves lie in \p buf.
 		uint8_t * fields [maxNumFields];
 		/// Number of defined \ref fields
@@ -82,20 +82,6 @@ public:
 	void processSensorData (uint8_t const *data,uint32_t dataLen);
 
 private:
-	/** \brief Look-ahead buffer for the next sentence
-	 *
-	 * When I read a block of data it may contain the remainder of a pending message
-	 * and the first part of the next one.
-	 * The tail of the pending message will go to NMEASentence::buf together with the first part which resided up to now in \p lAhBuffer.
-	 * The head of the next message goes to \p lAhBuffer waiting for the remainder.
-	 */
-	uint8_t lAhBuffer [maxLenSentence];
-
-	/** \brief Number of bytes in \ref lAhBuffer
-	 *
-	 */
-	uint32_t lAhBufferLen = 0;
-
 	/** \brief The current sentence which is being assembled
 	 *
 	 */
@@ -107,10 +93,22 @@ private:
 	 */
 	bool currSentenceActive = true;
 
-	/** \brief Parse and process one NMEA sentence in \ref currSentence
+	/** \brief Parse one NMEA sentence in \ref currSentence
+	 *
+	 * Go through currSentence.buf. Replace the ',' separators with '\0' to create partial C strings
+	 * for each field.
+	 * The start of each field is then stored in currSentence.fields[i].
+	 * In addition the first field is separated into currSentence.talkerID, and currSentence.sentenceType.
 	 *
 	 */
-	void processSentence();
+	void parseSentence();
+
+	/** \brief Process each parsed sentence
+	 *
+	 * Process each sentence based on currSentence.sentenceType
+	 *
+	 */
+	void processParsedSentence();
 };
 
 } /* namespace openEV */
