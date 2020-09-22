@@ -213,7 +213,7 @@ void BMXSensorBoardDriver::readConfiguration (Properties4CXX::Properties const &
 
 		portName = portNameConfig->getStringValue();
 
-		ioPort = dynamic_cast<io::StreamPort*> (io::PortBase::getPortByName(portName));
+		ioPort = dynamic_cast<io::DatagramPort*> (io::PortBase::getPortByName(portName));
 		if (ioPort == nullptr) {
 			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"I/O Port is not a stream port.");
 		}
@@ -221,10 +221,11 @@ void BMXSensorBoardDriver::readConfiguration (Properties4CXX::Properties const &
 		LOG4CXX_ERROR(logger, "Read configuration of driver \"" << driverName
 				<< "\" failed:"
 				<< e.what());
+		throw;
 	}
 
     errorTimeout = configuration.getPropertyValue(std::string("errorTimeout"),(long long)(10));
-    errorMaxNumRetries = configuration.getPropertyValue(std::string("errorTimeout"),(long long)(0));
+    errorMaxNumRetries = configuration.getPropertyValue(std::string("errorMaxNumRetries"),(long long)(0));
 
     try {
     	auto fileNameProp = configuration.searchProperty("calibrationDataFile");
@@ -600,256 +601,253 @@ void BMXSensorBoardDriver::processingMainLoop () {
 
 
 	while (!getStopDriverThread()) {
-		auto readLen = ioPort->readExactLen((uint8_t *)(&bmxData.header),sizeof(bmxData.header));
-		LOG4CXX_DEBUG(logger,"Read " << readLen << "Bytes from the port. Expected " << sizeof(bmxData.header) << " bytes.");
+		auto readLen = ioPort->recv((uint8_t *)(&bmxData),sizeof(bmxData));
+		LOG4CXX_DEBUG(logger,"Read " << readLen << "Bytes from the port. Expected " << sizeof(bmxData) << " bytes.");
 
-/*
-		// Answer the sensor board right away to eliminate the delayed acknowledge. Put the ack piggyback on the answer
-		struct BMX160RecvData sendMsg;
+		struct SensorData &currSensorData = sensorDataArr[currSensorDataIndex];
+		currSensorData.accelDataValid = false;
+		currSensorData.gyroDataValid = false;
+		currSensorData.magDataValid = false;
 
-		sendMsg.header.unionCode = BMX160RECV_DATA_NONE;
-		sendMsg.header.filler = 0;
-		sendMsg.header.length = sizeof sendMsg;
-		sendMsg.header.versionMajor = BMX160_SENSORBOX_MSG_VERSION_MAJOR;
-		sendMsg.header.versionMinor = BMX160_SENSORBOX_MSG_VERSION_MINOR;
-		sendMsg.dummy = 0;
+		LOG4CXX_DEBUG(logger,"bmxData.header.unionCode    = " << int(bmxData.header.unionCode));
+		LOG4CXX_DEBUG(logger,"bmxData.header.length       = " << bmxData.header.length);
+		LOG4CXX_DEBUG(logger,"bmxData.header.versionMajor = " << int(bmxData.header.versionMajor));
+		LOG4CXX_DEBUG(logger,"bmxData.header.versionMinor = " << int(bmxData.header.versionMinor));
+		LOG4CXX_DEBUG(logger,"bmxData.header.crc          = " << std::hex << uint16_t(bmxData.header.crc) << std::dec);
 
-		sendMsg.header.crc = 0U;
-		sendMsg.header.crc = crc16CCIT(PPP_INITFCS,&sendMsg,sendMsg.header.length);
+		if (bmxData.header.versionMajor == BMX160_SENSORBOX_MSG_VERSION_MAJOR &&
+				bmxData.header.versionMinor == BMX160_SENSORBOX_MSG_VERSION_MINOR)
+		{
+			switch (bmxData.header.unionCode) {
+			case BMX160DATA_TRIM:
+				if (bmxData.header.length == (sizeof(bmxData.header)+sizeof(bmxData.trimData))) {
+					uint16_t msgCrc;
+					msgCrc = bmxData.header.crc;
+					bmxData.header.crc = 0U;
 
-		ioPort->writeExactLen((uint8_t*)(&sendMsg),sizeof(sendMsg));
-*/
+					if (msgCrc == 0xffff || msgCrc == crc16CCIT(PPP_INITFCS,&bmxData,bmxData.header.length)) {
+						magTrimData = bmxData.trimData;
+						LOG4CXX_DEBUG(logger, "TrimData = \n"
+								<< "\tdig_x1   = " << int16_t(magTrimData.dig_x1) << "\n"
+								<< "\tdig_y1   = " << int16_t(magTrimData.dig_y1) << "\n"
+								<< "\tdig_z1   = " << magTrimData.dig_z1 << "\n"
+								<< "\tdig_x2   = " << int16_t(magTrimData.dig_x2) << "\n"
+								<< "\tdig_y2   = " << int16_t(magTrimData.dig_y2) << "\n"
+								<< "\tdig_z2   = " << magTrimData.dig_z2 << "\n"
+								<< "\tdig_z3   = " << magTrimData.dig_z3 << "\n"
+								<< "\tdig_z4   = " << magTrimData.dig_z4 << "\n"
+								<< "\tdig_xy1  = " << uint16_t(magTrimData.dig_xy1) << "\n"
+								<< "\tdig_xy2  = " << int16_t(magTrimData.dig_xy2) << "\n"
+								<< "\tdig_xyz1 = " << magTrimData.dig_xyz1);
 
-		if (readLen == sizeof(bmxData.header)) {
+						// Essential trim data is missing.
+						// compensate function would return BMM150_OVERFLOW_OUTPUT_FLOAT = 0.0.
+						// Therefore request a reset of the IMU, re-read the magnetometer trim data,
+						// and re-send them to me.
+						if ((magTrimData.dig_z2 == 0) || (magTrimData.dig_z1 == 0)
+								|| (magTrimData.dig_xyz1 == 0) ) {
+							struct BMX160RecvData sendMsg;
 
-			struct SensorData &currSensorData = sensorDataArr[currSensorDataIndex];
-			currSensorData.accelDataValid = false;
-			currSensorData.gyroDataValid = false;
-			currSensorData.magDataValid = false;
+							sendMsg.header.unionCode = BMX160RECV_DATA_RESET_IMU;
+							sendMsg.header.filler = 0;
+							sendMsg.header.length = sizeof sendMsg;
+							sendMsg.header.versionMajor = BMX160_SENSORBOX_MSG_VERSION_MAJOR;
+							sendMsg.header.versionMinor = BMX160_SENSORBOX_MSG_VERSION_MINOR;
+							sendMsg.dummy = 0;
 
-			LOG4CXX_DEBUG(logger,"bmxData.header.unionCode    = " << int(bmxData.header.unionCode));
-			LOG4CXX_DEBUG(logger,"bmxData.header.length       = " << bmxData.header.length);
-			LOG4CXX_DEBUG(logger,"bmxData.header.versionMajor = " << int(bmxData.header.versionMajor));
-			LOG4CXX_DEBUG(logger,"bmxData.header.versionMinor = " << int(bmxData.header.versionMinor));
-			LOG4CXX_DEBUG(logger,"bmxData.header.crc          = " << std::hex << uint16_t(bmxData.header.crc) << std::dec);
+							sendMsg.header.crc = 0U;
+							sendMsg.header.crc = 0xffff; // crc16CCIT(PPP_INITFCS,&sendMsg,sendMsg.header.length);
 
-			if (bmxData.header.versionMajor == BMX160_SENSORBOX_MSG_VERSION_MAJOR &&
-					bmxData.header.versionMinor == BMX160_SENSORBOX_MSG_VERSION_MINOR)
-			{
-				switch (bmxData.header.unionCode) {
-				case BMX160DATA_TRIM:
-					if (bmxData.header.length == (sizeof(bmxData.header)+sizeof(bmxData.trimData))) {
-						if (ioPort->readExactLen((uint8_t *)(&bmxData.trimData),sizeof(bmxData.trimData)) == sizeof(bmxData.trimData)) {
-							uint16_t msgCrc;
-							msgCrc = bmxData.header.crc;
-							bmxData.header.crc = 0U;
+							ioPort->send((uint8_t*)(&sendMsg),sizeof(sendMsg));
 
-							if (msgCrc == 0xffff || msgCrc == crc16CCIT(PPP_INITFCS,&bmxData,bmxData.header.length)) {
-								magTrimData = bmxData.trimData;
-								LOG4CXX_DEBUG(logger, "TrimData = \n"
-										<< "\tdig_x1   = " << int16_t(magTrimData.dig_x1) << "\n"
-										<< "\tdig_y1   = " << int16_t(magTrimData.dig_y1) << "\n"
-										<< "\tdig_z1   = " << magTrimData.dig_z1 << "\n"
-										<< "\tdig_x2   = " << int16_t(magTrimData.dig_x2) << "\n"
-										<< "\tdig_y2   = " << int16_t(magTrimData.dig_y2) << "\n"
-										<< "\tdig_z2   = " << magTrimData.dig_z2 << "\n"
-										<< "\tdig_z3   = " << magTrimData.dig_z3 << "\n"
-										<< "\tdig_z4   = " << magTrimData.dig_z4 << "\n"
-										<< "\tdig_xy1  = " << uint16_t(magTrimData.dig_xy1) << "\n"
-										<< "\tdig_xy2  = " << int16_t(magTrimData.dig_xy2) << "\n"
-										<< "\tdig_xyz1 = " << magTrimData.dig_xyz1);
-
-								// Essential trim data is missing.
-								// compensate function would return BMM150_OVERFLOW_OUTPUT_FLOAT = 0.0.
-								// Therefore request a reset of the IMU, re-read the magnetometer trim data,
-								// and re-send them to me.
-								if ((magTrimData.dig_z2 == 0) || (magTrimData.dig_z1 == 0)
-										|| (magTrimData.dig_xyz1 == 0) ) {
-									struct BMX160RecvData sendMsg;
-
-									sendMsg.header.unionCode = BMX160RECV_DATA_RESET_IMU;
-									sendMsg.header.filler = 0;
-									sendMsg.header.length = sizeof sendMsg;
-									sendMsg.header.versionMajor = BMX160_SENSORBOX_MSG_VERSION_MAJOR;
-									sendMsg.header.versionMinor = BMX160_SENSORBOX_MSG_VERSION_MINOR;
-									sendMsg.dummy = 0;
-
-									sendMsg.header.crc = 0U;
-									sendMsg.header.crc = crc16CCIT(PPP_INITFCS,&sendMsg,sendMsg.header.length);
-
-									ioPort->writeExactLen((uint8_t*)(&sendMsg),sizeof(sendMsg));
-
-								}
-							} else {
-								LOG4CXX_ERROR(logger,
-										"CRC error of received magnetometer trim data message");
-								// Send a request to send the trim data again
-								struct BMX160RecvData sendMsg;
-
-								sendMsg.header.unionCode = BMX160RECV_DATA_RESET_IMU;
-								sendMsg.header.filler = 0;
-								sendMsg.header.length = sizeof sendMsg;
-								sendMsg.header.versionMajor = BMX160_SENSORBOX_MSG_VERSION_MAJOR;
-								sendMsg.header.versionMinor = BMX160_SENSORBOX_MSG_VERSION_MINOR;
-								sendMsg.dummy = 0;
-
-								sendMsg.header.crc = 0U;
-								sendMsg.header.crc = crc16CCIT(PPP_INITFCS,&sendMsg,sendMsg.header.length);
-
-								ioPort->writeExactLen((uint8_t*)(&sendMsg),sizeof(sendMsg));
-							}
 						}
 					} else {
 						LOG4CXX_ERROR(logger,
-								"Alignment error. bmxData.header.length = " << bmxData.header.length
-								<< " but sizeof(bmxData.header)+sizeof(bmxData.trimData) = " << (sizeof(bmxData.header)+sizeof(bmxData.trimData)));
+								"CRC error of received magnetometer trim data message");
+						// Send a request to send the trim data again
+						struct BMX160RecvData sendMsg;
+
+						sendMsg.header.unionCode = BMX160RECV_DATA_RESET_IMU;
+						sendMsg.header.filler = 0;
+						sendMsg.header.length = sizeof sendMsg;
+						sendMsg.header.versionMajor = BMX160_SENSORBOX_MSG_VERSION_MAJOR;
+						sendMsg.header.versionMinor = BMX160_SENSORBOX_MSG_VERSION_MINOR;
+						sendMsg.dummy = 0;
+
+						sendMsg.header.crc = 0U;
+						sendMsg.header.crc = crc16CCIT(PPP_INITFCS,&sendMsg,sendMsg.header.length);
+
+						ioPort->send((uint8_t*)(&sendMsg),sizeof(sendMsg));
 					}
-					break;
-				case BMX160DATA_ACC_GYR_MAG:
-					if (bmxData.header.length == (sizeof(bmxData.header)+sizeof(bmxData.accGyrMagData))) {
-						if (ioPort->readExactLen((uint8_t*)(&bmxData.accGyrMagData),sizeof(bmxData.accGyrMagData)) == sizeof(bmxData.accGyrMagData)) {
-							uint16_t msgCrc;
-							msgCrc = bmxData.header.crc;
-							bmxData.header.crc = 0U;
+				} else {
+					LOG4CXX_ERROR(logger,
+							"Alignment error. bmxData.header.length = " << bmxData.header.length
+							<< " but sizeof(bmxData.header)+sizeof(bmxData.trimData) = " << (sizeof(bmxData.header)+sizeof(bmxData.trimData)));
+				}
+				break;
+			case BMX160DATA_ACC_GYR_MAG:
+				if (bmxData.header.length == (sizeof(bmxData.header)+sizeof(bmxData.accGyrMagData))) {
+					uint16_t msgCrc;
+					msgCrc = bmxData.header.crc;
+					bmxData.header.crc = 0U;
 
-							if (msgCrc == 0xffff || msgCrc == crc16CCIT(PPP_INITFCS,&bmxData,bmxData.header.length)) {
+					if (msgCrc == 0xffff || msgCrc == crc16CCIT(PPP_INITFCS,&bmxData,bmxData.header.length)) {
 
-								// advance the index, and wrap it around if necessary
-								currSensorDataIndex++;
-								currSensorDataIndex &= SIZE_SENSOR_DATA_ARRAY - 1;
+						// advance the index, and wrap it around if necessary
+						currSensorDataIndex++;
+						currSensorDataIndex &= SIZE_SENSOR_DATA_ARRAY - 1;
 
-								currSensorData.magX = compensate_x(bmxData.accGyrMagData.magX,bmxData.accGyrMagData.magRHall) * calibrationData.magXFactor;
-								currSensorData.magY = compensate_y(bmxData.accGyrMagData.magY,bmxData.accGyrMagData.magRHall) * calibrationData.magYFactor;
-								currSensorData.magZ = compensate_z(bmxData.accGyrMagData.magZ,bmxData.accGyrMagData.magRHall) * calibrationData.magZFactor;
+						// Essential trim data is missing.
+						// compensate function would return BMM150_OVERFLOW_OUTPUT_FLOAT = 0.0.
+						// Therefore request a reset of the IMU, re-read the magnetometer trim data,
+						// and re-send them to me.
+						if ((magTrimData.dig_z2 == 0) || (magTrimData.dig_z1 == 0)
+								|| (magTrimData.dig_xyz1 == 0) ) {
+							struct BMX160RecvData sendMsg;
 
-								LOG4CXX_DEBUG(logger,"magX (uT) = " << currSensorData.magX);
-								LOG4CXX_DEBUG(logger,"magY (uT) = " << currSensorData.magY);
-								LOG4CXX_DEBUG(logger,"magZ (uT) = " << currSensorData.magZ);
-								if (currSensorData.magX != BMM150_OVERFLOW_OUTPUT_FLOAT &&
-										currSensorData.magY != -BMM150_OVERFLOW_OUTPUT_FLOAT &&
-										currSensorData.magZ != -BMM150_OVERFLOW_OUTPUT_FLOAT
-										) {
-									currSensorData.magDataValid = true;
-								}
+							sendMsg.header.unionCode = BMX160RECV_DATA_RESET_IMU;
+							sendMsg.header.filler = 0;
+							sendMsg.header.length = sizeof sendMsg;
+							sendMsg.header.versionMajor = BMX160_SENSORBOX_MSG_VERSION_MAJOR;
+							sendMsg.header.versionMinor = BMX160_SENSORBOX_MSG_VERSION_MINOR;
+							sendMsg.dummy = 0;
 
-								currSensorData.gyroX = double(bmxData.accGyrMagData.gyrX)/ gyrFactor * calibrationData.gyrXFactor;
-								currSensorData.gyroY = double(bmxData.accGyrMagData.gyrY)/ gyrFactor * calibrationData.gyrYFactor;
-								currSensorData.gyroZ = double(bmxData.accGyrMagData.gyrZ)/ gyrFactor * calibrationData.gyrZFactor;
-								currSensorData.gyroDataValid = true;
+							sendMsg.header.crc = 0U;
+							sendMsg.header.crc = 0xffff;
 
-								LOG4CXX_DEBUG(logger,"gyrX (deg/s) = " << currSensorData.gyroX);
-								LOG4CXX_DEBUG(logger,"gyrY (deg/s) = " << currSensorData.gyroY);
-								LOG4CXX_DEBUG(logger,"gyrZ (deg/s) = " << currSensorData.gyroZ);
+							ioPort->send((uint8_t*)(&sendMsg),sizeof(sendMsg));
+
+						} else {
+
+							currSensorData.magX = compensate_x(bmxData.accGyrMagData.magX,bmxData.accGyrMagData.magRHall) * calibrationData.magXFactor;
+							currSensorData.magY = compensate_y(bmxData.accGyrMagData.magY,bmxData.accGyrMagData.magRHall) * calibrationData.magYFactor;
+							currSensorData.magZ = compensate_z(bmxData.accGyrMagData.magZ,bmxData.accGyrMagData.magRHall) * calibrationData.magZFactor;
+
+							LOG4CXX_DEBUG(logger,"magX (uT) = " << currSensorData.magX);
+							LOG4CXX_DEBUG(logger,"magY (uT) = " << currSensorData.magY);
+							LOG4CXX_DEBUG(logger,"magZ (uT) = " << currSensorData.magZ);
+							if (currSensorData.magX != BMM150_OVERFLOW_OUTPUT_FLOAT &&
+									currSensorData.magY != -BMM150_OVERFLOW_OUTPUT_FLOAT &&
+									currSensorData.magZ != -BMM150_OVERFLOW_OUTPUT_FLOAT
+									) {
+								currSensorData.magDataValid = true;
+							}
+						}
+
+						currSensorData.gyroX = double(bmxData.accGyrMagData.gyrX)/ gyrFactor * calibrationData.gyrXFactor;
+						currSensorData.gyroY = double(bmxData.accGyrMagData.gyrY)/ gyrFactor * calibrationData.gyrYFactor;
+						currSensorData.gyroZ = double(bmxData.accGyrMagData.gyrZ)/ gyrFactor * calibrationData.gyrZFactor;
+						currSensorData.gyroDataValid = true;
+
+						LOG4CXX_DEBUG(logger,"gyrX (deg/s) = " << currSensorData.gyroX);
+						LOG4CXX_DEBUG(logger,"gyrY (deg/s) = " << currSensorData.gyroY);
+						LOG4CXX_DEBUG(logger,"gyrZ (deg/s) = " << currSensorData.gyroZ);
 
 
-								currSensorData.accelX = (double)(bmxData.accGyrMagData.accX) * accFactor *
-										calibrationData.accelXFactor - calibrationData.accelXBias;
-								currSensorData.accelY = (double)(bmxData.accGyrMagData.accY) * accFactor *
-										calibrationData.accelYFactor - calibrationData.accelYBias;
-								currSensorData.accelZ = (double)(bmxData.accGyrMagData.accZ) * accFactor *
-										calibrationData.accelZFactor - calibrationData.accelZBias;
-								currSensorData.accelDataValid = true;
+						currSensorData.accelX = (double)(bmxData.accGyrMagData.accX) * accFactor *
+								calibrationData.accelXFactor - calibrationData.accelXBias;
+						currSensorData.accelY = (double)(bmxData.accGyrMagData.accY) * accFactor *
+								calibrationData.accelYFactor - calibrationData.accelYBias;
+						currSensorData.accelZ = (double)(bmxData.accGyrMagData.accZ) * accFactor *
+								calibrationData.accelZFactor - calibrationData.accelZBias;
+						currSensorData.accelDataValid = true;
 
-								LOG4CXX_DEBUG(logger,"accX (g) = " << currSensorData.accelX);
-								LOG4CXX_DEBUG(logger,"accY (g) = " << currSensorData.accelY);
-								LOG4CXX_DEBUG(logger,"accZ (g) = " << currSensorData.accelZ);
-							} else { // if (crc == msgCrc)
-								LOG4CXX_ERROR(logger,
-										"CRC error of received acc/gyr/mag sensor data message");
-							} // if (crc == msgCrc)
-						} // if (ioPort->readExactLen( ...
-					} else { // if (bmxData.header.length == ...
+						LOG4CXX_DEBUG(logger,"accX (g) = " << currSensorData.accelX);
+						LOG4CXX_DEBUG(logger,"accY (g) = " << currSensorData.accelY);
+						LOG4CXX_DEBUG(logger,"accZ (g) = " << currSensorData.accelZ);
+					} else { // if (crc == msgCrc)
 						LOG4CXX_ERROR(logger,
-								"Alignment error. bmxData.header.length = " << bmxData.header.length
-								<< " but (sizeof(bmxData.header)+sizeof(bmxData.accGyrMagData)) = " << (sizeof(bmxData.header)+sizeof(bmxData.accGyrMagData)));
-					} // if (bmxData.header.length == ...
-					break;
-				case BMX160DATA_ACC_GYR:
-					if (bmxData.header.length == (sizeof(bmxData.header)+sizeof(bmxData.accGyrData))) {
-						if (ioPort->readExactLen((uint8_t*)(&bmxData.accGyrData),sizeof(bmxData.accGyrData)) == sizeof(bmxData.accGyrData)) {
-							uint16_t msgCrc;
-							msgCrc = bmxData.header.crc;
-							bmxData.header.crc = 0U;
+								"CRC error of received acc/gyr/mag sensor data message");
+					} // if (crc == msgCrc)
+				} else { // if (bmxData.header.length == ...
+					LOG4CXX_ERROR(logger,
+							"Alignment error. bmxData.header.length = " << bmxData.header.length
+							<< " but (sizeof(bmxData.header)+sizeof(bmxData.accGyrMagData)) = " << (sizeof(bmxData.header)+sizeof(bmxData.accGyrMagData)));
+				} // if (bmxData.header.length == ...
+				break;
+			case BMX160DATA_ACC_GYR:
+				if (bmxData.header.length == (sizeof(bmxData.header)+sizeof(bmxData.accGyrData))) {
+					uint16_t msgCrc;
+					msgCrc = bmxData.header.crc;
+					bmxData.header.crc = 0U;
 
-							if (msgCrc == 0xffff || msgCrc == crc16CCIT(PPP_INITFCS,&bmxData,bmxData.header.length)) {
-								// advance the index, and wrap it around if necessary
-								currSensorDataIndex++;
-								currSensorDataIndex &= SIZE_SENSOR_DATA_ARRAY - 1;
+					if (msgCrc == 0xffff || msgCrc == crc16CCIT(PPP_INITFCS,&bmxData,bmxData.header.length)) {
+						// advance the index, and wrap it around if necessary
+						currSensorDataIndex++;
+						currSensorDataIndex &= SIZE_SENSOR_DATA_ARRAY - 1;
 
-								currSensorData.gyroX = double(bmxData.accGyrData.gyrX)/ gyrFactor;
-								currSensorData.gyroY = double(bmxData.accGyrData.gyrY)/ gyrFactor;
-								currSensorData.gyroZ = double(bmxData.accGyrData.gyrZ)/ gyrFactor;
-								currSensorData.gyroDataValid = true;
+						currSensorData.gyroX = double(bmxData.accGyrData.gyrX)/ gyrFactor;
+						currSensorData.gyroY = double(bmxData.accGyrData.gyrY)/ gyrFactor;
+						currSensorData.gyroZ = double(bmxData.accGyrData.gyrZ)/ gyrFactor;
+						currSensorData.gyroDataValid = true;
 
-								LOG4CXX_DEBUG(logger,"gyrX (deg/s) = " << currSensorData.gyroX);
-								LOG4CXX_DEBUG(logger,"gyrY (deg/s) = " << currSensorData.gyroY);
-								LOG4CXX_DEBUG(logger,"gyrZ (deg/s) = " << currSensorData.gyroZ);
+						LOG4CXX_DEBUG(logger,"gyrX (deg/s) = " << currSensorData.gyroX);
+						LOG4CXX_DEBUG(logger,"gyrY (deg/s) = " << currSensorData.gyroY);
+						LOG4CXX_DEBUG(logger,"gyrZ (deg/s) = " << currSensorData.gyroZ);
 
-								currSensorData.accelX = (double)(bmxData.accGyrMagData.accX) * accFactor *
-										calibrationData.accelXFactor - calibrationData.accelXBias;
-								currSensorData.accelY = (double)(bmxData.accGyrMagData.accY) * accFactor *
-										calibrationData.accelYFactor - calibrationData.accelYBias;
-								currSensorData.accelZ = (double)(bmxData.accGyrMagData.accZ) * accFactor *
-										calibrationData.accelZFactor - calibrationData.accelZBias;
-								currSensorData.accelDataValid = true;
+						currSensorData.accelX = (double)(bmxData.accGyrMagData.accX) * accFactor *
+								calibrationData.accelXFactor - calibrationData.accelXBias;
+						currSensorData.accelY = (double)(bmxData.accGyrMagData.accY) * accFactor *
+								calibrationData.accelYFactor - calibrationData.accelYBias;
+						currSensorData.accelZ = (double)(bmxData.accGyrMagData.accZ) * accFactor *
+								calibrationData.accelZFactor - calibrationData.accelZBias;
+						currSensorData.accelDataValid = true;
 
-								LOG4CXX_DEBUG(logger,"accX (g) = " << currSensorData.accelX);
-								LOG4CXX_DEBUG(logger,"accY (g) = " << currSensorData.accelY);
-								LOG4CXX_DEBUG(logger,"accZ (g) = " << currSensorData.accelZ);
-							} else { // if (crc == msgCrc)
-								LOG4CXX_ERROR(logger,
-										"CRC error of received acc/gyr sensor data message");
-							} // if (crc == msgCrc) {
-						} // if (ioPort->readExactLen( ...
-					} else { // if (bmxData.header.length == ...
+						LOG4CXX_DEBUG(logger,"accX (g) = " << currSensorData.accelX);
+						LOG4CXX_DEBUG(logger,"accY (g) = " << currSensorData.accelY);
+						LOG4CXX_DEBUG(logger,"accZ (g) = " << currSensorData.accelZ);
+					} else { // if (crc == msgCrc)
 						LOG4CXX_ERROR(logger,
-								"Alignment error. bmxData.header.length = " << bmxData.header.length
-								<< " but (sizeof(bmxData.header)+sizeof(bmxData.accGyrData)) = " << (sizeof(bmxData.header)+sizeof(bmxData.accGyrData)));
-					} // if (bmxData.header.length == ...
-					break;
-				default:
-					LOG4CXX_ERROR (logger,"Unknown union code " << (int)bmxData.header.unionCode);
+								"CRC error of received acc/gyr sensor data message");
+					} // if (crc == msgCrc) {
+				} else { // if (bmxData.header.length == ...
+					LOG4CXX_ERROR(logger,
+							"Alignment error. bmxData.header.length = " << bmxData.header.length
+							<< " but (sizeof(bmxData.header)+sizeof(bmxData.accGyrData)) = " << (sizeof(bmxData.header)+sizeof(bmxData.accGyrData)));
+				} // if (bmxData.header.length == ...
+				break;
+			default:
+				LOG4CXX_ERROR (logger,"Unknown union code " << (int)bmxData.header.unionCode);
 
-					break;
-				} // switch (bmxData.header.unionCode)
-			} // if (bmxData.header.versionMajor == ...
+				break;
+			} // switch (bmxData.header.unionCode)
+		} // if (bmxData.header.versionMajor == ...
 
-			if (getIsKalmanUpdateRunning()) {
-				GliderVarioMainPriv::LockedCurrentStatus currStatus(*varioMain);
+		if (getIsKalmanUpdateRunning()) {
+			GliderVarioMainPriv::LockedCurrentStatus currStatus(*varioMain);
 
-				if (currSensorData.accelDataValid) {
-					GliderVarioMeasurementUpdater::accelUpd(
-							currSensorData.accelX,0.1f,
-							currSensorData.accelY,0.1f,
-							currSensorData.accelZ,0.1f,
-							*currStatus.getMeasurementVector(),*currStatus.getCurrentStatus());
-				}
-				if (currSensorData.gyroDataValid) {
-					GliderVarioMeasurementUpdater::gyroUpd(
-							currSensorData.gyroX,0.1f,
-							currSensorData.gyroY,0.1f,
-							currSensorData.gyroZ,0.1f,
-							*currStatus.getMeasurementVector(),*currStatus.getCurrentStatus());
-				}
-				if (currSensorData.magDataValid) {
-					GliderVarioMeasurementUpdater::compassUpd(
-							currSensorData.magX,currSensorData.magY,currSensorData.magZ,
-							2.0f,2.0f,2.0f,
-							*currStatus.getMeasurementVector(),*currStatus.getCurrentStatus());
-				}
-
-				auto lastPredictionUpdate = varioMain->getLastPredictionUpdate();
-				auto timeSinceLastCalibrationWrite = lastPredictionUpdate - lastUpdateTime;
-				if (!calibrationWriterRunning && (timeSinceLastCalibrationWrite >= calibrationDataUpdateCycle)) {
-					calibrationWriterRunning = true;
-					if (calibrationDataWriteThread.joinable()) {
-						calibrationDataWriteThread.join();
-					}
-					lastUpdateTime = std::chrono::system_clock::now();
-					calibrationDataWriteThread = std::thread(&BMXSensorBoardDriver::calibrationDataWriteFunc,this);
-				}
+			if (currSensorData.accelDataValid) {
+				GliderVarioMeasurementUpdater::accelUpd(
+						currSensorData.accelX,0.1f,
+						currSensorData.accelY,0.1f,
+						currSensorData.accelZ,0.1f,
+						*currStatus.getMeasurementVector(),*currStatus.getCurrentStatus());
 			}
-		} // if (readLen == sizeof(bmxData.header))
+			if (currSensorData.gyroDataValid) {
+				GliderVarioMeasurementUpdater::gyroUpd(
+						currSensorData.gyroX,0.1f,
+						currSensorData.gyroY,0.1f,
+						currSensorData.gyroZ,0.1f,
+						*currStatus.getMeasurementVector(),*currStatus.getCurrentStatus());
+			}
+			if (currSensorData.magDataValid) {
+				GliderVarioMeasurementUpdater::compassUpd(
+						currSensorData.magX,currSensorData.magY,currSensorData.magZ,
+						2.0f,2.0f,2.0f,
+						*currStatus.getMeasurementVector(),*currStatus.getCurrentStatus());
+			}
+
+			auto lastPredictionUpdate = varioMain->getLastPredictionUpdate();
+			auto timeSinceLastCalibrationWrite = lastPredictionUpdate - lastUpdateTime;
+			if (!calibrationWriterRunning && (timeSinceLastCalibrationWrite >= calibrationDataUpdateCycle)) {
+				calibrationWriterRunning = true;
+				if (calibrationDataWriteThread.joinable()) {
+					calibrationDataWriteThread.join();
+				}
+				lastUpdateTime = std::chrono::system_clock::now();
+				calibrationDataWriteThread = std::thread(&BMXSensorBoardDriver::calibrationDataWriteFunc,this);
+			}
+		}
 	}
 }
 

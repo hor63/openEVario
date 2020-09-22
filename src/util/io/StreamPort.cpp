@@ -35,7 +35,7 @@ static log4cxx::LoggerPtr logger = 0;
 
 static inline void initLogger() {
 	if (!logger) {
-		logger = log4cxx::Logger::getLogger("openEV.IO.PortBase");
+		logger = log4cxx::Logger::getLogger("openEV.IO.StreamPort");
 	}
 }
 
@@ -120,20 +120,11 @@ ssize_t StreamPort::write(uint8_t *buffer, size_t bufLen) {
 
 		if (ret == -1) {
 			err = errno;
-			if (err == EINTR) {
-				LOG4CXX_DEBUG (logger,"Port" << getPortName() << ':' << getPortType() << ": Read interrupted with EINTR. Repeat ::read() ");
-			} else {
-				std::ostringstream str;
-				str << "Port" << getPortName() << ':' << getPortType() << ": Write error " << err << ":" << strerror(err);
-				LOG4CXX_ERROR (logger,str.str());
-
-				throw GliderVarioPortWriteException(__FILE__,__LINE__,str.str().c_str());
-			}
 
 			switch (err) {
 
 			case EINTR:
-				LOG4CXX_DEBUG (logger,"Port" << getPortName() << ':' << getPortType() << ": Write interrupted with EINTR. Repeat ::read() ");
+				LOG4CXX_DEBUG (logger,"Port" << getPortName() << ':' << getPortType() << ": Write interrupted with EINTR. Repeat ::write() ");
 				break;
 
 			case EWOULDBLOCK:

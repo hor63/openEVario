@@ -39,7 +39,7 @@
 
 #include "drivers/GliderVarioDriverBase.h"
 #include "BMXSensorBoardLib.h"
-#include "util/io/StreamPort.h"
+#include "util/io/DatagramPort.h"
 
 namespace openEV {
 
@@ -134,7 +134,7 @@ private:
     int32_t errorMaxNumRetries = 0;
 
     /// \brief The I/O port. Typically this is a TCP port.
-    io::StreamPort *ioPort = nullptr;
+    io::DatagramPort *ioPort = nullptr;
 
     /// Name of the calibration data parameter file
     std::string calibrationDataFileName;

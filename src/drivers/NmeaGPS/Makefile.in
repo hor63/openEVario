@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 #    This file is part of openEVario, an electronic variometer for glider planes
-#    Copyright (C) 2016  Kai Horstmann
+#    Copyright (C) 2020  Kai Horstmann
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -106,7 +106,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-subdir = src/drivers/simul
+subdir = src/drivers/NmeaGPS
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps =  \
 	$(top_srcdir)/m4/ax_cxx_compile_build_stdcxx_11.m4 \
@@ -151,19 +151,20 @@ am__uninstall_files_from_dir = { \
 am__installdirs = "$(DESTDIR)$(pkglibdir)"
 LTLIBRARIES = $(pkglib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-openEVSimul_la_DEPENDENCIES = ../../main/libopenEVMain.la \
+openEVNmeaGPS_la_DEPENDENCIES = ../../main/libopenEVMain.la \
 	../../kalman/libopenEVKalman.la ../../util/libopenEVUtil.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
-am_openEVSimul_la_OBJECTS = simulMain.lo
-openEVSimul_la_OBJECTS = $(am_openEVSimul_la_OBJECTS)
+am_openEVNmeaGPS_la_OBJECTS = NmeaGPSMain.lo NmeaGPSLib.lo \
+	NmeaGPSDriver.lo NMEA0813.lo
+openEVNmeaGPS_la_OBJECTS = $(am_openEVNmeaGPS_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-openEVSimul_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
+openEVNmeaGPS_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
-	$(AM_CXXFLAGS) $(CXXFLAGS) $(openEVSimul_la_LDFLAGS) \
+	$(AM_CXXFLAGS) $(CXXFLAGS) $(openEVNmeaGPS_la_LDFLAGS) \
 	$(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -180,7 +181,9 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/simulMain.Plo
+am__depfiles_remade = ./$(DEPDIR)/NMEA0813.Plo \
+	./$(DEPDIR)/NmeaGPSDriver.Plo ./$(DEPDIR)/NmeaGPSLib.Plo \
+	./$(DEPDIR)/NmeaGPSMain.Plo
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -200,8 +203,8 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(openEVSimul_la_SOURCES)
-DIST_SOURCES = $(openEVSimul_la_SOURCES)
+SOURCES = $(openEVNmeaGPS_la_SOURCES)
+DIST_SOURCES = $(openEVNmeaGPS_la_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -413,17 +416,17 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-pkglib_LTLIBRARIES = openEVSimul.la
-openEVSimul_la_SOURCES = simulMain.cpp
-openEVSimul_la_LDFLAGS = $(LD_NO_UNDEFINED_OPT) $(MAIN_LDFLAGS) $(LOG4CXX_LDFLAGS) -module
-openEVSimul_la_LIBADD = ../../main/libopenEVMain.la ../../kalman/libopenEVKalman.la ../../util/libopenEVUtil.la $(LOG4CXX_LIBS) $(MAIN_LIBS) $(PTHREAD_LIBS)
+pkglib_LTLIBRARIES = openEVNmeaGPS.la
+openEVNmeaGPS_la_SOURCES = NmeaGPSMain.cpp NmeaGPSLib.cpp NmeaGPSDriver.cpp NMEA0813.cpp
+openEVNmeaGPS_la_LDFLAGS = $(LD_NO_UNDEFINED_OPT) $(MAIN_LDFLAGS) $(LOG4CXX_LDFLAGS) -module
+openEVNmeaGPS_la_LIBADD = ../../main/libopenEVMain.la ../../kalman/libopenEVKalman.la ../../util/libopenEVUtil.la $(LOG4CXX_LIBS) $(MAIN_LIBS) $(PTHREAD_LIBS)
 AM_CXXFLAGS = -I../../.. -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen \
 	$(LOG4CXX_CXXFLAGS) \
 	$(PTHREAD_CFLAGS) \
 	$(DLL_VISIBLE_CFLAGS) \
 	-DBUILDING_OEV_DRIVER=1
 
-libopenEVSimul_la_CXXFLAGS = $(AM_CXXFLAGS) -DBUILDING_OEV_DRIVER=1
+libopenEVNmeaGPS_la_CXXFLAGS = $(AM_CXXFLAGS) -DBUILDING_OEV_DRIVER=1
 all: all-am
 
 .SUFFIXES:
@@ -437,9 +440,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/drivers/simul/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/drivers/NmeaGPS/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/drivers/simul/Makefile
+	  $(AUTOMAKE) --gnu src/drivers/NmeaGPS/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -493,8 +496,8 @@ clean-pkglibLTLIBRARIES:
 	  rm -f $${locs}; \
 	}
 
-openEVSimul.la: $(openEVSimul_la_OBJECTS) $(openEVSimul_la_DEPENDENCIES) $(EXTRA_openEVSimul_la_DEPENDENCIES) 
-	$(AM_V_CXXLD)$(openEVSimul_la_LINK) -rpath $(pkglibdir) $(openEVSimul_la_OBJECTS) $(openEVSimul_la_LIBADD) $(LIBS)
+openEVNmeaGPS.la: $(openEVNmeaGPS_la_OBJECTS) $(openEVNmeaGPS_la_DEPENDENCIES) $(EXTRA_openEVNmeaGPS_la_DEPENDENCIES) 
+	$(AM_V_CXXLD)$(openEVNmeaGPS_la_LINK) -rpath $(pkglibdir) $(openEVNmeaGPS_la_OBJECTS) $(openEVNmeaGPS_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -502,7 +505,10 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/simulMain.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NMEA0813.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NmeaGPSDriver.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NmeaGPSLib.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NmeaGPSMain.Plo@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -665,7 +671,10 @@ clean-am: clean-generic clean-libtool clean-pkglibLTLIBRARIES \
 	mostlyclean-am
 
 distclean: distclean-am
-		-rm -f ./$(DEPDIR)/simulMain.Plo
+		-rm -f ./$(DEPDIR)/NMEA0813.Plo
+	-rm -f ./$(DEPDIR)/NmeaGPSDriver.Plo
+	-rm -f ./$(DEPDIR)/NmeaGPSLib.Plo
+	-rm -f ./$(DEPDIR)/NmeaGPSMain.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -711,7 +720,10 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-		-rm -f ./$(DEPDIR)/simulMain.Plo
+		-rm -f ./$(DEPDIR)/NMEA0813.Plo
+	-rm -f ./$(DEPDIR)/NmeaGPSDriver.Plo
+	-rm -f ./$(DEPDIR)/NmeaGPSLib.Plo
+	-rm -f ./$(DEPDIR)/NmeaGPSMain.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

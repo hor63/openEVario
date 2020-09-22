@@ -15,13 +15,13 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-SUBDIRS=util kalman main drivers/simul drivers/IGCReader drivers/BoschBMXSensorBoard
+SUBDIRS=util kalman main drivers/simul drivers/IGCReader drivers/BoschBMXSensorBoard drivers/NmeaGPS
 
 bin_PROGRAMS=openEVario$(EXEEXT)
 
 openEVario_SOURCES=openEVario.cpp 
  
-openEVario_LDADD=main/libopenEVMain.la $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
+openEVario_LDADD=main/libopenEVMain.la util/libopenEVUtil.la $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
 
 AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen $(LOG4CXX_CXXFLAGS) \
 	$(PTHREAD_CFLAGS)

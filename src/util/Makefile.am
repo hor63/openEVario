@@ -21,8 +21,17 @@ pkglib_LTLIBRARIES=libopenEVUtil.la
 libopenEVUtil_la_SOURCES=RotationMatrix.cpp FastMath.cpp FastMathSineTable.cpp crc.cpp \
 	GliderVarioDriverBase.cpp GliderVarioDriverLibBase.cpp \
 	GliderVarioExceptionBase.cpp \
-	io/PortBase.cpp io/StreamPort.cpp io/SerialPort.cpp io/TCPPort.cpp
- 
+	io/PortBase.cpp io/StreamPort.cpp \
+	io/DatagramPort.cpp
+
+if BUILD_SERIAL_PORT_DRIVER
+libopenEVUtil_la_SOURCES += io/SerialPort.cpp
+endif
+
+if BUILD_IP_PORT_DRIVERS
+libopenEVUtil_la_SOURCES += io/TCPPort.cpp io/UDPPort.cpp
+endif
+
 libopenEVUtil_la_CXXFLAGS=$(AM_CXXFLAGS) -DBUILDING_OEV_UTILS=1 $(DLL_VISIBLE_CFLAGS)
 
 libopenEVUtil_la_LDFLAGS = $(LD_NO_UNDEFINED_OPT) $(MAIN_LDFLAGS) $(LOG4CXX_LDFLAGS)

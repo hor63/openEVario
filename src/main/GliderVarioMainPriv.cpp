@@ -54,6 +54,15 @@
 #include "main/GliderVarioMainPriv.h"
 #include "util/io/PortBase.h"
 
+#if WITH_IP_PORT_DRIVERS
+#	include "util/io/TCPPort.h"
+#	include "util/io/UDPPort.h"
+#endif
+
+#if WITH_SERIAL_PORT_DRIVER
+#	include "util/io/SerialPort.h"
+#endif
+
 #if defined HAVE_LOG4CXX_H
 static log4cxx::LoggerPtr logger = 0;
 static log4cxx::LoggerPtr rootLogger = 0;
@@ -393,6 +402,11 @@ void GliderVarioMainPriv::startup () {
 		}
 	}
 
+	// Register the communication port drivers.
+	// The port drivers are static
+	// in contrast to the device drivers which are dynamic loaded shared libraries.
+	registerPortDrivers();
+
 	// Read the configuration into memory and read out the global configuration properties.
 	readConfiguration();
 
@@ -509,6 +523,19 @@ void GliderVarioMainPriv::predictAndSwapStatus() {
 		currentStatus = nextStatus;
 		nextStatus = tempStatus;
 	}
+
+}
+
+void GliderVarioMainPriv::registerPortDrivers() {
+
+#if WITH_IP_PORT_DRIVERS
+	io::TCPPort::registerTcpPortType();
+	io::UDPPort::registerUdpPortType();
+#endif
+
+#if WITH_SERIAL_PORT_DRIVER
+	io::SerialPort::registerSerialPortType();
+#endif
 
 }
 
@@ -833,7 +860,6 @@ void GliderVarioMainPriv::getAndLockInternalStatusForDebug (
 void GliderVarioMainPriv::idleLoopTreadEntry (GliderVarioMainPriv *vario) {
 	vario->idleLoop();
 }
-
 
 } /* namespace openEV */
 

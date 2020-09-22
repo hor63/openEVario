@@ -205,6 +205,56 @@ public:
 
 };
 
+class OEV_UTILS_PUBLIC GliderVarioPortLocalPortUndefined :public GliderVarioPortIOException {
+public:
+	GliderVarioPortLocalPortUndefined (
+			char const *source,
+			int line)
+		:GliderVarioPortIOException {source,line,"Local port number is undefined.",EBADF}
+	{}
+
+};
+
+class OEV_UTILS_PUBLIC GliderVarioPortPeerPortUndefined :public GliderVarioPortIOException {
+public:
+	GliderVarioPortPeerPortUndefined (
+			char const *source,
+			int line)
+		:GliderVarioPortIOException {source,line,"Peer port number is undefined.",EBADF}
+	{}
+
+};
+
+class OEV_UTILS_PUBLIC GliderVarioPortPeerAddressUndefined :public GliderVarioPortIOException {
+public:
+	GliderVarioPortPeerAddressUndefined (
+			char const *source,
+			int line)
+		:GliderVarioPortIOException {source,line,"Peer address is undefined.",EBADF}
+	{}
+
+};
+
+class OEV_UTILS_PUBLIC GliderVarioPortBufferTooSmallForDatagram :public GliderVarioPortIOException {
+public:
+	GliderVarioPortBufferTooSmallForDatagram (
+			char const *source,
+			int line)
+		:GliderVarioPortIOException {source,line,"Buffer too small for datagram.",EBADF}
+	{}
+
+};
+
+class OEV_UTILS_PUBLIC GliderVarioPortNotConnected :public GliderVarioPortIOException {
+public:
+	GliderVarioPortNotConnected (
+			char const *source,
+			int line)
+		:GliderVarioPortIOException {source,line,"The port is not connected or the destination address is undefined.",EBADF}
+	{}
+
+};
+
 
 class OEV_UTILS_PUBLIC GliderVarioPortOpenException :public GliderVarioPortIOException {
 public:
@@ -228,6 +278,18 @@ public:
 			char const *description,
 			int errNo = -1)
 		:GliderVarioPortIOException {source,line,description,errNo}
+	{}
+
+};
+
+class OEV_UTILS_PUBLIC GliderVarioPortIsNoTTY :public GliderVarioPortIOException {
+public:
+	/// \see GliderVarioPortWriteException::GliderVarioPortWriteException()
+	GliderVarioPortIsNoTTY (
+			char const *source,
+			int line,
+			char const *description)
+		:GliderVarioPortIOException {source,line,description,ENOTTY}
 	{}
 
 };
