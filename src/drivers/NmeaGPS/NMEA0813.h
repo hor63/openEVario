@@ -67,9 +67,9 @@ public:
 		/// Number of bytes in \ref buf.
 		uint32_t bufLen;
 		/// \brief Talker ID from the first field. It is actually copied here.
-		uint8_t TalkerID[4];
+		uint8_t talkerID[4];
 		/// \brief Points to the character in the first field behind the talker ID designating the sentence type.
-		uint8_t *SentenceType;
+		uint8_t *sentenceType;
 		/// \brief The data fields of the sentence. The strings themselves lie in \p buf.
 		uint8_t * fields [maxNumFields];
 		/// Number of defined \ref fields
@@ -93,10 +93,22 @@ private:
 	 */
 	bool currSentenceActive = true;
 
-	/** \brief Parse and process one NMEA sentence in \ref currSentence
+	/** \brief Parse one NMEA sentence in \ref currSentence
+	 *
+	 * Go through currSentence.buf. Replace the ',' separators with '\0' to create partial C strings
+	 * for each field.
+	 * The start of each field is then stored in currSentence.fields[i].
+	 * In addition the first field is separated into currSentence.talkerID, and currSentence.sentenceType.
 	 *
 	 */
-	void processSentence();
+	void parseSentence();
+
+	/** \brief Process each parsed sentence
+	 *
+	 * Process each sentence based on currSentence.sentenceType
+	 *
+	 */
+	void processParsedSentence();
 };
 
 } /* namespace openEV */

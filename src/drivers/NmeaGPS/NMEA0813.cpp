@@ -86,7 +86,7 @@ void NMEA0813::processSensorData(const uint8_t *data, uint32_t dataLen) {
 						currSentence.buf[currSentence.bufLen] = 0;
 						LOG4CXX_DEBUG (logger, "processSensorData: Received one line: \"" << currSentence.buf << "\"");
 
-						processSentence();
+						parseSentence();
 
 						// Start over.
 						currSentenceActive = false;
@@ -139,7 +139,7 @@ void NMEA0813::processSensorData(const uint8_t *data, uint32_t dataLen) {
 
 }
 
-void NMEA0813::processSentence() {
+void NMEA0813::parseSentence() {
 
 	uint8_t checksum = 0;
 
@@ -156,6 +156,8 @@ void NMEA0813::processSentence() {
 				auto msgChkSum = strtoul((char const*)(&currSentence.buf[i + 1]),nullptr,16);
 				if (msgChkSum == checksum){
 					LOG4CXX_DEBUG(logger, "Checksum \"" << &currSentence.buf[i + 1] << "\" matches.");
+					// Now process the validated and parsed sentence.
+					processParsedSentence();
 				}
 			} else {
 				LOG4CXX_WARN(logger,"Read invalid checksum section \""
@@ -190,31 +192,31 @@ void NMEA0813::processSentence() {
 	// Process the type of sentence, and talker ID.
 	if (currSentence.buf[0] == 'P') {
 		// Proprietary message Talker ID is one character.
-		currSentence.TalkerID[0] = 'P';
-		currSentence.TalkerID[1] = 0;
+		currSentence.talkerID[0] = 'P';
+		currSentence.talkerID[1] = 0;
 	} else {
 		// A regular NMEA message. Talker ID is expected to be 2 char.
 		// But you never can be sure. I will check that too.
-		currSentence.TalkerID[0] = currSentence.buf[0];
-		currSentence.TalkerID[1] = currSentence.buf[1];
-		currSentence.TalkerID[2] = 0;
+		currSentence.talkerID[0] = currSentence.buf[0];
+		currSentence.talkerID[1] = currSentence.buf[1];
+		currSentence.talkerID[2] = 0;
 
 		// Prevent spill-over of sentence type into the next field in case
 		// that the preamble is only one character, and not 'P'.
 		// Illegal, but I want to avoid any accidents
 		if (currSentence.buf[1] != 0) {
-			currSentence.SentenceType = &currSentence.buf[2];
+			currSentence.sentenceType = &currSentence.buf[2];
 		} else {
 			// currSentence.buf[1] is already \0. Therefore the sentence type is also emtpy.
-			currSentence.SentenceType = &currSentence.buf[1];
+			currSentence.sentenceType = &currSentence.buf[1];
 		}
 	}
 
 #if defined HAVE_LOG4CXX_H
 	if (logger->isDebugEnabled()) {
 		std::ostringstream txt;
-		txt << "NMEA sentence parsed: \nTalker ID: \"" << currSentence.TalkerID
-				<< "\", \nsentence type: \"" << currSentence.SentenceType
+		txt << "NMEA sentence parsed: \nTalker ID: \"" << currSentence.talkerID
+				<< "\", \nsentence type: \"" << currSentence.sentenceType
 				<< "\", \nnumber fields: " << currSentence.numFields;
 		for (uint32_t i = 0; i < currSentence.numFields; i++) {
 			txt << "\n	fields[" << i << "] = \"" << currSentence.fields[i] << "\"";
@@ -223,6 +225,9 @@ void NMEA0813::processSentence() {
 	}
 #endif // #if defined HAVE_LOG4CXX_H
 
+}
+
+void NMEA0813::processParsedSentence() {
 }
 
 } /* namespace openEV */
