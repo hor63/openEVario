@@ -156,7 +156,7 @@ openEVNmeaGPS_la_DEPENDENCIES = ../../main/libopenEVMain.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
 am_openEVNmeaGPS_la_OBJECTS = NmeaGPSMain.lo NmeaGPSLib.lo \
-	NmeaGPSDriver.lo NMEA0813.lo
+	NmeaGPSDriver.lo NMEA0813.lo NMEASet.lo
 openEVNmeaGPS_la_OBJECTS = $(am_openEVNmeaGPS_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -181,7 +181,7 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/NMEA0813.Plo \
+am__depfiles_remade = ./$(DEPDIR)/NMEA0813.Plo ./$(DEPDIR)/NMEASet.Plo \
 	./$(DEPDIR)/NmeaGPSDriver.Plo ./$(DEPDIR)/NmeaGPSLib.Plo \
 	./$(DEPDIR)/NmeaGPSMain.Plo
 am__mv = mv -f
@@ -417,9 +417,11 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 pkglib_LTLIBRARIES = openEVNmeaGPS.la
-openEVNmeaGPS_la_SOURCES = NmeaGPSMain.cpp NmeaGPSLib.cpp NmeaGPSDriver.cpp NMEA0813.cpp
+openEVNmeaGPS_la_SOURCES = NmeaGPSMain.cpp NmeaGPSLib.cpp NmeaGPSDriver.cpp NMEA0813.cpp NMEASet.cpp
 openEVNmeaGPS_la_LDFLAGS = $(LD_NO_UNDEFINED_OPT) $(MAIN_LDFLAGS) $(LOG4CXX_LDFLAGS) -module
-openEVNmeaGPS_la_LIBADD = ../../main/libopenEVMain.la ../../kalman/libopenEVKalman.la ../../util/libopenEVUtil.la $(LOG4CXX_LIBS) $(MAIN_LIBS) $(PTHREAD_LIBS)
+openEVNmeaGPS_la_LIBADD = ../../main/libopenEVMain.la ../../kalman/libopenEVKalman.la ../../util/libopenEVUtil.la $(LOG4CXX_LIBS) \
+	 $(MAIN_LIBS) $(PTHREAD_LIBS)
+
 AM_CXXFLAGS = -I../../.. -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen \
 	$(LOG4CXX_CXXFLAGS) \
 	$(PTHREAD_CFLAGS) \
@@ -506,6 +508,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NMEA0813.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NMEASet.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NmeaGPSDriver.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NmeaGPSLib.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NmeaGPSMain.Plo@am__quote@ # am--include-marker
@@ -672,6 +675,7 @@ clean-am: clean-generic clean-libtool clean-pkglibLTLIBRARIES \
 
 distclean: distclean-am
 		-rm -f ./$(DEPDIR)/NMEA0813.Plo
+	-rm -f ./$(DEPDIR)/NMEASet.Plo
 	-rm -f ./$(DEPDIR)/NmeaGPSDriver.Plo
 	-rm -f ./$(DEPDIR)/NmeaGPSLib.Plo
 	-rm -f ./$(DEPDIR)/NmeaGPSMain.Plo
@@ -721,6 +725,7 @@ installcheck-am:
 
 maintainer-clean: maintainer-clean-am
 		-rm -f ./$(DEPDIR)/NMEA0813.Plo
+	-rm -f ./$(DEPDIR)/NMEASet.Plo
 	-rm -f ./$(DEPDIR)/NmeaGPSDriver.Plo
 	-rm -f ./$(DEPDIR)/NmeaGPSLib.Plo
 	-rm -f ./$(DEPDIR)/NmeaGPSMain.Plo
