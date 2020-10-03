@@ -51,7 +51,7 @@ public:
 	 * incl. CR and LF characters. So here I am on the safe side.
 	 *
 	 */
-	static constexpr uint16_t maxLenSentence = 128;
+	static constexpr uint16_t maxLenSentence = 256;
 
 	/** \brief Max. number of fields in a NMEA sentence
 	 *
@@ -71,7 +71,7 @@ public:
 		/// \brief Points to the character in the first field behind the talker ID designating the sentence type.
 		uint8_t *sentenceType;
 		/// \brief The data fields of the sentence. The strings themselves lie in \p buf.
-		uint8_t * fields [maxNumFields];
+		uint8_t * (fields [maxNumFields]);
 		/// Number of defined \ref fields
 		uint32_t numFields;
 	};
