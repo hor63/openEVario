@@ -238,6 +238,13 @@ public:
 	// Number of teach-in cycles to run.
 	static constexpr uint32_t numTeachInCycles = 10;
 
+	/** \brief The initial value of \ref currSequenceTimestampMS.
+	 *
+	 * The initial value is used to distinguish if the initial set of values is
+	 */
+
+	static constexpr uint32_t NMEATimeStampUndef = 0xFFFFFFFFU;
+
 
 	/** \brief Records of the teach-in/learning phase.
 	 *
@@ -270,6 +277,8 @@ public:
 	struct TeachInCollection {
 		/// Number of valid records in \p records
 		uint32_t numInCollection = 0;
+		/// Local timestamp of receipt of the first sentence of the current cycle
+		std::chrono::system_clock::time_point cycleStart;
 		/// The array of records. The number of actually defined records is stored in \p numInCollection.
 		TeachInRecord records [numExpectedSentencesPerCycle];
 	};
@@ -310,14 +319,16 @@ private:
 	TeachInCollection *teachInRecords;
 
 	/** Number of teach-in cycles have been completed.
-	uint32_t numTeachInCycles = 0;
+	 *
+	 */
+	uint32_t numTeachInCyclesExecuted = 0;
 
 	/** \brief Last timestamp of an GNSS fix and message sequence
 	 *
 	 * This is milliseconds after midnight today, taken from the GPS sentences, not std::chrono::
 	 * The initial value can never be reached because the timestamp resets every day.
 	 */
-	uint32_t currSequenceTimestampMS = 0xFFFFFFFFU;
+	uint32_t currSequenceTimestampMS = NMEATimeStampUndef;
 
 	/** \brief System timestamp when the first sentence of the current sequence was received.
 	 *
@@ -337,6 +348,16 @@ private:
 	 * @param newSentence parsed and verified NMEA sentence
 	 */
 	void processSentenceTeachIn(NMEA0813::NMEASentence const& newSentence);
+
+	/** \brief Finish the teach-in cycle, and switch to regular NMEA sentence processing.
+	 *
+	 * Analyze the type of sentences which were received during the teach-in phase.
+	 * Figure out the minimum set of sentences which I will use for an update of the Kalman filter.
+	 * This optimizes the delay between the actual time of the fix, and the receipt and processing of the NMEA sententes of the fix.
+	 * Since some receivers only communicate only with 9600 or even 4800 baud the delay is pretty significant, and any optimization here
+	 * is effective.
+	 */
+	void finishTeachIn();
 
 	/** \brief Process a new NMEA sentence in operations mode.
 	 *
