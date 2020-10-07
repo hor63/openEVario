@@ -345,6 +345,8 @@ void NMEASet::processSentenceTeachIn(
 
 	try {
 
+		LOG4CXX_DEBUG(logger,"processSentenceTeachIn: Process message type " << newSentence.sentenceType);
+
 		if (! strcmp((char const*)(newSentence.sentenceType),"GGA")) {
 			// If the timestamp is undefined the GNSS receiver is totally in the dark,
 			// and does not even have a battery backed RTC.
@@ -415,18 +417,33 @@ void NMEASet::processSentenceTeachIn(
 	if (useLocRecord && teachInStarted) {
 
 		if (currSequenceTimestampMS != thisGPSTimeStampMS) {
-			// If the last timestamp is at the initial value stay at index 0.
+			// If the last timestamp is at the initial value throw away messages until
+			// the next timestamp change occurs.
+			// Only this way I can be sure to catch the first start of a new cycle properly.
 			if (currSequenceTimestampMS != NMEATimeStampUndef) {
-				// Else progress to the next index
-				numTeachInCyclesExecuted ++;
+				// If the index was not used up to now ...
+				if (numTeachInCyclesExecuted == 0xFFFFFFFFU) {
+					// ... initialize it
+					numTeachInCyclesExecuted = 0;
+				} else {
+					// ... else progress to the next index
+					numTeachInCyclesExecuted ++;
+				}
 				if (numTeachInCyclesExecuted == numTeachInCycles) {
 					finishTeachIn();
+
+					// Switch to the operational message processor
+					// Without that this method would be called forever and be stuck here.
+					processSentenceFunction = &processSentenceOperation;
 					return;
 				}
 
 				// I am progressing from a previous real timestamp to the next one.
 				// This means this is really the start of a new cycle
 				teachInStarted = true;
+				LOG4CXX_WARN(logger,"processSentenceTeachIn: Last timestamp = " << currSequenceTimestampMS
+						<< " New timestamp = " << thisGPSTimeStampMS
+						<< ". Teach-in in progress. New numTeachInCyclesExecuted = " << numTeachInCyclesExecuted);
 			}
 			// this is the start of a new cycle
 			currSequenceTimestampMS = thisGPSTimeStampMS;
@@ -439,6 +456,10 @@ void NMEASet::processSentenceTeachIn(
 			TeachInCollection& currCollection = teachInRecords [numTeachInCyclesExecuted];
 
 			if (currCollection.numInCollection < numExpectedSentencesPerCycle) {
+				LOG4CXX_DEBUG(logger, "processSentenceTeachIn: Add message " << newSentence.sentenceType
+						<< " as #" << currCollection.numInCollection
+						<< " to collection #"  << numTeachInCyclesExecuted);
+
 				locRecord.timeAfterCycleStart = currTime - currCollection.cycleStart;
 				currCollection.records[currCollection.numInCollection] = locRecord;
 				currCollection.numInCollection ++;
@@ -452,7 +473,64 @@ void NMEASet::processSentenceTeachIn(
 }
 
 inline void NMEASet::finishTeachIn() {
-	/// todo: Implement me
+
+	// Store the common sentence sequences, and the number of occurrences
+	struct CommonRecord {
+		/// Number of records with the same sentence sequence
+		uint32_t numEqualRecords;
+		/// Indexes of records which have the same sentence sequence
+		uint32_t teachInRecordIndexes [numTeachInCycles];
+	} commonRecords [numTeachInCycles];
+	uint32_t numCommonRecords;
+
+	memset(commonRecords,0,sizeof(commonRecords));
+
+	// The first record is by definition always the first template.
+	commonRecords[0].numEqualRecords = 1;
+	commonRecords[0].teachInRecordIndexes[0] = 0;
+	numCommonRecords = 1;
+
+	for (uint32_t i = 1; i < numTeachInCycles; i++) {
+		bool foundRecord = false;
+		// Compare the cycles. Run through the previous collected common sets.
+		for (uint32_t k = 0; k < numCommonRecords; k++) {
+			CommonRecord &currCommonRecord = commonRecords[k];
+			TeachInCollection &newRecord = teachInRecords[i];
+			TeachInCollection &refRecord = teachInRecords[currCommonRecord.teachInRecordIndexes[0]];
+			if (newRecord.numInCollection == refRecord.numInCollection) {
+				foundRecord = true;
+				for (uint32_t l = 0; l < newRecord.numInCollection; l++) {
+					if (newRecord.records[l].recordType != refRecord.records[l].recordType) {
+						foundRecord = false;
+						break;
+					}
+				} // for (uint32_t l = 0; l < newRecord.numInCollection; l++)
+			} // if (newRecord.numInCollection == refRecord.numInCollection)
+
+			if (foundRecord) {
+				LOG4CXX_DEBUG(logger,"finishTeachIn: Collection #" << i << " joins common record #" << k
+						<< " as member #" << currCommonRecord.numEqualRecords
+						<< " and is equal to template collection #" << currCommonRecord.teachInRecordIndexes[0]);
+
+				// Store the index of the current record
+				currCommonRecord.teachInRecordIndexes[currCommonRecord.numEqualRecords] = i;
+				currCommonRecord.numEqualRecords ++;
+
+				// And finish the search for the current record because I had a hit.
+				break;
+			}
+
+		} // for (uint32_t k = 0; commonRecords[k].numEqualRecords != 0; k++)
+
+		if (!foundRecord) {
+			// This collection defines a new template.
+			LOG4CXX_DEBUG(logger,"finishTeachIn: Add collection # " << i << " as new template #" << numCommonRecords);
+			commonRecords[numCommonRecords].numEqualRecords = 1;
+			commonRecords[numCommonRecords].teachInRecordIndexes[0] = i;
+			numCommonRecords ++;
+		}
+	} // for (uint32_t i = 1; i < numTeachInCycles; i++)
+
 }
 
 void NMEASet::processSentenceOperation(

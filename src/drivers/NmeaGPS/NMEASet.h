@@ -321,7 +321,7 @@ private:
 	/** Number of teach-in cycles have been completed.
 	 *
 	 */
-	uint32_t numTeachInCyclesExecuted = 0;
+	uint32_t numTeachInCyclesExecuted = 0xFFFFFFFFU;
 
 	/** \brief Last timestamp of an GNSS fix and message sequence
 	 *
