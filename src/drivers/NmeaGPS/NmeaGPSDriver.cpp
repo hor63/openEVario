@@ -154,8 +154,8 @@ void NmeaGPSDriver::driverThreadFunction() {
 
 void NmeaGPSDriver::processingMainLoop () {
 
-	uint8_t buf [NMEA0813::maxLenSentence];
-	NMEA0813 nmeaProcessor;
+	uint8_t buf [NMEASentence::maxLenSentence];
+	NMEA0813 nmeaProcessor(nmeaSet);
 
 	while (!getStopDriverThread()) {
 		// LOG4CXX_DEBUG (logger,"Driver " << driverName << ": Read max. " << sizeof (buf) << " bytes from the port");

@@ -28,6 +28,7 @@
 
 #include <fstream>
 
+#include "NmeaGPSDriver.h"
 #include "NMEA0813.h"
 
 #if defined HAVE_LOG4CXX_H
@@ -44,7 +45,9 @@ static inline void initLogger() {
 
 namespace openEV {
 
-NMEA0813::NMEA0813() {
+NMEA0813::NMEA0813(NMEASet& set)
+		:nmeaSet{set}
+{
 
 	initLogger();
 
@@ -115,7 +118,7 @@ void NMEA0813::processSensorData(const uint8_t *data, uint32_t dataLen) {
 				}
 
 				// Check for buffer overrun
-				if (currSentence.bufLen >= (maxLenSentence - 1)) {
+				if (currSentence.bufLen >= (NMEASentence::maxLenSentence - 1)) {
 					// Even with the buffer being a good deal larger than the max. length of sentences (80 char)
 					// the buffer overflows.
 					// This means I missed somehow the end of the previous sentence.
@@ -143,7 +146,7 @@ void NMEA0813::parseSentence() {
 
 	uint8_t checksum = 0;
 
-	for (uint32_t i=0; i<maxLenSentence && currSentence.buf[i] != 0; i++) {
+	for (uint32_t i=0; i<NMEASentence::maxLenSentence && currSentence.buf[i] != 0; i++) {
 
 		// The last first: Checksum check, and the end of the message.
 		if (currSentence.buf[i] == '*') {
@@ -156,8 +159,6 @@ void NMEA0813::parseSentence() {
 				auto msgChkSum = strtoul((char const*)(&currSentence.buf[i + 1]),nullptr,16);
 				if (msgChkSum == checksum){
 					LOG4CXX_DEBUG(logger, "Checksum \"" << &currSentence.buf[i + 1] << "\" matches.");
-					// Now process the validated and parsed sentence.
-					processParsedSentence();
 				}
 			} else {
 				LOG4CXX_WARN(logger,"Read invalid checksum section \""
@@ -177,7 +178,7 @@ void NMEA0813::parseSentence() {
 			// Make it a \0 string terminator
 			currSentence.buf[i] = 0;
 
-			if (currSentence.numFields < maxNumFields) {
+			if (currSentence.numFields < NMEASentence::maxNumFields) {
 			// Store the start of the next field in the sentence
 			currSentence.fields[currSentence.numFields] = &currSentence.buf[i+1];
 			currSentence.numFields++;
@@ -225,9 +226,10 @@ void NMEA0813::parseSentence() {
 	}
 #endif // #if defined HAVE_LOG4CXX_H
 
-}
+	// Now process the validated and parsed sentence.
+	nmeaSet.processSentence(currSentence);
 
-void NMEA0813::processParsedSentence() {
+
 }
 
 } /* namespace openEV */

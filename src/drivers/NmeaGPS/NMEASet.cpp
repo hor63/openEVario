@@ -28,6 +28,7 @@
 
 #include <fstream>
 
+#include "NMEA0813.h"
 #include "NMEASet.h"
 #include "kalman/GliderVarioTransitionMatrix.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
@@ -260,7 +261,7 @@ uint32_t NMEASet::NMEATimeStampToMS(uint8_t const *timestampStr) {
 		LOG4CXX_WARN(logger,str.str());
 		throw NMEASetParseException(__FILE__,__LINE__,str.str().c_str());
 	}
-	if (isDigit(*timestampStr)) {
+	if (isDigit(*lStr)) {
 		rc += (*lStr - '0') * (1000*3600);
 		lStr ++;
 	} else {
@@ -272,9 +273,9 @@ uint32_t NMEASet::NMEATimeStampToMS(uint8_t const *timestampStr) {
 	}
 
 
-	// First two characters are minutes
+	// Next two characters are minutes
 	if (isDigit(*lStr)) {
-		rc = (*lStr - '0') * (1000*60*10);
+		rc += (*lStr - '0') * (1000*60*10);
 		lStr ++;
 	} else {
 		// Not a digit. This is therefore not a valid timestamp string
@@ -294,9 +295,9 @@ uint32_t NMEASet::NMEATimeStampToMS(uint8_t const *timestampStr) {
 		throw NMEASetParseException(__FILE__,__LINE__,str.str().c_str());
 	}
 
-	// First two characters are seconds
+	// Next two characters are seconds
 	if (isDigit(*lStr)) {
-		rc = (*lStr - '0') * (1000*10);
+		rc += (*lStr - '0') * (1000*10);
 		lStr ++;
 	} else {
 		// Not a digit. This is therefore not a valid timestamp string
@@ -328,13 +329,13 @@ uint32_t NMEASet::NMEATimeStampToMS(uint8_t const *timestampStr) {
 		}
 	}
 
-	LOG4CXX_DEBUG(logger,"NMEASet::NMEATimeStampToMS: \"" << timestampStr << "\" converted to ." << rc);
+	LOG4CXX_DEBUG(logger,"NMEASet::NMEATimeStampToMS: \"" << timestampStr << "\" converted to " << rc);
 
 	return rc;
 }
 
 void NMEASet::processSentenceTeachIn(
-		const NMEA0813::NMEASentence &newSentence) {
+		const NMEASentence &newSentence) {
 
 	auto currTime = std::chrono::system_clock::now();
 
@@ -435,6 +436,8 @@ void NMEASet::processSentenceTeachIn(
 					// Switch to the operational message processor
 					// Without that this method would be called forever and be stuck here.
 					processSentenceFunction = &processSentenceOperation;
+					delete[] teachInRecords;
+					teachInRecords = nullptr;
 					return;
 				}
 
@@ -534,7 +537,10 @@ inline void NMEASet::finishTeachIn() {
 }
 
 void NMEASet::processSentenceOperation(
-		const NMEA0813::NMEASentence &newSentence) {
+		const NMEASentence &newSentence) {
+
+	LOG4CXX_DEBUG(logger,"processSentenceOperation: Message " << newSentence.talkerID << ' ' << newSentence.sentenceType);
+
 }
 
 } /* namespace openEV */

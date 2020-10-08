@@ -30,8 +30,9 @@
 #include <string>
 
 #include "OEVCommon.h"
-#include "drivers/NmeaGPS/NmeaGPSDriver.h"
-#include "drivers/NmeaGPS/NMEA0813.h"
+#include "NmeaGPSDriver.h"
+#include "NMEASentence.h"
+#include "NMEA0813.h"
 
 
 namespace openEV {
@@ -297,7 +298,7 @@ public:
 	 *
 	 * @param newSentence parsed and verified sentence
 	 */
-	void processSentence(NMEA0813::NMEASentence const& newSentence) {
+	void processSentence(NMEASentence const& newSentence) {
 		(this->*processSentenceFunction)(newSentence);
 	}
 
@@ -347,7 +348,7 @@ private:
 	 *
 	 * @param newSentence parsed and verified NMEA sentence
 	 */
-	void processSentenceTeachIn(NMEA0813::NMEASentence const& newSentence);
+	void processSentenceTeachIn(NMEASentence const& newSentence);
 
 	/** \brief Finish the teach-in cycle, and switch to regular NMEA sentence processing.
 	 *
@@ -370,7 +371,7 @@ private:
 	 *
 	 * @param newSentence parsed and verified NMEA sentence
 	 */
-	void processSentenceOperation(NMEA0813::NMEASentence const& newSentence);
+	void processSentenceOperation(NMEASentence const& newSentence);
 
 	/** \brief Function pointer to the sentence processor
 	 *
@@ -379,9 +380,7 @@ private:
 	 *
 	 * @param newSentence parsed and verified NMEA sentence
 	 */
-	void (NMEASet::* processSentenceFunction) (NMEA0813::NMEASentence const& newSentence) = &processSentenceTeachIn;
-
-
+	void (NMEASet::* processSentenceFunction) (NMEASentence const& newSentence) = &processSentenceTeachIn;
 
 };
 

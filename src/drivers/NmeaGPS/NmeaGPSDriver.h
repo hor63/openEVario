@@ -33,6 +33,7 @@
 
 #include "drivers/GliderVarioDriverBase.h"
 #include "NmeaGPSLib.h"
+#include "NMEASet.h"
 
 #include "util/io/StreamPort.h"
 
@@ -126,6 +127,7 @@ private:
     /// TCP will work either.
     io::StreamPort *ioPort = nullptr;
 
+    NMEASet nmeaSet;
 
 };
 

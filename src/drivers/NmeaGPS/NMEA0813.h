@@ -29,9 +29,12 @@
 #include <string>
 
 #include "OEVCommon.h"
+#include "NMEASentence.h"
 #include "NmeaGPSDriver.h"
 
 namespace openEV {
+
+class NMEASet;
 
 /** \brief Implements a reader of NMEA 0813 sentences.
  *
@@ -45,38 +48,7 @@ namespace openEV {
 class NMEA0813 {
 public:
 
-	/** \brief Max. length of internal buffers for NMEA sentences.
-	 *
-	 * According to specification the maximum length of a sentence cannot be more than 82 characters
-	 * incl. CR and LF characters. So here I am on the safe side.
-	 *
-	 */
-	static constexpr uint16_t maxLenSentence = 256;
-
-	/** \brief Max. number of fields in a NMEA sentence
-	 *
-	 */
-	static constexpr int maxNumFields   = 30;
-
-	struct NMEASentence {
-		/** \brief Complete string of the sentence.
-		 *
-		 * During processing it is modified: Commas and the '*' are replaced by '\0' as string terminator of the fields
-		 */
-		uint8_t buf [maxLenSentence];
-		/// Number of bytes in \ref buf.
-		uint32_t bufLen;
-		/// \brief Talker ID from the first field. It is actually copied here.
-		uint8_t talkerID[4];
-		/// \brief Points to the character in the first field behind the talker ID designating the sentence type.
-		uint8_t *sentenceType;
-		/// \brief The data fields of the sentence. The strings themselves lie in \p buf.
-		uint8_t * (fields [maxNumFields]);
-		/// Number of defined \ref fields
-		uint32_t numFields;
-	};
-
-	NMEA0813();
+	NMEA0813(NMEASet& set);
 	virtual ~NMEA0813();
 
 	void processSensorData (uint8_t const *data,uint32_t dataLen);
@@ -93,6 +65,8 @@ private:
 	 */
 	bool currSentenceActive = true;
 
+	NMEASet& nmeaSet;
+
 	/** \brief Parse one NMEA sentence in \ref currSentence
 	 *
 	 * Go through currSentence.buf. Replace the ',' separators with '\0' to create partial C strings
@@ -103,12 +77,6 @@ private:
 	 */
 	void parseSentence();
 
-	/** \brief Process each parsed sentence
-	 *
-	 * Process each sentence based on currSentence.sentenceType
-	 *
-	 */
-	void processParsedSentence();
 };
 
 } /* namespace openEV */
