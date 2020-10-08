@@ -422,7 +422,7 @@ void NMEASet::processSentenceTeachIn(
 			// Only this way I can be sure to catch the first start of a new cycle properly.
 			if (currSequenceTimestampMS != NMEATimeStampUndef) {
 				// If the index was not used up to now ...
-				if (numTeachInCyclesExecuted == 0xFFFFFFFFU) {
+				if (numTeachInCyclesExecuted == UINT32_MAX ) {
 					// ... initialize it
 					numTeachInCyclesExecuted = 0;
 				} else {
