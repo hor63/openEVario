@@ -396,7 +396,6 @@ void NMEASet::processSentenceTeachIn(
 			// Because I do not have a timestamp I cannot decide if teach-in started.
 			// Teach-in starts when the timestamp changes compared to the previous cycle,
 			// or to the initial unplausible timestamp.
-			// teachInStarted = true;
 			locRecord.definesHDop = true;
 			locRecord.definesPDop = true;
 			locRecord.definesVDop = true;
@@ -415,7 +414,7 @@ void NMEASet::processSentenceTeachIn(
 		LOG4CXX_WARN(logger,"processSentenceTeachIn: Sentence " << newSentence.sentenceType << " failed. Reason: " << e.what());
 	}
 
-	if (useLocRecord && teachInStarted) {
+	if (useLocRecord) {
 
 		if (currSequenceTimestampMS != thisGPSTimeStampMS) {
 			// If the last timestamp is at the initial value throw away messages until
@@ -430,6 +429,7 @@ void NMEASet::processSentenceTeachIn(
 					// ... else progress to the next index
 					numTeachInCyclesExecuted ++;
 				}
+				teachInRecords [numTeachInCyclesExecuted].cycleStart = currTime;
 				if (numTeachInCyclesExecuted == numTeachInCycles) {
 					finishTeachIn();
 
@@ -444,14 +444,13 @@ void NMEASet::processSentenceTeachIn(
 				// I am progressing from a previous real timestamp to the next one.
 				// This means this is really the start of a new cycle
 				teachInStarted = true;
-				LOG4CXX_WARN(logger,"processSentenceTeachIn: Last timestamp = " << currSequenceTimestampMS
+				LOG4CXX_DEBUG(logger,"processSentenceTeachIn: Last timestamp = " << currSequenceTimestampMS
 						<< " New timestamp = " << thisGPSTimeStampMS
 						<< ". Teach-in in progress. New numTeachInCyclesExecuted = " << numTeachInCyclesExecuted);
 			}
 			// this is the start of a new cycle
 			currSequenceTimestampMS = thisGPSTimeStampMS;
 			// Store the local timestamp as start of the new cycle
-			teachInRecords [numTeachInCyclesExecuted].cycleStart = currTime;
 
 		}
 
