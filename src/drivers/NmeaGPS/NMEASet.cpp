@@ -46,18 +46,6 @@ static inline void initLogger() {
 
 namespace openEV {
 
-class NMEASetParseException: public GliderVarioExceptionBase {
-public:
-
-	NMEASetParseException (
-			char const *source,
-			int line,
-			char const *description)
-	: GliderVarioExceptionBase{source,line,description}
-		{}
-
-};
-
 NMEASet::NMEASet() {
 
 #if defined HAVE_LOG4CXX_H
@@ -82,21 +70,7 @@ inline bool isDigit (int c) {
 	return (c>='0' && c<='9');
 }
 
-/** \brief Specialized and fast string to double conversion function
- *
- * \p str is a 0-terminated string and must consist of digits only and one optional decimal separator, and an optional leading '-' or '+' character.
- * The string must be 0-terminated.
- * Any invalid character in the string leads to a NMEASetParseException exception.\n
- * The decimal separator is fixed '.'. Locales are not evaluated. \n
- * Base is always 10. Leading 0[xX] is not evaluated. Leading 0s are just ignored.
- * Leading space characters are allowed
- *
- *
- * @param str The string
- * @return double value of the string
- * @throws NMEASetParseException
- */
-static double strToD (uint8_t const *str) {
+double NMEASet::strToD (uint8_t const *str) {
 	double rc = 0.0;
 	double sign = 1.0;
 	double factor = 1.0;
@@ -145,22 +119,7 @@ static double strToD (uint8_t const *str) {
 	return rc * sign;
 }
 
-/** \brief Specialized and fast string to double conversion function for a fxied length, not 0-terminated string
- *
- * \p str is a string of which only the first \p maxLen characters are being considered. It does therefore not have to be 0-terminated. \n
- * \p str must consist of digits only and one optional decimal separator, and an optional leading '-' or '+' character.
- * Any invalid character in the string leads to a NMEASetParseException exception.\n
- * The decimal separator is fixed '.'. Locales are not evaluated. \n
- * Base is always 10. Leading 0[xX] is not evaluated. Leading 0s are just ignored.
- * Leading space characters are allowed
- *
- *
- * @param str The string containing the number
- * @param maxLen Number of characters up to \p str is valid.
- * @return double value of the string
- * @throws NMEASetParseException
- */
-static double strToD (uint8_t const *str,uint32_t maxLen) {
+double NMEASet::strToD (uint8_t const *str,uint32_t maxLen) {
 	uint8_t * strippedStr = new uint8_t[maxLen + 1];
 	double rc;
 
@@ -181,24 +140,7 @@ static double strToD (uint8_t const *str,uint32_t maxLen) {
 	return rc;
 }
 
-/** \brief Convert a coordinate string of a NMEA 0813 sentence into decimal degrees
- *
- * In NMEA 0813 sentences coordinates are presented as degrees and decimal minutes. \n
- * There is no separator between the degrees and minutes. The assumption is that the two digits
- * left of the decimal separator are the minutes. Anything before are the integer digits of the degrees.
- * The two common forms are:
- * - Longitude with 3-digit degrees: dddmm.mmm, e.g. 01032.2221 which is 10° 32.2221'
- * - Latitude with 2-digit degrees: ddmm.mmmm, e.g. 5002.12 is 50° 2.12'
- *
- * The number of decimal digits varies for different GNSS receivers (I tested U-Blox Antaris 4, U-Blox 6, and a SiRF 3 or 4.)
- * Also it is not guaranteed that the number of digits of degrees are always filled up with leading 0s.
- *
- * @param str The string containing an coordinate angle in NMEA format.
- * @return Angle in decimal degrees
- * @throws NMEASetParseException
- *
- */
-static double nmeaCoordToD(uint8_t const * str) {
+double NMEASet::nmeaCoordToD(uint8_t const * str) {
 
 	double degrees;
 	double minutes;
@@ -236,15 +178,6 @@ static double nmeaCoordToD(uint8_t const * str) {
 	return degrees + minutes / 60.0;
 }
 
-/** \brief Convert the timestamp from a NMEA sentence into milliseconds since 00:00 UTC of the day.
- *
- * The existence of second decimals is optional. \n
- * The number of second decimals is cut off after max. three decimals
- *
- * @param timestampStr String containing the timestamp in the format hhmiss.ssss
- * @return
- * @throw NMEASetParseException when non-digit characters except the decimal separator as 7th character occur
- */
 uint32_t NMEASet::NMEATimeStampToMS(uint8_t const *timestampStr) {
 	uint32_t rc = 0xFFFFFFFFU;
 	uint32_t i = 0;
