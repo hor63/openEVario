@@ -333,6 +333,15 @@ void NMEASet::processSentenceTeachIn(
 			locRecord.definesPDop = true;
 			locRecord.definesVDop = true;
 			locRecord.definesQualitiyLevel = true;
+		}  else if (! strcmp((char const*)(newSentence.sentenceType),"GST")) {
+			// If the timestamp is undefined the GNSS receiver is totally in the dark,
+			// and does not even have a battery backed RTC.
+			// Do not use teach-in now.
+			if (*(newSentence.fields[GST_TIME]) != 0) {
+				thisGPSTimeStampMS = NMEATimeStampToMS(newSentence.fields[GST_TIME]);
+				useLocRecord = true;
+				locRecord.definesAbsErr = true;
+			}
 		} else if (! strcmp((char const*)(newSentence.sentenceType),"RMC")) {
 			if (*(newSentence.fields[RMC_TIME]) != 0) {
 				thisGPSTimeStampMS = NMEATimeStampToMS(newSentence.fields[RMC_TIME]);
@@ -409,13 +418,7 @@ void NMEASet::processSentenceTeachIn(
 
 inline void NMEASet::finishTeachIn() {
 
-	// Store the common sentence sequences, and the number of occurrences
-	struct CommonRecord {
-		/// Number of records with the same sentence sequence
-		uint32_t numEqualRecords;
-		/// Indexes of records which have the same sentence sequence
-		uint32_t teachInRecordIndexes [numTeachInCycles];
-	} commonRecords [numTeachInCycles];
+	CommonRecord commonRecords [numTeachInCycles];
 	uint32_t numCommonRecords;
 
 	memset(commonRecords,0,sizeof(commonRecords));
@@ -466,6 +469,123 @@ inline void NMEASet::finishTeachIn() {
 		}
 	} // for (uint32_t i = 1; i < numTeachInCycles; i++)
 
+}
+
+
+void NMEASet::determineNMEASet(CommonRecord *commonRecords, uint32_t numCommonRecords) {
+
+	uint32_t usedCommonSequence = UINT32_MAX;
+	// First determine the one set with more then 50% of occurrences.
+	for (uint32_t i = 0 ; i< numTeachInCycles;i++){
+		if (commonRecords[i].numEqualRecords > (numTeachInCycles/2)) {
+			// This is the one. There can not be one with more entries
+			// Because this one has already more than half.
+			usedCommonSequence = i;
+			LOG4CXX_DEBUG(logger,"determineNMEASet: The dominant common sequence is #" << usedCommonSequence
+					<< " with " << commonRecords[usedCommonSequence].numEqualRecords << " equal sets.");
+			break;
+		}
+	}
+
+	// If I cannot determine the absolute winner try to determine the relative winner
+	if (usedCommonSequence == UINT32_MAX) {
+		usedCommonSequence = 0;
+		for (uint32_t i = 1 ; i< numTeachInCycles;i++){
+			if (commonRecords[usedCommonSequence].numEqualRecords < commonRecords[i].numEqualRecords) {
+				usedCommonSequence = 1;
+			}
+			LOG4CXX_DEBUG(logger,"determineNMEASet: The major common sequence is #" << usedCommonSequence
+					<< " with " << commonRecords[usedCommonSequence].numEqualRecords << " equal sets.");
+		}
+	}
+
+	if (commonRecords[usedCommonSequence].numEqualRecords < 3) {
+		LOG4CXX_WARN(logger,"determineNMEASet: Could not find a common sequence shared by at least 3 cycles. Go by individual cycle analysis.");
+	} else {
+		// Use a teach-in record to collect which flags have been set so far by NMEA sentences.
+		TeachInRecord collectiveFlags;
+
+		TeachInCollection &usedTeachInCollection = teachInRecords[commonRecords[usedCommonSequence].teachInRecordIndexes[0]];
+
+		currExpectedSentenceType = usedNMEASentenceTypes.cbefore_begin();
+
+		for (uint32_t i = 0;i < usedTeachInCollection.numInCollection; i++) {
+			TeachInRecord &currTeachInRecord = usedTeachInCollection.records[i];
+			// Check if the current record brings any new attributes.
+			if (
+					(currTeachInRecord.definesDifferentialMode && !collectiveFlags.definesDifferentialMode) ||
+					(currTeachInRecord.definesMSL && !collectiveFlags.definesMSL) ||
+					(currTeachInRecord.definesPosition && !collectiveFlags.definesPosition) ||
+					(currTeachInRecord.definesQualitiyLevel && !collectiveFlags.definesQualitiyLevel) ||
+
+					// Here some priorization: When I have HDOP and VDOP or AbsErr I do not care about PDOP any more
+					( !collectiveFlags.definesAbsErr &&
+						(!collectiveFlags.definesHDop || !collectiveFlags.definesVDop) &&
+						currTeachInRecord.definesPDop && !collectiveFlags.definesPDop
+					) ||
+
+					// Some either-ors: When I have HDOP and VDOP I do not need AbsErr
+					( (!collectiveFlags.definesHDop || !collectiveFlags.definesVDop) &&
+						(currTeachInRecord.definesAbsErr && !collectiveFlags.definesAbsErr)
+					) ||
+					// If I have AbsErr I not not need HDOP and PDOP any more.
+					( !collectiveFlags.definesAbsErr &&
+						((currTeachInRecord.definesHDop && !collectiveFlags.definesHDop) ||
+						 (currTeachInRecord.definesVDop && !collectiveFlags.definesVDop)
+						)
+					)
+
+				) {
+
+#if defined HAVE_LOG4CXX_H
+				if (logger->isDebugEnabled()) {
+					std::ostringstream str;
+					str << "determineNMEASet: Add " << currTeachInRecord.recordType << ". It defines";
+
+					if (!collectiveFlags.definesAbsErr && currTeachInRecord.definesAbsErr){
+						str << " AbsErr,";
+					}
+					if (!collectiveFlags.definesDifferentialMode && currTeachInRecord.definesDifferentialMode){
+						str << " DifferentialMode,";
+					}
+					if (!collectiveFlags.definesHDop && currTeachInRecord.definesHDop){
+						str << " HDop,";
+					}
+					if (!collectiveFlags.definesVDop && currTeachInRecord.definesVDop){
+						str << " VDop,";
+					}
+					if (!collectiveFlags.definesPDop && currTeachInRecord.definesPDop){
+						str << " PDop,";
+					}
+					if (!collectiveFlags.definesMSL && currTeachInRecord.definesMSL){
+						str << " MSL,";
+					}
+					if (!collectiveFlags.definesPosition && currTeachInRecord.definesPosition){
+						str << " Position,";
+					}
+					if (!collectiveFlags.definesQualitiyLevel && currTeachInRecord.definesQualitiyLevel){
+						str << " QualityLevel";
+					}
+					LOG4CXX_DEBUG(logger,str.str());
+				} // if (logger->isDebugEnabled())
+
+#endif // #if defined HAVE_LOG4CXX_H
+
+				// Set any new flags in the collective attribute set
+				collectiveFlags.definesAbsErr 			|= currTeachInRecord.definesAbsErr;
+				collectiveFlags.definesDifferentialMode	|= currTeachInRecord.definesDifferentialMode;
+				collectiveFlags.definesHDop 			|= currTeachInRecord.definesHDop;
+				collectiveFlags.definesMSL 				|= currTeachInRecord.definesMSL;
+				collectiveFlags.definesPDop 			|= currTeachInRecord.definesPDop;
+				collectiveFlags.definesPosition 		|= currTeachInRecord.definesPosition;
+				collectiveFlags.definesQualitiyLevel 	|= currTeachInRecord.definesQualitiyLevel;
+				collectiveFlags.definesVDop 			|= currTeachInRecord.definesVDop;
+
+				// This record brings a new aspect into my life. Store it.
+				currExpectedSentenceType = usedNMEASentenceTypes.insert_after(currExpectedSentenceType,currTeachInRecord.recordType);
+			} // if ( relevant attributes are defined which were not defined before.
+		} // for (uint32_t i = 0;i < usedTeachInCollection.numInCollection; i++)
+	} // if (commonRecords[usedCommonSequence].numEqualRecords < 3) {...} else {
 }
 
 void NMEASet::processSentenceOperation(

@@ -28,6 +28,7 @@
 
 #include <chrono>
 #include <string>
+#include <forward_list>
 
 #include "OEVCommon.h"
 #include "NmeaGPSDriver.h"
@@ -68,6 +69,8 @@ public:
  */
 class NMEASet {
 public:
+
+	// Now the enumerations of field indexes of the various NMEA sentence type which are of interest for me
 
 	// DTM: Datum reference not implemented. Does not carry anything useful
 
@@ -211,6 +214,20 @@ public:
 
 	// GSV: Satellites in view: Not useful
 
+	/** \brief Indexes for NMEA0813::NMEASentence::fields for GST sentences
+	 *
+	 * GST: GNSS pseudorange error statistics
+	 */
+	enum GSTIndex {
+		GST_TIME = 0, ///< hhmmss.ss; UTC time
+		GST_RANGE_RMS = 1, ///< double; Total RMS standard deviation of ranges inputs to the navigation solution
+		GST_STD_MAJOR = 2, ///< double; Standard deviation (meters) of semi-major axis of error ellipse
+		GST_STD_MINOR = 3, ///< double; Standard deviation (meters) of semi-minor axis of error ellipse
+		GST_ORIENT = 4, ///< double; Orientation of semi-major axis of error ellipse (true north degrees)
+		GST_STD_LAT = 5, ///< double; Standard deviation (meters) of latitude error
+		GST_STD_LON = 6, ///< double; Standard deviation (meters) of longitude error
+		GST_STD_ALT = 7, ///< double; Standard deviation (meters) of altitude error
+	};
 
 	// RMA, RMB: Never seen by a GNSS receiver
 
@@ -290,6 +307,7 @@ public:
 		bool definesAbsErr = false;
 	};
 
+	/// \brief Set of NMEA message type which are received during one GNSS fix cycle, i.e. with the same GNSS timstamp.
 	struct TeachInCollection {
 		/// Number of valid records in \p records
 		uint32_t numInCollection = 0;
@@ -298,6 +316,22 @@ public:
 		/// The array of records. The number of actually defined records is stored in \p numInCollection.
 		TeachInRecord records [numExpectedSentencesPerCycle];
 	};
+
+	/// \brief Store the common sentence sequences, and the number of occurrences
+	struct CommonRecord {
+		/// Number of records with the same sentence sequence
+		uint32_t numEqualRecords;
+		/// Indexes of records which have the same sentence sequence
+		uint32_t teachInRecordIndexes [numTeachInCycles];
+	};
+
+	/// \brief Collection class for storing the sequence of expected NMEA sentences
+	///
+	/// This is just a list of strings containing the NMEA sentence type.
+	typedef std::forward_list<std::string> UsedNMEASentenceTypes;
+	/// \brief Constant iterator through an \ref UsedNMEASentenceTypes object
+	typedef UsedNMEASentenceTypes::const_iterator UsedNMEASentenceTypesCIter;
+	/// \brief Iterator through an \ref UsedNMEASentenceTypes object.
 
 	NMEASet();
 	virtual ~NMEASet();
@@ -311,6 +345,7 @@ public:
 	 * Base is always 10. Leading 0[xX] is not evaluated. Leading 0s are just ignored.
 	 * Leading space characters are allowed
 	 *
+	 * As I said: Specialized, but about as fast as I can make it while retaining readability, thorough checking, and not delving into assembler.
 	 *
 	 * @param str The string
 	 * @return double value of the string
@@ -406,8 +441,15 @@ private:
 	/** \brief System timestamp when the first sentence of the current sequence was received.
 	 *
 	 */
-
 	std::chrono::system_clock::time_point currSequenctStart;
+
+	/// \brief The list of expected NMEA sentences during one GNSS fix cycle
+	UsedNMEASentenceTypes usedNMEASentenceTypes;
+	/// \brief Current position, and currently expected NMEA sentence in the current GNSS update cycle.
+	///
+	/// The iterator points into \ref usedNMEASentenceTypes
+	UsedNMEASentenceTypesCIter currExpectedSentenceType;
+
 
 	/** \brief Process a new NMEA sentence in teach-in mode.
 	 *
@@ -431,6 +473,11 @@ private:
 	 * is effective.
 	 */
 	void finishTeachIn();
+
+	/** \brief Use the data collected in \ref finishTeachIn() to determine the required set of messages for a Kalman update cycle
+	 *
+	 */
+	void determineNMEASet(	CommonRecord *commonRecords, uint32_t numCommonRecords);
 
 	/** \brief Process a new NMEA sentence in operations mode.
 	 *
