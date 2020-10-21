@@ -46,19 +46,19 @@ static inline void initLogger() {
 
 namespace openEV {
 
-NMEASet::NMEASet() {
+NMEASet::NMEASet()
+		:teachInRecords(),
+		 currTeachInRecord (teachInRecords.end())
+		{
 
 #if defined HAVE_LOG4CXX_H
 	initLogger();
 #endif
 
-	teachInRecords = new TeachInCollection[numTeachInCycles];
-
 }
 
 NMEASet::~NMEASet() {
 
-	delete [] teachInRecords;
 }
 
 /** \brief My inline and faster isdigit variant
@@ -363,32 +363,27 @@ void NMEASet::processSentenceTeachIn(
 			// the next timestamp change occurs.
 			// Only this way I can be sure to catch the first start of a new cycle properly.
 			if (currSequenceTimestampMS != NMEATimeStampUndef) {
-				// If the index was not used up to now ...
-				if (numTeachInCyclesExecuted == UINT32_MAX ) {
-					// ... initialize it
-					numTeachInCyclesExecuted = 0;
-				} else {
-					// ... else progress to the next index
-					numTeachInCyclesExecuted ++;
-				}
-				teachInRecords [numTeachInCyclesExecuted].cycleStart = currTime;
-				if (numTeachInCyclesExecuted == numTeachInCycles) {
+				if (teachInRecords.size() == numTeachInCycles) {
 					finishTeachIn();
 
 					// Switch to the operational message processor
 					// Without that this method would be called forever and be stuck here.
 					processSentenceFunction = &processSentenceOperation;
-					delete[] teachInRecords;
-					teachInRecords = nullptr;
 					return;
 				}
+
+				// Append an initialized record at the end
+				currTeachInRecord = teachInRecords.emplace(teachInRecords.end());
+
+				currTeachInRecord->cycleStart = currTime;
+				currTeachInRecord->recordNo = teachInRecords.size() - 1;
 
 				// I am progressing from a previous real timestamp to the next one.
 				// This means this is really the start of a new cycle
 				teachInStarted = true;
 				LOG4CXX_DEBUG(logger,"processSentenceTeachIn: Last timestamp = " << currSequenceTimestampMS
 						<< " New timestamp = " << thisGPSTimeStampMS
-						<< ". Teach-in in progress. New numTeachInCyclesExecuted = " << numTeachInCyclesExecuted);
+						<< ". Teach-in in progress. New numTeachInCyclesExecuted = " << teachInRecords.size());
 			}
 			// this is the start of a new cycle
 			currSequenceTimestampMS = thisGPSTimeStampMS;
@@ -397,48 +392,51 @@ void NMEASet::processSentenceTeachIn(
 		}
 
 		if (teachInStarted) {
-			TeachInCollection& currCollection = teachInRecords [numTeachInCyclesExecuted];
+		TeachInCollection& currCollection = *currTeachInRecord;
 
-			if (currCollection.numInCollection < numExpectedSentencesPerCycle) {
-				LOG4CXX_DEBUG(logger, "processSentenceTeachIn: Add message " << newSentence.sentenceType
-						<< " as #" << currCollection.numInCollection
-						<< " to collection #"  << numTeachInCyclesExecuted);
+			LOG4CXX_DEBUG(logger, "processSentenceTeachIn: Add message " << newSentence.sentenceType
+					<< " to collection #"  << teachInRecords.size());
 
-				locRecord.timeAfterCycleStart = currTime - currCollection.cycleStart;
-				currCollection.records[currCollection.numInCollection] = locRecord;
-				currCollection.numInCollection ++;
-
-			}
+			locRecord.timeAfterCycleStart = currTime - currCollection.cycleStart;
+			currCollection.records.insert(currCollection.records.end(),locRecord);
 		}
-
 	}
-
-
 }
 
 inline void NMEASet::finishTeachIn() {
 
-	CommonRecord commonRecords [numTeachInCycles];
-	uint32_t numCommonRecords;
+	CommonCycleList commonCycles;
 
-	memset(commonRecords,0,sizeof(commonRecords));
+	CommonRecordItem commonRecord;
+	TeachInCollectionIter currTeachInCollectionIter =  teachInRecords.begin();
 
+	// If there are no recoded records the behavior would be undefined.
+	if (currTeachInCollectionIter == teachInRecords.end()) {
+		return;
+	}
+
+	commonRecord.recordNo = 0;
+	commonRecord.teachInCollectionPtr = &(*currTeachInCollectionIter);
 	// The first record is by definition always the first template.
-	commonRecords[0].numEqualRecords = 1;
-	commonRecords[0].teachInRecordIndexes[0] = 0;
-	numCommonRecords = 1;
+	commonCycles.emplace_front();
+	commonCycles.begin()->commonRecordItems.insert(commonCycles.begin()->commonRecordItems.cend(),commonRecord);
 
-	for (uint32_t i = 1; i < numTeachInCycles; i++) {
+
+	for (currTeachInCollectionIter++; currTeachInCollectionIter != teachInRecords.end(); currTeachInCollectionIter++) {
 		bool foundRecord = false;
+		TeachInCollection *newRecord = nullptr;
+
 		// Compare the cycles. Run through the previous collected common sets.
-		for (uint32_t k = 0; k < numCommonRecords; k++) {
-			CommonRecord &currCommonRecord = commonRecords[k];
-			TeachInCollection &newRecord = teachInRecords[i];
-			TeachInCollection &refRecord = teachInRecords[currCommonRecord.teachInRecordIndexes[0]];
-			if (newRecord.numInCollection == refRecord.numInCollection) {
+		for (CommonCycleListIter k = commonCycles.begin(); k != commonCycles.end(); k++) {
+			newRecord = &(*currTeachInCollectionIter);
+			TeachInCollection *refRecord = k->commonRecordItems.begin()->teachInCollectionPtr;
+			if (newRecord->records.size() == refRecord->records.size()) {
+				TeachInRecordIter newSentenceTypeIter = newRecord->records.begin();
+				TeachInRecordIter refSentenceTypeIter = refRecord->records.begin();
 				foundRecord = true;
-				for (uint32_t l = 0; l < newRecord.numInCollection; l++) {
-					if (newRecord.records[l].recordType != refRecord.records[l].recordType) {
+				for (;newSentenceTypeIter != newRecord->records.end() && refSentenceTypeIter != refRecord->records.end();
+						newSentenceTypeIter++,refSentenceTypeIter++) {
+					if (newSentenceTypeIter->recordType != refSentenceTypeIter->recordType) {
 						foundRecord = false;
 						break;
 					}
@@ -446,13 +444,14 @@ inline void NMEASet::finishTeachIn() {
 			} // if (newRecord.numInCollection == refRecord.numInCollection)
 
 			if (foundRecord) {
-				LOG4CXX_DEBUG(logger,"finishTeachIn: Collection #" << i << " joins common record #" << k
-						<< " as member #" << currCommonRecord.numEqualRecords
-						<< " and is equal to template collection #" << currCommonRecord.teachInRecordIndexes[0]);
+				LOG4CXX_DEBUG(logger,
+						"finishTeachIn: Collection #" << newRecord->recordNo << " joins common record #" << k->recordNo
+						<< " as member #" << k->commonRecordItems.size());
 
-				// Store the index of the current record
-				currCommonRecord.teachInRecordIndexes[currCommonRecord.numEqualRecords] = i;
-				currCommonRecord.numEqualRecords ++;
+				// Store the pointer to the current collection
+				CommonRecordItemIter newCommonRecord = k->commonRecordItems.emplace(k->commonRecordItems.cend());
+				newCommonRecord->recordNo = k->commonRecordItems.size() -1;
+				newCommonRecord->teachInCollectionPtr = newRecord;
 
 				// And finish the search for the current record because I had a hit.
 				break;
@@ -460,57 +459,59 @@ inline void NMEASet::finishTeachIn() {
 
 		} // for (uint32_t k = 0; commonRecords[k].numEqualRecords != 0; k++)
 
-		if (!foundRecord) {
+		if (!foundRecord && newRecord != nullptr) {
 			// This collection defines a new template.
-			LOG4CXX_DEBUG(logger,"finishTeachIn: Add collection # " << i << " as new template #" << numCommonRecords);
-			commonRecords[numCommonRecords].numEqualRecords = 1;
-			commonRecords[numCommonRecords].teachInRecordIndexes[0] = i;
-			numCommonRecords ++;
+			CommonCycleListIter newCommonCycle = commonCycles.emplace(commonCycles.cend());
+			newCommonCycle->recordNo = commonCycles.size() - 1;
+			CommonRecordItemIter newCommonRecordItem = newCommonCycle->commonRecordItems.emplace(newCommonCycle->commonRecordItems.cend());
+			newCommonRecordItem->recordNo = 0;
+			newCommonRecordItem->teachInCollectionPtr = newRecord;
+			LOG4CXX_DEBUG(logger,"finishTeachIn: Add collection #" << newRecord->recordNo
+					<< " as new template #" << newCommonCycle->recordNo);
 		}
 	} // for (uint32_t i = 1; i < numTeachInCycles; i++)
 
+	// Finally determine the dominant set of MNEA sentence types which the GNSS receiver sends per update cycle.
+	NMEASet::determineNMEASet(commonCycles);
 }
 
 
-void NMEASet::determineNMEASet(CommonRecord *commonRecords, uint32_t numCommonRecords) {
+void NMEASet::determineNMEASet(CommonCycleList& commonCycles) {
 
-	uint32_t usedCommonSequence = UINT32_MAX;
+	CommonCycleListIter usedCommonSequence = commonCycles.begin();
 	// First determine the one set with more then 50% of occurrences.
-	for (uint32_t i = 0 ; i< numTeachInCycles;i++){
-		if (commonRecords[i].numEqualRecords > (numTeachInCycles/2)) {
+	for (; usedCommonSequence != commonCycles.end();usedCommonSequence++){
+		if (usedCommonSequence->commonRecordItems.size() > (numTeachInCycles/2)) {
 			// This is the one. There can not be one with more entries
 			// Because this one has already more than half.
-			usedCommonSequence = i;
-			LOG4CXX_DEBUG(logger,"determineNMEASet: The dominant common sequence is #" << usedCommonSequence
-					<< " with " << commonRecords[usedCommonSequence].numEqualRecords << " equal sets.");
+			LOG4CXX_DEBUG(logger,"determineNMEASet: Found dominant common sequence # " << usedCommonSequence->recordNo
+					<< " with " << usedCommonSequence->commonRecordItems.size() << " equal sets.");
 			break;
 		}
 	}
 
 	// If I cannot determine the absolute winner try to determine the relative winner
-	if (usedCommonSequence == UINT32_MAX) {
-		usedCommonSequence = 0;
-		for (uint32_t i = 1 ; i< numTeachInCycles;i++){
-			if (commonRecords[usedCommonSequence].numEqualRecords < commonRecords[i].numEqualRecords) {
-				usedCommonSequence = 1;
+	if (usedCommonSequence != commonCycles.end()) {
+		usedCommonSequence = commonCycles.begin();
+		for (CommonCycleListIter i = commonCycles.begin(); i != commonCycles.end();i++){
+			if (usedCommonSequence->commonRecordItems.size() < i->commonRecordItems.size()) {
+				usedCommonSequence = i;
 			}
-			LOG4CXX_DEBUG(logger,"determineNMEASet: The major common sequence is #" << usedCommonSequence
-					<< " with " << commonRecords[usedCommonSequence].numEqualRecords << " equal sets.");
+		LOG4CXX_DEBUG(logger,"determineNMEASet: The major common sequence is #" << usedCommonSequence->recordNo
+				<< ". It has " << usedCommonSequence->commonRecordItems.size() << " equal sets.");
 		}
 	}
 
-	if (commonRecords[usedCommonSequence].numEqualRecords < 3) {
+	if (usedCommonSequence->commonRecordItems.size() < 3) {
 		LOG4CXX_WARN(logger,"determineNMEASet: Could not find a common sequence shared by at least 3 cycles. Go by individual cycle analysis.");
 	} else {
 		// Use a teach-in record to collect which flags have been set so far by NMEA sentences.
 		TeachInRecord collectiveFlags;
 
-		TeachInCollection &usedTeachInCollection = teachInRecords[commonRecords[usedCommonSequence].teachInRecordIndexes[0]];
+		auto usedTeachInCollection = usedCommonSequence->commonRecordItems.begin()->teachInCollectionPtr;
 
-		currExpectedSentenceType = usedNMEASentenceTypes.cbefore_begin();
-
-		for (uint32_t i = 0;i < usedTeachInCollection.numInCollection; i++) {
-			TeachInRecord &currTeachInRecord = usedTeachInCollection.records[i];
+		for (auto i = usedTeachInCollection->records.begin();i != usedTeachInCollection->records.end(); i++) {
+			TeachInRecord &currTeachInRecord = *i;
 			// Check if the current record brings any new attributes.
 			if (
 					(currTeachInRecord.definesDifferentialMode && !collectiveFlags.definesDifferentialMode) ||
@@ -582,7 +583,7 @@ void NMEASet::determineNMEASet(CommonRecord *commonRecords, uint32_t numCommonRe
 				collectiveFlags.definesVDop 			|= currTeachInRecord.definesVDop;
 
 				// This record brings a new aspect into my life. Store it.
-				currExpectedSentenceType = usedNMEASentenceTypes.insert_after(currExpectedSentenceType,currTeachInRecord.recordType);
+				usedNMEASentenceTypes.insert(usedNMEASentenceTypes.cend(),currTeachInRecord.recordType);
 			} // if ( relevant attributes are defined which were not defined before.
 		} // for (uint32_t i = 0;i < usedTeachInCollection.numInCollection; i++)
 	} // if (commonRecords[usedCommonSequence].numEqualRecords < 3) {...} else {

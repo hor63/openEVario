@@ -28,7 +28,7 @@
 
 #include <chrono>
 #include <string>
-#include <forward_list>
+#include <list>
 
 #include "OEVCommon.h"
 #include "NmeaGPSDriver.h"
@@ -262,12 +262,6 @@ public:
 
 	// TXT, VTG, and ZDA are useless for me.
 
-	/** \brief Hard-coded number of distinct types of sentences per cycle
-	 *
-	 * If there are more sentences types they are going to be cut off, and not worth looking at :)
-	 * Usually there should not be more than 2-4 sentences per cycle which I am interested in.
-	 */
-	static constexpr uint32_t numExpectedSentencesPerCycle = 16;
 	// Number of teach-in cycles to run.
 	static constexpr uint32_t numTeachInCycles = 10;
 
@@ -285,6 +279,10 @@ public:
 	 *
 	 */
 	struct TeachInRecord {
+		/// Record number to keep track of the position in the list.
+		/// Since I am dealing with iterators only I would be loosing track of the position in a
+		/// \ref TeachInRecordList
+		uint32_t recordNo = 0U;
 		/// The type of the sentence like "RMC", "GGA", "GLL" etc.
 		std::string recordType;
 		/// The delay of the sentence from the start of a cycle
@@ -307,30 +305,56 @@ public:
 		bool definesAbsErr = false;
 	};
 
+	typedef std::list<TeachInRecord> TeachInRecordList;
+	typedef TeachInRecordList::iterator TeachInRecordIter;
+
 	/// \brief Set of NMEA message type which are received during one GNSS fix cycle, i.e. with the same GNSS timstamp.
 	struct TeachInCollection {
-		/// Number of valid records in \p records
-		uint32_t numInCollection = 0;
+		/// Record number to keep track of the number of reach-in cycles.
+		/// Since I am dealing with iterators only I would be loosing track of the number of teach-in cycles in a
+		/// \ref TeachInCollectionList
+		uint32_t recordNo = 0U;
 		/// Local timestamp of receipt of the first sentence of the current cycle
 		std::chrono::system_clock::time_point cycleStart;
 		/// The array of records. The number of actually defined records is stored in \p numInCollection.
-		TeachInRecord records [numExpectedSentencesPerCycle];
+		TeachInRecordList records;
 	};
 
-	/// \brief Store the common sentence sequences, and the number of occurrences
-	struct CommonRecord {
-		/// Number of records with the same sentence sequence
-		uint32_t numEqualRecords;
-		/// Indexes of records which have the same sentence sequence
-		uint32_t teachInRecordIndexes [numTeachInCycles];
+
+	/// \brief List of \ref TeachInCollection objects which comprise the teach-in phase
+	typedef std::list<TeachInCollection> TeachInCollectionList;
+	typedef TeachInCollectionList::iterator TeachInCollectionIter;
+
+	typedef TeachInCollectionList::pointer TeachInCollectionPtr;
+
+	struct CommonRecordItem {
+		/// Position in a \ref CommonRecordList
+		/// Since I am dealing with iterators only I would be loosing track of the number
+		uint32_t recordNo;
+		TeachInCollectionPtr teachInCollectionPtr;
 	};
+
+	/// \brief Store the pointers to common sentence sequences, i.e. equal \ref TeachInCollection.
+	typedef std::list<CommonRecordItem> CommonRecordItemList;
+	typedef CommonRecordItemList::iterator CommonRecordItemIter;
+
+	/// \brief List item of the list of common cycles
+	struct CommonCycle {
+		/// \brief Item number in the list
+		uint32_t recordNo = 0;
+		/// \brief List of common cycles, i.e. series of MNEA sentences with an identical sequence of NMEA message types.
+		CommonRecordItemList commonRecordItems;
+	};
+
+	typedef std::list<CommonCycle> CommonCycleList;
+	typedef CommonCycleList::iterator CommonCycleListIter;
 
 	/// \brief Collection class for storing the sequence of expected NMEA sentences
 	///
 	/// This is just a list of strings containing the NMEA sentence type.
-	typedef std::forward_list<std::string> UsedNMEASentenceTypes;
+	typedef std::list<std::string> UsedNMEASentenceTypes;
 	/// \brief Constant iterator through an \ref UsedNMEASentenceTypes object
-	typedef UsedNMEASentenceTypes::const_iterator UsedNMEASentenceTypesCIter;
+	typedef UsedNMEASentenceTypes::iterator UsedNMEASentenceTypesIter;
 	/// \brief Iterator through an \ref UsedNMEASentenceTypes object.
 
 	NMEASet();
@@ -422,14 +446,10 @@ private:
 
 	/** \brief Collection of records during the teach-in phase
 	 *
-	 * It is created with the constructor of the object and freed at the end of the teach-in phase.
+	 * It is cleared at the end of the teach-in phase.
 	 */
-	TeachInCollection *teachInRecords;
-
-	/** Number of teach-in cycles have been completed.
-	 *
-	 */
-	uint32_t numTeachInCyclesExecuted = UINT32_MAX;
+	TeachInCollectionList teachInRecords;
+	TeachInCollectionIter currTeachInRecord;
 
 	/** \brief Last timestamp of an GNSS fix and message sequence
 	 *
@@ -448,7 +468,7 @@ private:
 	/// \brief Current position, and currently expected NMEA sentence in the current GNSS update cycle.
 	///
 	/// The iterator points into \ref usedNMEASentenceTypes
-	UsedNMEASentenceTypesCIter currExpectedSentenceType;
+	UsedNMEASentenceTypesIter currExpectedSentenceType;
 
 
 	/** \brief Process a new NMEA sentence in teach-in mode.
@@ -476,8 +496,9 @@ private:
 
 	/** \brief Use the data collected in \ref finishTeachIn() to determine the required set of messages for a Kalman update cycle
 	 *
+	 * @param commonCycles List of identical collections of NMEA sentence types
 	 */
-	void determineNMEASet(	CommonRecord *commonRecords, uint32_t numCommonRecords);
+	void determineNMEASet(CommonCycleList& commonCycles);
 
 	/** \brief Process a new NMEA sentence in operations mode.
 	 *
