@@ -277,6 +277,8 @@ void NMEASet::processSentenceTeachIn(
 	TeachInRecord locRecord;
 	bool useLocRecord = false;
 
+	locRecord.recordType = (char const*)(newSentence.sentenceType);
+
 	try {
 
 		LOG4CXX_DEBUG(logger,"processSentenceTeachIn: Process message type " << newSentence.sentenceType);
@@ -288,7 +290,6 @@ void NMEASet::processSentenceTeachIn(
 			if (*(newSentence.fields[GGA_TIME]) != 0) {
 				thisGPSTimeStampMS = NMEATimeStampToMS(newSentence.fields[GGA_TIME]);
 				useLocRecord = true;
-				locRecord.recordType = "GGA";
 				locRecord.definesDifferentialMode = true;
 				locRecord.definesHDop = true;
 				locRecord.definesMSL = true;
