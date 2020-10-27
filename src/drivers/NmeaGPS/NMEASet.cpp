@@ -46,9 +46,10 @@ static inline void initLogger() {
 
 namespace openEV {
 
-NMEASet::NMEASet()
-		:teachInRecords(),
-		 currTeachInRecord (teachInRecords.end())
+NMEASet::NMEASet(NmeaGPSDriver& gpsDriver)
+		:gpsDriver {gpsDriver},
+		teachInRecords{},
+		 currTeachInRecord {teachInRecords.end()}
 		{
 
 #if defined HAVE_LOG4CXX_H

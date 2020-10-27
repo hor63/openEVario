@@ -38,6 +38,8 @@
 
 namespace openEV {
 
+class NmeaGPSDriver;
+
 /** \brief Exception thrown by string conversion function of class \ref NMEASet.
  *
  */
@@ -357,7 +359,26 @@ public:
 	typedef UsedNMEASentenceTypes::iterator UsedNMEASentenceTypesIter;
 	/// \brief Iterator through an \ref UsedNMEASentenceTypes object.
 
-	NMEASet();
+	struct gnssRecord {
+		double latitude;
+		double longitude;
+		bool posDefined;
+		double altMSL;
+		bool altMslDefined;
+		float latDeviation;
+		float longDeviation;
+		float altDeviation;
+
+		std::chrono::system_clock::time_point recordStart;
+		uint32_t gnssTimeStamp;
+
+		void init() {
+			posDefined = false;
+			altMslDefined = false;
+		}
+	};
+
+	NMEASet(NmeaGPSDriver& gpsDriver);
 	virtual ~NMEASet();
 
 	/** \brief Specialized and fast string to double conversion function
@@ -435,6 +456,8 @@ public:
 
 private:
 
+	/// Reference to the owning \ref NmeaGPSDriver object
+	NmeaGPSDriver& gpsDriver;
 
 	/** \brief Indicator if teach-in can start
 	 *
