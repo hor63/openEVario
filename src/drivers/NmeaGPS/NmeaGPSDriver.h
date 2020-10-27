@@ -80,6 +80,12 @@ public:
      */
     virtual void updateKalmanStatus (GliderVarioStatus &varioStatus) override;
 
+    /// \see \ref CEP
+    float getCEP() const {return CEP;}
+
+    float getAltStdDev() const {return altStdDev;}
+
+
 protected:
 
 
@@ -126,6 +132,23 @@ private:
     /// Typically this is a serial port, either real RS-232, or Serial via USB or Bluetooth SPP. \n
     /// TCP will work either.
     io::StreamPort *ioPort = nullptr;
+
+    /** \brief Circular Error Probable: Radius of 50% probability of the correct position in meters
+     *
+     * CEP is essentially the standard deviation of the position under most favorable conditions
+     * (good antenna, unobstructed view to the entire sky, big number, and equal distributed and traceable satellites.
+     *
+     * \see (Wikipedia: Circular error probable)[https://en.wikipedia.org/wiki/Circular_error_probable]
+     */
+    float CEP = 3.0f;
+
+    /** \brief Standard deviation of the altitude
+     *
+     * The standard deviation of the altitude usually is a lot worse than the horizontal CEP. \n
+     * I am assuming it being 2 times the CEP.
+     *
+     */
+    float altStdDev = 6.0f;
 
     NMEASet nmeaSet;
 

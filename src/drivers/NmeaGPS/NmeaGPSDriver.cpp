@@ -53,7 +53,8 @@ NmeaGPSDriver::NmeaGPSDriver(
 		char const *description,
 		char const *instanceName
 		)
-: GliderVarioDriverBase {driverName,description,instanceName,NmeaGPSLib::theOneAndOnly}
+: GliderVarioDriverBase {driverName,description,instanceName,NmeaGPSLib::theOneAndOnly},
+  nmeaSet{*this}
 {
 
 #if defined HAVE_LOG4CXX_H
@@ -107,7 +108,8 @@ void NmeaGPSDriver::readConfiguration (Properties4CXX::Properties const &configu
 
     errorTimeout = configuration.getPropertyValue(std::string("errorTimeout"),(long long)(10));
     errorMaxNumRetries = configuration.getPropertyValue(std::string("errorTimeout"),(long long)(0));
-
+    CEP = configuration.getPropertyValue(std::string("CEP"),3.0);
+    altStdDev = configuration.getPropertyValue(std::string("altitudeStdDev"),CEP*2.0);
 
 }
 
