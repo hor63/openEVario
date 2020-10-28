@@ -481,11 +481,6 @@ private:
 	 */
 	uint32_t currSequenceTimestampMS = NMEATimeStampUndef;
 
-	/** \brief System timestamp when the first sentence of the current sequence was received.
-	 *
-	 */
-	std::chrono::system_clock::time_point currSequenctStart;
-
 	/// \brief The list of expected NMEA sentences during one GNSS fix cycle
 	UsedNMEASentenceTypes usedNMEASentenceTypes;
 	/// \brief Current position, and currently expected NMEA sentence in the current GNSS update cycle.
