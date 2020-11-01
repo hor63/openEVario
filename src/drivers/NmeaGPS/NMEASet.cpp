@@ -284,7 +284,8 @@ void NMEASet::processSentenceTeachIn(
 
 		LOG4CXX_DEBUG(logger,"processSentenceTeachIn: Process message type " << newSentence.sentenceTypeString);
 
-		if (! strcmp((char const*)(newSentence.sentenceTypeString),"RMC")) {
+		switch (newSentence.sentenceType) {
+		case NMEA_RMC:
 			// If the timestamp is undefined the GNSS receiver is totally in the dark,
 			// and does not even have a battery backed RTC.
 			// Do not use teach-in now.
@@ -294,7 +295,9 @@ void NMEASet::processSentenceTeachIn(
 				locRecord.definesDifferentialMode = true;
 				locRecord.definesPosition = true;
 			}
-		} else if (! strcmp((char const*)(newSentence.sentenceTypeString),"GGA")) {
+			break;
+
+		case NMEA_GGA:
 			// If the timestamp is undefined the GNSS receiver is totally in the dark,
 			// and does not even have a battery backed RTC.
 			// Do not use teach-in now.
@@ -306,7 +309,9 @@ void NMEASet::processSentenceTeachIn(
 				locRecord.definesMSL = true;
 				locRecord.definesPosition = true;
 			}
-		} else if (! strcmp((char const*)(newSentence.sentenceTypeString),"GLL")) {
+			break;
+
+		case NMEA_GLL:
 			if (*(newSentence.fields[GLL_TIME]) != 0) {
 				thisGPSTimeStampMS = NMEATimeStampToMS(newSentence.fields[GLL_TIME]);
 				useLocRecord = true;
@@ -314,7 +319,9 @@ void NMEASet::processSentenceTeachIn(
 				locRecord.definesDifferentialMode = true;
 				locRecord.definesHDop = true;
 			}
-		} else if (! strcmp((char const*)(newSentence.sentenceTypeString),"GNS")) {
+			break;
+
+		case NMEA_GNS:
 			if (*(newSentence.fields[GNS_TIME]) != 0) {
 				thisGPSTimeStampMS = NMEATimeStampToMS(newSentence.fields[GNS_TIME]);
 				useLocRecord = true;
@@ -323,7 +330,9 @@ void NMEASet::processSentenceTeachIn(
 				locRecord.definesDifferentialMode = true;
 				locRecord.definesMSL = true;
 			}
-		} else if (! strcmp((char const*)(newSentence.sentenceTypeString),"GST")) {
+			break;
+
+		case NMEA_GST:
 			// If the timestamp is undefined the GNSS receiver is totally in the dark,
 			// and does not even have a battery backed RTC.
 			// Do not use teach-in now.
@@ -332,7 +341,9 @@ void NMEASet::processSentenceTeachIn(
 				useLocRecord = true;
 				locRecord.definesAbsErr = true;
 			}
-		} else if (! strcmp((char const*)(newSentence.sentenceTypeString),"GSA")) {
+			break;
+
+		case NMEA_GSA:
 			// GSA is a bit unique because it does not have an own timestamp field.
 			// It kind of swims in the fix update set with other NMEA sentences.
 			// For simplicity, and practical experience with GNSS receivers I assume
@@ -345,7 +356,9 @@ void NMEASet::processSentenceTeachIn(
 			locRecord.definesPDop = true;
 			locRecord.definesVDop = true;
 			locRecord.definesQualitiyLevel = true;
-		} else if (! strcmp((char const*)(newSentence.sentenceTypeString),"GBS")) {
+			break;
+
+		case NMEA_GBS:
 			// If the timestamp is undefined the GNSS receiver is totally in the dark,
 			// and does not even have a battery backed RTC.
 			// Do not use teach-in now.
@@ -354,6 +367,10 @@ void NMEASet::processSentenceTeachIn(
 				useLocRecord = true;
 				locRecord.definesAbsErr = true;
 			}
+			break;
+
+		default:
+			LOG4CXX_DEBUG(logger,"processSentenceTeachIn: Throw out un-supported sentenct with type " << newSentence.sentenceTypeString);
 		}
 
 	}
