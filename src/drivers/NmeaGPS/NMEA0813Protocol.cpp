@@ -195,6 +195,12 @@ void NMEA0813Protocol::parseSentence() {
 		// Proprietary message Talker ID is one character.
 		currSentence.talkerID[0] = 'P';
 		currSentence.talkerID[1] = 0;
+
+		// The next character onwards contains the sentence type.
+		// If '\0' follows immediately, so be it.
+		// I will throw away proprietary messages anyway at this time of writing.
+		currSentence.sentenceTypeString = &currSentence.buf[1];
+
 	} else {
 		// A regular NMEA message. Talker ID is expected to be 2 char.
 		// But you never can be sure. I will check that too.
