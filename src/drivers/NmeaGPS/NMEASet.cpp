@@ -28,7 +28,7 @@
 
 #include <fstream>
 
-#include "NMEA0813.h"
+#include "NMEA0813Protocol.h"
 #include "NMEASet.h"
 #include "kalman/GliderVarioTransitionMatrix.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
@@ -44,12 +44,12 @@ static inline void initLogger() {
 
 #endif
 
-namespace openEV {
+namespace openEV::drivers::NMEA0813 {
 
 NMEASet::NMEASet(NmeaGPSDriver& gpsDriver)
 		:gpsDriver {gpsDriver},
 		teachInRecords{},
-		 currTeachInRecord {teachInRecords.end()}
+		currTeachInRecord {teachInRecords.end()}
 		{
 
 #if defined HAVE_LOG4CXX_H
@@ -278,13 +278,13 @@ void NMEASet::processSentenceTeachIn(
 	TeachInRecord locRecord;
 	bool useLocRecord = false;
 
-	locRecord.recordType = (char const*)(newSentence.sentenceType);
+	locRecord.recordType = (char const*)(newSentence.sentenceTypeString);
 
 	try {
 
-		LOG4CXX_DEBUG(logger,"processSentenceTeachIn: Process message type " << newSentence.sentenceType);
+		LOG4CXX_DEBUG(logger,"processSentenceTeachIn: Process message type " << newSentence.sentenceTypeString);
 
-		if (! strcmp((char const*)(newSentence.sentenceType),"RMC")) {
+		if (! strcmp((char const*)(newSentence.sentenceTypeString),"RMC")) {
 			// If the timestamp is undefined the GNSS receiver is totally in the dark,
 			// and does not even have a battery backed RTC.
 			// Do not use teach-in now.
@@ -294,7 +294,7 @@ void NMEASet::processSentenceTeachIn(
 				locRecord.definesDifferentialMode = true;
 				locRecord.definesPosition = true;
 			}
-		} else if (! strcmp((char const*)(newSentence.sentenceType),"GGA")) {
+		} else if (! strcmp((char const*)(newSentence.sentenceTypeString),"GGA")) {
 			// If the timestamp is undefined the GNSS receiver is totally in the dark,
 			// and does not even have a battery backed RTC.
 			// Do not use teach-in now.
@@ -306,7 +306,7 @@ void NMEASet::processSentenceTeachIn(
 				locRecord.definesMSL = true;
 				locRecord.definesPosition = true;
 			}
-		} else if (! strcmp((char const*)(newSentence.sentenceType),"GLL")) {
+		} else if (! strcmp((char const*)(newSentence.sentenceTypeString),"GLL")) {
 			if (*(newSentence.fields[GLL_TIME]) != 0) {
 				thisGPSTimeStampMS = NMEATimeStampToMS(newSentence.fields[GLL_TIME]);
 				useLocRecord = true;
@@ -314,7 +314,7 @@ void NMEASet::processSentenceTeachIn(
 				locRecord.definesDifferentialMode = true;
 				locRecord.definesHDop = true;
 			}
-		} else if (! strcmp((char const*)(newSentence.sentenceType),"GNS")) {
+		} else if (! strcmp((char const*)(newSentence.sentenceTypeString),"GNS")) {
 			if (*(newSentence.fields[GNS_TIME]) != 0) {
 				thisGPSTimeStampMS = NMEATimeStampToMS(newSentence.fields[GNS_TIME]);
 				useLocRecord = true;
@@ -323,7 +323,7 @@ void NMEASet::processSentenceTeachIn(
 				locRecord.definesDifferentialMode = true;
 				locRecord.definesMSL = true;
 			}
-		} else if (! strcmp((char const*)(newSentence.sentenceType),"GST")) {
+		} else if (! strcmp((char const*)(newSentence.sentenceTypeString),"GST")) {
 			// If the timestamp is undefined the GNSS receiver is totally in the dark,
 			// and does not even have a battery backed RTC.
 			// Do not use teach-in now.
@@ -332,7 +332,7 @@ void NMEASet::processSentenceTeachIn(
 				useLocRecord = true;
 				locRecord.definesAbsErr = true;
 			}
-		} else if (! strcmp((char const*)(newSentence.sentenceType),"GSA")) {
+		} else if (! strcmp((char const*)(newSentence.sentenceTypeString),"GSA")) {
 			// GSA is a bit unique because it does not have an own timestamp field.
 			// It kind of swims in the fix update set with other NMEA sentences.
 			// For simplicity, and practical experience with GNSS receivers I assume
@@ -345,7 +345,7 @@ void NMEASet::processSentenceTeachIn(
 			locRecord.definesPDop = true;
 			locRecord.definesVDop = true;
 			locRecord.definesQualitiyLevel = true;
-		} else if (! strcmp((char const*)(newSentence.sentenceType),"GBS")) {
+		} else if (! strcmp((char const*)(newSentence.sentenceTypeString),"GBS")) {
 			// If the timestamp is undefined the GNSS receiver is totally in the dark,
 			// and does not even have a battery backed RTC.
 			// Do not use teach-in now.
@@ -358,7 +358,7 @@ void NMEASet::processSentenceTeachIn(
 
 	}
 	catch (NMEASetParseException const& e) {
-		LOG4CXX_WARN(logger,"processSentenceTeachIn: Sentence " << newSentence.sentenceType << " failed. Reason: " << e.what());
+		LOG4CXX_WARN(logger,"processSentenceTeachIn: Sentence " << newSentence.sentenceTypeString << " failed. Reason: " << e.what());
 	}
 
 	if (useLocRecord) {
@@ -370,6 +370,9 @@ void NMEASet::processSentenceTeachIn(
 			if (currSequenceTimestampMS != NMEATimeStampUndef) {
 				if (teachInRecords.size() == numTeachInCycles) {
 					finishTeachIn();
+
+					// Initialize the iterator for operational mode.
+					currExpectedSentenceType = usedNMEASentenceTypes.cbegin();
 
 					// Switch to the operational message processor
 					// Without that this method would be called forever and be stuck here.
@@ -404,7 +407,7 @@ void NMEASet::processSentenceTeachIn(
 		if (teachInStarted) {
 		TeachInCollection& currCollection = *currTeachInRecord;
 
-			LOG4CXX_DEBUG(logger, "processSentenceTeachIn: Add message " << newSentence.sentenceType
+			LOG4CXX_DEBUG(logger, "processSentenceTeachIn: Add message " << newSentence.sentenceTypeString
 					<< " to collection #"  << teachInRecords.size());
 
 			locRecord.timeAfterCycleStart = currTime - currCollection.cycleStart;
@@ -597,12 +600,13 @@ void NMEASet::determineNMEASet(CommonCycleList& commonCycles) {
 			} // if ( relevant attributes are defined which were not defined before.
 		} // for (uint32_t i = 0;i < usedTeachInCollection.numInCollection; i++)
 	} // if (commonRecords[usedCommonSequence].numEqualRecords < 3) {...} else {
+
 }
 
 void NMEASet::processSentenceOperation(
 		const NMEASentence &newSentence) {
 
-	LOG4CXX_DEBUG(logger,"processSentenceOperation: Message " << newSentence.talkerID << ' ' << newSentence.sentenceType);
+	LOG4CXX_DEBUG(logger,"processSentenceOperation: Message " << newSentence.talkerID << ' ' << newSentence.sentenceTypeString);
 
 }
 

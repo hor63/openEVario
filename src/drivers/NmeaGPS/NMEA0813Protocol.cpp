@@ -29,7 +29,7 @@
 #include <fstream>
 
 #include "NmeaGPSDriver.h"
-#include "NMEA0813.h"
+#include "NMEA0813Protocol.h"
 
 #if defined HAVE_LOG4CXX_H
 static log4cxx::LoggerPtr logger = 0;
@@ -206,10 +206,10 @@ void NMEA0813Protocol::parseSentence() {
 		// that the preamble is only one character, and not 'P'.
 		// Illegal, but I want to avoid any accidents
 		if (currSentence.buf[1] != 0) {
-			currSentence.sentenceType = &currSentence.buf[2];
+			currSentence.sentenceTypeString = &currSentence.buf[2];
 		} else {
 			// currSentence.buf[1] is already \0. Therefore the sentence type is also emtpy.
-			currSentence.sentenceType = &currSentence.buf[1];
+			currSentence.sentenceTypeString = &currSentence.buf[1];
 		}
 	}
 
@@ -217,7 +217,7 @@ void NMEA0813Protocol::parseSentence() {
 	if (logger->isDebugEnabled()) {
 		std::ostringstream txt;
 		txt << "NMEA sentence parsed: \nTalker ID: \"" << currSentence.talkerID
-				<< "\", \nsentence type: \"" << currSentence.sentenceType
+				<< "\", \nsentence type: \"" << currSentence.sentenceTypeString
 				<< "\", \nnumber fields: " << currSentence.numFields;
 		for (uint32_t i = 0; i < currSentence.numFields; i++) {
 			txt << "\n	fields[" << i << "] = \"" << currSentence.fields[i] << "\"";
@@ -231,5 +231,18 @@ void NMEA0813Protocol::parseSentence() {
 
 
 }
+
+std::ostream& operator << (std::ostream &o, openEV::drivers::NMEA0813::NMEASentenceType t){
+
+	return o;
+}
+
+#if defined HAVE_LOG4CXX_H
+std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::drivers::NMEA0813::NMEASentenceType t) {
+	std::ostream &o = b;
+	return operator << (o,t);
+
+}
+#endif
 
 } /* namespace openEV */

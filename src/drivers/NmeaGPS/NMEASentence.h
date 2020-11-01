@@ -30,6 +30,22 @@
 
 namespace openEV::drivers::NMEA0813 {
 
+
+/** Enumeration of NMEA sentence types of interest for me
+ *
+ * Any NMEA sentence type which is not listed here is marked as \p NMEA_DONT_CARE, and is thrown out at an early stage of processing.
+ *
+ */
+OEV_ENUM(NMEASentenceType,
+		NMEA_RMC,
+		NMEA_GGA,
+		NMEA_GLL,
+		NMEA_GNS,
+		NMEA_GST,
+		NMEA_GSA,
+		NMEA_GBS,
+		NMEA_DONT_CARE);
+
 struct NMEASentence {
 	/** \brief Max. length of internal buffers for NMEA sentences.
 	 *
@@ -54,7 +70,9 @@ struct NMEASentence {
 	/// \brief Talker ID from the first field. It is actually copied here.
 	uint8_t talkerID[4];
 	/// \brief Points to the character in the first field behind the talker ID designating the sentence type.
-	uint8_t *sentenceType;
+	uint8_t *sentenceTypeString;
+	/// Type of the sentence as enumeration value
+	NMEASentenceType sentenceType;
 	/// \brief The data fields of the sentence. The strings themselves lie in \p buf.
 	uint8_t * (fields [maxNumFields]);
 	/// Number of defined \ref fields
@@ -63,5 +81,9 @@ struct NMEASentence {
 
 } // namespace openEV
 
+std::ostream& operator << (std::ostream &o, openEV::drivers::NMEA0813::NMEASentenceType t);
 
+#if defined HAVE_LOG4CXX_H
+std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::drivers::NMEA0813::NMEASentenceType t);
+#endif
 #endif /* DRIVERS_NMEAGPS_NMEASENTENCE_H_ */

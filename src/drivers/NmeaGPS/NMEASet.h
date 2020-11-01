@@ -33,10 +33,10 @@
 #include "OEVCommon.h"
 #include "NmeaGPSDriver.h"
 #include "NMEASentence.h"
-#include "NMEA0813.h"
+#include "NMEA0813Protocol.h"
 
 
-namespace openEV {
+namespace openEV::drivers::NMEA0813 {
 
 class NmeaGPSDriver;
 
@@ -272,8 +272,11 @@ public:
 	 * The initial value is used to distinguish if the initial set of values is
 	 */
 
+#if defined UINT32_MAX | defined DOXYGEN
+	static constexpr uint32_t NMEATimeStampUndef = UINT32_MAX;
+#else
 	static constexpr uint32_t NMEATimeStampUndef = 0xFFFFFFFFU;
-
+#endif // defined UINT32_MAX
 
 	/** \brief Records of the teach-in/learning phase.
 	 *
@@ -330,7 +333,7 @@ public:
 	typedef TeachInCollectionList::pointer TeachInCollectionPtr;
 
 	struct CommonRecordItem {
-		/// Position in a \ref CommonRecordList
+		/// Position in a \ref CommonRecordItemList
 		/// Since I am dealing with iterators only I would be loosing track of the number
 		uint32_t recordNo;
 		TeachInCollectionPtr teachInCollectionPtr;
@@ -356,25 +359,45 @@ public:
 	/// This is just a list of strings containing the NMEA sentence type.
 	typedef std::list<std::string> UsedNMEASentenceTypes;
 	/// \brief Constant iterator through an \ref UsedNMEASentenceTypes object
-	typedef UsedNMEASentenceTypes::iterator UsedNMEASentenceTypesIter;
+	typedef UsedNMEASentenceTypes::const_iterator UsedNMEASentenceTypesCIter;
 	/// \brief Iterator through an \ref UsedNMEASentenceTypes object.
 
-	struct gnssRecord {
-		double latitude;
-		double longitude;
-		bool posDefined;
-		double altMSL;
-		bool altMslDefined;
-		float latDeviation;
-		float longDeviation;
-		float altDeviation;
+	struct GnssRecord {
+		double latitude;		///< Latitude in degrees, North of the equator is positive
+		double longitude;		///< Longitude in degrees. East of Greenwich is positive
+		bool posDefined;		///< true when \ref latitude and \ref longitude are defined.
+		double altMSL;			///< Altitude MSL in meter.
+		bool altMslDefined;		///< true when \ref altMSL is defined.
+		float latDeviation;		///< Standard deviation of \ref latitude in meters (not degrees!)
+		float longDeviation;	///< Standard deviation of \ref longitude in meters
+		float altDeviation;		///< Standard deviation of \ref altMSL
+		bool pDoPDefined; 		///< Position Dilution of Precision; one DoP value for all dimensions. Lowest priority, and least specific
+		bool hDoPDefined;		///< Horizontal Dilution of Precision; one DoP value for \ref latitude and \ref longitude
+		bool vDoPDefined;		///< Vertical Dilution of Precision; one DoP value for \ref altMSL
+		bool devDirectDefined;	///< Expected errors (standard deviations) for \ref latitude, \ref longitude, and \ref altMSL are explicitly defined.
+		 ///< Takes precedence over all DoP values.
 
 		std::chrono::system_clock::time_point recordStart;
 		uint32_t gnssTimeStamp;
 
-		void init() {
+		/** \brief Initialize the record for a new GNSS fix cycle
+		 *
+		 * It only resets the ...defined flags.
+		 */
+		void initialize() {
 			posDefined = false;
 			altMslDefined = false;
+			pDoPDefined = false;
+			hDoPDefined = false;
+			vDoPDefined = false;
+			devDirectDefined = false;
+			// Reset to epoch start
+			recordStart = std::chrono::system_clock::time_point();
+			// And set the GNSS timestamp to an implausible value
+			gnssTimeStamp = NMEATimeStampUndef;
+		}
+		GnssRecord() {
+			initialize();
 		}
 	};
 
@@ -486,8 +509,30 @@ private:
 	/// \brief Current position, and currently expected NMEA sentence in the current GNSS update cycle.
 	///
 	/// The iterator points into \ref usedNMEASentenceTypes
-	UsedNMEASentenceTypesIter currExpectedSentenceType;
+	UsedNMEASentenceTypesCIter currExpectedSentenceType;
 
+	/** \brief Is the Kalman filter set to the initial position and altitude?
+	 *
+	 * GNSS processing will wait until a sufficiently precise position and altitude is available.
+	 * Then it will set the initial position, and altitude. \n
+	 * If altimeter (static pressure) readings are already available the QFF is also initially calculated
+	 * to bring altimeter and GPS altitude in synch. \n
+	 * (GNSS is usually the latest sensor to come online. Even if the receiver was online before and is
+	 * delivering valid data immediately the teach-in phase takes 10 GNSS fix cycles which is between 1 and 10 seconds,
+	 * depending on the receiver rate).
+	 *
+	 * When the initial position and altitude are set \p initialPositionSet is set true.
+	 * From that moment the GNSS readings are being used to update the Kalman filter.
+	 *
+	 */
+	bool initialPositionSet = false;
+
+	/** \brief Data of the current GNSS fix cycle
+	 *
+	 * The various attributes of one GNSS fix are spread over various NMEA sentences.
+	 * This record collects the data.
+	 */
+	GnssRecord currGnssRecord;
 
 	/** \brief Process a new NMEA sentence in teach-in mode.
 	 *

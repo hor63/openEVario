@@ -30,7 +30,7 @@
 #include <fstream>
 
 #include "NmeaGPSDriver.h"
-#include "NMEA0813.h"
+#include "NMEA0813Protocol.h"
 #include "kalman/GliderVarioTransitionMatrix.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
 
