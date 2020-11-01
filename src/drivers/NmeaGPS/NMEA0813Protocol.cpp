@@ -226,9 +226,28 @@ void NMEA0813Protocol::parseSentence() {
 	}
 #endif // #if defined HAVE_LOG4CXX_H
 
-	// Now process the validated and parsed sentence.
-	nmeaSet.processSentence(currSentence);
+	// Evaluate the sentence type
+	if (!strcmp((char const*)(currSentence.sentenceTypeString),"RMC") ) {
+		currSentence.sentenceType = NMEA_RMC;
+	} else if (!strcmp((char const*)(currSentence.sentenceTypeString),"GGA") ) {
+		currSentence.sentenceType = NMEA_GGA;
+	} else if (!strcmp((char const*)(currSentence.sentenceTypeString),"GNS") ) {
+		currSentence.sentenceType = NMEA_GNS;
+	} else if (!strcmp((char const*)(currSentence.sentenceTypeString),"GST") ) {
+		currSentence.sentenceType = NMEA_GST;
+	} else if (!strcmp((char const*)(currSentence.sentenceTypeString),"GSA") ) {
+		currSentence.sentenceType = NMEA_GSA;
+	} else if (!strcmp((char const*)(currSentence.sentenceTypeString),"GBS") ) {
+		currSentence.sentenceType = NMEA_GBS;
+	} else {
+		currSentence.sentenceType = NMEA_DONT_CARE;
+	}
 
+	// Throw out any un-supported sentence type.
+	if (currSentence.sentenceType != NMEA_DONT_CARE) {
+		// Now process the validated and parsed sentence.
+		nmeaSet.processSentence(currSentence);
+	}
 
 }
 
