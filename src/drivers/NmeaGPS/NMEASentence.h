@@ -31,22 +31,23 @@
 namespace openEV::drivers::NMEA0813 {
 
 
-/** Enumeration of NMEA sentence types of interest for me
- *
- * Any NMEA sentence type which is not listed here is marked as \p NMEA_DONT_CARE, and is thrown out at an early stage of processing.
- *
- */
-OEV_ENUM(NMEASentenceType,
-		NMEA_RMC,
-		NMEA_GGA,
-		NMEA_GLL,
-		NMEA_GNS,
-		NMEA_GST,
-		NMEA_GSA,
-		NMEA_GBS,
-		NMEA_DONT_CARE);
 
 struct NMEASentence {
+	/** Enumeration of NMEA sentence types of interest for me
+	 *
+	 * Any NMEA sentence type which is not listed here is marked as \p NMEA_DONT_CARE, and is thrown out at an early stage of processing.
+	 *
+	 */
+	OEV_ENUM(NMEASentenceType,
+			NMEA_RMC,
+			NMEA_GGA,
+			NMEA_GLL,
+			NMEA_GNS,
+			NMEA_GST,
+			NMEA_GSA,
+			NMEA_GBS,
+			NMEA_DONT_CARE);
+
 	/** \brief Max. length of internal buffers for NMEA sentences.
 	 *
 	 * According to specification the maximum length of a sentence cannot be more than 82 characters
@@ -81,9 +82,9 @@ struct NMEASentence {
 
 } // namespace openEV
 
-std::ostream& operator << (std::ostream &o, openEV::drivers::NMEA0813::NMEASentenceType t);
+std::ostream& operator << (std::ostream &o, openEV::drivers::NMEA0813::NMEASentence::NMEASentenceType t);
 
 #if defined HAVE_LOG4CXX_H
-std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::drivers::NMEA0813::NMEASentenceType t);
+std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::drivers::NMEA0813::NMEASentence::NMEASentenceType t);
 #endif
 #endif /* DRIVERS_NMEAGPS_NMEASENTENCE_H_ */

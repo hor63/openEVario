@@ -228,40 +228,44 @@ void NMEA0813Protocol::parseSentence() {
 
 	// Evaluate the sentence type
 	if (!strcmp((char const*)(currSentence.sentenceTypeString),"RMC") ) {
-		currSentence.sentenceType = NMEA_RMC;
+		currSentence.sentenceType = NMEASentence::NMEA_RMC;
 	} else if (!strcmp((char const*)(currSentence.sentenceTypeString),"GGA") ) {
-		currSentence.sentenceType = NMEA_GGA;
+		currSentence.sentenceType = NMEASentence::NMEA_GGA;
 	} else if (!strcmp((char const*)(currSentence.sentenceTypeString),"GNS") ) {
-		currSentence.sentenceType = NMEA_GNS;
+		currSentence.sentenceType = NMEASentence::NMEA_GNS;
 	} else if (!strcmp((char const*)(currSentence.sentenceTypeString),"GST") ) {
-		currSentence.sentenceType = NMEA_GST;
+		currSentence.sentenceType = NMEASentence::NMEA_GST;
 	} else if (!strcmp((char const*)(currSentence.sentenceTypeString),"GSA") ) {
-		currSentence.sentenceType = NMEA_GSA;
+		currSentence.sentenceType = NMEASentence::NMEA_GSA;
 	} else if (!strcmp((char const*)(currSentence.sentenceTypeString),"GBS") ) {
-		currSentence.sentenceType = NMEA_GBS;
+		currSentence.sentenceType = NMEASentence::NMEA_GBS;
 	} else {
-		currSentence.sentenceType = NMEA_DONT_CARE;
+		currSentence.sentenceType = NMEASentence::NMEA_DONT_CARE;
 	}
 
 	// Throw out any un-supported sentence type.
-	if (currSentence.sentenceType != NMEA_DONT_CARE) {
+	if (currSentence.sentenceType != NMEASentence::NMEA_DONT_CARE) {
 		// Now process the validated and parsed sentence.
 		nmeaSet.processSentence(currSentence);
 	}
 
 }
 
-std::ostream& operator << (std::ostream &o, openEV::drivers::NMEA0813::NMEASentenceType t){
+NMEASentence::NMEASentenceTypeHelperClass NMEASentence::NMEASentenceTypeHelperObj;
 
+} /* namespace openEV */
+
+
+
+std::ostream& operator << (std::ostream &o, openEV::drivers::NMEA0813::NMEASentence::NMEASentenceType t){
+	o << openEV::drivers::NMEA0813::NMEASentence::NMEASentenceTypeHelperObj.getString(t);
 	return o;
 }
 
 #if defined HAVE_LOG4CXX_H
-std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::drivers::NMEA0813::NMEASentenceType t) {
+std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::drivers::NMEA0813::NMEASentence::NMEASentenceType t) {
 	std::ostream &o = b;
 	return operator << (o,t);
-
 }
 #endif
 
-} /* namespace openEV */
