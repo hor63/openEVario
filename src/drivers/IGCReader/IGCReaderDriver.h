@@ -37,7 +37,7 @@
 #include "drivers/IGCReader/BRecord.h"
 #include "drivers/IGCReader/BRecordSection.h"
 
-namespace openEV {
+namespace openEV::drivers::IGCReader {
 
 /** \brief Simulation/test driver playing back an IGC file
  *

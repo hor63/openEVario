@@ -32,9 +32,12 @@
 #include "OEVCommon.h"
 
 namespace openEV {
-
 // Forward declarations because the complex include hierarchy can have side effects on the order of includes
 class GliderVarioDriverList;
+
+namespace drivers {
+
+// Forward declarations because the complex include hierarchy can have side effects on the order of includes
 class GliderVarioDriverBase;
 
 /** \brief Driver library base class.
@@ -86,6 +89,7 @@ protected:
 
 typedef GliderVarioDriverLibBase* GliderVarioDriverLibBasePtr;
 
+} /* namespace drivers */
 } /* namespace openEV */
 
 #include "main/GliderVarioDriverList.h"

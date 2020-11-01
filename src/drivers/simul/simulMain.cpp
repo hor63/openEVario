@@ -32,7 +32,7 @@
 #include "simulDriver.h"
 #include "drivers/sensorDriver.h"
 
-using namespace openEV;
+using namespace openEV::drivers;
 
 static log4cxx::LoggerPtr logger = 0;
 
@@ -52,7 +52,7 @@ void OEV_DRIVER_PUBLIC driverLibInit(void) {
 
 }
 
-openEV::GliderVarioDriverLibBasePtr OEV_DRIVER_PUBLIC getDriverLib() {
+GliderVarioDriverLibBasePtr OEV_DRIVER_PUBLIC getDriverLib() {
 
 	initLogger();
 

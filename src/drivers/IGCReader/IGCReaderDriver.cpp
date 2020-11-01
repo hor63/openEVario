@@ -45,7 +45,7 @@ static inline void initLogger() {
 
 #endif
 
-namespace openEV {
+namespace openEV::drivers::IGCReader {
 
 IGCReaderDriver::IGCReaderDriver(
 	    char const *driverName,

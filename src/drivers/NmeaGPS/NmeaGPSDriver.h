@@ -37,7 +37,7 @@
 
 #include "util/io/StreamPort.h"
 
-namespace openEV {
+namespace openEV::drivers::NMEA0813 {
 
 /** \brief Driver for Bosch BMX160 IMU which is mounted on the hovImuBoard sensor board
  *

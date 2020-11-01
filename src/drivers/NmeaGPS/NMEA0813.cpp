@@ -43,9 +43,9 @@ static inline void initLogger() {
 #endif
 
 
-namespace openEV {
+namespace openEV::drivers::NMEA0813 {
 
-NMEA0813::NMEA0813(NMEASet& set)
+NMEA0813Protocol::NMEA0813Protocol(NMEASet& set)
 		:nmeaSet{set}
 {
 
@@ -53,11 +53,11 @@ NMEA0813::NMEA0813(NMEASet& set)
 
 }
 
-NMEA0813::~NMEA0813() {
+NMEA0813Protocol::~NMEA0813Protocol() {
 	// TODO Auto-generated destructor stub
 }
 
-void NMEA0813::processSensorData(const uint8_t *data, uint32_t dataLen) {
+void NMEA0813Protocol::processSensorData(const uint8_t *data, uint32_t dataLen) {
 
 	uint32_t i = 0;
 
@@ -142,7 +142,7 @@ void NMEA0813::processSensorData(const uint8_t *data, uint32_t dataLen) {
 
 }
 
-void NMEA0813::parseSentence() {
+void NMEA0813Protocol::parseSentence() {
 
 	uint8_t checksum = 0;
 

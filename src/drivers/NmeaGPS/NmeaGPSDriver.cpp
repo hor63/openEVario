@@ -46,7 +46,7 @@ static inline void initLogger() {
 
 #endif
 
-namespace openEV {
+namespace openEV::drivers::NMEA0813 {
 
 NmeaGPSDriver::NmeaGPSDriver(
 	    char const *driverName,
@@ -157,7 +157,7 @@ void NmeaGPSDriver::driverThreadFunction() {
 void NmeaGPSDriver::processingMainLoop () {
 
 	uint8_t buf [NMEASentence::maxLenSentence];
-	NMEA0813 nmeaProcessor(nmeaSet);
+	NMEA0813Protocol nmeaProcessor(nmeaSet);
 
 	while (!getStopDriverThread()) {
 		// LOG4CXX_DEBUG (logger,"Driver " << driverName << ": Read max. " << sizeof (buf) << " bytes from the port");

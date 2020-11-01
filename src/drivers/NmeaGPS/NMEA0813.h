@@ -32,7 +32,8 @@
 #include "NMEASentence.h"
 #include "NmeaGPSDriver.h"
 
-namespace openEV {
+namespace openEV::drivers::NMEA0813 {
+
 
 class NMEASet;
 
@@ -45,11 +46,11 @@ class NMEASet;
  * [NMEA description for uBlox6](https://www.u-blox.com/sites/default/files/products/documents/u-blox6_ReceiverDescrProtSpec_%28GPS.G6-SW-10018%29_Public.pdf)
  *
  */
-class NMEA0813 {
+class NMEA0813Protocol {
 public:
 
-	NMEA0813(NMEASet& set);
-	virtual ~NMEA0813();
+	NMEA0813Protocol(NMEASet& set);
+	virtual ~NMEA0813Protocol();
 
 	void processSensorData (uint8_t const *data,uint32_t dataLen);
 

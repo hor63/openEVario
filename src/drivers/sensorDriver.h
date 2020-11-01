@@ -43,7 +43,7 @@ void OEV_DRIVER_PUBLIC driverLibInit(void);
  *
  * @return Pointer to the driver library object
  */
-openEV::GliderVarioDriverLibBasePtr OEV_DRIVER_PUBLIC getDriverLib();
+openEV::drivers::GliderVarioDriverLibBasePtr OEV_DRIVER_PUBLIC getDriverLib();
 
 
 }

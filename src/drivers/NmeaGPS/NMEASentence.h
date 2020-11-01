@@ -28,7 +28,7 @@
 #ifndef DRIVERS_NMEAGPS_NMEASENTENCE_H_
 #define DRIVERS_NMEAGPS_NMEASENTENCE_H_
 
-namespace openEV {
+namespace openEV::drivers::NMEA0813 {
 
 struct NMEASentence {
 	/** \brief Max. length of internal buffers for NMEA sentences.

@@ -40,8 +40,10 @@
 
 namespace openEV {
 
-class GliderVarioDriverLibBase;
-class GliderVarioDriverBase;
+namespace drivers {
+	class GliderVarioDriverLibBase;
+	class GliderVarioDriverBase;
+}
 class GliderVarioMainPriv;
 
 /** \brief Administration of driver libraries, and the driver list
@@ -57,7 +59,7 @@ class GliderVarioDriverList {
 public:
 
 	/// Function pointer type to create a new driver instance
-	typedef GliderVarioDriverBase* (*GetNewDriverInstance) (
+	typedef drivers::GliderVarioDriverBase* (*GetNewDriverInstance) (
 		    char const *driverName,
 			char const *description,
 			char const *instanceName);
@@ -72,10 +74,10 @@ public:
 
 
 	typedef void (*DriverLibInitProc) ();
-	typedef GliderVarioDriverLibBase* (*GetDriverLibProc)();
+	typedef drivers::GliderVarioDriverLibBase* (*GetDriverLibProc)();
 
 	typedef struct {
-		GliderVarioDriverLibBase* libObj;
+		drivers::GliderVarioDriverLibBase* libObj;
 		std::string shLibName;
 		void *shLibHandle;
 		DriverLibInitProc driverLibInit;
@@ -83,7 +85,7 @@ public:
 	} DriverLibListItem;
 
 	typedef std::map<std::string,DriverLibListItem> DriverLibList;
-	typedef std::shared_ptr<GliderVarioDriverBase> GliderVarioDriverBasePtr;
+	typedef std::shared_ptr<drivers::GliderVarioDriverBase> GliderVarioDriverBasePtr;
 	typedef std::map<std::string,GliderVarioDriverBasePtr> DriverInstanceList;
 
 

@@ -28,7 +28,7 @@
 
 #include "OEVCommon.h"
 
-namespace openEV {
+namespace openEV::drivers::IGCReader {
 
 	typedef struct {
 		OEVDuration	timeSinceStart;	///< Duration since the first B-record

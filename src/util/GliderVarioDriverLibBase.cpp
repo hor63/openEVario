@@ -25,7 +25,7 @@
 
 #include "drivers/GliderVarioDriverLibBase.h"
 
-namespace openEV {
+namespace openEV::drivers {
 
 GliderVarioDriverLibBase::~GliderVarioDriverLibBase() {
 	// TODO Auto-generated destructor stub

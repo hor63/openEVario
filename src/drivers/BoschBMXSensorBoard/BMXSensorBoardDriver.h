@@ -41,7 +41,7 @@
 #include "BMXSensorBoardLib.h"
 #include "util/io/DatagramPort.h"
 
-namespace openEV {
+namespace openEV::drivers::BoschBMX160 {
 
 /** \brief Driver for Bosch BMX160 IMU which is mounted on the hovImuBoard sensor board
  *

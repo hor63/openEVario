@@ -33,7 +33,7 @@
 #include "NmeaGPSLib.h"
 #include "NmeaGPSDriver.h"
 
-namespace openEV {
+namespace openEV::drivers::NMEA0813 {
 
 static std::string const NmeaGPSDriverName = "NmeaGPS";
 static std::string const NmeaGPSDriverLibName = "NmeaGPSLib";

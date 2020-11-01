@@ -44,7 +44,7 @@ static inline void initLogger() {
 }
 #endif
 
-namespace openEV {
+namespace openEV::drivers {
 
 GliderVarioDriverBase::GliderVarioDriverBase (
 	    char const *driverName,
@@ -140,8 +140,8 @@ GliderVarioDriverBase::SensorCapabilityHelperClass GliderVarioDriverBase::Sensor
 
 }
 
-std::ostream& operator << (std::ostream &o,openEV::GliderVarioDriverBase::SensorCapability ind) {
-	o << openEV::GliderVarioDriverBase::SensorCapabilityHelperObj.getString (ind);
+std::ostream& operator << (std::ostream &o,openEV::drivers::GliderVarioDriverBase::SensorCapability ind) {
+	o << openEV::drivers::GliderVarioDriverBase::SensorCapabilityHelperObj.getString (ind);
 	return o;
 }
 

@@ -33,7 +33,7 @@
 #include "BMXSensorBoardLib.h"
 #include "BMXSensorBoardDriver.h"
 
-namespace openEV {
+namespace openEV::drivers::BoschBMX160 {
 
 static std::string const BMXSensorBoardDriverName = "BMX160SensorBoard";
 static std::string const BMXSensorBoardDriverLibName = "BMXSensorBoardLib";

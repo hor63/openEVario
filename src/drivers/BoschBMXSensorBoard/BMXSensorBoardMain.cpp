@@ -32,7 +32,7 @@
 #include "BMXSensorBoardDriver.h"
 #include "drivers/sensorDriver.h"
 
-using namespace openEV;
+using namespace openEV::drivers::BoschBMX160;
 
 #if defined HAVE_LOG4CXX_H
 static log4cxx::LoggerPtr logger = 0;
@@ -65,7 +65,7 @@ void OEV_DRIVER_PUBLIC driverLibInit(void) {
 }
 
 
-openEV::GliderVarioDriverLibBasePtr OEV_DRIVER_PUBLIC getDriverLib() {
+openEV::drivers::GliderVarioDriverLibBasePtr OEV_DRIVER_PUBLIC getDriverLib() {
 
 	driverLibInit();
 

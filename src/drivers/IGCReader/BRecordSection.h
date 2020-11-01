@@ -36,7 +36,7 @@
 
 #include "BRecord.h"
 
-namespace openEV {
+namespace openEV::drivers::IGCReader {
 
 
 /** \brief IGC file B record section processor

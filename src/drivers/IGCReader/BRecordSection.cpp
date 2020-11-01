@@ -44,7 +44,7 @@ static inline void initLogger() {
 
 
 
-namespace openEV {
+namespace openEV::drivers::IGCReader {
 
 /** \brief Read a signed integer value from a fixed length string
  *

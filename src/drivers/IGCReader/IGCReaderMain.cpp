@@ -32,7 +32,7 @@
 #include "IGCReaderDriver.h"
 #include "drivers/sensorDriver.h"
 
-using namespace openEV;
+using namespace openEV::drivers::IGCReader;
 
 static log4cxx::LoggerPtr logger = 0;
 
@@ -61,7 +61,7 @@ void OEV_DRIVER_PUBLIC driverLibInit(void) {
 }
 
 
-openEV::GliderVarioDriverLibBasePtr OEV_DRIVER_PUBLIC getDriverLib() {
+openEV::drivers::GliderVarioDriverLibBasePtr OEV_DRIVER_PUBLIC getDriverLib() {
 
 	driverLibInit();
 

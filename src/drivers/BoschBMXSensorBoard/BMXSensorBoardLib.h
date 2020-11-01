@@ -28,7 +28,7 @@
 
 #include "drivers/GliderVarioDriverLibBase.h"
 
-namespace openEV {
+namespace openEV::drivers::BoschBMX160 {
 
 class BMXSensorBoardLib : public GliderVarioDriverLibBase {
 public:

@@ -35,7 +35,7 @@
 #include "drivers/GliderVarioDriverBase.h"
 #include "templateLib.h"
 
-namespace openEV {
+namespace openEV::drivers::template {
 
 /** \brief Driver for Bosch BMX160 IMU which is mounted on the hovImuBoard sensor board
  *

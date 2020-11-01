@@ -28,7 +28,7 @@
 
 #include "drivers/GliderVarioDriverLibBase.h"
 
-namespace openEV {
+namespace openEV::drivers::IGCReader {
 
 class IGCReaderLib : public GliderVarioDriverLibBase {
 public:

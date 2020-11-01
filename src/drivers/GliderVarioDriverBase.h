@@ -49,6 +49,9 @@ namespace openEV {
 // Forward declaration
 class GliderVarioMainPriv;
 
+namespace drivers {
+
+
 /** \brief Abstract base class for sensor drivers.
  *
  * Abstract base class of sensor drivers. Most methods are pure virtual, and must be implemented by the driver class
@@ -353,13 +356,14 @@ protected:
 }; // class GliderVarioDriverBase
 
 /// Define a shared pointer to the driver object which keeps a reference count
-typedef std::shared_ptr<openEV::GliderVarioDriverBase> GliderVarioDriverBasePtr;
+typedef std::shared_ptr<openEV::drivers::GliderVarioDriverBase> GliderVarioDriverBasePtr;
 
-}
+} // namespace drivers
+} // namespace openEV
 
 #include "main/GliderVarioDriverList.h"
 
-OEV_UTILS_PUBLIC std::ostream& operator << (std::ostream &o,openEV::GliderVarioDriverBase::SensorCapability ind);
+OEV_UTILS_PUBLIC std::ostream& operator << (std::ostream &o,openEV::drivers::GliderVarioDriverBase::SensorCapability ind);
 
 #endif /* GLIDERVARIODRIVERBASE_H_ */
 

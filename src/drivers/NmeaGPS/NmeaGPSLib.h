@@ -28,7 +28,7 @@
 
 #include "drivers/GliderVarioDriverLibBase.h"
 
-namespace openEV {
+namespace openEV::drivers::NMEA0813 {
 
 class NmeaGPSLib : public GliderVarioDriverLibBase {
 public:

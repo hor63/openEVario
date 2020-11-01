@@ -33,7 +33,7 @@
 #include "IGCReaderLib.h"
 #include "IGCReaderDriver.h"
 
-namespace openEV {
+namespace openEV::drivers::IGCReader {
 
 static std::string const igcReaderDriverName = "IGCReader";
 static std::string const igcReaderDriverLibName = "IGCReaderLib";

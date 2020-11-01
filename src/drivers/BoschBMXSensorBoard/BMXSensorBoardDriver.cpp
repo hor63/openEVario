@@ -51,7 +51,7 @@ static inline void initLogger() {
 
 #endif
 
-namespace openEV {
+namespace openEV::drivers::BoschBMX160 {
 
 BMXSensorBoardDriver::BMXSensorBoardDriver(
 	    char const *driverName,
