@@ -620,8 +620,7 @@ void NMEASet::determineNMEASet(CommonCycleList& commonCycles) {
 
 }
 
-void NMEASet::processSentenceOperation(
-		const NMEASentence &newSentence) {
+uint32_t NMEASet::getNewSentenceTimestampMS(NMEASentence const& newSentence) {
 
 	uint32_t thisGPSTimeStampMS = NMEATimeStampUndef;
 	uint8_t const * timestampString = nullptr;
@@ -629,78 +628,99 @@ void NMEASet::processSentenceOperation(
 	LOG4CXX_DEBUG(logger,"processSentenceOperation: Message " << newSentence.talkerID << ' ' << newSentence.sentenceTypeString
 			<< ", internal type" << newSentence.sentenceType);
 
+	LOG4CXX_DEBUG(logger,"processSentenceTeachIn: Process message type " << newSentence.sentenceTypeString);
+
+	switch (newSentence.sentenceType) {
+	case NMEASentence::NMEA_RMC:
+		timestampString = newSentence.fields[RMC_TIME];
+		break;
+
+	case NMEASentence::NMEA_GGA:
+		timestampString = newSentence.fields[GGA_TIME];
+		break;
+
+	case NMEASentence::NMEA_GLL:
+		timestampString = newSentence.fields[GLL_TIME];
+		break;
+
+	case NMEASentence::NMEA_GNS:
+		timestampString = newSentence.fields[GNS_TIME];
+		break;
+
+	case NMEASentence::NMEA_GST:
+		timestampString = newSentence.fields[GST_TIME];
+		break;
+
+	case NMEASentence::NMEA_GSA:
+		// This case is special: The record does not have a timestamp field.
+		// Therefore just assume the same timestamp as the record before.
+		thisGPSTimeStampMS = currGnssRecord.gnssTimeStamp;
+		break;
+
+	case NMEASentence::NMEA_GBS:
+		timestampString = newSentence.fields[GBS_TIME];
+		break;
+
+	default:
+		// Why am I here? Un-supported sentence types should have been thrown out by the caller,
+		// i.e. NMEA0813Protocol::parseSentence()
+		LOG4CXX_WARN(logger,"NMEASet::processSentenceOperation: Un-supported sentence type " << newSentence.sentenceType
+				<< " from talker/type" << newSentence.talkerID << '/' << newSentence.sentenceTypeString << " is discarded.");
+	}
+
+	if (timestampString != nullptr) {
+		if (*timestampString != 0) {
+			LOG4CXX_DEBUG(logger, "getNewSentenceTimestampMS: Timestamp string = " << timestampString);
+			thisGPSTimeStampMS = NMEATimeStampToMS(timestampString);
+		}
+	}
+
+	LOG4CXX_DEBUG(logger, "getNewSentenceTimestampMS: Return = " << thisGPSTimeStampMS);
+	return thisGPSTimeStampMS;
+}
+
+void NMEASet::processSentenceOperation(
+		const NMEASentence &newSentence) {
+
+
+
 	try {
 
-		LOG4CXX_DEBUG(logger,"processSentenceTeachIn: Process message type " << newSentence.sentenceTypeString);
-
-		switch (newSentence.sentenceType) {
-		case NMEASentence::NMEA_RMC:
-			timestampString = newSentence.fields[RMC_TIME];
-			break;
-
-		case NMEASentence::NMEA_GGA:
-			timestampString = newSentence.fields[GGA_TIME];
-			break;
-
-		case NMEASentence::NMEA_GLL:
-			timestampString = newSentence.fields[GLL_TIME];
-			break;
-
-		case NMEASentence::NMEA_GNS:
-			timestampString = newSentence.fields[GNS_TIME];
-			break;
-
-		case NMEASentence::NMEA_GST:
-			timestampString = newSentence.fields[GST_TIME];
-			break;
-
-		case NMEASentence::NMEA_GSA:
-			thisGPSTimeStampMS = currGnssRecord.gnssTimeStamp;
-			break;
-
-		case NMEASentence::NMEA_GBS:
-			timestampString = newSentence.fields[GBS_TIME];
-			break;
-
-		default:
-			// Why am I here? Un-supported sentence types should have been thrown out by the caller,
-			// i.e. NMEA0813Protocol::parseSentence()
-			LOG4CXX_WARN(logger,"NMEASet::processSentenceOperation: Un-supported sentence type " << newSentence.sentenceType
-					<< " from talker/type" << newSentence.talkerID << '/' << newSentence.sentenceTypeString << " is discarded.");
-		}
-
-		if (timestampString != nullptr) {
-			if (*timestampString == 0) {
-				// If the timestamp string is expected by emtpy
-				// the GNSS receiver probably has done a cold start
-				// and is completely in the dark, beacuse it does not even have a time.
-				// throw out the message.
-				LOG4CXX_DEBUG(logger,"NMEASet::processSentenceOperation: Timestamp of message is undefined. Discard it.");
-				return;
-			} else {
-			thisGPSTimeStampMS = NMEATimeStampToMS(timestampString);
-			}
-		}
+		uint32_t thisGPSTimeStampMS = getNewSentenceTimestampMS(newSentence);
 
 		if (thisGPSTimeStampMS != NMEATimeStampUndef &&
 				thisGPSTimeStampMS != currGnssRecord.gnssTimeStamp	) {
 			// The record contains a valid timestamp, and it is different from the last cycle.
 			// Therefore start a new cycle.
-
-			// Please note using timestampString is safe here. When thisGPSTimeStampMS is valid timestampString was not NULL.
 			LOG4CXX_DEBUG(logger,"Start new cycle. Old GNSS timestamp = " << currGnssRecord.gnssTimeStamp
-					<< ", new GNSS timestamp = " << thisGPSTimeStampMS
-					<< ", new timestamp string = " << timestampString);
+					<< ", new GNSS timestamp = " << thisGPSTimeStampMS);
+
 			currExpectedSentenceType = usedNMEASentenceTypes.cbegin();
+			currGnssRecord.initialize();
 			currGnssRecord.gnssTimeStamp = thisGPSTimeStampMS;
 			currGnssRecord.recordStart = std::chrono::system_clock::now();
 		}
 
 		// First check if the sentence type is the one which is currently expected,
 		// Or if the expected type list is empty, and we are in promiscuous mode
-		if (currExpectedSentenceType == usedNMEASentenceTypes.cend() ||
-				*currExpectedSentenceType != (char const *)(newSentence.sentenceTypeString)) {
+		if (usedNMEASentenceTypes.size() == 0 ||
+				(currExpectedSentenceType != usedNMEASentenceTypes.cend() &&
+				*currExpectedSentenceType != (char const *)(newSentence.sentenceTypeString))) {
+			// Process the message
 
+			// Check if you got all required messages in targeted mode
+			if (usedNMEASentenceTypes.size() > 0) {
+				if (currExpectedSentenceType != usedNMEASentenceTypes.cend()) {
+					// I received all required sentences.
+					// Check if all required data are present, and if so pass them on to the Kalman filter
+				}
+			} else {
+				// In promiscuous mode check if all required data are present, and if so pass them on to the Kalman filter
+			}
+			// Advance to the next expected sentence type
+			if (currExpectedSentenceType != usedNMEASentenceTypes.cend()) {
+				currExpectedSentenceType ++;
+			}
 		}
 
 	}

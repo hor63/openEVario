@@ -576,6 +576,18 @@ private:
 	 */
 	void processSentenceOperation(NMEASentence const& newSentence);
 
+	/** \brief Determine the timestamp in the received NMEA sentence in milliseconds
+	 *
+	 * Determine the timestamp in ms since midnight UTC.
+	 * If the sentence type does not bear a timestamp by design return the time of the previous sentence.
+	 * If the timestamp string is empty, i.e. the GNSS receiver has no defined time base return \ref NMEATimeStampUndef.
+	 *
+	 * @param newSentence The received and parsed NMEA sentence
+	 * @return The timestamp of the sentence in ms. Return \ref NMEATimeStampUndef when the GNSS receiver has no time base.
+	 * @throws NMEASetParseException when the timestamp does apply to the convention of the timestamp string.
+	 */
+	uint32_t getNewSentenceTimestampMS(NMEASentence const& newSentence);
+
 	/** \brief Function pointer to the sentence processor
 	 *
 	 * Initially it is set to \ref processSentenceTeachIn(). This method will switch to \ref processSentenceOperation()
