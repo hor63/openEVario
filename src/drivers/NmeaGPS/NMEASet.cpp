@@ -285,7 +285,7 @@ void NMEASet::processSentenceTeachIn(
 		LOG4CXX_DEBUG(logger,"processSentenceTeachIn: Process message type " << newSentence.sentenceTypeString);
 
 		switch (newSentence.sentenceType) {
-		case NMEA_RMC:
+		case NMEASentence::NMEA_RMC:
 			// If the timestamp is undefined the GNSS receiver is totally in the dark,
 			// and does not even have a battery backed RTC.
 			// Do not use teach-in now.
@@ -297,7 +297,7 @@ void NMEASet::processSentenceTeachIn(
 			}
 			break;
 
-		case NMEA_GGA:
+		case NMEASentence::NMEA_GGA:
 			// If the timestamp is undefined the GNSS receiver is totally in the dark,
 			// and does not even have a battery backed RTC.
 			// Do not use teach-in now.
@@ -311,7 +311,7 @@ void NMEASet::processSentenceTeachIn(
 			}
 			break;
 
-		case NMEA_GLL:
+		case NMEASentence::NMEA_GLL:
 			if (*(newSentence.fields[GLL_TIME]) != 0) {
 				thisGPSTimeStampMS = NMEATimeStampToMS(newSentence.fields[GLL_TIME]);
 				useLocRecord = true;
@@ -321,7 +321,7 @@ void NMEASet::processSentenceTeachIn(
 			}
 			break;
 
-		case NMEA_GNS:
+		case NMEASentence::NMEA_GNS:
 			if (*(newSentence.fields[GNS_TIME]) != 0) {
 				thisGPSTimeStampMS = NMEATimeStampToMS(newSentence.fields[GNS_TIME]);
 				useLocRecord = true;
@@ -332,7 +332,7 @@ void NMEASet::processSentenceTeachIn(
 			}
 			break;
 
-		case NMEA_GST:
+		case NMEASentence::NMEA_GST:
 			// If the timestamp is undefined the GNSS receiver is totally in the dark,
 			// and does not even have a battery backed RTC.
 			// Do not use teach-in now.
@@ -343,7 +343,7 @@ void NMEASet::processSentenceTeachIn(
 			}
 			break;
 
-		case NMEA_GSA:
+		case NMEASentence::NMEA_GSA:
 			// GSA is a bit unique because it does not have an own timestamp field.
 			// It kind of swims in the fix update set with other NMEA sentences.
 			// For simplicity, and practical experience with GNSS receivers I assume
@@ -358,7 +358,7 @@ void NMEASet::processSentenceTeachIn(
 			locRecord.definesQualitiyLevel = true;
 			break;
 
-		case NMEA_GBS:
+		case NMEASentence::NMEA_GBS:
 			// If the timestamp is undefined the GNSS receiver is totally in the dark,
 			// and does not even have a battery backed RTC.
 			// Do not use teach-in now.
@@ -623,7 +623,91 @@ void NMEASet::determineNMEASet(CommonCycleList& commonCycles) {
 void NMEASet::processSentenceOperation(
 		const NMEASentence &newSentence) {
 
-	LOG4CXX_DEBUG(logger,"processSentenceOperation: Message " << newSentence.talkerID << ' ' << newSentence.sentenceTypeString);
+	uint32_t thisGPSTimeStampMS = NMEATimeStampUndef;
+	uint8_t const * timestampString = nullptr;
+
+	LOG4CXX_DEBUG(logger,"processSentenceOperation: Message " << newSentence.talkerID << ' ' << newSentence.sentenceTypeString
+			<< ", internal type" << newSentence.sentenceType);
+
+	try {
+
+		LOG4CXX_DEBUG(logger,"processSentenceTeachIn: Process message type " << newSentence.sentenceTypeString);
+
+		switch (newSentence.sentenceType) {
+		case NMEASentence::NMEA_RMC:
+			timestampString = newSentence.fields[RMC_TIME];
+			break;
+
+		case NMEASentence::NMEA_GGA:
+			timestampString = newSentence.fields[GGA_TIME];
+			break;
+
+		case NMEASentence::NMEA_GLL:
+			timestampString = newSentence.fields[GLL_TIME];
+			break;
+
+		case NMEASentence::NMEA_GNS:
+			timestampString = newSentence.fields[GNS_TIME];
+			break;
+
+		case NMEASentence::NMEA_GST:
+			timestampString = newSentence.fields[GST_TIME];
+			break;
+
+		case NMEASentence::NMEA_GSA:
+			thisGPSTimeStampMS = currGnssRecord.gnssTimeStamp;
+			break;
+
+		case NMEASentence::NMEA_GBS:
+			timestampString = newSentence.fields[GBS_TIME];
+			break;
+
+		default:
+			// Why am I here? Un-supported sentence types should have been thrown out by the caller,
+			// i.e. NMEA0813Protocol::parseSentence()
+			LOG4CXX_WARN(logger,"NMEASet::processSentenceOperation: Un-supported sentence type " << newSentence.sentenceType
+					<< " from talker/type" << newSentence.talkerID << '/' << newSentence.sentenceTypeString << " is discarded.");
+		}
+
+		if (timestampString != nullptr) {
+			if (*timestampString == 0) {
+				// If the timestamp string is expected by emtpy
+				// the GNSS receiver probably has done a cold start
+				// and is completely in the dark, beacuse it does not even have a time.
+				// throw out the message.
+				LOG4CXX_DEBUG(logger,"NMEASet::processSentenceOperation: Timestamp of message is undefined. Discard it.");
+				return;
+			} else {
+			thisGPSTimeStampMS = NMEATimeStampToMS(timestampString);
+			}
+		}
+
+		if (thisGPSTimeStampMS != NMEATimeStampUndef &&
+				thisGPSTimeStampMS != currGnssRecord.gnssTimeStamp	) {
+			// The record contains a valid timestamp, and it is different from the last cycle.
+			// Therefore start a new cycle.
+
+			// Please note using timestampString is safe here. When thisGPSTimeStampMS is valid timestampString was not NULL.
+			LOG4CXX_DEBUG(logger,"Start new cycle. Old GNSS timestamp = " << currGnssRecord.gnssTimeStamp
+					<< ", new GNSS timestamp = " << thisGPSTimeStampMS
+					<< ", new timestamp string = " << timestampString);
+			currExpectedSentenceType = usedNMEASentenceTypes.cbegin();
+			currGnssRecord.gnssTimeStamp = thisGPSTimeStampMS;
+			currGnssRecord.recordStart = std::chrono::system_clock::now();
+		}
+
+		// First check if the sentence type is the one which is currently expected,
+		// Or if the expected type list is empty, and we are in promiscuous mode
+		if (currExpectedSentenceType == usedNMEASentenceTypes.cend() ||
+				*currExpectedSentenceType != (char const *)(newSentence.sentenceTypeString)) {
+
+		}
+
+	}
+	catch (NMEASetParseException const& e) {
+		LOG4CXX_WARN(logger,"processSentenceTeachIn: Sentence " << newSentence.sentenceTypeString << " failed. Reason: " << e.what());
+		return;
+	}
 
 }
 
