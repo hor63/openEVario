@@ -372,10 +372,14 @@ public:
 		float longDeviation;	///< Standard deviation of \ref longitude in meters
 		float altDeviation;		///< Standard deviation of \ref altMSL
 		bool pDoPDefined; 		///< Position Dilution of Precision; one DoP value for all dimensions. Lowest priority, and least specific
-		bool hDoPDefined;		///< Horizontal Dilution of Precision; one DoP value for \ref latitude and \ref longitude
-		bool vDoPDefined;		///< Vertical Dilution of Precision; one DoP value for \ref altMSL
-		bool devDirectDefined;	///< Expected errors (standard deviations) for \ref latitude, \ref longitude, and \ref altMSL are explicitly defined.
-		 ///< Takes precedence over all DoP values.
+		bool hDoPDefined;		///< Horizontal Dilution of Precision; one DoP value for \ref latitude and \ref longitude;
+								///< overrides \ref pDoPDefined
+		bool vDoPDefined;		///< Vertical Dilution of Precision; one DoP value for \ref altMSL;
+								///< overrides \ref pDoPDefined
+		bool devDirectDefined;	///< Expected errors (standard deviations) for \ref latitude, \ref longitude,
+		 	 	 	 	 	 	///< and \ref altMSL are explicitly defined. Takes precedence over all DoP values.
+		bool recordProcessed;	///< true when this record was complete and used for the Kalman update.
+								///< In promiscuous mode I can ignore all messages from that point until the next GNSS fix cycle
 
 		std::chrono::system_clock::time_point recordStart;
 		uint32_t gnssTimeStamp;
@@ -395,6 +399,7 @@ public:
 			recordStart = std::chrono::system_clock::time_point();
 			// And set the GNSS timestamp to an implausible value
 			gnssTimeStamp = NMEATimeStampUndef;
+			recordProcessed = false;
 		}
 		GnssRecord() {
 			initialize();
@@ -534,6 +539,15 @@ private:
 	 */
 	GnssRecord currGnssRecord;
 
+	/** \brief Function pointer to the sentence processor
+	 *
+	 * Initially it is set to \ref processSentenceTeachIn(). This method will switch to \ref processSentenceOperation()
+	 * when the teach-in phase is finished.
+	 *
+	 * @param newSentence parsed and verified NMEA sentence
+	 */
+	void (NMEASet::* processSentenceFunction) (NMEASentence const& newSentence) = &processSentenceTeachIn;
+
 	/** \brief Process a new NMEA sentence in teach-in mode.
 	 *
 	 * In teach-in mode the system uses 10 cycles to figure out in which order sentences are being sent,
@@ -588,14 +602,23 @@ private:
 	 */
 	uint32_t getNewSentenceTimestampMS(NMEASentence const& newSentence);
 
-	/** \brief Function pointer to the sentence processor
+	/** \brief Extract data from the \p newSentence into \ref currGnssRecord
 	 *
-	 * Initially it is set to \ref processSentenceTeachIn(). This method will switch to \ref processSentenceOperation()
-	 * when the teach-in phase is finished.
+	 * Extract relevant data from the message \pnewSentence into \ref currGnssRecord depending on the flags within.
+	 * When the flags indicate that an attribute is already present the attribute is not filled a second time to save time
 	 *
-	 * @param newSentence parsed and verified NMEA sentence
+	 * @param newSentence The sentence from which relevant data are to be extracted.
 	 */
-	void (NMEASet::* processSentenceFunction) (NMEASentence const& newSentence) = &processSentenceTeachIn;
+	void extractDataFromSentence(NMEASentence const& newSentence);
+
+	/** \brief Use the data in \ref currGnssRecord to initialize or update the Kalman filter
+	 *
+	 * @param endOfCycle true when the function is called in promiscuous mode at the end of a GNSS fix cycle,
+	 *  or when all expected sentences in tageted mode are received.
+	 *  When true the function tries to scrape together whatever data is available since no better quality is to be expected.
+	 *  This particularly applies when only pDoP or no deviation data is available, or only position but no altitude is defined.
+	 */
+	void updateKalmanFilter (bool endOfCycle);
 
 };
 

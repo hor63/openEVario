@@ -682,8 +682,6 @@ uint32_t NMEASet::getNewSentenceTimestampMS(NMEASentence const& newSentence) {
 void NMEASet::processSentenceOperation(
 		const NMEASentence &newSentence) {
 
-
-
 	try {
 
 		uint32_t thisGPSTimeStampMS = getNewSentenceTimestampMS(newSentence);
@@ -691,6 +689,12 @@ void NMEASet::processSentenceOperation(
 		if (thisGPSTimeStampMS != NMEATimeStampUndef &&
 				thisGPSTimeStampMS != currGnssRecord.gnssTimeStamp	) {
 			// The record contains a valid timestamp, and it is different from the last cycle.
+
+			// Close out the previous cycle when it was not finished before
+			if (!currGnssRecord.recordProcessed) {
+				updateKalmanFilter (/*endOfCycle*/true);
+			}
+
 			// Therefore start a new cycle.
 			LOG4CXX_DEBUG(logger,"Start new cycle. Old GNSS timestamp = " << currGnssRecord.gnssTimeStamp
 					<< ", new GNSS timestamp = " << thisGPSTimeStampMS);
@@ -701,25 +705,30 @@ void NMEASet::processSentenceOperation(
 			currGnssRecord.recordStart = std::chrono::system_clock::now();
 		}
 
-		// First check if the sentence type is the one which is currently expected,
-		// Or if the expected type list is empty, and we are in promiscuous mode
-		if (usedNMEASentenceTypes.size() == 0 ||
-				(currExpectedSentenceType != usedNMEASentenceTypes.cend() &&
-				*currExpectedSentenceType != (char const *)(newSentence.sentenceTypeString))) {
+		// Check if the current cycle was complete and use to update the Kalman filter already
+		// and if the sentence type is the one which is currently expected,
+		// or if the expected type list is empty, and we are in promiscuous mode
+		if (!currGnssRecord.recordProcessed &&
+				(usedNMEASentenceTypes.size() == 0 ||
+				 (currExpectedSentenceType != usedNMEASentenceTypes.cend() &&
+				  *currExpectedSentenceType != (char const *)(newSentence.sentenceTypeString)))) {
 			// Process the message
-
+			extractDataFromSentence(newSentence);
 			// Check if you got all required messages in targeted mode
 			if (usedNMEASentenceTypes.size() > 0) {
-				if (currExpectedSentenceType != usedNMEASentenceTypes.cend()) {
+				// Advance to the next expected sentence type
+				currExpectedSentenceType ++;
+
+				if (currExpectedSentenceType == usedNMEASentenceTypes.cend()) {
 					// I received all required sentences.
 					// Check if all required data are present, and if so pass them on to the Kalman filter
+					updateKalmanFilter (/*endOfCycle*/true);
 				}
 			} else {
 				// In promiscuous mode check if all required data are present, and if so pass them on to the Kalman filter
-			}
-			// Advance to the next expected sentence type
-			if (currExpectedSentenceType != usedNMEASentenceTypes.cend()) {
-				currExpectedSentenceType ++;
+				// Do this for each received message.
+
+				updateKalmanFilter (/*endOfCycle*/false);
 			}
 		}
 
