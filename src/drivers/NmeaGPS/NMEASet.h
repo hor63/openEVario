@@ -288,8 +288,10 @@ public:
 		/// Since I am dealing with iterators only I would be loosing track of the position in a
 		/// \ref TeachInRecordList
 		uint32_t recordNo = 0U;
-		/// The type of the sentence like "RMC", "GGA", "GLL" etc.
-		std::string recordType;
+		/// The type of the sentence like "RMC", "GGA", "GLL" etc. as string
+		std::string recordTypeString;
+		/// The record type as enum
+		NMEASentence::NMEASentenceType recordType;
 		/// The delay of the sentence from the start of a cycle
 		std::chrono::system_clock::duration timeAfterCycleStart;
 		/// Defines longitude and latitude
@@ -357,7 +359,7 @@ public:
 	/// \brief Collection class for storing the sequence of expected NMEA sentences
 	///
 	/// This is just a list of strings containing the NMEA sentence type.
-	typedef std::list<std::string> UsedNMEASentenceTypes;
+	typedef std::list<NMEASentence::NMEASentenceType> UsedNMEASentenceTypes;
 	/// \brief Constant iterator through an \ref UsedNMEASentenceTypes object
 	typedef UsedNMEASentenceTypes::const_iterator UsedNMEASentenceTypesCIter;
 	/// \brief Iterator through an \ref UsedNMEASentenceTypes object.

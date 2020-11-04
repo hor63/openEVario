@@ -278,7 +278,8 @@ void NMEASet::processSentenceTeachIn(
 	TeachInRecord locRecord;
 	bool useLocRecord = false;
 
-	locRecord.recordType = (char const*)(newSentence.sentenceTypeString);
+	locRecord.recordTypeString = (char const*)(newSentence.sentenceTypeString);
+	locRecord.recordType = newSentence.sentenceType;
 
 	try {
 
@@ -571,7 +572,7 @@ void NMEASet::determineNMEASet(CommonCycleList& commonCycles) {
 #if defined HAVE_LOG4CXX_H
 				if (logger->isDebugEnabled()) {
 					std::ostringstream str;
-					str << "determineNMEASet: Add " << currTeachInRecord.recordType << ". It defines";
+					str << "determineNMEASet: Add " << currTeachInRecord.recordTypeString << ". It defines";
 
 					if (!collectiveFlags.definesAbsErr && currTeachInRecord.definesAbsErr){
 						str << " AbsErr,";
@@ -711,7 +712,7 @@ void NMEASet::processSentenceOperation(
 		if (!currGnssRecord.recordProcessed &&
 				(usedNMEASentenceTypes.size() == 0 ||
 				 (currExpectedSentenceType != usedNMEASentenceTypes.cend() &&
-				  *currExpectedSentenceType != (char const *)(newSentence.sentenceTypeString)))) {
+				  *currExpectedSentenceType != newSentence.sentenceType))) {
 			// Process the message
 			extractDataFromSentence(newSentence);
 			// Check if you got all required messages in targeted mode
@@ -740,4 +741,4 @@ void NMEASet::processSentenceOperation(
 
 }
 
-} /* namespace openEV */
+} /* namespace openEV::drivers::NMEA0813 */
