@@ -257,7 +257,9 @@ void NMEA0813Protocol::parseSentence() {
 
 }
 
+#if !defined DOXYGEN
 NMEASentence::NMEASentenceTypeHelperClass NMEASentence::NMEASentenceTypeHelperObj;
+#endif
 
 } /* namespace openEV */
 

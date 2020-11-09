@@ -52,7 +52,7 @@ namespace openEV {
 	    OEVDuration maxTimeBetweenPredictionAndMeasurementUpdate = std::chrono::milliseconds(5);
 	    /** \brief Run the idle thread in the main program to perform Kalman prediction cycles at least every \ref idlePredictionCycle.
 	     *
-	     * This will be set false only when a sensor driver has the capability \ref GliderVarioDriverBase::RUN_IDLE_LOOP. In this case the idle loop is executed
+	     * This will be set false only when a sensor driver has the capability \ref drivers::GliderVarioDriverBase::RUN_IDLE_LOOP. In this case the idle loop is executed
 	     * by the driver within for debugging and testing purposes.
 	     */
 	    bool runIdleLoop = true;
