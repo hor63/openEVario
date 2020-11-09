@@ -26,7 +26,7 @@
 #  include <config.h>
 #endif
 
-#include <fstream>
+#include <sstream>
 
 #include "NMEA0813Protocol.h"
 #include "NMEASet.h"
@@ -713,12 +713,15 @@ void NMEASet::processSentenceOperation(
 				(usedNMEASentenceTypes.size() == 0 ||
 				 (currExpectedSentenceType != usedNMEASentenceTypes.cend() &&
 				  *currExpectedSentenceType != newSentence.sentenceType))) {
-			// Process the message
-			extractDataFromSentence(newSentence);
 			// Check if you got all required messages in targeted mode
 			if (usedNMEASentenceTypes.size() > 0) {
 				// Advance to the next expected sentence type
+				// Do that before processing. Otherwise the current position gets stuck when
+				// an exception is thrown in extractDataFromSentence below.
 				currExpectedSentenceType ++;
+
+				// Process the message
+				extractDataFromSentence(newSentence);
 
 				if (currExpectedSentenceType == usedNMEASentenceTypes.cend()) {
 					// I received all required sentences.
@@ -726,9 +729,11 @@ void NMEASet::processSentenceOperation(
 					updateKalmanFilter (/*endOfCycle*/true);
 				}
 			} else {
+				// Process the message
+				extractDataFromSentence(newSentence);
+
 				// In promiscuous mode check if all required data are present, and if so pass them on to the Kalman filter
 				// Do this for each received message.
-
 				updateKalmanFilter (/*endOfCycle*/false);
 			}
 		}
@@ -738,6 +743,252 @@ void NMEASet::processSentenceOperation(
 		LOG4CXX_WARN(logger,"processSentenceTeachIn: Sentence " << newSentence.sentenceTypeString << " failed. Reason: " << e.what());
 		return;
 	}
+
+}
+
+void NMEASet::extractDataFromSentence(NMEASentence const& newSentence) {
+
+	if (currGnssRecord.recordProcessed) {
+		LOG4CXX_WARN(logger,"extractDataFromSentence called for a processed GNSS record again.! Sentence type = " << newSentence.sentenceType);
+		return;
+	}
+
+	LOG4CXX_DEBUG(logger,"extractDataFromSentence called with a " << newSentence.sentenceType << " sentence.");
+	switch (newSentence.sentenceType) {
+	case NMEASentence::NMEA_RMC:
+		LOG4CXX_DEBUG(logger,"Extract Longitude \"" << newSentence.fields[RMC_LON] << newSentence.fields[RMC_EW]
+							<< "\", Latitude \"" << newSentence.fields[RMC_LAT] << newSentence.fields[RMC_NS]
+							<< "\", Status '" << newSentence.fields[RMC_STATUS]
+							<< "', Nav Status (FAA Indicator) '" << newSentence.fields[RMC_NAV_STATUS] << '\'');
+
+		// Check the FAA indicator and the status.
+		// Valid values for the FAA indicator are A (Autonomous), D (Differential mode), or P (Precise).
+		// Valid value for the Status is A (no idea what that means)
+		if (newSentence.fields[RMC_STATUS][0] == 'A'
+				&& (newSentence.fields[RMC_NAV_STATUS][0] == 0	// The Nav status (FAA indicator) is defined for NMEA 2.3 and higher.
+																// If it is empty only look at the status
+					|| (newSentence.fields[RMC_NAV_STATUS][0] == 'A' || newSentence.fields[RMC_NAV_STATUS][0] == 'D'
+						|| newSentence.fields[RMC_NAV_STATUS][0] == 'P')) ) {
+
+			extractCoordinatesFromSentence(
+					newSentence,RMC_LON,RMC_EW,RMC_LAT,RMC_NS);
+
+		} else {
+			// Status is invalid
+			LOG4CXX_DEBUG(logger,"Status or Nav-Status invaid. Cancel this entire cycle");
+
+			// Mark the current measurement record as processed to indicate that this cycle is shot, and prevent wasting
+			// time and cycles for processing more messages for this cycle.
+			currGnssRecord.recordProcessed = true;
+		}
+
+		break;
+
+	case NMEASentence::NMEA_GGA:
+		LOG4CXX_DEBUG(logger,"Extract Longitude \"" << newSentence.fields[GGA_LON] << newSentence.fields[GGA_EW]
+							<< "\", Latitude \"" << newSentence.fields[GGA_LAT] << newSentence.fields[GGA_NS]
+							<< "\", Quality Indicator '" << newSentence.fields[GGA_QUALITY]
+							<< "', hDoP '" << newSentence.fields[GGA_HDOP]
+							<< "\", Alt MSL \"" << newSentence.fields[GGA_ALT] << newSentence.fields[GGA_ALT_UNIT]
+							<< ", Number of satellites in use " << newSentence.fields[GGA_NUM_SV]);
+
+		// Check the Quality indicator.
+		// Valid values 1 (Fix (unspecified)), 2 (Differential mode), 3 (PPS, precise),
+		// 4 (RTK), 5 (Float RTK)
+		if (*newSentence.fields[GGA_QUALITY] >= '1' && *newSentence.fields[GGA_QUALITY] <= '5' ) {
+
+			extractCoordinatesFromSentence(
+					newSentence,GGA_LON,GGA_EW,GGA_LAT,GGA_NS);
+
+			extractAltMSLFromSentence(newSentence,GGA_ALT,GGA_ALT_UNIT);
+
+			extractHDoPFromSentence(newSentence,GGA_HDOP);
+
+		} else {
+			// Status is invalid
+			LOG4CXX_DEBUG(logger,"Quality indicator invalid. Cancel this entire cycle");
+
+			// Mark the current measurement record as processed to indicate that this cycle is shot, and prevent wasting
+			// time and cycles for processing more messages for this cycle.
+			currGnssRecord.recordProcessed = true;
+		}
+		break;
+
+	case NMEASentence::NMEA_GLL:
+		break;
+
+	case NMEASentence::NMEA_GNS:
+		break;
+
+	case NMEASentence::NMEA_GST:
+		break;
+
+	case NMEASentence::NMEA_GSA:
+		break;
+
+	case NMEASentence::NMEA_GBS:
+		break;
+
+	default:
+		// Not recognized. Skip the message
+		break;
+
+	}
+
+}
+
+void NMEASet::extractCoordinatesFromSentence(
+		NMEASentence const& newSentence,
+		int lonIndex,int ewIndex,int latIndex, int nsIndex) {
+
+	// Extract coordinates when they have not yet been extracted,
+	// and when longitude and latitude are not empty in the sentence.
+	if (!currGnssRecord.posDefined
+			&& *newSentence.fields[lonIndex] != 0
+			&& *newSentence.fields[latIndex] != 0) {
+		double longitude;
+		double latitude;
+		// Data seem valid. Go for it.
+		switch (*newSentence.fields[ewIndex]) {
+		case 'E':
+			longitude = 1.0;
+			break;
+
+		case 'W':
+			longitude = -1.0;
+			break;
+
+		default:
+			std::ostringstream s;
+			s << "extractCoordinatesFromSentence: Invalid East-West indicator in " << newSentence.sentenceTypeString << " sentence = " << newSentence.fields[ewIndex];
+			throw NMEASetParseException(__FILE__,__LINE__,s.str().c_str());
+		}
+		longitude *= nmeaCoordToD(newSentence.fields[lonIndex]);
+
+		switch (*newSentence.fields[nsIndex]) {
+		case 'N':
+			latitude = 1.0;
+			break;
+
+		case 'S':
+			latitude = -1.0;
+			break;
+
+		default:
+			std::ostringstream s;
+			s << "extractCoordinatesFromSentence: Invalid North-South indicator in " << newSentence.sentenceTypeString << " sentence = " << newSentence.fields[nsIndex];
+			throw NMEASetParseException(__FILE__,__LINE__,s.str().c_str());
+		}
+		latitude *= nmeaCoordToD(newSentence.fields[lonIndex]);
+
+		LOG4CXX_DEBUG (logger," Longitude = " << longitude << ", latitude = "<< latitude);
+		currGnssRecord.longitude = longitude;
+		currGnssRecord.latitude = latitude;
+		currGnssRecord.posDefined = true;
+	} // if (!currGnssRecord.posDefined)
+}
+
+void NMEASet::extractAltMSLFromSentence(NMEASentence const& newSentence,int altMSLIndex,int altMSLUoMIndex) {
+
+
+	if (!currGnssRecord.altMslDefined
+			&& *newSentence.fields[altMSLIndex] != 0) {
+
+		if (*newSentence.fields[altMSLUoMIndex] != 'M') {
+			LOG4CXX_DEBUG (logger,"extractAltMSLFromSentence: Unit of altitude is not 'M' but " << newSentence.fields[altMSLUoMIndex]);
+			return;
+		}
+		currGnssRecord.altMSL = strToD(newSentence.fields[altMSLIndex]);
+		LOG4CXX_DEBUG (logger, "extractAltMSLFromSentence: altMSL = " << currGnssRecord.altMSL);
+	}
+
+}
+
+void NMEASet::extractHDoPFromSentence(NMEASentence const& newSentence,int hDoPIndex) {
+
+	// Direct definition of deviations overrides DoP values
+	if (!currGnssRecord.devDirectDefined && !currGnssRecord.hDoPDefined
+			&& *newSentence.fields[hDoPIndex] != 0) {
+		double hDoP = strToD(newSentence.fields[hDoPIndex]);
+
+		currGnssRecord.longDeviation = currGnssRecord.latDeviation = gpsDriver.getCEP() * hDoP;
+		currGnssRecord.hDoPDefined = true;
+		LOG4CXX_DEBUG (logger, "extractHDoPFromSentence: hDop = " << hDoP << ", Lat/Long-Deviation = " << currGnssRecord.longDeviation);
+
+
+		if (!currGnssRecord.vDoPDefined && ! currGnssRecord.pDoPDefined) {
+			// Estimate the vDoP as ~1.7 hDoP
+			// Thus estimate the vertical deviation
+			currGnssRecord.altDeviation = gpsDriver.getAltStdDev() * hDoP * 1.7;
+			LOG4CXX_DEBUG (logger, "	Estimated vDop = " << hDoP * 1.7 << ", Altitude Deviation = " << currGnssRecord.altDeviation);
+		}
+
+	}
+
+}
+
+void NMEASet::extractVDoPFromSentence(NMEASentence const& newSentence,int vDoPIndex) {
+
+	if (!currGnssRecord.devDirectDefined && !currGnssRecord.vDoPDefined
+			&& *newSentence.fields[vDoPIndex] != 0) {
+		double vDoP = strToD(newSentence.fields[vDoPIndex]);
+
+		currGnssRecord.altDeviation = gpsDriver.getAltStdDev() * vDoP;
+		currGnssRecord.vDoPDefined = true;
+		LOG4CXX_DEBUG (logger, "extractVDoPFromSentence: vDop = " << vDoP << ", Altitude Deviation = " << currGnssRecord.altDeviation);
+
+	}
+
+}
+
+void NMEASet::extractPDoPFromSentence(NMEASentence const& newSentence,int pDoPIndex) {
+
+	if (!currGnssRecord.devDirectDefined && !currGnssRecord.pDoPDefined
+			&& *newSentence.fields[pDoPIndex] != 0) {
+
+		// Retrieve pDoP only when it really makes sense, and calculate hDoP and vDoP on demand only.
+		if (!currGnssRecord.hDoPDefined) {
+			double pDoP = strToD(newSentence.fields[pDoPIndex]);
+			// Use the float variant for speed.
+			double hDoP = sqrtf(pDoP*pDoP / (3.89 /*1 + 1.7*1.7*/) );
+
+			currGnssRecord.pDoPDefined = true;
+
+			currGnssRecord.longDeviation = currGnssRecord.latDeviation = gpsDriver.getCEP() * hDoP;
+			LOG4CXX_DEBUG (logger, "extractPDoPFromSentence: pDop = " << pDoP << ", calculated hDoP = " << hDoP
+					<<", Lon/Lat Deviation = " << currGnssRecord.latDeviation);
+
+			// Continue with the calculation of vDoP here because thedirect calculation from pDoP
+			// would be as expensive as the calculation of hDoP above, whereas I can calculate
+			// vDoP easly from hDoP
+			if (!currGnssRecord.vDoPDefined) {
+				double vDoP = hDoP * 1.7;
+
+				currGnssRecord.altDeviation = gpsDriver.getAltStdDev() * vDoP;
+				LOG4CXX_DEBUG (logger, "extractPDoPFromSentence: Calculated vDoP = " << vDoP
+						<< ", Altitude Deviation = " << currGnssRecord.altDeviation);
+
+			}
+
+		} else {
+			if (!currGnssRecord.vDoPDefined) {
+				double pDoP = strToD(newSentence.fields[pDoPIndex]);
+				// Use the float variant for speed.
+				double vDoP = sqrtf(pDoP*pDoP / (3.89 /*1 + 1.7*1.7*/) ) * 1.7;
+
+				currGnssRecord.altDeviation = gpsDriver.getAltStdDev() * vDoP;
+				LOG4CXX_DEBUG (logger, "extractPDoPFromSentence: pDop = " << pDoP << ", calculated vDoP = " << vDoP
+						<< ", Altitude Deviation = " << currGnssRecord.altDeviation);
+
+			}
+
+		}
+	}
+
+}
+
+
+void NMEASet::updateKalmanFilter (bool endOfCycle) {
 
 }
 

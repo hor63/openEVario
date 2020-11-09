@@ -76,7 +76,7 @@ public:
 
 	// DTM: Datum reference not implemented. Does not carry anything useful
 
-	/** \brief Indexes for NMEA0813::NMEASentence::fields for GBS sentences
+	/** \brief Indexes for NMEASentence::fields for GBS sentences
 	 *
 	 * GBS: GPS Satellite Fault Detection
 	 *
@@ -94,7 +94,7 @@ public:
 		GBS_SIGNAL_ID = 9, ///< int; NMEA-defined GNSS signal ID (only available in NMEA 4.10 and later)
 	};
 
-	/** \brief Indexes for NMEA0813::NMEASentence::fields for GGA sentences
+	/** \brief Indexes for NMEASentence::fields for GGA sentences
 	 *
 	 * GGA: Global positioning system fix data sentence
 	 *
@@ -125,7 +125,7 @@ public:
 		GGA_DIFF_STATION = 13 ///< int; ID of station providing differential corrections (null when DGPS is not used)
 	};
 
-	/** \brief Indexes for NMEA0813::NMEASentence::fields for GLL sentences
+	/** \brief Indexes for NMEASentence::fields for GLL sentences
 	 *
 	 * GLL: Latitude and longitude, with time of position fix and status
 	 */
@@ -148,7 +148,7 @@ public:
 		 ///< Only A, D, and P are usable fixes for me
 	};
 
-	/** \brief Indexes for NMEA0813::NMEASentence::fields for GNS sentences
+	/** \brief Indexes for NMEASentence::fields for GNS sentences
 	 *
 	 * GNS: GNSS fix data
 	 */
@@ -180,7 +180,7 @@ public:
 
 	// GRS: GNSS range residuals: Not useful
 
-	/** \brief Indexes for NMEA0813::NMEASentence::fields for GSA sentences
+	/** \brief Indexes for NMEASentence::fields for GSA sentences
 	 *
 	 * GSA: GNSS DOP and active satellites
 	 */
@@ -216,7 +216,7 @@ public:
 
 	// GSV: Satellites in view: Not useful
 
-	/** \brief Indexes for NMEA0813::NMEASentence::fields for GST sentences
+	/** \brief Indexes for NMEASentence::fields for GST sentences
 	 *
 	 * GST: GNSS pseudorange error statistics
 	 */
@@ -233,7 +233,7 @@ public:
 
 	// RMA, RMB: Never seen by a GNSS receiver
 
-	/** \brief Indexes for NMEA0813::NMEASentence::fields for RMC sentences
+	/** \brief Indexes for NMEASentence::fields for RMC sentences
 	 *
 	 * RMC: Recommended minimum data
 	 */
@@ -388,7 +388,7 @@ public:
 
 		/** \brief Initialize the record for a new GNSS fix cycle
 		 *
-		 * It only resets the ...defined flags.
+		 * It only resets the ...defined flags, and the deviations
 		 */
 		void initialize() {
 			posDefined = false;
@@ -397,6 +397,9 @@ public:
 			hDoPDefined = false;
 			vDoPDefined = false;
 			devDirectDefined = false;
+			latDeviation = 0.0;
+			longDeviation = 0.0;
+			altDeviation = 0.0;
 			// Reset to epoch start
 			recordStart = std::chrono::system_clock::time_point();
 			// And set the GNSS timestamp to an implausible value
@@ -606,17 +609,91 @@ private:
 
 	/** \brief Extract data from the \p newSentence into \ref currGnssRecord
 	 *
-	 * Extract relevant data from the message \pnewSentence into \ref currGnssRecord depending on the flags within.
+	 * Extract relevant data from the message \p newSentence into \ref currGnssRecord depending on the flags within.
 	 * When the flags indicate that an attribute is already present the attribute is not filled a second time to save time
 	 *
 	 * @param newSentence The sentence from which relevant data are to be extracted.
+	 * @throws NMEASetParseException
 	 */
 	void extractDataFromSentence(NMEASentence const& newSentence);
+
+	/** \brief Extract the coordinates from a sentence, and write them into \ref currGnssRecord
+	 *
+	 * @param newSentence The sentence from which relevant data are to be extracted.
+	 * @param lonIndex Index of the longitude field in \ref NMEASentence::fields
+	 * @param ewIndex Index of the East/West indicator in \ref NMEASentence::fields
+	 * @param latIndex Index of the latitude field in \ref NMEASentence::fields
+	 * @param nsIndex Index of the North/South indicator in \ref NMEASentence::fields
+	 * @throws NMEASetParseException
+	 */
+	void extractCoordinatesFromSentence(
+			NMEASentence const& newSentence,
+			int lonIndex,int ewIndex,int latIndex, int nsIndex);
+
+	/** \brief Extract the altitude MSL from a sentence, and write it into \ref currGnssRecord
+	 *
+	 * @param newSentence The sentence from which relevant data are to be extracted.
+	 * @param altMSLIndex Index of the altitude field in \ref NMEASentence::fields
+	 * @param altMSLUoMIndex Index of the UoM of the altitude field in \ref NMEASentence::fields
+	 *   Always expected to be 'M'.
+	 * @throws NMEASetParseException
+	 */
+	void extractAltMSLFromSentence(NMEASentence const& newSentence,int altMSLIndex,int altMSLUoMIndex);
+
+	/** \brief Extract hDoP  (Horizontal Dilution of Precision)from the sentence. Calculate standard deviations in \ref currGnssRecord
+	 *
+	 * If \ref NMEASet::GnssRecord::devDirectDefined is true, i.e. absolute deviations are already defined, skip. \n
+	 * If NMEASet::GnssRecord::hDoPDefined is false extract the value from the sentence.
+	 *
+	 * Calculate the standard deviation of longitude and latitude from hDoP * \ref NmeaGPSDriver::CEP
+	 * When NMEASet::GnssRecord::pDoPDefined is not defined mark it as defined, and calculate the vertical standard deviation
+	 * by 1.7 * hDoP * \ref NmeaGPSDriver::altStdDev
+	 *
+	 * @param newSentence The sentence from which relevant data are to be extracted.
+	 * @param hDoPIndex Index of the HDOP field in \ref NMEASentence::fields
+	 * @throws NMEASetParseException
+	 */
+	void extractHDoPFromSentence(NMEASentence const& newSentence,int hDoPIndex);
+
+	/** \brief Extract vDoP (Vertical Dilution of Precision) from the sentence. Calculate standard deviations in \ref currGnssRecord
+	 *
+	 * If \ref NMEASet::GnssRecord::devDirectDefined is true, i.e. absolute deviations are already defined, skip. \n
+	 * If NMEASet::GnssRecord::vDoPDefined is false extract the value from the sentence.
+	 *
+	 * Calculate the standard deviation of the altitude from vDoP * \ref NmeaGPSDriver::altStdDev
+	 *
+	 * @param newSentence The sentence from which relevant data are to be extracted.
+	 * @param vDoPIndex Index of the VDOP field in \ref NMEASentence::fields
+	 * @throws NMEASetParseException
+	 */
+	void extractVDoPFromSentence(NMEASentence const& newSentence,int vDoPIndex);
+
+	/** \brief Extract pDoP (Positional Dilution of Precision) from the sentence. Calculate standard deviations in \ref currGnssRecord
+	 *
+	 * If \ref NMEASet::GnssRecord::devDirectDefined, is true, i.e. absolute deviations are already defined, skip. \n
+	 * If NMEASet::GnssRecord::hDoPDefined is true skip re-calculation of longitude and latitude standard deviation.
+	 * If NMEASet::GnssRecord::vDoPDefined is true skip re-calculation of vertical standard deviation.
+	 *
+	 * From pDoP calculate hDoP and vDoP with the empirical assumption: vDoP = hDoP * 1.7
+	 * pDoP is calculated by Sqrt(hDoP^2 + vDoP^2)
+	 * With this
+	 * 1) hDoP = Sqrt(pDoP^2 / (1 + 1.7^2) )
+	 * 2) vDoP = hDoP * 1.7
+
+	 * Calculate the standard deviation of longitude and latitude from hDoP * \ref NmeaGPSDriver::CEP
+	 * Calculate the standard deviation of the altitude from vDoP * \ref NmeaGPSDriver::altStdDev
+	 * Then set NMEASet::GnssRecord::pDoPDefined true
+	 *
+	 * @param newSentence The sentence from which relevant data are to be extracted.
+	 * @param vDoPIndex Index of the VDOP field in \ref NMEASentence::fields
+	 * @throws NMEASetParseException
+	 */
+	void extractPDoPFromSentence(NMEASentence const& newSentence,int pDoPIndex);
 
 	/** \brief Use the data in \ref currGnssRecord to initialize or update the Kalman filter
 	 *
 	 * @param endOfCycle true when the function is called in promiscuous mode at the end of a GNSS fix cycle,
-	 *  or when all expected sentences in tageted mode are received.
+	 *  or when all expected sentences in targeted mode are received.
 	 *  When true the function tries to scrape together whatever data is available since no better quality is to be expected.
 	 *  This particularly applies when only pDoP or no deviation data is available, or only position but no altitude is defined.
 	 */
