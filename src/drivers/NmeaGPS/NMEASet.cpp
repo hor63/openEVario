@@ -911,9 +911,9 @@ void NMEASet::extractHDoPFromSentence(NMEASentence const& newSentence,int hDoPIn
 			&& *newSentence.fields[hDoPIndex] != 0) {
 		double hDoP = strToD(newSentence.fields[hDoPIndex]);
 
-		currGnssRecord.longDeviation = currGnssRecord.latDeviation = gpsDriver.getCEP() * hDoP;
+		currGnssRecord.lonDeviation = currGnssRecord.latDeviation = gpsDriver.getCEP() * hDoP;
 		currGnssRecord.hDoPDefined = true;
-		LOG4CXX_DEBUG (logger, "extractHDoPFromSentence: hDop = " << hDoP << ", Lat/Long-Deviation = " << currGnssRecord.longDeviation);
+		LOG4CXX_DEBUG (logger, "extractHDoPFromSentence: hDop = " << hDoP << ", Lat/Long-Deviation = " << currGnssRecord.lonDeviation);
 
 
 		if (!currGnssRecord.vDoPDefined && ! currGnssRecord.pDoPDefined) {
@@ -954,7 +954,7 @@ void NMEASet::extractPDoPFromSentence(NMEASentence const& newSentence,int pDoPIn
 
 			currGnssRecord.pDoPDefined = true;
 
-			currGnssRecord.longDeviation = currGnssRecord.latDeviation = gpsDriver.getCEP() * hDoP;
+			currGnssRecord.lonDeviation = currGnssRecord.latDeviation = gpsDriver.getCEP() * hDoP;
 			LOG4CXX_DEBUG (logger, "extractPDoPFromSentence: pDop = " << pDoP << ", calculated hDoP = " << hDoP
 					<<", Lon/Lat Deviation = " << currGnssRecord.latDeviation);
 
@@ -1008,7 +1008,7 @@ void NMEASet::extractDeviationsFromSentence(NMEASentence const& newSentence,int 
 
 		// No Exception? Then move on.
 		currGnssRecord.latDeviation = latDevIndex;
-		currGnssRecord.longDeviation = lonDevIndex;
+		currGnssRecord.lonDeviation = lonDevIndex;
 		currGnssRecord.altDeviation = altDevIndex;
 		currGnssRecord.devDirectDefined = true;
 	}

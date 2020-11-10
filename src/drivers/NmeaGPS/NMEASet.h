@@ -371,7 +371,7 @@ public:
 		double altMSL;			///< Altitude MSL in meter.
 		bool altMslDefined;		///< true when \ref altMSL is defined.
 		float latDeviation;		///< Standard deviation of \ref latitude in meters (not degrees!)
-		float longDeviation;	///< Standard deviation of \ref longitude in meters
+		float lonDeviation;		///< Standard deviation of \ref longitude in meters
 		float altDeviation;		///< Standard deviation of \ref altMSL
 		bool pDoPDefined; 		///< Position Dilution of Precision; one DoP value for all dimensions. Lowest priority, and least specific
 		bool hDoPDefined;		///< Horizontal Dilution of Precision; one DoP value for \ref latitude and \ref longitude;
@@ -398,7 +398,7 @@ public:
 			vDoPDefined = false;
 			devDirectDefined = false;
 			latDeviation = 0.0;
-			longDeviation = 0.0;
+			lonDeviation = 0.0;
 			altDeviation = 0.0;
 			// Reset to epoch start
 			recordStart = std::chrono::system_clock::time_point();
