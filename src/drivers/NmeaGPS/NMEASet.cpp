@@ -1007,10 +1007,15 @@ void NMEASet::extractDeviationsFromSentence(NMEASentence const& newSentence,int 
 		}
 
 		// No Exception? Then move on.
-		currGnssRecord.latDeviation = latDevIndex;
-		currGnssRecord.lonDeviation = lonDevIndex;
-		currGnssRecord.altDeviation = altDevIndex;
+		currGnssRecord.latDeviation = latDeviation;
+		currGnssRecord.lonDeviation = lonDeviation;
+		currGnssRecord.altDeviation = altDeviation;
 		currGnssRecord.devDirectDefined = true;
+
+		LOG4CXX_DEBUG(logger,"extractDeviationsFromSentence: latDeviation = " << currGnssRecord.latDeviation
+				<< ", lonDeviation = " << currGnssRecord.lonDeviation
+				<< ", altDeviation = " << currGnssRecord.altDeviation
+				);
 	}
 
 }
