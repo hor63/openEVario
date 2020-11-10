@@ -987,6 +987,33 @@ void NMEASet::extractPDoPFromSentence(NMEASentence const& newSentence,int pDoPIn
 
 }
 
+void NMEASet::extractDeviationsFromSentence(NMEASentence const& newSentence,int latDevIndex, int lonDevIndex, int altDevIndex) {
+
+	if (!currGnssRecord.devDirectDefined && !currGnssRecord.pDoPDefined) {
+		double latDeviation = 0.0;
+		double lonDeviation = 0.0;
+		double altDeviation = 0.0;
+
+		if (*newSentence.fields[latDevIndex] != 0) {
+			latDeviation = strToD(newSentence.fields[latDevIndex]);
+		}
+
+		if (*newSentence.fields[lonDevIndex] != 0) {
+			lonDeviation = strToD(newSentence.fields[lonDevIndex]);
+		}
+
+		if (*newSentence.fields[altDevIndex] != 0) {
+			altDeviation = strToD(newSentence.fields[altDevIndex]);
+		}
+
+		// No Exception? Then move on.
+		currGnssRecord.latDeviation = latDevIndex;
+		currGnssRecord.longDeviation = lonDevIndex;
+		currGnssRecord.altDeviation = altDevIndex;
+		currGnssRecord.devDirectDefined = true;
+	}
+
+}
 
 void NMEASet::updateKalmanFilter (bool endOfCycle) {
 

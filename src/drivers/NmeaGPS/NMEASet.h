@@ -690,6 +690,16 @@ private:
 	 */
 	void extractPDoPFromSentence(NMEASentence const& newSentence,int pDoPIndex);
 
+	/** \brief Extract explicit standard deviations from the NMEA sentence
+	 *
+	 * @param newSentence The sentence from which relevant data are to be extracted.
+	 * @param latDevIndex Index of the standard deviation of latitude in \ref NMEASentence::fields
+	 * @param lonDevIndex Index of the standard deviation of longitude in \ref NMEASentence::fields
+	 * @param altDevIndex Index of the standard deviation of altitude in \ref NMEASentence::fields
+	 * @throws NMEASetParseException
+	 */
+	void extractDeviationsFromSentence(NMEASentence const& newSentence,int latDevIndex, int lonDevIndex, int altDevIndex);
+
 	/** \brief Use the data in \ref currGnssRecord to initialize or update the Kalman filter
 	 *
 	 * @param endOfCycle true when the function is called in promiscuous mode at the end of a GNSS fix cycle,
