@@ -762,20 +762,22 @@ void NMEASet::extractDataFromSentence(NMEASentence const& newSentence) {
 							<< "', Nav Status (FAA Indicator) '" << newSentence.fields[RMC_NAV_STATUS] << '\'');
 
 		// Check the FAA indicator and the status.
-		// Valid values for the FAA indicator are A (Autonomous), D (Differential mode), or P (Precise).
-		// Valid value for the Status is A (no idea what that means)
-		if (newSentence.fields[RMC_STATUS][0] == 'A'
-				&& (newSentence.fields[RMC_NAV_STATUS][0] == 0	// The Nav status (FAA indicator) is defined for NMEA 2.3 and higher.
+		// Valid values for the FAA indicator are A (Autonomous), D (Differential mode), R (RTK Mode), F (RTK Floar) or P (Precise).
+		// OR, when the FAA indicator is empty: Valid value for the Status is A (no idea what that means)
+		if ((newSentence.fields[RMC_STATUS][0] == 'A'
+				&& newSentence.fields[RMC_NAV_STATUS][0] == 0)	// The Nav status (FAA indicator) is defined for NMEA 2.3 and higher.
 																// If it is empty only look at the status
-					|| (newSentence.fields[RMC_NAV_STATUS][0] == 'A' || newSentence.fields[RMC_NAV_STATUS][0] == 'D'
-						|| newSentence.fields[RMC_NAV_STATUS][0] == 'P')) ) {
+					|| ( (newSentence.fields[RMC_NAV_STATUS][0] == 'A' || newSentence.fields[RMC_NAV_STATUS][0] == 'D'
+						|| newSentence.fields[RMC_NAV_STATUS][0] == 'P'
+						|| newSentence.fields[RMC_NAV_STATUS][0] == 'R' || newSentence.fields[RMC_NAV_STATUS][0] == 'F'
+						)) ) {
 
 			extractCoordinatesFromSentence(
 					newSentence,RMC_LON,RMC_EW,RMC_LAT,RMC_NS);
 
 		} else {
 			// Status is invalid
-			LOG4CXX_DEBUG(logger,"Status or Nav-Status invaid. Cancel this entire cycle");
+			LOG4CXX_DEBUG(logger,"Status or Nav-Status invalid. Cancel this entire cycle");
 
 			// Mark the current measurement record as processed to indicate that this cycle is shot, and prevent wasting
 			// time and cycles for processing more messages for this cycle.
@@ -815,22 +817,103 @@ void NMEASet::extractDataFromSentence(NMEASentence const& newSentence) {
 		break;
 
 	case NMEASentence::NMEA_GLL:
+		LOG4CXX_DEBUG(logger,"Extract Longitude \"" << newSentence.fields[GLL_LON] << newSentence.fields[GLL_EW]
+							<< "\", Latitude \"" << newSentence.fields[GLL_LAT] << newSentence.fields[GLL_NS]
+							<< "\", Status '" << newSentence.fields[GLL_STATUS]
+							<< "', Nav Status (FAA Indicator) '" << newSentence.fields[GLL_POS_MODE] << '\'');
+
+		// Check the FAA indicator and the status.
+		// Valid values for the FAA indicator are A (Autonomous), D (Differential mode), R (RTK Mode), F (RTK Floar) or P (Precise).
+		// OR, when the FAA indicator is empty: Valid value for the Status is A (no idea what that means)
+		if ((newSentence.fields[GLL_STATUS][0] == 'A'
+				&& newSentence.fields[GLL_POS_MODE][0] == 0)	// The Nav status (FAA indicator) is defined for NMEA 2.3 and higher.
+																// If it is empty only look at the status
+					|| ( (newSentence.fields[GLL_POS_MODE][0] == 'A' || newSentence.fields[GLL_POS_MODE][0] == 'D'
+						|| newSentence.fields[GLL_POS_MODE][0] == 'P'
+						|| newSentence.fields[GLL_POS_MODE][0] == 'R' || newSentence.fields[GLL_POS_MODE][0] == 'F'
+						)) ) {
+
+			extractCoordinatesFromSentence(
+					newSentence,GLL_LON,GLL_EW,GLL_LAT,GLL_NS);
+
+		} else {
+			// Status is invalid
+			LOG4CXX_DEBUG(logger,"Status or Nav-Status invalid. Cancel this entire cycle");
+
+			// Mark the current measurement record as processed to indicate that this cycle is shot, and prevent wasting
+			// time and cycles for processing more messages for this cycle.
+			currGnssRecord.recordProcessed = true;
+		}
+
 		break;
 
 	case NMEASentence::NMEA_GNS:
+		LOG4CXX_DEBUG(logger,"Extract Longitude \"" << newSentence.fields[GNS_LON] << newSentence.fields[GNS_EW]
+							<< "\", Latitude \"" << newSentence.fields[GNS_LAT] << newSentence.fields[GNS_NS]
+							<< "', Nav Mode (by GNSS system) \"" << newSentence.fields[GNS_POS_MODE] << '"');
+
+		{
+			bool validStatus = false;
+
+					// The mode indicator is here a string of multiple characters, each representing
+			// the status of one GNSS system: GPS, GLONASS, Galileo, Baidu...
+			// If any of these has the values A, D, P, R, or F the measurement is deemed valid.
+			for (auto i = newSentence.fields[GNS_POS_MODE];*i != 0; i++) {
+				if ( *i == 'A' || *i == 'D' || *i == 'P' || *i == 'R' || *i == 'F')  {
+					validStatus = true;
+					break;
+				}
+			}
+
+			if (validStatus) {
+
+				extractAltMSLFromSentence(newSentence,GNS_ALT,-1);
+				extractCoordinatesFromSentence(newSentence,GNS_LON,GNS_EW,GNS_LAT,GNS_NS);
+				extractHDoPFromSentence(newSentence,GNS_HDOP);
+
+			} else {
+				// Status is invalid
+				LOG4CXX_DEBUG(logger,"Quality indicator invalid. Cancel this entire cycle");
+
+				// Mark the current measurement record as processed to indicate that this cycle is shot, and prevent wasting
+				// time and cycles for processing more messages for this cycle.
+				currGnssRecord.recordProcessed = true;
+			}
+		}
 		break;
 
 	case NMEASentence::NMEA_GST:
+		LOG4CXX_DEBUG(logger,"Extract Std.Dev. Latitude \"" << newSentence.fields[GST_STD_LAT]
+						<< "\", Std.Dev. Longitude \"" << newSentence.fields[GST_STD_LON]
+						<< "\", Std.Dev. Altitude \"" << newSentence.fields[GST_STD_ALT] << "\""
+						);
+
+		extractDeviationsFromSentence(newSentence,GST_STD_LAT,GST_STD_LON,GST_STD_ALT);
 		break;
 
 	case NMEASentence::NMEA_GSA:
+		LOG4CXX_DEBUG(logger,"Extract hDoP \"" << newSentence.fields[GSA_HDOP]
+						<< "\", vDoP " << newSentence.fields[GSA_VDOP]
+						<< "\", pDoP " << newSentence.fields[GSA_PDOP] << "\""
+		);
+
+		extractDeviationsFromSentence(newSentence,GBS_ERR_LAT,GBS_ERR_LON,GBS_ERR_ALT);
+
 		break;
 
 	case NMEASentence::NMEA_GBS:
+		LOG4CXX_DEBUG(logger,"Extract Std.Dev. Latitude \"" << newSentence.fields[GBS_ERR_LAT]
+						<< "\", Std.Dev. Longitude \"" << newSentence.fields[GBS_ERR_LON]
+						<< "\", Std.Dev. Altitude \"" << newSentence.fields[GBS_ERR_ALT] << "\""
+						);
+
+
 		break;
 
 	default:
 		// Not recognized. Skip the message
+		LOG4CXX_DEBUG(logger,"Not supported message type. Skipped.");
+
 		break;
 
 	}
@@ -894,7 +977,9 @@ void NMEASet::extractAltMSLFromSentence(NMEASentence const& newSentence,int altM
 	if (!currGnssRecord.altMslDefined
 			&& *newSentence.fields[altMSLIndex] != 0) {
 
-		if (*newSentence.fields[altMSLUoMIndex] != 'M') {
+		// Some sentences like GNS do not carry the UoM because it is *always* in meters.
+		if (altMSLUoMIndex > 0 &&
+				*newSentence.fields[altMSLUoMIndex] != 'M') {
 			LOG4CXX_DEBUG (logger,"extractAltMSLFromSentence: Unit of altitude is not 'M' but " << newSentence.fields[altMSLUoMIndex]);
 			return;
 		}
@@ -996,21 +1081,23 @@ void NMEASet::extractDeviationsFromSentence(NMEASentence const& newSentence,int 
 
 		if (*newSentence.fields[latDevIndex] != 0) {
 			latDeviation = strToD(newSentence.fields[latDevIndex]);
+			currGnssRecord.devDirectDefined = true;
 		}
 
 		if (*newSentence.fields[lonDevIndex] != 0) {
 			lonDeviation = strToD(newSentence.fields[lonDevIndex]);
+			currGnssRecord.devDirectDefined = true;
 		}
 
 		if (*newSentence.fields[altDevIndex] != 0) {
 			altDeviation = strToD(newSentence.fields[altDevIndex]);
+			currGnssRecord.devDirectDefined = true;
 		}
 
 		// No Exception? Then move on.
 		currGnssRecord.latDeviation = latDeviation;
 		currGnssRecord.lonDeviation = lonDeviation;
 		currGnssRecord.altDeviation = altDeviation;
-		currGnssRecord.devDirectDefined = true;
 
 		LOG4CXX_DEBUG(logger,"extractDeviationsFromSentence: latDeviation = " << currGnssRecord.latDeviation
 				<< ", lonDeviation = " << currGnssRecord.lonDeviation
