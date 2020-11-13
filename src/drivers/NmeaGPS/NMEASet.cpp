@@ -84,7 +84,9 @@ double NMEASet::strToD (uint8_t const *str) {
 		// A leading + is allowed, but does not change a thing
 		lStr ++;
 	} else {
-		if (*lStr == '-') sign = -1.0;
+		if (*lStr == '-') {
+			sign = -1.0;
+		}
 	}
 	for (; isDigit(*lStr);lStr ++) {
 		rc = rc * 10.0 + double(*lStr - '0');
@@ -93,23 +95,17 @@ double NMEASet::strToD (uint8_t const *str) {
 	if (*lStr == '.') {
 		// Eat up the decimal separator
 		lStr ++;
-	} else {
-		std::ostringstream s;
-		s << "strToD: String \"" << str << "\" is not a valid double value";
-		LOG4CXX_WARN(logger,s.str());
-		throw NMEASetParseException(__FILE__,__LINE__,s.str().c_str());
-	}
 
-	// now come the decimal places when there are any.
-	for (; isDigit(*lStr);lStr ++) {
-		factor /= 10.0;
-		rc += double(*lStr - '0') * factor;
-		lStr ++;
+		// now come the decimal places when there are any.
+		for (; isDigit(*lStr);lStr ++) {
+			factor /= 10.0;
+			rc += double(*lStr - '0') * factor;
+		}
 	}
 
 	// Check if I reached the end of the string. Else there is invalid trailing stuff
 	// This is not allowed for this function.
-	if (lStr != 0) {
+	if (*lStr != 0) {
 		std::ostringstream s;
 		s << "strToD: String \"" << str << "\" is not a valid double value";
 		LOG4CXX_WARN(logger,s.str());
@@ -150,7 +146,7 @@ double NMEASet::nmeaCoordToD(uint8_t const * str) {
 
 	// Look for the decimal.
 	for (lStr = str;*lStr != 0; lStr ++) {
-		if (*str == '.') break;
+		if (*lStr == '.') break;
 	}
 
 	if (*lStr == 0) {
@@ -627,7 +623,7 @@ uint32_t NMEASet::getNewSentenceTimestampMS(NMEASentence const& newSentence) {
 	uint8_t const * timestampString = nullptr;
 
 	LOG4CXX_DEBUG(logger,"processSentenceOperation: Message " << newSentence.talkerID << ' ' << newSentence.sentenceTypeString
-			<< ", internal type" << newSentence.sentenceType);
+			<< ", internal type " << newSentence.sentenceType);
 
 	LOG4CXX_DEBUG(logger,"processSentenceTeachIn: Process message type " << newSentence.sentenceTypeString);
 
@@ -709,16 +705,26 @@ void NMEASet::processSentenceOperation(
 		// Check if the current cycle was complete and use to update the Kalman filter already
 		// and if the sentence type is the one which is currently expected,
 		// or if the expected type list is empty, and we are in promiscuous mode
-		if (!currGnssRecord.recordProcessed &&
+		LOG4CXX_DEBUG(logger,"Check if message must be processed: currGnssRecord.recordProcessed = " << currGnssRecord.recordProcessed
+				<< ", usedNMEASentenceTypes.size() = " << usedNMEASentenceTypes.size()
+				<< ", currExpectedSentenceType != usedNMEASentenceTypes.cend() = " << (currExpectedSentenceType != usedNMEASentenceTypes.cend())
+				<< ", *currExpectedSentenceType = " << *currExpectedSentenceType
+				<< ", newSentence.sentenceType = " << newSentence.sentenceType);
+
+		/* !!!Test
+		currGnssRecord.recordProcessed = false;
+		*/
+
+		/* !!!Test*/ if (!currGnssRecord.recordProcessed &&
 				(usedNMEASentenceTypes.size() == 0 ||
 				 (currExpectedSentenceType != usedNMEASentenceTypes.cend() &&
-				  *currExpectedSentenceType != newSentence.sentenceType))) {
+				  *currExpectedSentenceType == newSentence.sentenceType))) /* */ {
 			// Check if you got all required messages in targeted mode
 			if (usedNMEASentenceTypes.size() > 0) {
 				// Advance to the next expected sentence type
 				// Do that before processing. Otherwise the current position gets stuck when
 				// an exception is thrown in extractDataFromSentence below.
-				currExpectedSentenceType ++;
+				/* !!!Test */ currExpectedSentenceType ++;
 
 				// Process the message
 				extractDataFromSentence(newSentence);
@@ -759,17 +765,17 @@ void NMEASet::extractDataFromSentence(NMEASentence const& newSentence) {
 		LOG4CXX_DEBUG(logger,"Extract Longitude \"" << newSentence.fields[RMC_LON] << newSentence.fields[RMC_EW]
 							<< "\", Latitude \"" << newSentence.fields[RMC_LAT] << newSentence.fields[RMC_NS]
 							<< "\", Status '" << newSentence.fields[RMC_STATUS]
-							<< "', Nav Status (FAA Indicator) '" << newSentence.fields[RMC_NAV_STATUS] << '\'');
+							<< "', Mode indicator (FAA Indicator) '" << newSentence.fields[RMC_POS_MODE] << '\'');
 
 		// Check the FAA indicator and the status.
 		// Valid values for the FAA indicator are A (Autonomous), D (Differential mode), R (RTK Mode), F (RTK Floar) or P (Precise).
 		// OR, when the FAA indicator is empty: Valid value for the Status is A (no idea what that means)
 		if ((newSentence.fields[RMC_STATUS][0] == 'A'
-				&& newSentence.fields[RMC_NAV_STATUS][0] == 0)	// The Nav status (FAA indicator) is defined for NMEA 2.3 and higher.
+				&& newSentence.fields[RMC_POS_MODE][0] == 0)	// The Nav status (FAA indicator) is defined for NMEA 2.3 and higher.
 																// If it is empty only look at the status
-					|| ( (newSentence.fields[RMC_NAV_STATUS][0] == 'A' || newSentence.fields[RMC_NAV_STATUS][0] == 'D'
-						|| newSentence.fields[RMC_NAV_STATUS][0] == 'P'
-						|| newSentence.fields[RMC_NAV_STATUS][0] == 'R' || newSentence.fields[RMC_NAV_STATUS][0] == 'F'
+					|| ( (newSentence.fields[RMC_POS_MODE][0] == 'A' || newSentence.fields[RMC_POS_MODE][0] == 'D'
+						|| newSentence.fields[RMC_POS_MODE][0] == 'P'
+						|| newSentence.fields[RMC_POS_MODE][0] == 'R' || newSentence.fields[RMC_POS_MODE][0] == 'F'
 						)) ) {
 
 			extractCoordinatesFromSentence(
@@ -895,9 +901,24 @@ void NMEASet::extractDataFromSentence(NMEASentence const& newSentence) {
 		LOG4CXX_DEBUG(logger,"Extract hDoP \"" << newSentence.fields[GSA_HDOP]
 						<< "\", vDoP " << newSentence.fields[GSA_VDOP]
 						<< "\", pDoP " << newSentence.fields[GSA_PDOP] << "\""
+						<< "\", Nav Mode " << newSentence.fields[GSA_NAV_MODE] << "\""
+						<< "\", Operation mode " << newSentence.fields[GSA_OP_MODE] << "\""
+						<< "\", pDoP " << newSentence.fields[GSA_SYSTEM_ID] << "\""
 		);
 
-		extractDeviationsFromSentence(newSentence,GBS_ERR_LAT,GBS_ERR_LON,GBS_ERR_ALT);
+		if (*newSentence.fields[GSA_NAV_MODE] == '3') { // I am accepting only 3D-Mode
+			extractVDoPFromSentence(newSentence,GSA_VDOP);
+			extractHDoPFromSentence(newSentence,GSA_HDOP);
+			extractPDoPFromSentence(newSentence,GSA_PDOP);
+		} else {
+			// Status is invalid
+			LOG4CXX_DEBUG(logger,"Navigation mode is not 3D. Cancel this entire cycle");
+
+			// Mark the current measurement record as processed to indicate that this cycle is shot, and prevent wasting
+			// time and cycles for processing more messages for this cycle.
+			currGnssRecord.recordProcessed = true;
+		}
+
 
 		break;
 
@@ -907,6 +928,7 @@ void NMEASet::extractDataFromSentence(NMEASentence const& newSentence) {
 						<< "\", Std.Dev. Altitude \"" << newSentence.fields[GBS_ERR_ALT] << "\""
 						);
 
+		extractDeviationsFromSentence(newSentence,GBS_ERR_LAT,GBS_ERR_LON,GBS_ERR_ALT);
 
 		break;
 
@@ -962,7 +984,7 @@ void NMEASet::extractCoordinatesFromSentence(
 			s << "extractCoordinatesFromSentence: Invalid North-South indicator in " << newSentence.sentenceTypeString << " sentence = " << newSentence.fields[nsIndex];
 			throw NMEASetParseException(__FILE__,__LINE__,s.str().c_str());
 		}
-		latitude *= nmeaCoordToD(newSentence.fields[lonIndex]);
+		latitude *= nmeaCoordToD(newSentence.fields[latIndex]);
 
 		LOG4CXX_DEBUG (logger," Longitude = " << longitude << ", latitude = "<< latitude);
 		currGnssRecord.longitude = longitude;
