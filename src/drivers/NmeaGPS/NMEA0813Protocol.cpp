@@ -226,7 +226,7 @@ void NMEA0813Protocol::parseSentence() {
 				<< "\", \nsentence type: \"" << currSentence.sentenceTypeString
 				<< "\", \nnumber fields: " << currSentence.numFields;
 		for (uint32_t i = 0; i < currSentence.numFields; i++) {
-			txt << "\n	fields[" << i << "] = \"" << currSentence.fields[i] << "\"";
+			txt << ", fields[" << i << "] = \"" << currSentence.fields[i] << "\"";
 		}
 		LOG4CXX_DEBUG(logger,txt.str());
 	}
