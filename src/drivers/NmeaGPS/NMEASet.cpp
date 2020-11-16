@@ -141,6 +141,7 @@ double NMEASet::nmeaCoordToD(uint8_t const * str) {
 
 	double degrees;
 	double minutes;
+	double rc;
 	uint32_t i;
 	uint8_t const *lStr;
 
@@ -168,11 +169,12 @@ double NMEASet::nmeaCoordToD(uint8_t const * str) {
 	// Get the degrees
 	degrees = strToD(str,i-2);
 	minutes = strToD (str + (i-2));
+	rc = degrees + minutes / 60.0;
 
 	LOG4CXX_DEBUG(logger,"nmeaCoordToD: \"" << str << "\" converted to " << degrees << " Degrees, " << minutes << " minutes = "
-			<< " = " << (degrees + minutes / 60.0));
+			<< rc);
 
-	return degrees + minutes / 60.0;
+	return rc;
 }
 
 uint32_t NMEASet::NMEATimeStampToMS(uint8_t const *timestampStr) {
@@ -711,20 +713,25 @@ void NMEASet::processSentenceOperation(
 				<< ", *currExpectedSentenceType = " << *currExpectedSentenceType
 				<< ", newSentence.sentenceType = " << newSentence.sentenceType);
 
-		/* !!!Test
+		/* !!!Test +/
 		currGnssRecord.recordProcessed = false;
-		*/
+		currGnssRecord.initialize();
+		/+ */
 
-		/* !!!Test*/ if (!currGnssRecord.recordProcessed &&
+		/* !!!Test */
+		if (!currGnssRecord.recordProcessed &&
 				(usedNMEASentenceTypes.size() == 0 ||
 				 (currExpectedSentenceType != usedNMEASentenceTypes.cend() &&
-				  *currExpectedSentenceType == newSentence.sentenceType))) /* */ {
+				  *currExpectedSentenceType == newSentence.sentenceType)))
+		/* */ {
 			// Check if you got all required messages in targeted mode
 			if (usedNMEASentenceTypes.size() > 0) {
 				// Advance to the next expected sentence type
 				// Do that before processing. Otherwise the current position gets stuck when
 				// an exception is thrown in extractDataFromSentence below.
-				/* !!!Test */ currExpectedSentenceType ++;
+				/* !!!Test */
+				currExpectedSentenceType ++;
+				/* */
 
 				// Process the message
 				extractDataFromSentence(newSentence);
@@ -732,6 +739,7 @@ void NMEASet::processSentenceOperation(
 				if (currExpectedSentenceType == usedNMEASentenceTypes.cend()) {
 					// I received all required sentences.
 					// Check if all required data are present, and if so pass them on to the Kalman filter
+					currGnssRecord.recordProcessed = true;
 					updateKalmanFilter (/*endOfCycle*/true);
 				}
 			} else {
@@ -796,9 +804,9 @@ void NMEASet::extractDataFromSentence(NMEASentence const& newSentence) {
 		LOG4CXX_DEBUG(logger,"Extract Longitude \"" << newSentence.fields[GGA_LON] << newSentence.fields[GGA_EW]
 							<< "\", Latitude \"" << newSentence.fields[GGA_LAT] << newSentence.fields[GGA_NS]
 							<< "\", Quality Indicator '" << newSentence.fields[GGA_QUALITY]
-							<< "', hDoP '" << newSentence.fields[GGA_HDOP]
+							<< "', hDoP \"" << newSentence.fields[GGA_HDOP]
 							<< "\", Alt MSL \"" << newSentence.fields[GGA_ALT] << newSentence.fields[GGA_ALT_UNIT]
-							<< ", Number of satellites in use " << newSentence.fields[GGA_NUM_SV]);
+							<< "\", Number of satellites in use \"" << newSentence.fields[GGA_NUM_SV] << "\"");
 
 		// Check the Quality indicator.
 		// Valid values 1 (Fix (unspecified)), 2 (Differential mode), 3 (PPS, precise),
@@ -829,7 +837,7 @@ void NMEASet::extractDataFromSentence(NMEASentence const& newSentence) {
 							<< "', Nav Status (FAA Indicator) '" << newSentence.fields[GLL_POS_MODE] << '\'');
 
 		// Check the FAA indicator and the status.
-		// Valid values for the FAA indicator are A (Autonomous), D (Differential mode), R (RTK Mode), F (RTK Floar) or P (Precise).
+		// Valid values for the FAA indicator are A (Autonomous), D (Differential mode), R (RTK Mode), F (RTK Float) or P (Precise).
 		// OR, when the FAA indicator is empty: Valid value for the Status is A (no idea what that means)
 		if ((newSentence.fields[GLL_STATUS][0] == 'A'
 				&& newSentence.fields[GLL_POS_MODE][0] == 0)	// The Nav status (FAA indicator) is defined for NMEA 2.3 and higher.
@@ -899,11 +907,11 @@ void NMEASet::extractDataFromSentence(NMEASentence const& newSentence) {
 
 	case NMEASentence::NMEA_GSA:
 		LOG4CXX_DEBUG(logger,"Extract hDoP \"" << newSentence.fields[GSA_HDOP]
-						<< "\", vDoP " << newSentence.fields[GSA_VDOP]
-						<< "\", pDoP " << newSentence.fields[GSA_PDOP] << "\""
-						<< "\", Nav Mode " << newSentence.fields[GSA_NAV_MODE] << "\""
-						<< "\", Operation mode " << newSentence.fields[GSA_OP_MODE] << "\""
-						<< "\", pDoP " << newSentence.fields[GSA_SYSTEM_ID] << "\""
+						<< "\", vDoP \"" << newSentence.fields[GSA_VDOP]
+						<< "\", pDoP \"" << newSentence.fields[GSA_PDOP]
+						<< "\", Nav Mode \"" << newSentence.fields[GSA_NAV_MODE]
+						<< "\", Operation mode \"" << newSentence.fields[GSA_OP_MODE]
+						<< "\", System ID \"" << newSentence.fields[GSA_SYSTEM_ID] << "\""
 		);
 
 		if (*newSentence.fields[GSA_NAV_MODE] == '3') { // I am accepting only 3D-Mode
@@ -1006,6 +1014,7 @@ void NMEASet::extractAltMSLFromSentence(NMEASentence const& newSentence,int altM
 			return;
 		}
 		currGnssRecord.altMSL = strToD(newSentence.fields[altMSLIndex]);
+		currGnssRecord.altMslDefined = true;
 		LOG4CXX_DEBUG (logger, "extractAltMSLFromSentence: altMSL = " << currGnssRecord.altMSL);
 	}
 
@@ -1131,6 +1140,14 @@ void NMEASet::extractDeviationsFromSentence(NMEASentence const& newSentence,int 
 
 void NMEASet::updateKalmanFilter (bool endOfCycle) {
 
+	LOG4CXX_DEBUG(logger,"updateKalmanFilter with endOfCycle = " << endOfCycle << " and:");
+	if (currGnssRecord.altMslDefined && (currGnssRecord.vDoPDefined || currGnssRecord.pDoPDefined || currGnssRecord.devDirectDefined)) {
+		LOG4CXX_DEBUG(logger,"	Alt MSL = "  << currGnssRecord.altMSL << ", altitude deviation = " << currGnssRecord.altDeviation);
+	}
+	if (currGnssRecord.posDefined && (currGnssRecord.hDoPDefined || currGnssRecord.pDoPDefined || currGnssRecord.devDirectDefined)) {
+		LOG4CXX_DEBUG(logger,"	Latitude = "  << currGnssRecord.latitude << ", latitude deviation = " << currGnssRecord.latDeviation);
+		LOG4CXX_DEBUG(logger,"	Longitude = "  << currGnssRecord.longitude << ", longitude deviation = " << currGnssRecord.lonDeviation);
+	}
 }
 
 } /* namespace openEV::drivers::NMEA0813 */
