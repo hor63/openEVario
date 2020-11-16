@@ -245,6 +245,8 @@ void NMEA0813Protocol::parseSentence() {
 		currSentence.sentenceType = NMEASentence::NMEA_GSA;
 	} else if (!strcmp((char const*)(currSentence.sentenceTypeString),"GBS") ) {
 		currSentence.sentenceType = NMEASentence::NMEA_GBS;
+	} else if (!strcmp((char const*)(currSentence.sentenceTypeString),"GLL") ) {
+		currSentence.sentenceType = NMEASentence::NMEA_GLL;
 	} else {
 		currSentence.sentenceType = NMEASentence::NMEA_DONT_CARE;
 	}
