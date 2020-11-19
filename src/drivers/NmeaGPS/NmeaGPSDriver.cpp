@@ -111,6 +111,11 @@ void NmeaGPSDriver::readConfiguration (Properties4CXX::Properties const &configu
     CEP = configuration.getPropertyValue(std::string("CEP"),3.0);
     altStdDev = configuration.getPropertyValue(std::string("altitudeStdDev"),CEP*2.0);
 
+	LOG4CXX_DEBUG(logger,"	errorTimeout = " << errorTimeout);
+	LOG4CXX_DEBUG(logger,"	errorMaxNumRetries = " << errorMaxNumRetries);
+	LOG4CXX_DEBUG(logger,"	CEP = " << CEP);
+	LOG4CXX_DEBUG(logger,"	altStdDev = " << altStdDev);
+
 }
 
 void NmeaGPSDriver::initializeStatus(
@@ -166,7 +171,7 @@ void NmeaGPSDriver::processingMainLoop () {
 		auto rc = ioPort->read(buf,sizeof(buf)-1);
 		if (rc > 0 && rc < sizeof(buf)) {
 			buf [rc] = 0;
-			LOG4CXX_DEBUG (logger,"Driver " << driverName << ": ioPort->read returned '" << buf << '\'');
+			LOG4CXX_TRACE (logger,"Driver " << driverName << ": ioPort->read returned '" << buf << '\'');
 			// Consume and process received data.
 			nmeaProcessor.processSensorData(buf,rc);
 		} else {

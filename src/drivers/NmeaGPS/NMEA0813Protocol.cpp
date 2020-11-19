@@ -228,7 +228,7 @@ void NMEA0813Protocol::parseSentence() {
 		for (uint32_t i = 0; i < currSentence.numFields; i++) {
 			txt << ", fields[" << i << "] = \"" << currSentence.fields[i] << "\"";
 		}
-		LOG4CXX_DEBUG(logger,txt.str());
+		LOG4CXX_TRACE(logger,txt.str());
 	}
 #endif // #if defined HAVE_LOG4CXX_H
 

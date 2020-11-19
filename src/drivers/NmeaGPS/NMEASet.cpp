@@ -112,7 +112,7 @@ double NMEASet::strToD (uint8_t const *str) {
 		throw NMEASetParseException(__FILE__,__LINE__,s.str().c_str());
 	}
 
-	LOG4CXX_DEBUG (logger,"strToD: String \"" << str << "\" converted to " << (rc * sign));
+	LOG4CXX_TRACE (logger,"strToD: String \"" << str << "\" converted to " << (rc * sign));
 	return rc * sign;
 }
 
@@ -171,7 +171,7 @@ double NMEASet::nmeaCoordToD(uint8_t const * str) {
 	minutes = strToD (str + (i-2));
 	rc = degrees + minutes / 60.0;
 
-	LOG4CXX_DEBUG(logger,"nmeaCoordToD: \"" << str << "\" converted to " << degrees << " Degrees, " << minutes << " minutes = "
+	LOG4CXX_TRACE(logger,"nmeaCoordToD: \"" << str << "\" converted to " << degrees << " Degrees, " << minutes << " minutes = "
 			<< rc);
 
 	return rc;
@@ -261,7 +261,7 @@ uint32_t NMEASet::NMEATimeStampToMS(uint8_t const *timestampStr) {
 		}
 	}
 
-	LOG4CXX_DEBUG(logger,"NMEASet::NMEATimeStampToMS: \"" << timestampStr << "\" converted to " << rc);
+	LOG4CXX_TRACE(logger,"NMEASet::NMEATimeStampToMS: \"" << timestampStr << "\" converted to " << rc);
 
 	return rc;
 }
@@ -369,7 +369,7 @@ void NMEASet::processSentenceTeachIn(
 			break;
 
 		default:
-			LOG4CXX_DEBUG(logger,"processSentenceTeachIn: Throw out un-supported sentenct with type " << newSentence.sentenceTypeString);
+			LOG4CXX_DEBUG(logger,"processSentenceTeachIn: Throw out un-supported sentence with type " << newSentence.sentenceTypeString);
 		}
 
 	}
@@ -410,7 +410,7 @@ void NMEASet::processSentenceTeachIn(
 				// I am progressing from a previous real timestamp to the next one.
 				// This means this is really the start of a new cycle
 				teachInStarted = true;
-				LOG4CXX_DEBUG(logger,"processSentenceTeachIn: Last timestamp = " << currSequenceTimestampMS
+				LOG4CXX_TRACE(logger,"processSentenceTeachIn: Last timestamp = " << currSequenceTimestampMS
 						<< " New timestamp = " << thisGPSTimeStampMS
 						<< ". Teach-in in progress. New numTeachInCyclesExecuted = " << teachInRecords.size());
 			}
@@ -624,10 +624,10 @@ uint32_t NMEASet::getNewSentenceTimestampMS(NMEASentence const& newSentence) {
 	uint32_t thisGPSTimeStampMS = NMEATimeStampUndef;
 	uint8_t const * timestampString = nullptr;
 
-	LOG4CXX_DEBUG(logger,"processSentenceOperation: Message " << newSentence.talkerID << ' ' << newSentence.sentenceTypeString
+	LOG4CXX_TRACE(logger,"processSentenceOperation: Message " << newSentence.talkerID << ' ' << newSentence.sentenceTypeString
 			<< ", internal type " << newSentence.sentenceType);
 
-	LOG4CXX_DEBUG(logger,"processSentenceTeachIn: Process message type " << newSentence.sentenceTypeString);
+	LOG4CXX_TRACE(logger,"processSentenceTeachIn: Process message type " << newSentence.sentenceTypeString);
 
 	switch (newSentence.sentenceType) {
 	case NMEASentence::NMEA_RMC:
@@ -669,12 +669,12 @@ uint32_t NMEASet::getNewSentenceTimestampMS(NMEASentence const& newSentence) {
 
 	if (timestampString != nullptr) {
 		if (*timestampString != 0) {
-			LOG4CXX_DEBUG(logger, "getNewSentenceTimestampMS: Timestamp string = " << timestampString);
+			LOG4CXX_TRACE(logger, "getNewSentenceTimestampMS: Timestamp string = " << timestampString);
 			thisGPSTimeStampMS = NMEATimeStampToMS(timestampString);
 		}
 	}
 
-	LOG4CXX_DEBUG(logger, "getNewSentenceTimestampMS: Return = " << thisGPSTimeStampMS);
+	LOG4CXX_TRACE(logger, "getNewSentenceTimestampMS: Return = " << thisGPSTimeStampMS);
 	return thisGPSTimeStampMS;
 }
 
@@ -695,7 +695,7 @@ void NMEASet::processSentenceOperation(
 			}
 
 			// Therefore start a new cycle.
-			LOG4CXX_DEBUG(logger,"Start new cycle. Old GNSS timestamp = " << currGnssRecord.gnssTimeStamp
+			LOG4CXX_TRACE(logger,"Start new cycle. Old GNSS timestamp = " << currGnssRecord.gnssTimeStamp
 					<< ", new GNSS timestamp = " << thisGPSTimeStampMS);
 
 			currExpectedSentenceType = usedNMEASentenceTypes.cbegin();
@@ -707,7 +707,7 @@ void NMEASet::processSentenceOperation(
 		// Check if the current cycle was complete and use to update the Kalman filter already
 		// and if the sentence type is the one which is currently expected,
 		// or if the expected type list is empty, and we are in promiscuous mode
-		LOG4CXX_DEBUG(logger,"Check if message must be processed: currGnssRecord.recordProcessed = " << currGnssRecord.recordProcessed
+		LOG4CXX_TRACE(logger,"Check if message must be processed: currGnssRecord.recordProcessed = " << currGnssRecord.recordProcessed
 				<< ", usedNMEASentenceTypes.size() = " << usedNMEASentenceTypes.size()
 				<< ", currExpectedSentenceType != usedNMEASentenceTypes.cend() = " << (currExpectedSentenceType != usedNMEASentenceTypes.cend())
 				<< ", *currExpectedSentenceType = " << *currExpectedSentenceType
@@ -767,10 +767,10 @@ void NMEASet::extractDataFromSentence(NMEASentence const& newSentence) {
 		return;
 	}
 
-	LOG4CXX_DEBUG(logger,"extractDataFromSentence called with a " << newSentence.sentenceType << " sentence.");
+	LOG4CXX_TRACE(logger,"extractDataFromSentence called with a " << newSentence.sentenceType << " sentence.");
 	switch (newSentence.sentenceType) {
 	case NMEASentence::NMEA_RMC:
-		LOG4CXX_DEBUG(logger,"Extract Longitude \"" << newSentence.fields[RMC_LON] << newSentence.fields[RMC_EW]
+		LOG4CXX_TRACE(logger,"Extract Longitude \"" << newSentence.fields[RMC_LON] << newSentence.fields[RMC_EW]
 							<< "\", Latitude \"" << newSentence.fields[RMC_LAT] << newSentence.fields[RMC_NS]
 							<< "\", Status '" << newSentence.fields[RMC_STATUS]
 							<< "', Mode indicator (FAA Indicator) '" << newSentence.fields[RMC_POS_MODE] << '\'');
@@ -801,7 +801,7 @@ void NMEASet::extractDataFromSentence(NMEASentence const& newSentence) {
 		break;
 
 	case NMEASentence::NMEA_GGA:
-		LOG4CXX_DEBUG(logger,"Extract Longitude \"" << newSentence.fields[GGA_LON] << newSentence.fields[GGA_EW]
+		LOG4CXX_TRACE(logger,"Extract Longitude \"" << newSentence.fields[GGA_LON] << newSentence.fields[GGA_EW]
 							<< "\", Latitude \"" << newSentence.fields[GGA_LAT] << newSentence.fields[GGA_NS]
 							<< "\", Quality Indicator '" << newSentence.fields[GGA_QUALITY]
 							<< "', hDoP \"" << newSentence.fields[GGA_HDOP]
@@ -831,7 +831,7 @@ void NMEASet::extractDataFromSentence(NMEASentence const& newSentence) {
 		break;
 
 	case NMEASentence::NMEA_GLL:
-		LOG4CXX_DEBUG(logger,"Extract Longitude \"" << newSentence.fields[GLL_LON] << newSentence.fields[GLL_EW]
+		LOG4CXX_TRACE(logger,"Extract Longitude \"" << newSentence.fields[GLL_LON] << newSentence.fields[GLL_EW]
 							<< "\", Latitude \"" << newSentence.fields[GLL_LAT] << newSentence.fields[GLL_NS]
 							<< "\", Status '" << newSentence.fields[GLL_STATUS]
 							<< "', Nav Status (FAA Indicator) '" << newSentence.fields[GLL_POS_MODE] << '\'');
@@ -862,7 +862,7 @@ void NMEASet::extractDataFromSentence(NMEASentence const& newSentence) {
 		break;
 
 	case NMEASentence::NMEA_GNS:
-		LOG4CXX_DEBUG(logger,"Extract Longitude \"" << newSentence.fields[GNS_LON] << newSentence.fields[GNS_EW]
+		LOG4CXX_TRACE(logger,"Extract Longitude \"" << newSentence.fields[GNS_LON] << newSentence.fields[GNS_EW]
 							<< "\", Latitude \"" << newSentence.fields[GNS_LAT] << newSentence.fields[GNS_NS]
 							<< "', Nav Mode (by GNSS system) \"" << newSentence.fields[GNS_POS_MODE] << '"');
 
@@ -897,7 +897,7 @@ void NMEASet::extractDataFromSentence(NMEASentence const& newSentence) {
 		break;
 
 	case NMEASentence::NMEA_GST:
-		LOG4CXX_DEBUG(logger,"Extract Std.Dev. Latitude \"" << newSentence.fields[GST_STD_LAT]
+		LOG4CXX_TRACE(logger,"Extract Std.Dev. Latitude \"" << newSentence.fields[GST_STD_LAT]
 						<< "\", Std.Dev. Longitude \"" << newSentence.fields[GST_STD_LON]
 						<< "\", Std.Dev. Altitude \"" << newSentence.fields[GST_STD_ALT] << "\""
 						);
@@ -906,7 +906,7 @@ void NMEASet::extractDataFromSentence(NMEASentence const& newSentence) {
 		break;
 
 	case NMEASentence::NMEA_GSA:
-		LOG4CXX_DEBUG(logger,"Extract hDoP \"" << newSentence.fields[GSA_HDOP]
+		LOG4CXX_TRACE(logger,"Extract hDoP \"" << newSentence.fields[GSA_HDOP]
 						<< "\", vDoP \"" << newSentence.fields[GSA_VDOP]
 						<< "\", pDoP \"" << newSentence.fields[GSA_PDOP]
 						<< "\", Nav Mode \"" << newSentence.fields[GSA_NAV_MODE]
@@ -931,7 +931,7 @@ void NMEASet::extractDataFromSentence(NMEASentence const& newSentence) {
 		break;
 
 	case NMEASentence::NMEA_GBS:
-		LOG4CXX_DEBUG(logger,"Extract Std.Dev. Latitude \"" << newSentence.fields[GBS_ERR_LAT]
+		LOG4CXX_TRACE(logger,"Extract Std.Dev. Latitude \"" << newSentence.fields[GBS_ERR_LAT]
 						<< "\", Std.Dev. Longitude \"" << newSentence.fields[GBS_ERR_LON]
 						<< "\", Std.Dev. Altitude \"" << newSentence.fields[GBS_ERR_ALT] << "\""
 						);
@@ -994,7 +994,7 @@ void NMEASet::extractCoordinatesFromSentence(
 		}
 		latitude *= nmeaCoordToD(newSentence.fields[latIndex]);
 
-		LOG4CXX_DEBUG (logger," Longitude = " << longitude << ", latitude = "<< latitude);
+		LOG4CXX_TRACE (logger," Longitude = " << longitude << ", latitude = "<< latitude);
 		currGnssRecord.longitude = longitude;
 		currGnssRecord.latitude = latitude;
 		currGnssRecord.posDefined = true;
@@ -1010,12 +1010,12 @@ void NMEASet::extractAltMSLFromSentence(NMEASentence const& newSentence,int altM
 		// Some sentences like GNS do not carry the UoM because it is *always* in meters.
 		if (altMSLUoMIndex > 0 &&
 				*newSentence.fields[altMSLUoMIndex] != 'M') {
-			LOG4CXX_DEBUG (logger,"extractAltMSLFromSentence: Unit of altitude is not 'M' but " << newSentence.fields[altMSLUoMIndex]);
+			LOG4CXX_TRACE (logger,"extractAltMSLFromSentence: Unit of altitude is not 'M' but " << newSentence.fields[altMSLUoMIndex]);
 			return;
 		}
 		currGnssRecord.altMSL = strToD(newSentence.fields[altMSLIndex]);
 		currGnssRecord.altMslDefined = true;
-		LOG4CXX_DEBUG (logger, "extractAltMSLFromSentence: altMSL = " << currGnssRecord.altMSL);
+		LOG4CXX_TRACE (logger, "extractAltMSLFromSentence: altMSL = " << currGnssRecord.altMSL);
 	}
 
 }
@@ -1029,14 +1029,14 @@ void NMEASet::extractHDoPFromSentence(NMEASentence const& newSentence,int hDoPIn
 
 		currGnssRecord.lonDeviation = currGnssRecord.latDeviation = gpsDriver.getCEP() * hDoP;
 		currGnssRecord.hDoPDefined = true;
-		LOG4CXX_DEBUG (logger, "extractHDoPFromSentence: hDop = " << hDoP << ", Lat/Long-Deviation = " << currGnssRecord.lonDeviation);
+		LOG4CXX_TRACE (logger, "extractHDoPFromSentence: hDop = " << hDoP << ", Lat/Long-Deviation = " << currGnssRecord.lonDeviation);
 
 
 		if (!currGnssRecord.vDoPDefined && ! currGnssRecord.pDoPDefined) {
 			// Estimate the vDoP as ~1.7 hDoP
 			// Thus estimate the vertical deviation
 			currGnssRecord.altDeviation = gpsDriver.getAltStdDev() * hDoP * 1.7;
-			LOG4CXX_DEBUG (logger, "	Estimated vDop = " << hDoP * 1.7 << ", Altitude Deviation = " << currGnssRecord.altDeviation);
+			LOG4CXX_TRACE (logger, "	Estimated vDop = " << hDoP * 1.7 << ", Altitude Deviation = " << currGnssRecord.altDeviation);
 		}
 
 	}
@@ -1051,7 +1051,7 @@ void NMEASet::extractVDoPFromSentence(NMEASentence const& newSentence,int vDoPIn
 
 		currGnssRecord.altDeviation = gpsDriver.getAltStdDev() * vDoP;
 		currGnssRecord.vDoPDefined = true;
-		LOG4CXX_DEBUG (logger, "extractVDoPFromSentence: vDop = " << vDoP << ", Altitude Deviation = " << currGnssRecord.altDeviation);
+		LOG4CXX_TRACE (logger, "extractVDoPFromSentence: vDop = " << vDoP << ", Altitude Deviation = " << currGnssRecord.altDeviation);
 
 	}
 
@@ -1071,7 +1071,7 @@ void NMEASet::extractPDoPFromSentence(NMEASentence const& newSentence,int pDoPIn
 			currGnssRecord.pDoPDefined = true;
 
 			currGnssRecord.lonDeviation = currGnssRecord.latDeviation = gpsDriver.getCEP() * hDoP;
-			LOG4CXX_DEBUG (logger, "extractPDoPFromSentence: pDop = " << pDoP << ", calculated hDoP = " << hDoP
+			LOG4CXX_TRACE (logger, "extractPDoPFromSentence: pDop = " << pDoP << ", calculated hDoP = " << hDoP
 					<<", Lon/Lat Deviation = " << currGnssRecord.latDeviation);
 
 			// Continue with the calculation of vDoP here because thedirect calculation from pDoP
@@ -1081,7 +1081,7 @@ void NMEASet::extractPDoPFromSentence(NMEASentence const& newSentence,int pDoPIn
 				double vDoP = hDoP * 1.7;
 
 				currGnssRecord.altDeviation = gpsDriver.getAltStdDev() * vDoP;
-				LOG4CXX_DEBUG (logger, "extractPDoPFromSentence: Calculated vDoP = " << vDoP
+				LOG4CXX_TRACE (logger, "extractPDoPFromSentence: Calculated vDoP = " << vDoP
 						<< ", Altitude Deviation = " << currGnssRecord.altDeviation);
 
 			}
@@ -1093,7 +1093,7 @@ void NMEASet::extractPDoPFromSentence(NMEASentence const& newSentence,int pDoPIn
 				double vDoP = sqrtf(pDoP*pDoP / (3.89 /*1 + 1.7*1.7*/) ) * 1.7;
 
 				currGnssRecord.altDeviation = gpsDriver.getAltStdDev() * vDoP;
-				LOG4CXX_DEBUG (logger, "extractPDoPFromSentence: pDop = " << pDoP << ", calculated vDoP = " << vDoP
+				LOG4CXX_TRACE (logger, "extractPDoPFromSentence: pDop = " << pDoP << ", calculated vDoP = " << vDoP
 						<< ", Altitude Deviation = " << currGnssRecord.altDeviation);
 
 			}
@@ -1130,7 +1130,7 @@ void NMEASet::extractDeviationsFromSentence(NMEASentence const& newSentence,int 
 		currGnssRecord.lonDeviation = lonDeviation;
 		currGnssRecord.altDeviation = altDeviation;
 
-		LOG4CXX_DEBUG(logger,"extractDeviationsFromSentence: latDeviation = " << currGnssRecord.latDeviation
+		LOG4CXX_TRACE(logger,"extractDeviationsFromSentence: latDeviation = " << currGnssRecord.latDeviation
 				<< ", lonDeviation = " << currGnssRecord.lonDeviation
 				<< ", altDeviation = " << currGnssRecord.altDeviation
 				);
@@ -1148,6 +1148,8 @@ void NMEASet::updateKalmanFilter (bool endOfCycle) {
 		LOG4CXX_DEBUG(logger,"	Latitude = "  << currGnssRecord.latitude << ", latitude deviation = " << currGnssRecord.latDeviation);
 		LOG4CXX_DEBUG(logger,"	Longitude = "  << currGnssRecord.longitude << ", longitude deviation = " << currGnssRecord.lonDeviation);
 	}
+
+
 }
 
 } /* namespace openEV::drivers::NMEA0813 */
