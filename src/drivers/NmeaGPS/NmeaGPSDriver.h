@@ -83,7 +83,20 @@ public:
     /// \see \ref CEP
     float getCEP() const {return CEP;}
 
+    /// \see \ref altStdDev
     float getAltStdDev() const {return altStdDev;}
+
+    /// \see \ref maxStdDeviationPositionInitialization
+    float getMmaxStdDeviationPositionInitialization() {return maxStdDeviationPositionInitialization;}
+
+    /// \see \ref maxStdDeviationAltitudeInitialization
+    float getMaxStdDeviationAltitudeInitialization() { return maxStdDeviationAltitudeInitialization;}
+
+    /// \see \ref maxStdDeviationPositionUpdate
+	float getMaxStdDeviationPositionUpdate() {return maxStdDeviationPositionUpdate;}
+
+	/// \see \ref maxStdDeviationAltitudeUpdate
+	float getMaxStdDeviationAltitudeUpdate() {return maxStdDeviationAltitudeUpdate;}
 
 
 protected:
@@ -136,11 +149,11 @@ private:
     /** \brief Circular Error Probable: Radius of 50% probability of the correct position in meters
      *
      * CEP is essentially the standard deviation of the position under most favorable conditions
-     * (good antenna, unobstructed view to the entire sky, big number, and equal distributed and traceable satellites.
+     * (good antenna, un-obstructed view to the entire sky, big number, and equal distributed and traceable satellites.
      *
      * \see (Wikipedia: Circular error probable)[https://en.wikipedia.org/wiki/Circular_error_probable]
      */
-    float CEP = 3.0f;
+    float CEP = 5.0f;
 
     /** \brief Standard deviation of the altitude
      *
@@ -148,7 +161,50 @@ private:
      * I am assuming it being 2 times the CEP.
      *
      */
-    float altStdDev = 6.0f;
+    float altStdDev = 7.5f;
+
+    /** \brief Maximum standard deviation of latitude and longitude in meter for
+     * initialization of the position of the Kalman filter
+	 *
+     * When the standard deviation of either longitude or latitude exceeds the max. std. dev.
+     * the measurements are not used to initialize the Kalman filter with the position.
+     * Of course the measurements are also not used to update the Kalman filter. They will be ignored.
+     *
+     * Default is 15 m
+     */
+    float maxStdDeviationPositionInitialization = 15.0f;
+
+
+    /** \brief Max standard deviation of altitude MSL in meter for initialization
+     * of the altitude of the Kalman filter
+     *
+     * When the standard deviation of the altitude exceeds the max. std. dev. the measurement
+     * is not used to initialize the Kalman filter
+     * with the altitude. Of course the measurement is also not used to update the Kalman filter.
+     * It will be ignored.
+     *
+     * Default is 20 m
+     */
+    float maxStdDeviationAltitudeInitialization = 20.0f;
+
+    /** \brief Max standard deviation of latitude and longitude in meter for the continuous update of the position of the Kalman filter
+     *
+     * When the standard deviation of either longitude or latitude exceeds the max. std. dev.
+     * the measurements are not used to update the Kalman filter with the position. They will be ignored.
+     *
+     * Default is 15 m
+     */
+	float maxStdDeviationPositionUpdate = 15.0f;
+
+	/** \brief Max standard deviation of altitude MSL in meter for initialization of the altitude of the Kalman filter
+	 *
+	 * When the standard deviation of the altitude exceeds the max. std. dev. the measurement is not used to initialize the Kalman filter
+	 * with the altitude. Of course the measurement is also not used to update the Kalman filter. It will be ignored.
+	 *
+	 * Default is 20 m
+	 */
+	float maxStdDeviationAltitudeUpdate = 20.0f;
+
 
     NMEASet nmeaSet;
 

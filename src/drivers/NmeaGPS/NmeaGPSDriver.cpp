@@ -106,15 +106,39 @@ void NmeaGPSDriver::readConfiguration (Properties4CXX::Properties const &configu
 		throw;
 	}
 
-    errorTimeout = configuration.getPropertyValue(std::string("errorTimeout"),(long long)(10));
-    errorMaxNumRetries = configuration.getPropertyValue(std::string("errorTimeout"),(long long)(0));
-    CEP = configuration.getPropertyValue(std::string("CEP"),3.0);
-    altStdDev = configuration.getPropertyValue(std::string("altitudeStdDev"),CEP*1.5);
+    errorTimeout = configuration.getPropertyValue(
+    		std::string("errorTimeout"),
+			(long long)(errorTimeout));
+    errorMaxNumRetries = configuration.getPropertyValue(
+    		std::string("errorTimeout"),
+			(long long)(errorMaxNumRetries));
+    CEP = configuration.getPropertyValue(
+    		std::string("CEP"),
+			double (CEP));
+    altStdDev = configuration.getPropertyValue(
+    		std::string("altitudeStdDev"),
+			CEP*1.5);
+    maxStdDeviationPositionInitialization = configuration.getPropertyValue(
+    		std::string("maxStdDeviationPositionInitialization"),
+			double (maxStdDeviationPositionInitialization));
+    maxStdDeviationAltitudeInitialization = configuration.getPropertyValue(
+    		std::string("maxStdDeviationAltitudeInitialization"),
+			double (maxStdDeviationAltitudeInitialization));
+	maxStdDeviationPositionUpdate = configuration.getPropertyValue(
+			std::string("maxStdDeviationPositionUpdate"),
+			double (maxStdDeviationPositionUpdate));
+	maxStdDeviationAltitudeUpdate = configuration.getPropertyValue(
+			std::string("maxStdDeviationAltitudeUpdate"),
+			double (maxStdDeviationAltitudeUpdate));
 
 	LOG4CXX_DEBUG(logger,"	errorTimeout = " << errorTimeout);
 	LOG4CXX_DEBUG(logger,"	errorMaxNumRetries = " << errorMaxNumRetries);
 	LOG4CXX_DEBUG(logger,"	CEP = " << CEP);
 	LOG4CXX_DEBUG(logger,"	altStdDev = " << altStdDev);
+	LOG4CXX_DEBUG(logger,"	maxStdDeviationPositionInitialization = " << maxStdDeviationPositionInitialization);
+	LOG4CXX_DEBUG(logger,"	maxStdDeviationAltitudeInitialization = " << maxStdDeviationAltitudeInitialization);
+	LOG4CXX_DEBUG(logger,"	maxStdDeviationPositionUpdate = " << maxStdDeviationPositionUpdate);
+	LOG4CXX_DEBUG(logger,"	maxStdDeviationAltitudeUpdate = " << maxStdDeviationAltitudeUpdate);
 
 }
 
