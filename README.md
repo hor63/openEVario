@@ -1,13 +1,20 @@
 # openEVario
 Electronic variometer application using inertial and pressure sensors (typically I2C on ARM SoC) and GPS input. 
 
-At this stage the program is completely useless.
-I just started testing the entire system feeding old IGC logs into the Kalman filter.
+The system is slowly coming together.
+ 
+I designed a [detached IMU sensor board](https://github.com/hor63/hovImuBoard.git) around a Bosch BMX160 IMU with KiCad.   
+[The firmware is here](https://github.com/hor63/horOvIp-I2C-Bridge/tree/with-FreeRTOS-UDP).   
+The driver is "BMX160SensorBoard", and ready for real-life and integration testing.
 
-Save your bandwidth downloading it unless you are interested in an ongoing work-in-progress :)
+The driver for GNSS (GPS) receivers with NMEA0813 protocol is "NmeaGPS". It is currently in development.
+
+Next and finally drivers for absolute and differential pressure sensors will be coming.
+
+Save your bandwidth downloading it unless you are interested in an ongoing work-in-progress :upside_down_face:
 
     This file is part of openEVario, an electronic variometer for glider planes
-    Copyright (C) 2016-2018  Kai Horstmann
+    Copyright (C) 2016-2020  Kai Horstmann
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
