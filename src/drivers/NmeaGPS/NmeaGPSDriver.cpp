@@ -83,7 +83,7 @@ void NmeaGPSDriver::driverInit(GliderVarioMainPriv &varioMain) {
 
 void NmeaGPSDriver::readConfiguration (Properties4CXX::Properties const &configuration) {
 
-	LOG4CXX_DEBUG(logger,"Driver" << driverName << " read configuraion");
+	LOG4CXX_INFO(logger,"Driver" << driverName << " read configuraion");
 
 
 	try {
@@ -131,14 +131,14 @@ void NmeaGPSDriver::readConfiguration (Properties4CXX::Properties const &configu
 			std::string("maxStdDeviationAltitudeUpdate"),
 			double (maxStdDeviationAltitudeUpdate));
 
-	LOG4CXX_DEBUG(logger,"	errorTimeout = " << errorTimeout);
-	LOG4CXX_DEBUG(logger,"	errorMaxNumRetries = " << errorMaxNumRetries);
-	LOG4CXX_DEBUG(logger,"	CEP = " << CEP);
-	LOG4CXX_DEBUG(logger,"	altStdDev = " << altStdDev);
-	LOG4CXX_DEBUG(logger,"	maxStdDeviationPositionInitialization = " << maxStdDeviationPositionInitialization);
-	LOG4CXX_DEBUG(logger,"	maxStdDeviationAltitudeInitialization = " << maxStdDeviationAltitudeInitialization);
-	LOG4CXX_DEBUG(logger,"	maxStdDeviationPositionUpdate = " << maxStdDeviationPositionUpdate);
-	LOG4CXX_DEBUG(logger,"	maxStdDeviationAltitudeUpdate = " << maxStdDeviationAltitudeUpdate);
+	LOG4CXX_INFO(logger,"	errorTimeout = " << errorTimeout);
+	LOG4CXX_INFO(logger,"	errorMaxNumRetries = " << errorMaxNumRetries);
+	LOG4CXX_INFO(logger,"	CEP = " << CEP);
+	LOG4CXX_INFO(logger,"	altStdDev = " << altStdDev);
+	LOG4CXX_INFO(logger,"	maxStdDeviationPositionInitialization = " << maxStdDeviationPositionInitialization);
+	LOG4CXX_INFO(logger,"	maxStdDeviationAltitudeInitialization = " << maxStdDeviationAltitudeInitialization);
+	LOG4CXX_INFO(logger,"	maxStdDeviationPositionUpdate = " << maxStdDeviationPositionUpdate);
+	LOG4CXX_INFO(logger,"	maxStdDeviationAltitudeUpdate = " << maxStdDeviationAltitudeUpdate);
 
 }
 
@@ -189,9 +189,8 @@ void NmeaGPSDriver::processingMainLoop () {
 	NMEA0813Protocol nmeaProcessor(nmeaSet);
 
 	while (!getStopDriverThread()) {
-		// LOG4CXX_DEBUG (logger,"Driver " << driverName << ": Read max. " << sizeof (buf) << " bytes from the port");
+		LOG4CXX_TRACE (logger,"Driver " << driverName << ": Read max. " << sizeof (buf) << " bytes from the port");
 
-		// auto rc = ioPort->read(buf,sizeof (buf));
 		auto rc = ioPort->read(buf,sizeof(buf)-1);
 		if (rc > 0 && rc < sizeof(buf)) {
 			buf [rc] = 0;
