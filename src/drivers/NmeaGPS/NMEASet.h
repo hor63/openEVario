@@ -487,6 +487,13 @@ public:
 		(this->*processSentenceFunction)(newSentence);
 	}
 
+	/// \see \ref varioMain
+	void setVarioMain (GliderVarioMainPriv *varioMain) {
+		this->varioMain = varioMain;
+	}
+	/// \see \ref varioMain
+	GliderVarioMainPriv * getVarioMain () {return varioMain;}
+
 private:
 
 	/// Reference to the owning \ref NmeaGPSDriver object
@@ -521,21 +528,35 @@ private:
 	/// The iterator points into \ref usedNMEASentenceTypes
 	UsedNMEASentenceTypesCIter currExpectedSentenceType;
 
-	/** \brief Is the Kalman filter set to the initial position and altitude?
+	/// Pointer to the main vario object which also hosts the Kalman filter.
+	GliderVarioMainPriv *varioMain = nullptr;
+
+	/** \brief Is the Kalman filter set to the initial position?
 	 *
-	 * GNSS processing will wait until a sufficiently precise position and altitude is available.
-	 * Then it will set the initial position, and altitude. \n
+	 * GNSS processing will wait until a sufficiently precise position is available.
+	 * Then it will set the initial position. \n
+	 *
+	 * When the initial position is set \p initialPositionSet is set true.
+	 * From that moment the GNSS readings are being used to update the Kalman filter.
+	 *
+	 */
+	bool initialPositionSet = false;
+
+	/** \brief Is the Kalman filter set to the initial altitude?
+	 *
+	 * GNSS processing will wait until a sufficiently precise altitude is available.
+	 * Then it will set the initial altitude. \n
 	 * If altimeter (static pressure) readings are already available the QFF is also initially calculated
 	 * to bring altimeter and GPS altitude in synch. \n
 	 * (GNSS is usually the latest sensor to come online. Even if the receiver was online before and is
 	 * delivering valid data immediately the teach-in phase takes 10 GNSS fix cycles which is between 1 and 10 seconds,
 	 * depending on the receiver rate).
 	 *
-	 * When the initial position and altitude are set \p initialPositionSet is set true.
+	 * When the initial  altitude is set \p initialAltitudeSet is set true.
 	 * From that moment the GNSS readings are being used to update the Kalman filter.
 	 *
 	 */
-	bool initialPositionSet = false;
+	bool initialAltitudeSet = false;
 
 	/** \brief Data of the current GNSS fix cycle
 	 *
