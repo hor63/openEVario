@@ -1068,8 +1068,6 @@ void NMEASet::extractPDoPFromSentence(NMEASentence const& newSentence,int pDoPIn
 			// Use the float variant for speed.
 			double hDoP = sqrtf(pDoP*pDoP / (3.89 /*1 + 1.7*1.7*/) );
 
-			currGnssRecord.pDoPDefined = true;
-
 			currGnssRecord.lonDeviation = currGnssRecord.latDeviation = gpsDriver.getCEP() * hDoP;
 			LOG4CXX_TRACE (logger, "extractPDoPFromSentence: pDop = " << pDoP << ", calculated hDoP = " << hDoP
 					<<", Lon/Lat Deviation = " << currGnssRecord.latDeviation);
@@ -1084,22 +1082,27 @@ void NMEASet::extractPDoPFromSentence(NMEASentence const& newSentence,int pDoPIn
 				LOG4CXX_TRACE (logger, "extractPDoPFromSentence: Calculated vDoP = " << vDoP
 						<< ", Altitude Deviation = " << currGnssRecord.altDeviation);
 
-			}
+			} // if (!currGnssRecord.vDoPDefined)
 
-		} else {
+		} else { // if (!currGnssRecord.hDoPDefined)
 			if (!currGnssRecord.vDoPDefined) {
 				double pDoP = strToD(newSentence.fields[pDoPIndex]);
 				// Use the float variant for speed.
-				double vDoP = sqrtf(pDoP*pDoP / (3.89 /*1 + 1.7*1.7*/) ) * 1.7;
+				double vDoP = sqrtf(pDoP*pDoP / (3.89 /* 1 + 1.7*1.7 */) ) * 1.7;
 
 				currGnssRecord.altDeviation = gpsDriver.getAltStdDev() * vDoP;
 				LOG4CXX_TRACE (logger, "extractPDoPFromSentence: pDop = " << pDoP << ", calculated vDoP = " << vDoP
 						<< ", Altitude Deviation = " << currGnssRecord.altDeviation);
 
-			}
+			} // if (!currGnssRecord.vDoPDefined)
 
-		}
-	}
+		} // if (!currGnssRecord.hDoPDefined)
+
+		// Put this line at the bottom. If an exception is thrown during conversion the flag is not being set.
+		currGnssRecord.pDoPDefined = true;
+
+	} //	if (!currGnssRecord.devDirectDefined && !currGnssRecord.pDoPDefined
+	  //		&& *newSentence.fields[pDoPIndex] != 0)
 
 }
 
@@ -1138,6 +1141,8 @@ void NMEASet::extractDeviationsFromSentence(NMEASentence const& newSentence,int 
 
 }
 
+#define SQUARE(x) ((x)*(x))
+
 void NMEASet::updateKalmanFilter (bool endOfCycle) {
 
 	LOG4CXX_DEBUG(logger,"updateKalmanFilter with endOfCycle = " << endOfCycle << " and:");
@@ -1147,6 +1152,72 @@ void NMEASet::updateKalmanFilter (bool endOfCycle) {
 	if (currGnssRecord.posDefined && (currGnssRecord.hDoPDefined || currGnssRecord.pDoPDefined || currGnssRecord.devDirectDefined)) {
 		LOG4CXX_DEBUG(logger,"	Latitude = "  << currGnssRecord.latitude << ", latitude deviation = " << currGnssRecord.latDeviation);
 		LOG4CXX_DEBUG(logger,"	Longitude = "  << currGnssRecord.longitude << ", longitude deviation = " << currGnssRecord.lonDeviation);
+	}
+
+	GliderVarioMainPriv::LockedCurrentStatus currStat (*varioMain );
+	GliderVarioStatus* currVarioStatus = currStat.getCurrentStatus();
+
+	if (currGnssRecord.posDefined &&
+			currGnssRecord.latDeviation > 0.0 && currGnssRecord.lonDeviation > 0.0 &&
+			(currGnssRecord.devDirectDefined || currGnssRecord.hDoPDefined|| // Rather specific deviation information
+					(currGnssRecord.pDoPDefined && endOfCycle))) {	// Just minimal deviation information,
+																	// but I will not get anything better in this cycle
+		if (initialPositionSet ) {
+
+			if (currGnssRecord.latDeviation < gpsDriver.getMaxStdDeviationPositionUpdate() &&
+					currGnssRecord.lonDeviation < gpsDriver.getMaxStdDeviationPositionUpdate()) {
+				LOG4CXX_DEBUG (logger," Update longitude and latitude.");
+
+				// Assess the additional uncertainty due to turning.
+				// Use the amount of predicted veering off a straight course at the current speed and current rate of turn
+				// within the next second.
+
+				// turn radius calculates by speed (m/s) * time for a full circle / 2Pi
+				FloatType turnRadius = currVarioStatus->trueAirSpeed *
+						360.0f / currVarioStatus->yawRateZ
+						/ (2.0f * float(M_PI));
+
+				FloatType addDeviation = turnRadius * FastMath::fastSin(currVarioStatus->yawRateZ);
+
+				LOG4CXX_DEBUG (logger," TrueAirSpeed = " << currVarioStatus->trueAirSpeed
+						<< ", turn rate (deg/s) = " << currVarioStatus->yawRateZ
+						<< ", turnRadius = " << turnRadius
+						<< " addDeviation = " << addDeviation
+						);
+
+				GliderVarioMeasurementUpdater::GPSLatitudeUpd(currGnssRecord.latitude,
+						currGnssRecord.latDeviation*currGnssRecord.latDeviation + addDeviation,
+						*currStat.getMeasurementVector(),
+						*currStat.getCurrentStatus());
+
+				GliderVarioMeasurementUpdater::GPSLongitudeUpd(currGnssRecord.longitude,
+						currGnssRecord.latDeviation*currGnssRecord.lonDeviation + addDeviation,
+						*currStat.getMeasurementVector(),
+						*currStat.getCurrentStatus());
+			}
+		} else { // if (initialPositionSet )
+			if (currGnssRecord.latDeviation < gpsDriver.getMaxStdDeviationPositionInitialization() &&
+					currGnssRecord.lonDeviation < gpsDriver.getMaxStdDeviationPositionInitialization()) {
+				GliderVarioStatus::StatusCoVarianceType &systemNoiseCov = currVarioStatus->getSystemNoiseCovariance_Q();
+				GliderVarioStatus::StatusCoVarianceType &errorCov = currVarioStatus->getErrorCovariance_P();
+				double baseIntervalSec = varioMain->getProgramOptions().idlePredictionCycleMilliSec / 1000.0;
+
+				currVarioStatus->latitude(currGnssRecord.latitude);
+				errorCov.coeffRef(GliderVarioStatus::STATUS_IND_LATITUDE_OFFS,GliderVarioStatus::STATUS_IND_LATITUDE_OFFS)
+						= currGnssRecord.latDeviation * SQUARE(5.0);
+				systemNoiseCov.coeffRef(GliderVarioStatus::STATUS_IND_LATITUDE_OFFS,GliderVarioStatus::STATUS_IND_LATITUDE_OFFS) =
+						SQUARE(3.0) * baseIntervalSec;
+
+				currVarioStatus->longitude(currGnssRecord.longitude);
+				errorCov.coeffRef(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS)
+						= currGnssRecord.lonDeviation  * SQUARE(5.0);
+				systemNoiseCov.coeffRef(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS) =
+						SQUARE(3.0) * baseIntervalSec;
+
+				initialPositionSet = true;
+			}
+
+		} // if (initialPositionSet )
 	}
 
 
