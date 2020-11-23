@@ -144,7 +144,7 @@ void IGCReaderDriver::initializeStatus(
 
 	readIGCFile ();
 
-	double baseIntervalSec = std::chrono::duration_cast<std::chrono::duration<double>>(varioMain.getProgramOptions().idlePredictionCycle).count() ;
+	double baseIntervalSec = varioMain.getProgramOptions().idlePredictionCycleMilliSec / 1000.0;
 
 	auto firstRec = bRecords.cbegin();
 
@@ -428,7 +428,7 @@ void IGCReaderDriver::runDebugSingleThread(GliderVarioMainPriv& varioMain) {
 	GliderVarioStatus **nextStatus = 0;
 	GliderVarioTransitionMatrix *transitionMatrix = 0;
 	GliderVarioMeasurementVector *measurementVector = 0;
-	FloatType idleLoopIncrement = std::chrono::duration_cast<std::chrono::duration<FloatType>>(varioMain.getProgramOptions().idlePredictionCycle).count();
+	FloatType idleLoopIncrement = varioMain.getProgramOptions().idlePredictionCycleMilliSec / 1000.0;
 
 	varioMain.getAndLockInternalStatusForDebug(
 			currentStatus,

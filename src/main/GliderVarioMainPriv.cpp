@@ -458,6 +458,7 @@ void GliderVarioMainPriv::readConfiguration () {
 	try {
 		Properties4CXX::Property const* prop = configuration.searchProperty("idlePredictionCycle");
 		if (prop && (prop->isDouble()||prop->isInteger())) {
+			programOptions.idlePredictionCycleMilliSec =  prop->getDoubleValue();
 			programOptions.idlePredictionCycle = std::chrono::milliseconds( prop->getIntVal());
 		} else {
 			LOG4CXX_ERROR(logger, "Property \"idlePredictionCycle\" is not double or integer. Use default value");
@@ -466,6 +467,7 @@ void GliderVarioMainPriv::readConfiguration () {
 			LOG4CXX_DEBUG(logger,"Property \"idlePredictionCycle\" does not exist. Use default value");
 		}
 	LOG4CXX_DEBUG(logger, "programOptions.idlePredictionCycle = " << programOptions.idlePredictionCycle.count());
+	LOG4CXX_DEBUG(logger, "programOptions.idlePredictionCycleMilliSec = " << programOptions.idlePredictionCycleMilliSec);
 
 	try {
 		Properties4CXX::Property const* prop = configuration.searchProperty("maxTimeBetweenPredictionAndMeasurementUpdate");
@@ -544,8 +546,7 @@ void GliderVarioMainPriv::intializeStatus() {
 	// Initialize the current Kalman status with initial sensor reading
 	driverList.initializeKalmanStatus(*currentStatus,*this);
 
-	double baseIntervalSec = std::chrono::duration_cast<std::chrono::duration<double>>(programOptions.idlePredictionCycle).count() ;
-
+	double baseIntervalSec = programOptions.idlePredictionCycleMilliSec / 1000.0;
 	LOG4CXX_DEBUG(logger,"baseIntervalSec = " << baseIntervalSec);
 
 

@@ -80,6 +80,9 @@ public:
      */
     virtual void updateKalmanStatus (GliderVarioStatus &varioStatus) override;
 
+    /// \see \ref varioMain
+    GliderVarioMainPriv *getVarioMain() {return varioMain;}
+
     /// \see \ref CEP
     float getCEP() const {return CEP;}
 
@@ -87,7 +90,7 @@ public:
     float getAltStdDev() const {return altStdDev;}
 
     /// \see \ref maxStdDeviationPositionInitialization
-    float getMmaxStdDeviationPositionInitialization() {return maxStdDeviationPositionInitialization;}
+    float getMaxStdDeviationPositionInitialization() {return maxStdDeviationPositionInitialization;}
 
     /// \see \ref maxStdDeviationAltitudeInitialization
     float getMaxStdDeviationAltitudeInitialization() { return maxStdDeviationAltitudeInitialization;}
@@ -207,6 +210,9 @@ private:
 
 
     NMEASet nmeaSet;
+
+	/// Pointer to the main vario object which also hosts the Kalman filter.
+    GliderVarioMainPriv *varioMain = nullptr;
 
 };
 

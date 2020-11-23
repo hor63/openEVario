@@ -48,7 +48,11 @@ namespace openEV {
 	     */
 	    int defaultLoggerLevel = 2; // Default level info.
 	    bool terminateOnDriverLoadError = true;
+	    /// The idle loop cycle, i.e. the base cycle of the Kalman filter as system clock duration
 	    OEVDuration idlePredictionCycle = std::chrono::milliseconds(20);
+	    /// Idle loop cycle as double in milliseconds
+	    /// \see \ref idlePredictionCycle
+	    double idlePredictionCycleMilliSec = 20.0;
 	    OEVDuration maxTimeBetweenPredictionAndMeasurementUpdate = std::chrono::milliseconds(5);
 	    /** \brief Run the idle thread in the main program to perform Kalman prediction cycles at least every \ref idlePredictionCycle.
 	     *

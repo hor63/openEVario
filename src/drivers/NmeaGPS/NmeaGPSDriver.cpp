@@ -70,21 +70,20 @@ NmeaGPSDriver::NmeaGPSDriver(
 
 NmeaGPSDriver::~NmeaGPSDriver() {
 
-	/// todo fill me
-
 }
 
 
 void NmeaGPSDriver::driverInit(GliderVarioMainPriv &varioMain) {
 
-	/// todo fill me
+	this->varioMain = &varioMain;
+
+	nmeaSet.setVarioMain(&varioMain);
 
 }
 
 void NmeaGPSDriver::readConfiguration (Properties4CXX::Properties const &configuration) {
 
 	LOG4CXX_INFO(logger,"Driver" << driverName << " read configuraion");
-
 
 	try {
 		auto portNameConfig = configuration.searchProperty("portName");

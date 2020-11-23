@@ -261,7 +261,7 @@ void BMXSensorBoardDriver::initializeStatusAccel(
 	auto avgAccelZ = sumSensorData.accelZ / float(numAccelData);
 	auto absoluteAccel = sqrtf(avgAccelX*avgAccelX + avgAccelY*avgAccelY + avgAccelZ*avgAccelZ);
 
-	double baseIntervalSec = std::chrono::duration_cast<std::chrono::duration<double>>(varioMain.getProgramOptions().idlePredictionCycle).count() ;
+	double baseIntervalSec = varioMain.getProgramOptions().idlePredictionCycleMilliSec / 1000.0;
 
 	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << " baseIntervalSec = " << baseIntervalSec);
 
@@ -317,7 +317,7 @@ void BMXSensorBoardDriver::initializeStatusGyro(
 	auto avgGyroY = sumSensorData.gyroY / float(numGyroData);
 	auto avgGyroZ = sumSensorData.gyroZ / float(numGyroData);
 
-	double baseIntervalSec = std::chrono::duration_cast<std::chrono::duration<double>>(varioMain.getProgramOptions().idlePredictionCycle).count() ;
+	double baseIntervalSec = varioMain.getProgramOptions().idlePredictionCycleMilliSec / 1000.0;
 
 	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << " baseIntervalSec = " << baseIntervalSec);
 
@@ -411,7 +411,7 @@ void BMXSensorBoardDriver::initializeStatusMag(
 	auto avgMagY = sumSensorData.magY / float(numMagData) - calibrationData.magYBias;
 	auto avgMagZ = sumSensorData.magZ / float(numMagData) - calibrationData.magZBias ;
 
-	double baseIntervalSec = std::chrono::duration_cast<std::chrono::duration<double>>(varioMain.getProgramOptions().idlePredictionCycle).count() ;
+	double baseIntervalSec = varioMain.getProgramOptions().idlePredictionCycleMilliSec / 1000.0;
 
 	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << "baseIntervalSec = " << baseIntervalSec);
 
