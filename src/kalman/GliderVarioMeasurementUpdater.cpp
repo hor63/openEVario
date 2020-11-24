@@ -196,7 +196,7 @@ GliderVarioMeasurementUpdater::GPSHeadingUpd (
 
     // approximate the derivates
     // to avoid numeric issues use the same increment for both directions
-    temp1 = (fabs(varioStatus.groundSpeedNorth) + fabs(varioStatus.groundSpeedEast)) / 100.0f;
+    temp1 = (fabsf(varioStatus.groundSpeedNorth) + fabsf(varioStatus.groundSpeedEast)) / 100.0f;
 
     measRowT.insert(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,0) =
             (FastMath::fastATan2(varioStatus.groundSpeedEast,varioStatus.groundSpeedNorth + temp1) - calculatedValue) / temp1;

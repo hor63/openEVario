@@ -345,7 +345,7 @@ TEST_F(TransitionMatrixTest, AltMSL) {
                             - vertAcc *t*t/2.0
                             ;
 
-                    EXPECT_NEAR (st2.altMSL,expectResult,fabs(expectResult*0.000001f)) <<
+                    EXPECT_NEAR (st2.altMSL,expectResult,fabsf(expectResult*0.000001f)) <<
                             " at alt = " << alt << " vertSpeed = " << vertSpeed << " vertAcc = " << vertAcc <<
                             " time = " << t;
 
@@ -368,7 +368,7 @@ TEST_F(TransitionMatrixTest, AltMSL) {
                             transMatrix.getTransitionMatrix()
                             .coeff(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ALT_MSL);
 
-                    EXPECT_NEAR (expectResult,orgResult + resultDelta,fabs(expectResult*0.000001f)) << " Altitude delta = " << deltaValue;
+                    EXPECT_NEAR (expectResult,orgResult + resultDelta,fabsf(expectResult*0.000001f)) << " Altitude delta = " << deltaValue;
                     st1.altMSL = alt;
 
                     // Modify the vertical speed
@@ -384,7 +384,7 @@ TEST_F(TransitionMatrixTest, AltMSL) {
                             transMatrix.getTransitionMatrix()
                             .coeff(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_VERTICAL_SPEED);
 
-                    EXPECT_NEAR (expectResult,orgResult + resultDelta,fabs(expectResult*0.000001f)) << " vertical speed delta = " << deltaValue;
+                    EXPECT_NEAR (expectResult,orgResult + resultDelta,fabsf(expectResult*0.000001f)) << " vertical speed delta = " << deltaValue;
                     st1.verticalSpeed = vertSpeed;
 
                     // Modify the vertical acceleration
@@ -400,7 +400,7 @@ TEST_F(TransitionMatrixTest, AltMSL) {
                             transMatrix.getTransitionMatrix()
                             .coeff(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ACC_VERTICAL);
 
-                    EXPECT_NEAR (expectResult,orgResult + resultDelta,fabs(expectResult*0.000001f)) << " vertical acceleration delta = " << deltaValue;
+                    EXPECT_NEAR (expectResult,orgResult + resultDelta,fabsf(expectResult*0.000001f)) << " vertical acceleration delta = " << deltaValue;
                     st1.accelVertical = vertAcc;
 
                 }
@@ -538,7 +538,7 @@ TEST_F(TransitionMatrixTest, Roll) {
                     expectResult -= 360.0f;
                 }
 
-                EXPECT_NEAR (st2.rollAngle,expectResult,fabs(expectResult*0.00001f)) <<
+                EXPECT_NEAR (st2.rollAngle,expectResult,fabsf(expectResult*0.00001f)) <<
                         " at roll = " << roll << " rollRate = " << rollRate <<
                         " time = " << t;
 
@@ -571,7 +571,7 @@ TEST_F(TransitionMatrixTest, Roll) {
                     deltaResult -= 360.0f;
                 }
 
-                EXPECT_NEAR (expectResult,deltaResult,fabs(expectResult*0.00001f)) << " Roll delta = " << deltaValue;
+                EXPECT_NEAR (expectResult,deltaResult,fabsf(expectResult*0.00001f)) << " Roll delta = " << deltaValue;
                 st1.rollAngle = roll;
 
                 // Modify the roll rate
@@ -597,7 +597,7 @@ TEST_F(TransitionMatrixTest, Roll) {
                     deltaResult -= 360.0f;
                 }
 
-                EXPECT_NEAR (expectResult,deltaResult,fabs(expectResult*0.00001f)) << " Roll rate delta = " << deltaValue;
+                EXPECT_NEAR (expectResult,deltaResult,fabsf(expectResult*0.00001f)) << " Roll rate delta = " << deltaValue;
                 st1.rollRateX = rollRate;
             }
         }
@@ -630,7 +630,7 @@ TEST_F(TransitionMatrixTest, Heading) {
                     expectResult -= 360.0f;
                 }
 
-                EXPECT_NEAR (st2.heading,expectResult,fabs(expectResult*0.00001f)) <<
+                EXPECT_NEAR (st2.heading,expectResult,fabsf(expectResult*0.00001f)) <<
                         " at heading = " << heading << " yawRate = " << yawRate <<
                         " time = " << t;
 
@@ -663,7 +663,7 @@ TEST_F(TransitionMatrixTest, Heading) {
                     deltaResult -= 360.0f;
                 }
 
-                EXPECT_NEAR (expectResult,deltaResult,fabs(expectResult*0.00001f)) << " Heading delta = " << deltaValue
+                EXPECT_NEAR (expectResult,deltaResult,fabsf(expectResult*0.00001f)) << " Heading delta = " << deltaValue
                         << " Heading = " << heading << " yawRate = " << yawRate << " time = " << t;
                 st1.heading = heading;
 
@@ -690,7 +690,7 @@ TEST_F(TransitionMatrixTest, Heading) {
                     deltaResult -= 360.0f;
                 }
 
-                EXPECT_NEAR (expectResult,deltaResult,fabs(expectResult*0.00001f)) << " Yaw rate delta = " << deltaValue
+                EXPECT_NEAR (expectResult,deltaResult,fabsf(expectResult*0.00001f)) << " Yaw rate delta = " << deltaValue
                         << " Heading = " << heading << " heading = " << yawRate << " time = " << t;
                 st1.yawRateZ = yawRate;
             }

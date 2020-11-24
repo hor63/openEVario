@@ -218,7 +218,7 @@ void GliderVarioStatus::normalizeStatus() {
     		latitudeOffs -= LEN_LAT_ARC_SEC;
     		latitudeBaseArcSec ++;
     	}
-        lenLongitudeArcSec = fabs(LEN_LAT_ARC_SEC * FastMath::fastCos(FloatType(latitudeBaseArcSec/3600.0f)));
+        lenLongitudeArcSec = fabsf(LEN_LAT_ARC_SEC * FastMath::fastCos(FloatType(latitudeBaseArcSec/3600.0f)));
 
     	longitude(longitudeBak);
     }

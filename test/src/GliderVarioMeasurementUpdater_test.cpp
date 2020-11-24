@@ -338,7 +338,7 @@ TEST_F(MeasurementUpdaterTest, GPSHeading) {
     FloatType measHeadingGrnd = expectResult + 10.0; // Increase by 10 degrees.
 
     // approximate derivatives
-    FloatType delta = (fabs(st1.groundSpeedEast) + fabs(st1.groundSpeedNorth)) / 100.0;
+    FloatType delta = (fabsf(st1.groundSpeedEast) + fabsf(st1.groundSpeedNorth)) / 100.0;
     FloatType expectDiffNorth = (FastMath::fastATan2(st1.groundSpeedEast        ,st1.groundSpeedNorth + delta) - expectResult ) / delta;
     FloatType expectDiffEast  = (FastMath::fastATan2(st1.groundSpeedEast + delta,st1.groundSpeedNorth        ) - expectResult ) / delta;
 
