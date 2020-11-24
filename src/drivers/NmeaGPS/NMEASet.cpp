@@ -1177,7 +1177,7 @@ void NMEASet::updateKalmanFilter (bool endOfCycle) {
 						360.0f / currVarioStatus->yawRateZ
 						/ (2.0f * float(M_PI));
 
-				FloatType addDeviation = turnRadius * FastMath::fastSin(currVarioStatus->yawRateZ);
+				FloatType addDeviation = fabsf(turnRadius * FastMath::fastSin(currVarioStatus->yawRateZ));
 
 				LOG4CXX_DEBUG (logger," TrueAirSpeed = " << currVarioStatus->trueAirSpeed
 						<< ", turn rate (deg/s) = " << currVarioStatus->yawRateZ
@@ -1185,13 +1185,18 @@ void NMEASet::updateKalmanFilter (bool endOfCycle) {
 						<< " addDeviation = " << addDeviation
 						);
 
+				LOG4CXX_DEBUG(logger," Latitude = " << currGnssRecord.latitude
+						<< ", variance = " << SQUARE(currGnssRecord.latDeviation*currGnssRecord.lonDeviation + addDeviation));
+				LOG4CXX_DEBUG(logger," Longitude = " << currGnssRecord.longitude
+						<< ", variance = " << SQUARE(currGnssRecord.latDeviation*currGnssRecord.lonDeviation + addDeviation));
+
 				GliderVarioMeasurementUpdater::GPSLatitudeUpd(currGnssRecord.latitude,
-						currGnssRecord.latDeviation*currGnssRecord.latDeviation + addDeviation,
+						SQUARE(currGnssRecord.latDeviation*currGnssRecord.latDeviation + addDeviation),
 						*currStat.getMeasurementVector(),
 						*currStat.getCurrentStatus());
 
 				GliderVarioMeasurementUpdater::GPSLongitudeUpd(currGnssRecord.longitude,
-						currGnssRecord.latDeviation*currGnssRecord.lonDeviation + addDeviation,
+						SQUARE(currGnssRecord.latDeviation*currGnssRecord.lonDeviation + addDeviation),
 						*currStat.getMeasurementVector(),
 						*currStat.getCurrentStatus());
 			}
@@ -1204,18 +1209,59 @@ void NMEASet::updateKalmanFilter (bool endOfCycle) {
 
 				currVarioStatus->latitude(currGnssRecord.latitude);
 				errorCov.coeffRef(GliderVarioStatus::STATUS_IND_LATITUDE_OFFS,GliderVarioStatus::STATUS_IND_LATITUDE_OFFS)
-						= currGnssRecord.latDeviation * SQUARE(5.0);
+						= SQUARE(currGnssRecord.latDeviation) * 5.0;
 				systemNoiseCov.coeffRef(GliderVarioStatus::STATUS_IND_LATITUDE_OFFS,GliderVarioStatus::STATUS_IND_LATITUDE_OFFS) =
 						SQUARE(3.0) * baseIntervalSec;
 
 				currVarioStatus->longitude(currGnssRecord.longitude);
 				errorCov.coeffRef(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS)
-						= currGnssRecord.lonDeviation  * SQUARE(5.0);
+						= SQUARE(currGnssRecord.lonDeviation)  * 5.0;
 				systemNoiseCov.coeffRef(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS) =
 						SQUARE(3.0) * baseIntervalSec;
 
+				LOG4CXX_DEBUG (logger," Initialize latitude and longitude.");
+				LOG4CXX_DEBUG (logger," latitude = " << currVarioStatus->latitude()
+						<< ", initial variance = "
+						<< errorCov.coeffRef(GliderVarioStatus::STATUS_IND_LATITUDE_OFFS,GliderVarioStatus::STATUS_IND_LATITUDE_OFFS)
+						<< ", variance increment = "
+						<< systemNoiseCov.coeffRef(GliderVarioStatus::STATUS_IND_LATITUDE_OFFS,GliderVarioStatus::STATUS_IND_LATITUDE_OFFS)
+						<< " / " << baseIntervalSec << "s");
+				LOG4CXX_DEBUG (logger," longitude = " << currVarioStatus->longitude()
+						<< ", initial variance = "
+						<< errorCov.coeffRef(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS)
+						<< ", variance increment = "
+						<< systemNoiseCov.coeffRef(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS)
+						<< " / " << baseIntervalSec << "s");
+
 				initialPositionSet = true;
 			}
+
+			if (initialAltitudeSet) {
+				if (currGnssRecord.altDeviation < gpsDriver.getMaxStdDeviationAltitudeUpdate()) {
+					LOG4CXX_DEBUG (logger," Update altitude.");
+
+					// Assess the additional uncertainty due to acceleration in thermals and turbulence.
+					// Use acceleration based on one second prediction time
+					// to assess the additional uncertainty.
+					FloatType addDeviation = fabsf(currVarioStatus->accelVertical);
+
+					LOG4CXX_DEBUG (logger," addDeviation = " << addDeviation);
+
+					GliderVarioMeasurementUpdater::GPSAltitudeUpd(currGnssRecord.altMSL,
+							SQUARE(currGnssRecord.altDeviation*currGnssRecord.altDeviation + addDeviation),
+							*currStat.getMeasurementVector(),
+							*currStat.getCurrentStatus());
+
+					LOG4CXX_DEBUG(logger," Altitude = " << currGnssRecord.altMSL
+							<< ", variance = " << SQUARE(currGnssRecord.altDeviation*currGnssRecord.altDeviation + addDeviation));
+
+				} // if (currGnssRecord.altDeviation < gpsDriver.getMaxStdDeviationAltitudeUpdate())
+
+			} else { // if (initialAltitudeSet)
+				if (currGnssRecord.altDeviation < gpsDriver.getMaxStdDeviationAltitudeInitialization()) {
+					LOG4CXX_DEBUG (logger," Initialize altitude.");
+				}
+			} // if (initialAltitudeSet)
 
 		} // if (initialPositionSet )
 	}
