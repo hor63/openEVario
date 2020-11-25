@@ -60,7 +60,7 @@ namespace openEV
 /** \brief Constant of gravity acceleration.
  *
  * Here I am using the [conventional value of Earth gravity](https://en.wikipedia.org/wiki/Gravity_of_Earth#Conventional_value) as basis.
- * This value should also be used for accelerometers which measure "g" instead m/s^2, and you are asking yourself "What the heck is the absolute value of 1g?"
+ * This value should also be used for accelerometers which measure "g" instead m/s<SUP>2</SUP>, and you are asking yourself "What the heck is the absolute value of 1g?"
  * Drivers can adjust the initial gravity value in the status matrix from the calibration file.
  *
  * Exact values for Germany can be obtained for the German gravity base mesh
@@ -126,6 +126,8 @@ static FloatType constexpr M         = 0.0289644f;
 static FloatType constexpr Rspec     = R/M;
 
 static FloatType constexpr P0StdAtmosphere = 1013.25f	; ///< Pressure at MSL according to ICAO standard atmosphere
+static FloatType constexpr tempLapseStd = -0.65f / 100.0f; ///< Temperature lapse of the standard ICAO atmosphere in K/m
+static FloatType constexpr tempLapseIndiffBoundLayer = -1.0f / 100.0f; ///< Temperature lapse of the the indifferent mixed boundary layer in K/m
 
 /** \brief Calculate the pressure from the altitude above MSL with the Barometric formula at standard temperature 15C.
  *
