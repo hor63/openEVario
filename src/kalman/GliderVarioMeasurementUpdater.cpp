@@ -760,8 +760,6 @@ GliderVarioMeasurementUpdater::staticPressureUpd (
 ) {
     Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,1);
 
-    static FloatType constexpr tempLapse = -0.01; // -1C/100m. Indifferent lapse for adiabatic mixed air in the boundary layer
-    static FloatType constexpr exponent        = GRAVITY * M / R / tempLapse;
     FloatType pFactor;
     FloatType p;
     FloatType p1;
@@ -772,19 +770,15 @@ GliderVarioMeasurementUpdater::staticPressureUpd (
     // calculate and fill in local variables here.
     measurementVector.staticPressure = measuredStaticPressure;
 
-    // Temperature in Kelvin
-    measuredTemperature += CtoK;
-
     // This is used to calculate the pressure and at the same time the derivate for Qff.
-    pFactor = powf ((measuredTemperature - (tempLapse * varioStatus.altMSL)) / measuredTemperature,exponent);
+    pFactor = calcBarometricFactor(varioStatus.altMSL,measuredTemperature);
     // The pressure at the height in the dry indifferent boundary layer.
     p = varioStatus.qff * pFactor;
     // The pressure 10m above to assess the derivate for altitude deviations
-    p1 = varioStatus.qff * powf ((measuredTemperature - (tempLapse * (varioStatus.altMSL + 10))) / measuredTemperature,exponent);
+    p1 = varioStatus.qff * calcBarometricFactor(varioStatus.altMSL + 10.0f,measuredTemperature);
 
     measRowT.insert(GliderVarioStatus::STATUS_IND_QFF,0) = pFactor;
     measRowT.insert(GliderVarioStatus::STATUS_IND_ALT_MSL,0) = (p1 - p) / 10.0f;
-
 
     if (unitTestMode) {
         // Save internal statuses for unit tests
@@ -855,6 +849,21 @@ GliderVarioMeasurementUpdater::dynamicPressureUpd (
             measRowT,
             varioStatus
     );
+}
+
+FloatType GliderVarioMeasurementUpdater::calcBarometricFactor(
+		float altMSL,
+		float currTempC
+		) {
+    static FloatType constexpr exponent = GRAVITY * M / R / tempLapseIndiffBoundLayer;
+    FloatType pFactor;
+    // Temperature in Kelvin
+    FloatType currTempK = currTempC + CtoK;
+
+
+    pFactor = powf ((currTempK - (tempLapseIndiffBoundLayer * altMSL)) / currTempK,exponent);
+
+	return pFactor;
 }
 
 bool GliderVarioMeasurementUpdater::calcInverse3D (
