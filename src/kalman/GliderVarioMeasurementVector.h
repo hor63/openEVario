@@ -80,6 +80,8 @@ public:
         MEASURE_IND_STATIC_PRESSURE,  ///< static pressure in Pascal
         MEASURE_IND_DYNAMIC_PRESSURE, ///< dynamic (pitot) pressure in Pascal, i.e. total pressure-static pressure.
 
+		MEASURE_IND_TEMP_LOCAL_K , ///< local (at current altitude) temperature in Kelvin; is initialized to standard ICAO temperature 15°C
+
         MEASURE_NUM_ROWS
 #if defined DOXYGEN
 	    };
@@ -124,6 +126,8 @@ public:
     // Air pressure values (converted because raw values are highly non-linear to speed and altitude
     FloatType &staticPressure; ///< static pressure in Pascal
     FloatType &dynamicPressure;       ///< True air speed (based on difference pressure and air density based on absolute pressure) in m/s
+
+    FloatType &tempLocalK; ///< Local temperature (at current altitude); is initialized to standard ICAO temperature 15°C
 
     /**
      *

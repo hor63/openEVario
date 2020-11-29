@@ -61,10 +61,18 @@ GliderVarioMeasurementVector::GliderVarioMeasurementVector() :
 
 	    // Air pressure values (converted because raw values are highly non-linear to speed and altitude
 	    staticPressure {measureVector [MEASURE_IND_STATIC_PRESSURE]},
-	    dynamicPressure {measureVector [MEASURE_IND_DYNAMIC_PRESSURE]}
+	    dynamicPressure {measureVector [MEASURE_IND_DYNAMIC_PRESSURE]},
+
+		tempLocalK {measureVector [MEASURE_IND_TEMP_LOCAL_K]}
 {
 	measureVector.fill(NAN);
 	measureError.setZero();
+
+	// Initialize the temperature to 15°C
+	measureVector [MEASURE_IND_TEMP_LOCAL_K] = 15.0f + CtoK;
+
+	/// \todo Remove after testing
+	measureVector [MEASURE_IND_STATIC_PRESSURE] = 1000.0f * 100.0f; // In Pascal, not hPa, i.e. mBar!
 }
 
 GliderVarioMeasurementVector::~GliderVarioMeasurementVector() {
