@@ -726,9 +726,90 @@ private:
 	 * @param endOfCycle true when the function is called in promiscuous mode at the end of a GNSS fix cycle,
 	 *  or when all expected sentences in targeted mode are received.
 	 *  When true the function tries to scrape together whatever data is available since no better quality is to be expected.
-	 *  This particularly applies when only pDoP or no deviation data is available, or only position but no altitude is defined.
+	 *  This particularly applies when only pDoP or no deviation data is available.
 	 */
-	void updateKalmanFilter (bool endOfCycle);
+	void updateKalmanFilter (
+			bool endOfCycle
+		);
+
+	/** \brief Initialize the Kalman filter with the current latitude and longitude
+	 *
+	 * The initialization is only performed when the standard deviation does not exceed
+	 * \ref NmeaGPSDriver::maxStdDeviationPositionInitialization
+	 *
+	 * When the position was initialized \ref initialPositionSet is set \p true.
+	 *
+	 * @param endOfCycle true when the function is called in promiscuous mode at the end of a GNSS fix cycle,
+	 *  or when all expected sentences in targeted mode are received.
+	 *  When true the function tries to scrape together whatever data is available since no better quality is to be expected.
+	 *  This particularly applies when only pDoP or no deviation data is available.
+	 * @param currStat Current locked Kalman filter status used for updating
+	 */
+	void initializePosition (
+			bool endOfCycle,
+			GliderVarioMainPriv::LockedCurrentStatus &currStat
+		);
+
+	/** \brief Update the Kalman filter with the current longitude and latitude from the GNSS receiver
+	 *
+	 * The Kalman filter is only updated when the standard deviation is less than
+	 * \ref NmeaGPSDriver::maxStdDeviationPositionUpdate
+	 *
+	 * @param endOfCycle true when the function is called in promiscuous mode at the end of a GNSS fix cycle,
+	 *  or when all expected sentences in targeted mode are received.
+	 *  When true the function tries to scrape together whatever data is available since no better quality is to be expected.
+	 *  This particularly applies when only pDoP or no deviation data is available.
+	 * @param currStat Current locked Kalman filter status used for updating
+	 */
+	void updatePosition (
+			bool endOfCycle,
+			GliderVarioMainPriv::LockedCurrentStatus &currStat
+		);
+
+	/** \brief Initialize the Kalman filter with the current altitude
+	 *
+	 * The initialization is only performed when the standard deviation of both latitude and longitude does not exceed
+	 * \ref NmeaGPSDriver::maxStdDeviationAltitudeInitialization
+	 *
+	 * When the altitude was initialized \ref initialAltitudeSet is set \p true.
+	 *
+	 * @param endOfCycle true when the function is called in promiscuous mode at the end of a GNSS fix cycle,
+	 *  or when all expected sentences in targeted mode are received.
+	 *  When true the function tries to scrape together whatever data is available since no better quality is to be expected.
+	 *  This particularly applies when only pDoP or no deviation data is available.
+	 * @param currStat Current locked Kalman filter status used for updating
+	 */
+	void initializeAltitude (
+			bool endOfCycle,
+			GliderVarioMainPriv::LockedCurrentStatus &currStat
+		);
+
+	/** \brief Update the Kalman filter with the current altitude from the GNSS receiver
+	 *
+	 * The Kalman filter is only updated when the standard deviation of the altitude is less than
+	 * \ref NmeaGPSDriver::maxStdDeviationAlititudeUpdate
+	 *
+	 * @param endOfCycle true when the function is called in promiscuous mode at the end of a GNSS fix cycle,
+	 *  or when all expected sentences in targeted mode are received.
+	 *  When true the function tries to scrape together whatever data is available since no better quality is to be expected.
+	 *  This particularly applies when only pDoP or no deviation data is available.
+	 * @param currStat Current locked Kalman filter status used for updating
+	 */
+	void updateAltitude (
+			bool endOfCycle,
+			GliderVarioMainPriv::LockedCurrentStatus &currStat
+		);
+
+	/** \brief Initialize the reduced sea level pressure
+	 *
+	 * When the absolute GPS altitude is eventually known I can calculate the QFF (reduced pressure at MSL) based on the latest measured pressure,
+	 * and the known absolute GPS altitude.
+	 * The calculated QFF also compensates calibration errors of the pressure sensor, at least partially.
+	 * This initialization synchronizes the GNSS and barometric altitude measurement.
+	 *
+	 * @param currStat Current locked Kalman filter status used for updating
+	 */
+	void initQFF(GliderVarioMainPriv::LockedCurrentStatus &currStat);
 
 };
 
