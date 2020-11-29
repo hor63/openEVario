@@ -30,6 +30,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <thread>
 #include <math.h>
 #include <time.h>
 #include <sys/time.h>
@@ -774,7 +775,7 @@ void GliderVarioMainPriv::intializeStatus() {
 		currentStatus->lastPressure = P0StdAtmosphere;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LAST_PRESSURE,currentStatus->STATUS_IND_LAST_PRESSURE) = 100.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_LAST_PRESSURE,currentStatus->STATUS_IND_LAST_PRESSURE) =
-				SQUARE(0.5) * baseIntervalSec; //  (0.5mbar / 1sec)
+				SQUARE(10) * baseIntervalSec; //  (0.1mbar / 1sec)
 	}
 
 
