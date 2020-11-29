@@ -37,7 +37,6 @@ GliderVarioMeasurementVector::MeasureComponentIndexHelperClass GliderVarioMeasur
 #endif
 
 GliderVarioMeasurementVector::GliderVarioMeasurementVector() :
-		measureVector {MeasureVectorType::Zero()},
 	    // All measurement components as references into the matrix
 	    gpsLatitude {measureVector [MEASURE_IND_GPS_LAT]},
 	    gpsLongitude {measureVector [MEASURE_IND_GPS_LON]},
@@ -64,6 +63,7 @@ GliderVarioMeasurementVector::GliderVarioMeasurementVector() :
 	    staticPressure {measureVector [MEASURE_IND_STATIC_PRESSURE]},
 	    dynamicPressure {measureVector [MEASURE_IND_DYNAMIC_PRESSURE]}
 {
+	measureVector.fill(NAN);
 	measureError.setZero();
 }
 

@@ -27,16 +27,21 @@
 #ifndef GLIDERVARIOMEASUREMENTVECTOR_H_
 #define GLIDERVARIOMEASUREMENTVECTOR_H_
 
+#include <float.h>
+#include <math.h>
+
 #include "GliderVarioStatus.h"
 
 namespace openEV {
 
 /**
  * This is the measurement input vector into the Kalman filter.
- * Not all measurements are the raw instrument readings.
- * Particularly pressure readings are converted into altitude and speed before because the conversions are highly non-linear.
  * Otherwise all units are converted to ISO base units.
  * Absolute Magnetometer readings are irrelevant but their ratios are used to estimate the attitude.
+ *
+ * All values are initialized to \p nan to indicate if a value has even been set by a measurement.
+ * You can check for \p nan value with isnan()
+ *
  */
 class OEV_PUBLIC GliderVarioMeasurementVector {
 public:
@@ -86,7 +91,12 @@ public:
     typedef Eigen::Matrix<FloatType,MEASURE_NUM_ROWS,MEASURE_NUM_ROWS> MeasureCovarianceType;
 
 protected:
-        MeasureVectorType measureVector; ///< holder of the vector
+    /** \brief Holder of the measurement vector
+     *
+     * All values are initialized to \p nan to indicate if a value has even been set by a measurement.
+     * You can check for \p nan value with isnan()
+     */
+    MeasureVectorType measureVector;
 
 public:
     // Here come all measurement components as references into the matrix
@@ -118,6 +128,7 @@ public:
     /**
      *
      * @return constant reference to the internal vector for direct matrix manipulation.
+     * @see measureVector
      */
     MeasureVectorType const &getMeasureVector() const {
         return measureVector;
@@ -126,6 +137,7 @@ public:
     /**
      *
      * @return reference to the internal vector for direct matrix manipulation.
+     * @see measureVector
      */
     MeasureVectorType &getMeasureVector() {
         return measureVector;
@@ -133,6 +145,7 @@ public:
 
     /**
      *  @return constant reference to the covariance of the measurement vector.
+     * @see measureError
      */
     MeasureVectorType const &getMeasureError() const {
         return measureError;
@@ -140,6 +153,7 @@ public:
 
     /**
      *  @return reference to the covariance of the measurement vector.
+     * @see measureError
      */
     MeasureVectorType &getMeasureError() {
         return measureError;
