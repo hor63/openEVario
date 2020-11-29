@@ -765,17 +765,17 @@ void GliderVarioMainPriv::intializeStatus() {
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_QFF,currentStatus->STATUS_IND_QFF) == 0.0) {
-		currentStatus->qff = P0StdAtmosphere;
+		currentStatus->qff = pressureStdMSL;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_QFF,currentStatus->STATUS_IND_QFF) = 100.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_QFF,currentStatus->STATUS_IND_QFF) =
 				SQUARE(0.01) * baseIntervalSec; // Veryyyy slow (1mbar / 100sec)
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LAST_PRESSURE,currentStatus->STATUS_IND_LAST_PRESSURE) == 0.0) {
-		currentStatus->lastPressure = P0StdAtmosphere;
+		currentStatus->lastPressure = pressureStdMSL;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LAST_PRESSURE,currentStatus->STATUS_IND_LAST_PRESSURE) = 100.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_LAST_PRESSURE,currentStatus->STATUS_IND_LAST_PRESSURE) =
-				SQUARE(10) * baseIntervalSec; //  (0.1mbar / 1sec)
+				SQUARE(0.1) * baseIntervalSec;
 	}
 
 

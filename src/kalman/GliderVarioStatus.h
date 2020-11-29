@@ -83,12 +83,6 @@ static FloatType constexpr GRAVITY = 9.80665;
 static FloatType constexpr CtoK = 273.15f;
 
 /**
- * Standard sea level pressure according to ICAO standard atmosphere in Pascal
- * \sa [ICAO Standard atmosphere](https://en.wikipedia.org/wiki/International_Standard_Atmosphere#ICAO_Standard_Atmosphere)
- */
-static FloatType constexpr pressureStdMSL = 101325.0f;
-
-/**
  * Initialization value for magnetic inclination.
  * Rough Average value for Germany is about 67 degrees downward (pitch angle is measured upward).
  *
@@ -125,7 +119,11 @@ static FloatType constexpr M         = 0.0289644f;
 /// \sa [Specific Gas Constant for dry air](https://en.wikipedia.org/wiki/Gas_constant#Specific_gas_constant)
 static FloatType constexpr Rspec     = R/M;
 
-static FloatType constexpr P0StdAtmosphere = 1013.25f	; ///< Pressure at MSL according to ICAO standard atmosphere
+/**
+ * Standard sea level pressure according to ICAO standard atmosphere in hPascal
+ * \sa [ICAO Standard atmosphere](https://en.wikipedia.org/wiki/International_Standard_Atmosphere#ICAO_Standard_Atmosphere)
+ */
+static FloatType constexpr pressureStdMSL = 1013.25f;
 static FloatType constexpr tempLapseStd = -0.65f / 100.0f; ///< Temperature lapse of the standard ICAO atmosphere in K/m
 static FloatType constexpr tempLapseIndiffBoundLayer = -1.0f / 100.0f; ///< Temperature lapse of the the indifferent mixed boundary layer in K/m
 
@@ -137,9 +135,9 @@ static FloatType constexpr tempLapseIndiffBoundLayer = -1.0f / 100.0f; ///< Temp
  *
  * @param altitude Altitude above MSL in m
  * @param temperatureLapse Temperature lapse in K/m. Default is the standard atmosphere lapse of 0.65K/100m
- * @return Pressure in Pascal
+ * @return Pressure in hPascal
  */
-static inline double altToPressureStdTemp (double altitude,double temperatureLapse = 0.65/100.0) {
+static inline double altToPressureStdTemp (double altitude,double temperatureLapse = -0.65/100.0) {
 
 	static double constexpr R  = 8.3144598	; // Universal gas constant: 8.3144598 J/mol/K
 	static double constexpr g0 = 9.80665	; // Gravitational acceleration: 9.80665 m/s2
@@ -149,7 +147,7 @@ static inline double altToPressureStdTemp (double altitude,double temperatureLap
 
 	static double constexpr T0 = 288.15		; // 15C at MSL according to the standard atmosphere
 
-	return  (P0StdAtmosphere * pow(1 - ((temperatureLapse * altitude ) / T0),exp));
+	return  (pressureStdMSL * pow(1 - ((temperatureLapse * altitude ) / T0),exp));
 
 }
 
@@ -230,7 +228,7 @@ public:
         STATUS_IND_COMPASS_DEVIATION_Z, ///< Strength of the local airplane magnetic field in Z direction
         STATUS_IND_WIND_SPEED_N	, ///< Wind speed North component in m/s
         STATUS_IND_WIND_SPEED_E	, ///< Wind speed East component in m/s
-        STATUS_IND_QFF			, ///< QFF in Pascal (Using a more realistic model incl. temperature, but ignoring humidity).
+        STATUS_IND_QFF			, ///< QFF in hPascal (Using a more realistic model incl. temperature, but ignoring humidity).
         STATUS_IND_LAST_PRESSURE, ///< Calculated pressure from last altMSL. Used to avoid to calculate the expensive
         								///< barometric formula multiple times. I am ignoring the error imposed by the
         								///< last altitude update :)
@@ -361,7 +359,7 @@ public:
     FloatType& compassDeviationZ = statusVector_x [ STATUS_IND_COMPASS_DEVIATION_Z] ; ///< Strength of the local airplane magnetic field in Z direction
     FloatType& windSpeedNorth = statusVector_x[ STATUS_IND_WIND_SPEED_N]; ///< Wind speed North component in m/s
     FloatType& windSpeedEast  = statusVector_x[ STATUS_IND_WIND_SPEED_E]; ///< Wind speed East component in m/s
-    FloatType& qff			= statusVector_x[ STATUS_IND_QFF		 ]; ///< QFF in Pascal (Using a realistic model incl. temperature, ignoring humidity).
+    FloatType& qff			= statusVector_x[ STATUS_IND_QFF		 ]; ///< QFF in hPascal (Using a realistic model incl. temperature, ignoring humidity).
     FloatType& lastPressure   = statusVector_x[ STATUS_IND_LAST_PRESSURE]; ///< Calculated pressure from last altMSL. Used to avoid to calculate the expensive
     ///< barometric formula multiple times. I am ignoring the error imposed by the
     ///< last altitude update :)

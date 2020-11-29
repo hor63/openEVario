@@ -233,7 +233,7 @@ public:
      * usually somewhere around -0.5 - 0.6C/100m.
      *
      * I am ignoring water vapor in all calculations.
-     * @param[in] measuredStaticPressure Static pressure in Pascal
+     * @param[in] measuredStaticPressure Static pressure in hPascal
      * @param[in] measuredTemperature Ambient temperature in Degrees Celsius at the current altitude
      * @param[in] staticPressureVariance Variance of the pressure measurement
      * @param[in,out] measurementVector The applicable column is updated for information purposes.

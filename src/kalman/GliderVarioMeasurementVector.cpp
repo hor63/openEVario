@@ -72,7 +72,7 @@ GliderVarioMeasurementVector::GliderVarioMeasurementVector() :
 	measureVector [MEASURE_IND_TEMP_LOCAL_K] = 15.0f + CtoK;
 
 	/// \todo Remove after testing
-	measureVector [MEASURE_IND_STATIC_PRESSURE] = 1000.0f * 100.0f; // In Pascal, not hPa, i.e. mBar!
+	measureVector [MEASURE_IND_STATIC_PRESSURE] = 1000.0f;
 }
 
 GliderVarioMeasurementVector::~GliderVarioMeasurementVector() {

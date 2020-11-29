@@ -815,7 +815,8 @@ GliderVarioMeasurementUpdater::dynamicPressureUpd (
     static FloatType constexpr RspecTimes2     = Rspec * 2.0f;     // Specific R for dry air
 
     // This term is used repeatedly
-    FloatType pressRspecTemp = varioStatus.lastPressure / RspecTimes2 / (measuredTemperature + CtoK);
+    // Note, pressure must be in Pascal
+    FloatType pressRspecTemp = varioStatus.lastPressure * (100.0f / RspecTimes2) / (measuredTemperature + CtoK);
     FloatType tmp1;
     FloatType dynPressure;
     Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,1);
