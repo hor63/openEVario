@@ -193,7 +193,7 @@ public:
         // I am not aiming to capture the slightest gusts, but be responsive, 5 m/s per 10sec
         noiseCov.coeffRef(st1.STATUS_IND_WIND_SPEED_E,st1.STATUS_IND_WIND_SPEED_E) = 5.0*5.0 / 100.0;
 
-        st1.qff = 101000.0;
+        st1.qff = 1010.0;
         errCov.coeffRef(st1.STATUS_IND_QFF,st1.STATUS_IND_QFF) = 100.0*100.0;
         // the pressure changes sloooowly
         noiseCov.coeffRef(st1.STATUS_IND_QFF,st1.STATUS_IND_QFF) = 1 / 600.0f;
@@ -862,19 +862,19 @@ TEST_F(MeasurementUpdaterTest, Magnetometer) {
         switch (i) {
 
         case GliderVarioStatus::STATUS_IND_ROLL:
-            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),magVectIncX(1) - magVect(1),0.000001f);
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),magVectIncX(1) - magVect(1),0.00001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_PITCH:
-            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),magVectIncY(1) - magVect(1),0.000001f);
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),magVectIncY(1) - magVect(1),0.00001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_HEADING:
-            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),magVectIncZ(1) - magVect(1),0.000001f);
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),magVectIncZ(1) - magVect(1),0.00001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION:
-            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),magVectIncDecl(1) - magVect(1),0.000001f);
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),magVectIncDecl(1) - magVect(1),0.00001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION:
@@ -899,23 +899,23 @@ TEST_F(MeasurementUpdaterTest, Magnetometer) {
         switch (i) {
 
         case GliderVarioStatus::STATUS_IND_ROLL:
-            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncX(2) - magVect(2),0.000001f);
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncX(2) - magVect(2),0.00001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_PITCH:
-            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncY(2) - magVect(2),0.000001f);
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncY(2) - magVect(2),0.00001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_HEADING:
-            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncZ(2) - magVect(2),0.000001f);
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncZ(2) - magVect(2),0.00001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION:
-            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncDecl(2) - magVect(2),0.000001f);
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncDecl(2) - magVect(2),0.00001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION:
-            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncIncl(2) - magVect(2),0.000001f);
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncIncl(2) - magVect(2),0.00001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Z:
@@ -1003,7 +1003,7 @@ TEST_F(MeasurementUpdaterTest, DynamicPressure) {
 
 	st1.lastPressure = calculatedPressure;
 
-	const FloatType density = calculatedPressure / Rspec / (measuredTemp + CtoK);
+	const FloatType density = calculatedPressure * (100.0f / Rspec) / (measuredTemp + CtoK);
 
 	const FloatType dynPressure = density * st1.trueAirSpeed * st1.trueAirSpeed / 2.0f;
 
