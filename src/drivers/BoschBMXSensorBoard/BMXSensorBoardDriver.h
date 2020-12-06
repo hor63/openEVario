@@ -298,7 +298,7 @@ private:
     	/// Value of the local gravity
     	/// \see \ref GRAVITY for more details of local gravity, and how to obtain your approximate local gravity value.
     	double gravity = GRAVITY;
-    	double gravityVariance = 0.0001;
+    	double gravityVariance = 0.01;
 
     } calibrationData;
 
