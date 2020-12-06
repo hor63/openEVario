@@ -572,7 +572,8 @@ private:
 	 *
 	 * @param newSentence parsed and verified NMEA sentence
 	 */
-	void (NMEASet::* processSentenceFunction) (NMEASentence const& newSentence) = &processSentenceTeachIn;
+	void (NMEASet::* processSentenceFunction) (NMEASentence const& newSentence) =
+			&openEV::drivers::NMEA0813::NMEASet::processSentenceTeachIn;
 
 	/** \brief Process a new NMEA sentence in teach-in mode.
 	 *

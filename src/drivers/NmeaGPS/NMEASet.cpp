@@ -392,7 +392,8 @@ void NMEASet::processSentenceTeachIn(
 
 					// Switch to the operational message processor
 					// Without that this method would be called forever and be stuck here.
-					processSentenceFunction = &processSentenceOperation;
+					processSentenceFunction =
+							&openEV::drivers::NMEA0813::NMEASet::processSentenceOperation;
 
 					// Cleanout the collection to free up memory
 					teachInRecords.clear();
