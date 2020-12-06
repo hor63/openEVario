@@ -166,10 +166,11 @@ void BRecordSectionProcessor::processBRecord (
 		}
 
 		if (accuracyPos >= 0) {
-			bRecord.posAccuracy = double(strToInt(recordString + accuracyPos,accuracyLen)) + 20.0; // 20m fudge factor.
+			bRecord.posAccuracy = double(strToInt(recordString + accuracyPos,accuracyLen)) + 10.0; // 10m fudge factor.
 		} else {
 			// Use a default appropriate for a GPS receiver in a plane in free view to the sky
-			bRecord.posAccuracy = 2.0;
+			// But involved in swift glider movements
+			bRecord.posAccuracy = 10.0;
 		}
 
 		if (vertAccuracyPos >= 0) {
