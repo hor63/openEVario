@@ -694,6 +694,12 @@ BUILD_SERIAL_PORT_DRIVER_TRUE
 WITH_SERIAL_PORT_DRIVER
 HAVE_TCSETATTR
 HAVE_TERMIOS_H
+BUILD_I2C_PORT_DRIVER_FALSE
+BUILD_I2C_PORT_DRIVER_TRUE
+HAVE_SMBUS_I2C_BLOCK_FUNC
+HAVE_SMBUS_H
+HAVE_I2C_DEV_H
+HAVE_I2C_H
 OS_IS_CYGWIN_FALSE
 OS_IS_CYGWIN_TRUE
 LIBTOOL_DEPS
@@ -19498,19 +19504,106 @@ fi
 
 
 
+ac_fn_cxx_check_header_mongrel "$LINENO" "linux/i2c.h" "ac_cv_header_linux_i2c_h" "$ac_includes_default"
+if test "x$ac_cv_header_linux_i2c_h" = xyes; then :
+  HAVE_I2C_H=1
+
+
+$as_echo "#define HAVE_I2C_H 1" >>confdefs.h
+
+fi
+
+
 ac_fn_cxx_check_header_mongrel "$LINENO" "linux/i2c-dev.h" "ac_cv_header_linux_i2c_dev_h" "$ac_includes_default"
 if test "x$ac_cv_header_linux_i2c_dev_h" = xyes; then :
+  HAVE_I2C_DEV_H=1
+
 
 $as_echo "#define HAVE_I2C_DEV_H 1" >>confdefs.h
 
 fi
 
 
-ac_fn_cxx_check_header_mongrel "$LINENO" "linux/i2c.h" "ac_cv_header_linux_i2c_h" "$ac_includes_default"
-if test "x$ac_cv_header_linux_i2c_h" = xyes; then :
+ac_fn_cxx_check_header_mongrel "$LINENO" "i2c/smbus.h" "ac_cv_header_i2c_smbus_h" "$ac_includes_default"
+if test "x$ac_cv_header_i2c_smbus_h" = xyes; then :
+  HAVE_SMBUS_H=1
 
-$as_echo "#define HAVE_I2C_H 1" >>confdefs.h
 
+$as_echo "#define HAVE_SMBUS_H 1" >>confdefs.h
+
+
+fi
+
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing i2c_smbus_read_i2c_block_data" >&5
+$as_echo_n "checking for library containing i2c_smbus_read_i2c_block_data... " >&6; }
+if ${ac_cv_search_i2c_smbus_read_i2c_block_data+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char i2c_smbus_read_i2c_block_data ();
+int
+main ()
+{
+return i2c_smbus_read_i2c_block_data ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' i2c; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_cxx_try_link "$LINENO"; then :
+  ac_cv_search_i2c_smbus_read_i2c_block_data=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_i2c_smbus_read_i2c_block_data+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_i2c_smbus_read_i2c_block_data+:} false; then :
+
+else
+  ac_cv_search_i2c_smbus_read_i2c_block_data=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_i2c_smbus_read_i2c_block_data" >&5
+$as_echo "$ac_cv_search_i2c_smbus_read_i2c_block_data" >&6; }
+ac_res=$ac_cv_search_i2c_smbus_read_i2c_block_data
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+  HAVE_SMBUS_I2C_BLOCK_FUNC=1
+
+
+$as_echo "#define HAVE_SMBUS_I2C_BLOCK_FUNC 1" >>confdefs.h
+
+
+fi
+
+
+ if test "x$HAVE_I2C_H" = x1 -o "x$HAVE_SMBUS_I2C_BLOCK_FUNC" = x1; then
+  BUILD_I2C_PORT_DRIVER_TRUE=
+  BUILD_I2C_PORT_DRIVER_FALSE='#'
+else
+  BUILD_I2C_PORT_DRIVER_TRUE='#'
+  BUILD_I2C_PORT_DRIVER_FALSE=
 fi
 
 
@@ -22762,6 +22855,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${OS_IS_CYGWIN_TRUE}" && test -z "${OS_IS_CYGWIN_FALSE}"; then
   as_fn_error $? "conditional \"OS_IS_CYGWIN\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${BUILD_I2C_PORT_DRIVER_TRUE}" && test -z "${BUILD_I2C_PORT_DRIVER_FALSE}"; then
+  as_fn_error $? "conditional \"BUILD_I2C_PORT_DRIVER\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${BUILD_SERIAL_PORT_DRIVER_TRUE}" && test -z "${BUILD_SERIAL_PORT_DRIVER_FALSE}"; then

@@ -32,6 +32,10 @@ if BUILD_IP_PORT_DRIVERS
 libopenEVUtil_la_SOURCES += io/TCPPort.cpp io/UDPPort.cpp
 endif
 
+if BUILD_I2C_PORT_DRIVER
+libopenEVUtil_la_SOURCES += io/I2CPort.cpp
+endif
+
 libopenEVUtil_la_CXXFLAGS=$(AM_CXXFLAGS) -DBUILDING_OEV_UTILS=1 $(DLL_VISIBLE_CFLAGS)
 
 libopenEVUtil_la_LDFLAGS = $(LD_NO_UNDEFINED_OPT) $(MAIN_LDFLAGS) $(LOG4CXX_LDFLAGS)

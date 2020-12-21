@@ -77,6 +77,12 @@
 /* Have PTHREAD_PRIO_INHERIT. */
 #undef HAVE_PTHREAD_PRIO_INHERIT
 
+/* Define to 1 if you have the <i2c/smbus.h> header file. */
+#undef HAVE_SMBUS_H
+
+/* Define to 1 if the function i2c_smbus_read_i2c_block_data is available. */
+#undef HAVE_SMBUS_I2C_BLOCK_FUNC
+
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
 

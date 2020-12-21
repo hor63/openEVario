@@ -108,6 +108,7 @@ host_triplet = @host@
 target_triplet = @target@
 @BUILD_SERIAL_PORT_DRIVER_TRUE@am__append_1 = io/SerialPort.cpp
 @BUILD_IP_PORT_DRIVERS_TRUE@am__append_2 = io/TCPPort.cpp io/UDPPort.cpp
+@BUILD_I2C_PORT_DRIVER_TRUE@am__append_3 = io/I2CPort.cpp
 subdir = src/util
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps =  \
@@ -159,12 +160,14 @@ am__libopenEVUtil_la_SOURCES_DIST = RotationMatrix.cpp FastMath.cpp \
 	FastMathSineTable.cpp crc.cpp GliderVarioDriverBase.cpp \
 	GliderVarioDriverLibBase.cpp GliderVarioExceptionBase.cpp \
 	io/PortBase.cpp io/StreamPort.cpp io/DatagramPort.cpp \
-	io/SerialPort.cpp io/TCPPort.cpp io/UDPPort.cpp
+	io/SerialPort.cpp io/TCPPort.cpp io/UDPPort.cpp io/I2CPort.cpp
 @BUILD_SERIAL_PORT_DRIVER_TRUE@am__objects_1 =  \
 @BUILD_SERIAL_PORT_DRIVER_TRUE@	libopenEVUtil_la-SerialPort.lo
 @BUILD_IP_PORT_DRIVERS_TRUE@am__objects_2 =  \
 @BUILD_IP_PORT_DRIVERS_TRUE@	libopenEVUtil_la-TCPPort.lo \
 @BUILD_IP_PORT_DRIVERS_TRUE@	libopenEVUtil_la-UDPPort.lo
+@BUILD_I2C_PORT_DRIVER_TRUE@am__objects_3 =  \
+@BUILD_I2C_PORT_DRIVER_TRUE@	libopenEVUtil_la-I2CPort.lo
 am_libopenEVUtil_la_OBJECTS = libopenEVUtil_la-RotationMatrix.lo \
 	libopenEVUtil_la-FastMath.lo \
 	libopenEVUtil_la-FastMathSineTable.lo libopenEVUtil_la-crc.lo \
@@ -173,7 +176,7 @@ am_libopenEVUtil_la_OBJECTS = libopenEVUtil_la-RotationMatrix.lo \
 	libopenEVUtil_la-GliderVarioExceptionBase.lo \
 	libopenEVUtil_la-PortBase.lo libopenEVUtil_la-StreamPort.lo \
 	libopenEVUtil_la-DatagramPort.lo $(am__objects_1) \
-	$(am__objects_2)
+	$(am__objects_2) $(am__objects_3)
 libopenEVUtil_la_OBJECTS = $(am_libopenEVUtil_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -204,6 +207,7 @@ am__depfiles_remade = ./$(DEPDIR)/libopenEVUtil_la-DatagramPort.Plo \
 	./$(DEPDIR)/libopenEVUtil_la-GliderVarioDriverBase.Plo \
 	./$(DEPDIR)/libopenEVUtil_la-GliderVarioDriverLibBase.Plo \
 	./$(DEPDIR)/libopenEVUtil_la-GliderVarioExceptionBase.Plo \
+	./$(DEPDIR)/libopenEVUtil_la-I2CPort.Plo \
 	./$(DEPDIR)/libopenEVUtil_la-PortBase.Plo \
 	./$(DEPDIR)/libopenEVUtil_la-RotationMatrix.Plo \
 	./$(DEPDIR)/libopenEVUtil_la-SerialPort.Plo \
@@ -326,8 +330,12 @@ FGREP = @FGREP@
 GREP = @GREP@
 HAVE_BUILD_CXX11 = @HAVE_BUILD_CXX11@
 HAVE_CXX14 = @HAVE_CXX14@
+HAVE_I2C_DEV_H = @HAVE_I2C_DEV_H@
+HAVE_I2C_H = @HAVE_I2C_H@
 HAVE_NETINET_IN_H = @HAVE_NETINET_IN_H@
 HAVE_NETINET_TCP_H = @HAVE_NETINET_TCP_H@
+HAVE_SMBUS_H = @HAVE_SMBUS_H@
+HAVE_SMBUS_I2C_BLOCK_FUNC = @HAVE_SMBUS_I2C_BLOCK_FUNC@
 HAVE_TCSETATTR = @HAVE_TCSETATTR@
 HAVE_TERMIOS_H = @HAVE_TERMIOS_H@
 INSTALL = @INSTALL@
@@ -448,7 +456,7 @@ libopenEVUtil_la_SOURCES = RotationMatrix.cpp FastMath.cpp \
 	FastMathSineTable.cpp crc.cpp GliderVarioDriverBase.cpp \
 	GliderVarioDriverLibBase.cpp GliderVarioExceptionBase.cpp \
 	io/PortBase.cpp io/StreamPort.cpp io/DatagramPort.cpp \
-	$(am__append_1) $(am__append_2)
+	$(am__append_1) $(am__append_2) $(am__append_3)
 libopenEVUtil_la_CXXFLAGS = $(AM_CXXFLAGS) -DBUILDING_OEV_UTILS=1 $(DLL_VISIBLE_CFLAGS)
 libopenEVUtil_la_LDFLAGS = $(LD_NO_UNDEFINED_OPT) $(MAIN_LDFLAGS) $(LOG4CXX_LDFLAGS)
 libopenEVUtil_la_LIBADD = $(LOG4CXX_LIBS) $(MAIN_LIBS) $(PTHREAD_LIBS)
@@ -544,6 +552,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopenEVUtil_la-GliderVarioDriverBase.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopenEVUtil_la-GliderVarioDriverLibBase.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopenEVUtil_la-GliderVarioExceptionBase.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopenEVUtil_la-I2CPort.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopenEVUtil_la-PortBase.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopenEVUtil_la-RotationMatrix.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopenEVUtil_la-SerialPort.Plo@am__quote@ # am--include-marker
@@ -669,6 +678,13 @@ libopenEVUtil_la-UDPPort.lo: io/UDPPort.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='io/UDPPort.cpp' object='libopenEVUtil_la-UDPPort.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVUtil_la_CXXFLAGS) $(CXXFLAGS) -c -o libopenEVUtil_la-UDPPort.lo `test -f 'io/UDPPort.cpp' || echo '$(srcdir)/'`io/UDPPort.cpp
+
+libopenEVUtil_la-I2CPort.lo: io/I2CPort.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVUtil_la_CXXFLAGS) $(CXXFLAGS) -MT libopenEVUtil_la-I2CPort.lo -MD -MP -MF $(DEPDIR)/libopenEVUtil_la-I2CPort.Tpo -c -o libopenEVUtil_la-I2CPort.lo `test -f 'io/I2CPort.cpp' || echo '$(srcdir)/'`io/I2CPort.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libopenEVUtil_la-I2CPort.Tpo $(DEPDIR)/libopenEVUtil_la-I2CPort.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='io/I2CPort.cpp' object='libopenEVUtil_la-I2CPort.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVUtil_la_CXXFLAGS) $(CXXFLAGS) -c -o libopenEVUtil_la-I2CPort.lo `test -f 'io/I2CPort.cpp' || echo '$(srcdir)/'`io/I2CPort.cpp
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -810,6 +826,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/libopenEVUtil_la-GliderVarioDriverBase.Plo
 	-rm -f ./$(DEPDIR)/libopenEVUtil_la-GliderVarioDriverLibBase.Plo
 	-rm -f ./$(DEPDIR)/libopenEVUtil_la-GliderVarioExceptionBase.Plo
+	-rm -f ./$(DEPDIR)/libopenEVUtil_la-I2CPort.Plo
 	-rm -f ./$(DEPDIR)/libopenEVUtil_la-PortBase.Plo
 	-rm -f ./$(DEPDIR)/libopenEVUtil_la-RotationMatrix.Plo
 	-rm -f ./$(DEPDIR)/libopenEVUtil_la-SerialPort.Plo
@@ -868,6 +885,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/libopenEVUtil_la-GliderVarioDriverBase.Plo
 	-rm -f ./$(DEPDIR)/libopenEVUtil_la-GliderVarioDriverLibBase.Plo
 	-rm -f ./$(DEPDIR)/libopenEVUtil_la-GliderVarioExceptionBase.Plo
+	-rm -f ./$(DEPDIR)/libopenEVUtil_la-I2CPort.Plo
 	-rm -f ./$(DEPDIR)/libopenEVUtil_la-PortBase.Plo
 	-rm -f ./$(DEPDIR)/libopenEVUtil_la-RotationMatrix.Plo
 	-rm -f ./$(DEPDIR)/libopenEVUtil_la-SerialPort.Plo

@@ -63,8 +63,26 @@ fi
 AM_CONDITIONAL(OS_IS_CYGWIN, test "$host_os" = cygwin)
 
 
-AC_CHECK_HEADER([linux/i2c-dev.h],[AC_DEFINE([HAVE_I2C_DEV_H],[1],[Define to 1 if you have the <linux/i2c-dev.h> header file.])],[])
-AC_CHECK_HEADER([linux/i2c.h],[AC_DEFINE([HAVE_I2C_H],[1],[Define to 1 if you have the <linux/i2c.h> header file.])],[])
+AC_CHECK_HEADER([linux/i2c.h],
+	[AC_SUBST([HAVE_I2C_H],[1])]
+	[AC_DEFINE([HAVE_I2C_H],[1],[Define to 1 if you have the <linux/i2c.h> header file.])],
+	[])
+AC_CHECK_HEADER([linux/i2c-dev.h],
+	[AC_SUBST([HAVE_I2C_DEV_H],[1])]
+	[AC_DEFINE([HAVE_I2C_DEV_H],[1],[Define to 1 if you have the <linux/i2c-dev.h> header file.])],
+	[])
+AC_CHECK_HEADER([i2c/smbus.h],
+	[AC_SUBST([HAVE_SMBUS_H],[1])]
+	[AC_DEFINE([HAVE_SMBUS_H],[1],[Define to 1 if you have the <i2c/smbus.h> header file.])]
+	,[])
+
+AC_SEARCH_LIBS([i2c_smbus_read_i2c_block_data],[i2c],
+	[AC_SUBST([HAVE_SMBUS_I2C_BLOCK_FUNC],[1])]
+	[AC_DEFINE([HAVE_SMBUS_I2C_BLOCK_FUNC],[1],[Define to 1 if the function i2c_smbus_read_i2c_block_data is available.])]
+	,[])
+
+AM_CONDITIONAL([BUILD_I2C_PORT_DRIVER],[test "x$HAVE_I2C_H" = x1 -o "x$HAVE_SMBUS_I2C_BLOCK_FUNC" = x1])
+
 
 AC_CHECK_HEADER([argp.h],[AC_DEFINE([HAVE_ARGP_H],[1],[Define to 1 if you have the <argp.h> header file.])],[])
 AC_CHECK_HEADER([getopt.h],[AC_DEFINE([HAVE_GETOPT_H],[1],[Define to 1 if you have the <getopt.h> header file.])],[])
