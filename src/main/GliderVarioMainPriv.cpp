@@ -64,6 +64,10 @@
 #	include "util/io/SerialPort.h"
 #endif
 
+#if HAVE_I2C_H
+#	include "util/io/I2CPort.h"
+#endif
+
 #if defined HAVE_LOG4CXX_H
 static log4cxx::LoggerPtr logger = 0;
 static log4cxx::LoggerPtr rootLogger = 0;
@@ -538,6 +542,10 @@ void GliderVarioMainPriv::registerPortDrivers() {
 
 #if WITH_SERIAL_PORT_DRIVER
 	io::SerialPort::registerSerialPortType();
+#endif
+
+#if HAVE_I2C_H
+	io::I2CPort::registerI2CPortType();
 #endif
 
 }

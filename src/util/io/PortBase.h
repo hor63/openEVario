@@ -188,6 +188,14 @@ public:
 		return datagramPort;
 	}
 
+	/** \brief Is the port descendant of class \ref I2CPort?
+	 *
+	 * @return true when the port is an I2C port.
+	 */
+	bool isI2CPort() const {
+		return i2cPort;
+	}
+
 	/** \brief Read the configuration and create all ports defined in the section "IOPorts"
 	 *
 	 * Read the properties. Scan the sub-node "IOPorts" when it exists. If not issue a warning.
@@ -366,7 +374,7 @@ protected:
 
 	/** \brief Is this port a stream port?
 	 *
-	 * By default streamPort is false.
+	 * By default \p streamPort is false.
 	 *
 	 * This flag is being set only by the sub-class \ref StreamPort.
 	 */
@@ -374,11 +382,19 @@ protected:
 
 	/** \brief Is this port a datagram port?
 	 *
-	 * By default datagramPort is false.
+	 * By default \p datagramPort is false.
 	 *
 	 * This flag is being set only by UDPPort or other datagram based classes.
 	 */
 	bool datagramPort = false;
+
+	/** \brief Is this port an I2C port?
+	 *
+	 * By default \p i2cPort is false.
+	 *
+	 * This flag is being set only by I2CPort classes.
+	 */
+	bool i2cPort = false;
 
 };
 
