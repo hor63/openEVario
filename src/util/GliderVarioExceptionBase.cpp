@@ -55,5 +55,27 @@ const char* GliderVarioExceptionBase::what() const noexcept{
 	return whatString.c_str();
 }
 
+namespace io {
+
+GliderVarioPortIOException::GliderVarioPortIOException (
+		char const *source,
+		int line,
+		char const *description,
+		int errNo)
+	:GliderVarioPortException {source,line,description},
+	 errNo {errNo}
+{
+	std::ostringstream ostr;
+	if (this->errNo == -1) {
+		this->errNo = errno;
+	}
+	errStr = std::strerror(errNo);
+
+	ostr << ". errno = " << errNo << ": " << errStr;
+
+	whatString += ostr.str();
+}
+
+} // namespace io
 
 } /* namespace openEV */

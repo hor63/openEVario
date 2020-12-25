@@ -150,15 +150,7 @@ public:
 			char const *source,
 			int line,
 			char const *description,
-			int errNo = -1)
-		:GliderVarioPortException {source,line,description},
-		 errNo {errNo}
-	{
-		if (this->errNo == -1) {
-			this->errNo = errno;
-		}
-		errStr = std::strerror(errNo);
-	}
+			int errNo = -1);
 
 	/** \brief Return the system error code causing this exception.
 	 *
@@ -343,6 +335,7 @@ public:
 	{}
 
 };
+
 
 } // namespace io
 
