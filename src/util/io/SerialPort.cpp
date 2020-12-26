@@ -220,7 +220,7 @@ void SerialPort::setupPort() {
 	if (rc != 1) {
 		errTxt << getPortName()<< ":" << getDeviceName() << " is not a TTY.";
 		LOG4CXX_ERROR(logger,errTxt.str());
-		throw GliderVarioPortIsNoTTY (__FILE__,__LINE__,errTxt.str().c_str());
+		throw GliderVarioPortIsNoTTYException (__FILE__,__LINE__,errTxt.str().c_str());
 	}
 
 	LOG4CXX_DEBUG(logger,getPortName() << " is a TTY. OK");
@@ -230,7 +230,7 @@ void SerialPort::setupPort() {
 	if (rc != 0) {
 		errTxt << "Port "<< getPortName() << ": Error tcgetattr: " << ::strerror(rc);
 		LOG4CXX_ERROR(logger,errTxt.str());
-		throw GliderVarioPortIsNoTTY (__FILE__,__LINE__,errTxt.str().c_str());
+		throw GliderVarioPortIsNoTTYException (__FILE__,__LINE__,errTxt.str().c_str());
 	}
 	LOG4CXX_DEBUG(logger,"Read struct termios for port " << getPortName());
 
@@ -394,7 +394,7 @@ void SerialPort::setupPort() {
 	if (rc != 0) {
 		errTxt << "Port "<< getPortName() << ": Error tcsetattr: " << ::strerror(rc);
 		LOG4CXX_ERROR(logger,errTxt.str());
-		throw GliderVarioPortIsNoTTY (__FILE__,__LINE__,errTxt.str().c_str());
+		throw GliderVarioPortIsNoTTYException (__FILE__,__LINE__,errTxt.str().c_str());
 	}
 	LOG4CXX_DEBUG(logger,"Set struct termios for port " << getPortName());
 
@@ -404,7 +404,7 @@ void SerialPort::setupPort() {
 	if (rc != 0) {
 		errTxt << "Port "<< getPortName() << ": Error tcgetattr: " << ::strerror(rc);
 		LOG4CXX_ERROR(logger,errTxt.str());
-		throw GliderVarioPortIsNoTTY (__FILE__,__LINE__,errTxt.str().c_str());
+		throw GliderVarioPortIsNoTTYException (__FILE__,__LINE__,errTxt.str().c_str());
 	}
 	LOG4CXX_DEBUG(logger,"Re-read struct termios for port " << getPortName());
 

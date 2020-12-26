@@ -103,7 +103,7 @@ ssize_t DatagramPort::recv(uint8_t *buffer, size_t bufLen) {
 		// This is not acceptable for the sake of data integrity.
 		LOG4CXX_ERROR(logger,"Port" << getPortName() << ':' << getPortType() << ": Buffer too small for the datagram."
 				" Buffer length = " << bufLen << ", datagram length = " << ret);
-		throw GliderVarioPortBufferTooSmallForDatagram(__FILE__,__LINE__);
+		throw GliderVarioPortBufferTooSmallForDatagramException(__FILE__,__LINE__);
 	}
 
 	LOG4CXX_DEBUG(logger,"DatagramPort::recv: ret = " << ret);

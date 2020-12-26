@@ -187,62 +187,62 @@ protected:
 
 };
 
-class OEV_UTILS_PUBLIC GliderVarioPortNotOpenException :public GliderVarioPortIOException {
+class OEV_UTILS_PUBLIC GliderVarioPortNotOpenException :public GliderVarioPortException {
 public:
 	GliderVarioPortNotOpenException (
 			char const *source,
 			int line)
-		:GliderVarioPortIOException {source,line,"Port has not been opened.",EBADF}
+		:GliderVarioPortException {source,line,"Port has not been opened."}
 	{}
 
 };
 
-class OEV_UTILS_PUBLIC GliderVarioPortLocalPortUndefined :public GliderVarioPortIOException {
+class OEV_UTILS_PUBLIC GliderVarioPortLocalPortUndefinedException :public GliderVarioPortException {
 public:
-	GliderVarioPortLocalPortUndefined (
+	GliderVarioPortLocalPortUndefinedException (
 			char const *source,
 			int line)
-		:GliderVarioPortIOException {source,line,"Local port number is undefined.",EBADF}
+		:GliderVarioPortException {source,line,"Local port number is undefined."}
 	{}
 
 };
 
-class OEV_UTILS_PUBLIC GliderVarioPortPeerPortUndefined :public GliderVarioPortIOException {
+class OEV_UTILS_PUBLIC GliderVarioPortPeerPortUndefinedException :public GliderVarioPortException {
 public:
-	GliderVarioPortPeerPortUndefined (
+	GliderVarioPortPeerPortUndefinedException (
 			char const *source,
 			int line)
-		:GliderVarioPortIOException {source,line,"Peer port number is undefined.",EBADF}
+		:GliderVarioPortException {source,line,"Peer port number is undefined."}
 	{}
 
 };
 
-class OEV_UTILS_PUBLIC GliderVarioPortPeerAddressUndefined :public GliderVarioPortIOException {
+class OEV_UTILS_PUBLIC GliderVarioPortPeerAddressUndefinedException :public GliderVarioPortException {
 public:
-	GliderVarioPortPeerAddressUndefined (
+	GliderVarioPortPeerAddressUndefinedException (
 			char const *source,
 			int line)
-		:GliderVarioPortIOException {source,line,"Peer address is undefined.",EBADF}
+		:GliderVarioPortException {source,line,"Peer address is undefined."}
 	{}
 
 };
 
-class OEV_UTILS_PUBLIC GliderVarioPortBufferTooSmallForDatagram :public GliderVarioPortIOException {
+class OEV_UTILS_PUBLIC GliderVarioPortBufferTooSmallForDatagramException :public GliderVarioPortException {
 public:
-	GliderVarioPortBufferTooSmallForDatagram (
+	GliderVarioPortBufferTooSmallForDatagramException (
 			char const *source,
 			int line)
-		:GliderVarioPortIOException {source,line,"Buffer too small for datagram.",EBADF}
+		:GliderVarioPortException {source,line,"Buffer too small for datagram."}
 	{}
 
 };
 
-class OEV_UTILS_PUBLIC GliderVarioPortNotConnected :public GliderVarioPortIOException {
+class OEV_UTILS_PUBLIC GliderVarioPortNotConnectedException :public GliderVarioPortException {
 public:
-	GliderVarioPortNotConnected (
+	GliderVarioPortNotConnectedException (
 			char const *source,
 			int line)
-		:GliderVarioPortIOException {source,line,"The port is not connected or the destination address is undefined.",EBADF}
+		:GliderVarioPortException {source,line,"The port is not connected or the destination address is undefined."}
 	{}
 
 };
@@ -274,10 +274,10 @@ public:
 
 };
 
-class OEV_UTILS_PUBLIC GliderVarioPortIsNoTTY :public GliderVarioPortIOException {
+class OEV_UTILS_PUBLIC GliderVarioPortIsNoTTYException :public GliderVarioPortIOException {
 public:
 	/// \see GliderVarioPortWriteException::GliderVarioPortWriteException()
-	GliderVarioPortIsNoTTY (
+	GliderVarioPortIsNoTTYException (
 			char const *source,
 			int line,
 			char const *description)
@@ -335,6 +335,26 @@ public:
 	{}
 
 };
+
+class OEV_UTILS_PUBLIC GliderVarioPortI2C10BitAddrException :public GliderVarioPortException {
+public:
+	GliderVarioPortI2C10BitAddrException (
+			char const *source,
+			int line,
+			char const * deviceName,
+			uint16_t i2cDeviceAddr
+			)
+		:GliderVarioPortException {source,line,""}
+	{
+		std::ostringstream str;
+
+		str << "Error using 10-bit I2C address " << std::hex << i2cDeviceAddr << std::dec
+				<< " with device " << deviceName;
+		whatString += str.str();
+	}
+
+};
+
 
 
 } // namespace io
