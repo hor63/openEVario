@@ -1,5 +1,5 @@
 /*
- * templateMain.cpp
+ * AbsPressureMPL3115Main.cpp
  *
  *  Created on: Feb 04, 2020
  *      Author: kai_horstmann
@@ -28,18 +28,18 @@
 #endif
 
 #include "kalman/GliderVarioStatus.h"
-#include "templateLib.h"
-#include "templateDriver.h"
+#include "AbsPressureMPL3115Lib.h"
+#include "AbsPressureMPL3115Driver.h"
 #include "drivers/sensorDriver.h"
 
-using namespace openEV::drivers::template;
+using namespace openEV::drivers::AbsPressureMPL3115;
 
 #if defined HAVE_LOG4CXX_H
 static log4cxx::LoggerPtr logger = 0;
 
 static void initLogger() {
 	if (!logger) {
-		logger = log4cxx::Logger::getLogger("openEV.Drivers.template");
+		logger = log4cxx::Logger::getLogger("openEV.Drivers.MPL3115");
 	}
 }
 #endif /* defined HAVE_LOG4CXX_H */
@@ -58,7 +58,7 @@ void OEV_DRIVER_PUBLIC driverLibInit(void) {
 	initLogger();
 #endif
 
-	LOG4CXX_INFO(logger,"Initialize the template driver library");
+	LOG4CXX_INFO(logger,"Initialize the MPL3115 driver library");
 
 	initialized = true;
 
@@ -69,9 +69,9 @@ openEV::drivers::GliderVarioDriverLibBasePtr OEV_DRIVER_PUBLIC getDriverLib() {
 
 	driverLibInit();
 
-	LOG4CXX_INFO(logger,"template: getDriverLib");
+	LOG4CXX_INFO(logger,"MPL3115: getDriverLib");
 
-	return &templateLib::theOneAndOnly;
+	return &AbsPressureMPL3115Lib::theOneAndOnly;
 }
 
 

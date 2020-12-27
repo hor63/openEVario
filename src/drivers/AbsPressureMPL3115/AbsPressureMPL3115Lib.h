@@ -1,5 +1,5 @@
 /*
- * templateMain.cpp
+ * AbsPressureMPL3115Lib.h
  *
  *  Created on: Feb 04, 2020
  *      Author: kai_horstmann
@@ -23,56 +23,29 @@
  *
  */
 
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
+#ifndef DRIVERS_ABSPRESSUREMPL3115_ABSPRESSUREMPL3115LIB_H_
+#define DRIVERS_ABSPRESSUREMPL3115_ABSPRESSUREMPL3115LIB_H_
 
-#include "kalman/GliderVarioStatus.h"
-#include "templateLib.h"
-#include "templateDriver.h"
-#include "drivers/sensorDriver.h"
+#include "drivers/GliderVarioDriverLibBase.h"
 
-using namespace openEV::drivers::template;
+namespace openEV::drivers::AbsPressureMPL3115 {
 
-#if defined HAVE_LOG4CXX_H
-static log4cxx::LoggerPtr logger = 0;
+class AbsPressureMPL3115Lib : public GliderVarioDriverLibBase {
+public:
 
-static void initLogger() {
-	if (!logger) {
-		logger = log4cxx::Logger::getLogger("openEV.Drivers.template");
-	}
-}
-#endif /* defined HAVE_LOG4CXX_H */
+	virtual void addDrivers(GliderVarioDriverList &gliderVarioDriverList) override;
 
-extern "C" {
-
-void OEV_DRIVER_PUBLIC driverLibInit(void) {
-
-	static bool initialized = false;
-
-	if (initialized) {
-		return;
-	}
-
-#if defined HAVE_LOG4CXX_H
-	initLogger();
-#endif
-
-	LOG4CXX_INFO(logger,"Initialize the template driver library");
-
-	initialized = true;
-
-}
+	static AbsPressureMPL3115Lib theOneAndOnly;
 
 
-openEV::drivers::GliderVarioDriverLibBasePtr OEV_DRIVER_PUBLIC getDriverLib() {
-
-	driverLibInit();
-
-	LOG4CXX_INFO(logger,"template: getDriverLib");
-
-	return &templateLib::theOneAndOnly;
-}
+// no one shall create instances except the one and only static instance
+private:
+	AbsPressureMPL3115Lib();
+	virtual ~AbsPressureMPL3115Lib();
 
 
-}
+};
+
+} /* namespace openEV */
+
+#endif /* DRIVERS_ABSPRESSUREMPL3115_ABSPRESSUREMPL3115LIB_H_ */

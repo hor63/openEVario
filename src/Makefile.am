@@ -17,6 +17,10 @@
 
 SUBDIRS=util kalman main drivers/simul drivers/IGCReader drivers/BoschBMXSensorBoard drivers/NmeaGPS
 
+if BUILD_I2C_PORT_DRIVER
+SUBDIRS+=drivers/AbsPressureMPL3115
+endif
+
 bin_PROGRAMS=openEVario$(EXEEXT)
 
 openEVario_SOURCES=openEVario.cpp 
