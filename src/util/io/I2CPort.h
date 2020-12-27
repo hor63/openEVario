@@ -86,7 +86,7 @@ public:
 	 * @throws GliderVarioPortIOException
 	 * @throws GliderVarioPortI2C10BitAddr
 	 */
-	void writeByte(uint16_t devAddr,uint8_t data);
+	void writeByte (uint16_t devAddr,uint8_t data);
 
 	/** \brief Write an array of bytes to the device
 	 *
@@ -95,6 +95,9 @@ public:
 	 *
 	 * No written length is returned. The function always writes the complete block to the device.
 	 * If not the entire length can be written an exception is thrown.
+	 *
+	 * To write a single byte or a block to a specific address use this function too.
+	 * Simply incement the data buffer size, and write the register address into byte #0 of \p data.
 	 *
 	 * @param devAddr 7 or 10 bit address (if supported) of the device on the I2C bus
 	 * @param[in] data Pointer to buffer containing data
