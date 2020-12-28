@@ -1,8 +1,8 @@
 /*
  * MPL3115Main.cpp
  *
- *  Created on: Feb 04, 2020
- *      Author: kai_horstmann
+ *  Created on: Dec 28, 2020
+ *      Author: hor
  *
  *   This file is part of openEVario, an electronic variometer for glider planes
  *   Copyright (C) 2020  Kai Horstmann
