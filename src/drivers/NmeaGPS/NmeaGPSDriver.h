@@ -110,7 +110,7 @@ protected:
      * \see GliderVarioDriverBase::driverThreadFunction()
      *
      */
-    void driverThreadFunction() override;
+    virtual void driverThreadFunction() override;
 
     /** \brief The main loop of the driver after the port was opened
      *
