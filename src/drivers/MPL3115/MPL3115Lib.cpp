@@ -35,8 +35,8 @@
 
 namespace openEV::drivers::MPL3115 {
 
-static std::string const MPL3115DriverName = "MPL3115A2";
-static std::string const MPL3115A2DriverLibName = "MPL3115";
+static std::string const MPL3115A2DriverName = "MPL3115A2";
+static std::string const MPL3115DriverLibName = "MPL3115";
 
 MPL3115Lib MPL3115Lib::theOneAndOnly;
 
@@ -46,7 +46,7 @@ static GliderVarioDriverBase* getNewMPL3115Instance (
 		char const *description,
 		char const *instanceName) {
 
-	if (MPL3115DriverName.compare(driverName)) {
+	if (MPL3115A2DriverName.compare(driverName)) {
 		return 0;
 	}
 	return new MPL3115Driver (driverName,description,instanceName);
@@ -54,7 +54,7 @@ static GliderVarioDriverBase* getNewMPL3115Instance (
 
 MPL3115Lib::MPL3115Lib()
 	: GliderVarioDriverLibBase{
-		MPL3115A2DriverLibName.c_str(),
+		MPL3115DriverLibName.c_str(),
 		"Absolute atmospheric pressure sensors MPL3115"}
 {
 
@@ -68,7 +68,7 @@ MPL3115Lib::~MPL3115Lib() {
 
 void MPL3115Lib::addDrivers(GliderVarioDriverList &gliderVarioDriverList) {
 	GliderVarioDriverList::DriverListItem listItem {
-		MPL3115DriverName,
+		MPL3115A2DriverName,
 		"Absolute atmospheric pressure sensor MPL3115A2",
 		getNewMPL3115Instance};
 
