@@ -1,5 +1,5 @@
 /*
- * AbsPressureMPL3115Lib.cpp
+ * MPL3115Lib.cpp
  *
  *  Created on: Feb 04, 2020
  *      Author: kai_horstmann
@@ -30,31 +30,31 @@
 #include "OEVCommon.h"
 
 
-#include "AbsPressureMPL3115Lib.h"
-#include "AbsPressureMPL3115Driver.h"
+#include "MPL3115Lib.h"
+#include "MPL3115Driver.h"
 
-namespace openEV::drivers::AbsPressureMPL3115 {
+namespace openEV::drivers::MPL3115 {
 
-static std::string const AbsPressureMPL3115DriverName = "MPL3115A2";
-static std::string const AbsPressureMPL3115A2DriverLibName = "MPL3115";
+static std::string const MPL3115DriverName = "MPL3115A2";
+static std::string const MPL3115A2DriverLibName = "MPL3115";
 
-AbsPressureMPL3115Lib AbsPressureMPL3115Lib::theOneAndOnly;
+MPL3115Lib MPL3115Lib::theOneAndOnly;
 
 
-static GliderVarioDriverBase* getNewAbsPressureMPL3115Instance (
+static GliderVarioDriverBase* getNewMPL3115Instance (
 	    char const *driverName,
 		char const *description,
 		char const *instanceName) {
 
-	if (AbsPressureMPL3115DriverName.compare(driverName)) {
+	if (MPL3115DriverName.compare(driverName)) {
 		return 0;
 	}
-	return new AbsPressureMPL3115Driver (driverName,description,instanceName);
+	return new MPL3115Driver (driverName,description,instanceName);
 }
 
-AbsPressureMPL3115Lib::AbsPressureMPL3115Lib()
+MPL3115Lib::MPL3115Lib()
 	: GliderVarioDriverLibBase{
-		AbsPressureMPL3115A2DriverLibName.c_str(),
+		MPL3115A2DriverLibName.c_str(),
 		"Absolute atmospheric pressure sensors MPL3115"}
 {
 
@@ -62,15 +62,15 @@ AbsPressureMPL3115Lib::AbsPressureMPL3115Lib()
 }
 
 
-AbsPressureMPL3115Lib::~AbsPressureMPL3115Lib() {
+MPL3115Lib::~MPL3115Lib() {
 
 }
 
-void AbsPressureMPL3115Lib::addDrivers(GliderVarioDriverList &gliderVarioDriverList) {
+void MPL3115Lib::addDrivers(GliderVarioDriverList &gliderVarioDriverList) {
 	GliderVarioDriverList::DriverListItem listItem {
-		AbsPressureMPL3115DriverName,
+		MPL3115DriverName,
 		"Absolute atmospheric pressure sensor MPL3115A2",
-		getNewAbsPressureMPL3115Instance};
+		getNewMPL3115Instance};
 
 	gliderVarioDriverList.addDriver(listItem);
 }

@@ -106,7 +106,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-@BUILD_I2C_PORT_DRIVER_TRUE@am__append_1 = drivers/AbsPressureMPL3115
+@BUILD_I2C_PORT_DRIVER_TRUE@am__append_1 = drivers/MPL3115
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps =  \
@@ -211,8 +211,7 @@ am__define_uniq_tagged_files = \
 ETAGS = etags
 CTAGS = ctags
 DIST_SUBDIRS = util kalman main drivers/simul drivers/IGCReader \
-	drivers/BoschBMXSensorBoard drivers/NmeaGPS \
-	drivers/AbsPressureMPL3115
+	drivers/BoschBMXSensorBoard drivers/NmeaGPS drivers/MPL3115
 am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/depcomp
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 am__relativize = \

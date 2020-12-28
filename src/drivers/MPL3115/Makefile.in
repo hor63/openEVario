@@ -106,7 +106,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-subdir = src/drivers/AbsPressureMPL3115
+subdir = src/drivers/MPL3115
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps =  \
 	$(top_srcdir)/m4/ax_cxx_compile_build_stdcxx_11.m4 \
@@ -151,22 +151,21 @@ am__uninstall_files_from_dir = { \
 am__installdirs = "$(DESTDIR)$(pkglibdir)"
 LTLIBRARIES = $(pkglib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-openEVAbsPressureMPL3115_la_DEPENDENCIES =  \
-	../../main/libopenEVMain.la ../../kalman/libopenEVKalman.la \
-	../../util/libopenEVUtil.la $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
-am_openEVAbsPressureMPL3115_la_OBJECTS = AbsPressureMPL3115Main.lo \
-	AbsPressureMPL3115Lib.lo AbsPressureMPL3115Driver.lo
-openEVAbsPressureMPL3115_la_OBJECTS =  \
-	$(am_openEVAbsPressureMPL3115_la_OBJECTS)
+openEVMPL3115_la_DEPENDENCIES = ../../main/libopenEVMain.la \
+	../../kalman/libopenEVKalman.la ../../util/libopenEVUtil.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
+am_openEVMPL3115_la_OBJECTS = MPL3115Main.lo MPL3115Lib.lo \
+	MPL3115Driver.lo
+openEVMPL3115_la_OBJECTS = $(am_openEVMPL3115_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-openEVAbsPressureMPL3115_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
+openEVMPL3115_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
-	$(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(openEVAbsPressureMPL3115_la_LDFLAGS) $(LDFLAGS) -o $@
+	$(AM_CXXFLAGS) $(CXXFLAGS) $(openEVMPL3115_la_LDFLAGS) \
+	$(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -182,9 +181,8 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/AbsPressureMPL3115Driver.Plo \
-	./$(DEPDIR)/AbsPressureMPL3115Lib.Plo \
-	./$(DEPDIR)/AbsPressureMPL3115Main.Plo
+am__depfiles_remade = ./$(DEPDIR)/MPL3115Driver.Plo \
+	./$(DEPDIR)/MPL3115Lib.Plo ./$(DEPDIR)/MPL3115Main.Plo
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -204,8 +202,8 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(openEVAbsPressureMPL3115_la_SOURCES)
-DIST_SOURCES = $(openEVAbsPressureMPL3115_la_SOURCES)
+SOURCES = $(openEVMPL3115_la_SOURCES)
+DIST_SOURCES = $(openEVMPL3115_la_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -421,17 +419,17 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-pkglib_LTLIBRARIES = openEVAbsPressureMPL3115.la
-openEVAbsPressureMPL3115_la_SOURCES = AbsPressureMPL3115Main.cpp AbsPressureMPL3115Lib.cpp AbsPressureMPL3115Driver.cpp
-openEVAbsPressureMPL3115_la_LDFLAGS = $(LD_NO_UNDEFINED_OPT) $(MAIN_LDFLAGS) $(LOG4CXX_LDFLAGS) -module
-openEVAbsPressureMPL3115_la_LIBADD = ../../main/libopenEVMain.la ../../kalman/libopenEVKalman.la ../../util/libopenEVUtil.la $(LOG4CXX_LIBS) $(MAIN_LIBS) $(PTHREAD_LIBS)
+pkglib_LTLIBRARIES = openEVMPL3115.la
+openEVMPL3115_la_SOURCES = MPL3115Main.cpp MPL3115Lib.cpp MPL3115Driver.cpp
+openEVMPL3115_la_LDFLAGS = $(LD_NO_UNDEFINED_OPT) $(MAIN_LDFLAGS) $(LOG4CXX_LDFLAGS) -module
+openEVMPL3115_la_LIBADD = ../../main/libopenEVMain.la ../../kalman/libopenEVKalman.la ../../util/libopenEVUtil.la $(LOG4CXX_LIBS) $(MAIN_LIBS) $(PTHREAD_LIBS)
 AM_CXXFLAGS = -I../../.. -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen \
 	$(LOG4CXX_CXXFLAGS) \
 	$(PTHREAD_CFLAGS) \
 	$(DLL_VISIBLE_CFLAGS) \
 	-DBUILDING_OEV_DRIVER=1
 
-libopenEVAbsPressureMPL3115_la_CXXFLAGS = $(AM_CXXFLAGS) -DBUILDING_OEV_DRIVER=1
+libopenEVMPL3115_la_CXXFLAGS = $(AM_CXXFLAGS) -DBUILDING_OEV_DRIVER=1
 all: all-am
 
 .SUFFIXES:
@@ -445,9 +443,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/drivers/AbsPressureMPL3115/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/drivers/MPL3115/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/drivers/AbsPressureMPL3115/Makefile
+	  $(AUTOMAKE) --gnu src/drivers/MPL3115/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -501,8 +499,8 @@ clean-pkglibLTLIBRARIES:
 	  rm -f $${locs}; \
 	}
 
-openEVAbsPressureMPL3115.la: $(openEVAbsPressureMPL3115_la_OBJECTS) $(openEVAbsPressureMPL3115_la_DEPENDENCIES) $(EXTRA_openEVAbsPressureMPL3115_la_DEPENDENCIES) 
-	$(AM_V_CXXLD)$(openEVAbsPressureMPL3115_la_LINK) -rpath $(pkglibdir) $(openEVAbsPressureMPL3115_la_OBJECTS) $(openEVAbsPressureMPL3115_la_LIBADD) $(LIBS)
+openEVMPL3115.la: $(openEVMPL3115_la_OBJECTS) $(openEVMPL3115_la_DEPENDENCIES) $(EXTRA_openEVMPL3115_la_DEPENDENCIES) 
+	$(AM_V_CXXLD)$(openEVMPL3115_la_LINK) -rpath $(pkglibdir) $(openEVMPL3115_la_OBJECTS) $(openEVMPL3115_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -510,9 +508,9 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AbsPressureMPL3115Driver.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AbsPressureMPL3115Lib.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AbsPressureMPL3115Main.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MPL3115Driver.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MPL3115Lib.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MPL3115Main.Plo@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -675,9 +673,9 @@ clean-am: clean-generic clean-libtool clean-pkglibLTLIBRARIES \
 	mostlyclean-am
 
 distclean: distclean-am
-		-rm -f ./$(DEPDIR)/AbsPressureMPL3115Driver.Plo
-	-rm -f ./$(DEPDIR)/AbsPressureMPL3115Lib.Plo
-	-rm -f ./$(DEPDIR)/AbsPressureMPL3115Main.Plo
+		-rm -f ./$(DEPDIR)/MPL3115Driver.Plo
+	-rm -f ./$(DEPDIR)/MPL3115Lib.Plo
+	-rm -f ./$(DEPDIR)/MPL3115Main.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -723,9 +721,9 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-		-rm -f ./$(DEPDIR)/AbsPressureMPL3115Driver.Plo
-	-rm -f ./$(DEPDIR)/AbsPressureMPL3115Lib.Plo
-	-rm -f ./$(DEPDIR)/AbsPressureMPL3115Main.Plo
+		-rm -f ./$(DEPDIR)/MPL3115Driver.Plo
+	-rm -f ./$(DEPDIR)/MPL3115Lib.Plo
+	-rm -f ./$(DEPDIR)/MPL3115Main.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

@@ -317,7 +317,7 @@ AC_CONFIG_FILES(Makefile
                 src/drivers/IGCReader/Makefile
                 src/drivers/BoschBMXSensorBoard/Makefile
                 src/drivers/NmeaGPS/Makefile
-                src/drivers/AbsPressureMPL3115/Makefile
+                src/drivers/MPL3115/Makefile
                 test/src/Makefile)
 
 AC_OUTPUT

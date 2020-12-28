@@ -1,5 +1,5 @@
 /*
- * AbsPressureMPL3115Driver.cpp
+ * MPL3115Driver.cpp
  *
  *  Created on: Feb 04, 2020
  *      Author: kai_horstmann
@@ -29,7 +29,7 @@
 
 #include <fstream>
 
-#include "AbsPressureMPL3115Driver.h"
+#include "MPL3115Driver.h"
 #include "kalman/GliderVarioTransitionMatrix.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
 
@@ -45,14 +45,14 @@ static inline void initLogger() {
 
 #endif
 
-namespace openEV::drivers::AbsPressureMPL3115 {
+namespace openEV::drivers::MPL3115 {
 
-AbsPressureMPL3115Driver::AbsPressureMPL3115Driver(
+MPL3115Driver::MPL3115Driver(
 	    char const *driverName,
 		char const *description,
 		char const *instanceName
 		)
-: GliderVarioDriverBase {driverName,description,instanceName,AbsPressureMPL3115Lib::theOneAndOnly}
+: GliderVarioDriverBase {driverName,description,instanceName,MPL3115Lib::theOneAndOnly}
 {
 
 #if defined HAVE_LOG4CXX_H
@@ -68,26 +68,26 @@ AbsPressureMPL3115Driver::AbsPressureMPL3115Driver(
 }
 
 
-AbsPressureMPL3115Driver::~AbsPressureMPL3115Driver() {
+MPL3115Driver::~MPL3115Driver() {
 
 	/// todo fill me
 
 }
 
 
-void AbsPressureMPL3115Driver::driverInit(GliderVarioMainPriv &varioMain) {
+void MPL3115Driver::driverInit(GliderVarioMainPriv &varioMain) {
 
 	/// todo fill me
 
 }
 
-void AbsPressureMPL3115Driver::readConfiguration (Properties4CXX::Properties const &configuration) {
+void MPL3115Driver::readConfiguration (Properties4CXX::Properties const &configuration) {
 
 	/// todo fill me
 
 }
 
-void AbsPressureMPL3115Driver::initializeStatus(
+void MPL3115Driver::initializeStatus(
 		GliderVarioStatus &varioStatus,
 		GliderVarioMainPriv &varioMain) {
 
@@ -95,32 +95,32 @@ void AbsPressureMPL3115Driver::initializeStatus(
 
 }
 
-void AbsPressureMPL3115Driver::run() {
+void MPL3115Driver::run() {
 
 	GliderVarioDriverBase::run();
 
 }
 
-void AbsPressureMPL3115Driver::suspend() {
+void MPL3115Driver::suspend() {
 
 	/// todo fill me
 
 }
 
-void AbsPressureMPL3115Driver::resume() {
+void MPL3115Driver::resume() {
 
 	/// todo fill me
 
 }
 
-void AbsPressureMPL3115Driver::updateKalmanStatus (GliderVarioStatus &varioStatus) {
+void MPL3115Driver::updateKalmanStatus (GliderVarioStatus &varioStatus) {
 
 	/// todo fill me
 
 }
 
 
-void AbsPressureMPL3115Driver::driverThreadFunction() {
+void MPL3115Driver::driverThreadFunction() {
 
 	/// todo fill me
 }

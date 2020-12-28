@@ -1,5 +1,5 @@
 /*
- * AbsPressureMPL3115Driver.h
+ * MPL3115Driver.h
  *
  *  Created on: Feb 04, 2020
  *      Author: kai_horstmann
@@ -33,23 +33,23 @@
 #include "OEVCommon.h"
 
 #include "drivers/GliderVarioDriverBase.h"
-#include "AbsPressureMPL3115Lib.h"
+#include "MPL3115Lib.h"
 
-namespace openEV::drivers::AbsPressureMPL3115 {
+namespace openEV::drivers::MPL3115 {
 
 /** \brief Driver for Bosch BMX160 IMU which is mounted on the hovImuBoard sensor board
  *
  * This driver communicates with the BMX SensorBoard to obtain accelerometer, gyroscope, and magnetometer
  */
-class AbsPressureMPL3115Driver  : public GliderVarioDriverBase {
+class MPL3115Driver  : public GliderVarioDriverBase {
 public:
 
-	AbsPressureMPL3115Driver(
+	MPL3115Driver(
     	    char const *driverName,
 			char const *description,
 			char const *instanceName
 			);
-	virtual ~AbsPressureMPL3115Driver();
+	virtual ~MPL3115Driver();
 
     /** \brief Initialize the driver
      *

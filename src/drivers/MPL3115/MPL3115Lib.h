@@ -1,5 +1,5 @@
 /*
- * AbsPressureMPL3115Lib.h
+ * MPL3115Lib.h
  *
  *  Created on: Feb 04, 2020
  *      Author: kai_horstmann
@@ -28,20 +28,20 @@
 
 #include "drivers/GliderVarioDriverLibBase.h"
 
-namespace openEV::drivers::AbsPressureMPL3115 {
+namespace openEV::drivers::MPL3115 {
 
-class AbsPressureMPL3115Lib : public GliderVarioDriverLibBase {
+class MPL3115Lib : public GliderVarioDriverLibBase {
 public:
 
 	virtual void addDrivers(GliderVarioDriverList &gliderVarioDriverList) override;
 
-	static AbsPressureMPL3115Lib theOneAndOnly;
+	static MPL3115Lib theOneAndOnly;
 
 
 // no one shall create instances except the one and only static instance
 private:
-	AbsPressureMPL3115Lib();
-	virtual ~AbsPressureMPL3115Lib();
+	MPL3115Lib();
+	virtual ~MPL3115Lib();
 
 
 };

@@ -16,12 +16,12 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-pkglib_LTLIBRARIES = openEVAbsPressureMPL3115.la
+pkglib_LTLIBRARIES = openEVMPL3115.la
 
-openEVAbsPressureMPL3115_la_SOURCES=AbsPressureMPL3115Main.cpp AbsPressureMPL3115Lib.cpp AbsPressureMPL3115Driver.cpp
+openEVMPL3115_la_SOURCES=MPL3115Main.cpp MPL3115Lib.cpp MPL3115Driver.cpp
  
-openEVAbsPressureMPL3115_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT) $(MAIN_LDFLAGS) $(LOG4CXX_LDFLAGS) -module
-openEVAbsPressureMPL3115_la_LIBADD = ../../main/libopenEVMain.la ../../kalman/libopenEVKalman.la ../../util/libopenEVUtil.la $(LOG4CXX_LIBS) $(MAIN_LIBS) $(PTHREAD_LIBS)
+openEVMPL3115_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT) $(MAIN_LDFLAGS) $(LOG4CXX_LDFLAGS) -module
+openEVMPL3115_la_LIBADD = ../../main/libopenEVMain.la ../../kalman/libopenEVKalman.la ../../util/libopenEVUtil.la $(LOG4CXX_LIBS) $(MAIN_LIBS) $(PTHREAD_LIBS)
 
 AM_CXXFLAGS = -I../../.. -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen \
 	$(LOG4CXX_CXXFLAGS) \
@@ -29,6 +29,6 @@ AM_CXXFLAGS = -I../../.. -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen \
 	$(DLL_VISIBLE_CFLAGS) \
 	-DBUILDING_OEV_DRIVER=1
 	
-libopenEVAbsPressureMPL3115_la_CXXFLAGS=$(AM_CXXFLAGS) -DBUILDING_OEV_DRIVER=1
+libopenEVMPL3115_la_CXXFLAGS=$(AM_CXXFLAGS) -DBUILDING_OEV_DRIVER=1
 
 	
