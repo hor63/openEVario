@@ -32,7 +32,7 @@
 #include "templateDriver.h"
 #include "drivers/sensorDriver.h"
 
-using namespace openEV::drivers::template;
+using namespace openEV::drivers::templ;
 
 #if defined HAVE_LOG4CXX_H
 static log4cxx::LoggerPtr logger = 0;

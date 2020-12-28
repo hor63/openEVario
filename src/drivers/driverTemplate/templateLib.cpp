@@ -33,7 +33,7 @@
 #include "templateLib.h"
 #include "templateDriver.h"
 
-namespace openEV::drivers::template {
+namespace openEV::drivers::templ {
 
 static std::string const templateDriverName = "template";
 static std::string const templateDriverLibName = "templateLib";

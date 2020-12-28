@@ -28,7 +28,7 @@
 
 #include "drivers/GliderVarioDriverLibBase.h"
 
-namespace openEV::drivers::template {
+namespace openEV::drivers::templ {
 
 class templateLib : public GliderVarioDriverLibBase {
 public:

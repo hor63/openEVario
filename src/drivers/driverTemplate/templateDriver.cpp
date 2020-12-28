@@ -45,7 +45,7 @@ static inline void initLogger() {
 
 #endif
 
-namespace openEV::drivers::template {
+namespace openEV::drivers::templ {
 
 templateDriver::templateDriver(
 	    char const *driverName,
