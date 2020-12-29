@@ -1,8 +1,8 @@
 /*
  * MPL3115Driver.cpp
  *
- *  Created on: Feb 04, 2020
- *      Author: kai_horstmann
+ *  Created on: Dec 28, 2020
+ *      Author: hor
  *
  *   This file is part of openEVario, an electronic variometer for glider planes
  *   Copyright (C) 2020  Kai Horstmann
@@ -59,31 +59,56 @@ MPL3115Driver::MPL3115Driver(
 	initLogger();
 #endif /* HAVE_LOG4CXX_H */
 
-	setSensorCapability(GPS_LATITUDE	);
-	setSensorCapability(GPS_LONGITUDE	);
-	setSensorCapability(GPS_ALTITUDE_MSL);
 	setSensorCapability(STATIC_PRESSURE	);
-	setSensorCapability(RUN_IDLE_LOOP	);
 
 }
 
 
 MPL3115Driver::~MPL3115Driver() {
 
-	/// todo fill me
-
 }
 
 
 void MPL3115Driver::driverInit(GliderVarioMainPriv &varioMain) {
 
-	/// todo fill me
+	this->varioMain = &varioMain;
 
 }
 
 void MPL3115Driver::readConfiguration (Properties4CXX::Properties const &configuration) {
 
-	/// todo fill me
+	LOG4CXX_INFO(logger, __FUNCTION__ << " Driver" << driverName << " read configuraion");
+
+	try {
+		auto portNameConfig = configuration.searchProperty("portName");
+
+		if (portNameConfig->isList() || portNameConfig->isStruct()) {
+			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"Configuration variable \"PortName\" is a struct or a string list.");
+		}
+
+		portName = portNameConfig->getStringValue();
+
+		ioPort = dynamic_cast<io::I2CPort*> (io::PortBase::getPortByName(portName));
+		if (ioPort == nullptr) {
+			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"I/O Port is not an I2C port.");
+		}
+	} catch (std::exception const& e) {
+		LOG4CXX_ERROR(logger, "Read configuration of driver \"" << driverName
+				<< "\" failed:"
+				<< e.what());
+		throw;
+	}
+
+    errorTimeout = configuration.getPropertyValue(
+    		std::string("errorTimeout"),
+			(long long)(errorTimeout));
+    errorMaxNumRetries = configuration.getPropertyValue(
+    		std::string("errorTimeout"),
+			(long long)(errorMaxNumRetries));
+
+	LOG4CXX_INFO(logger,"	portName = " << portName);
+	LOG4CXX_INFO(logger,"	errorTimeout = " << errorTimeout);
+	LOG4CXX_INFO(logger,"	errorMaxNumRetries = " << errorMaxNumRetries);
 
 }
 
@@ -91,39 +116,52 @@ void MPL3115Driver::initializeStatus(
 		GliderVarioStatus &varioStatus,
 		GliderVarioMainPriv &varioMain) {
 
-	/// todo fill me
-
-}
-
-void MPL3115Driver::run() {
-
-	GliderVarioDriverBase::run();
-
-}
-
-void MPL3115Driver::suspend() {
-
-	/// todo fill me
-
-}
-
-void MPL3115Driver::resume() {
-
-	/// todo fill me
-
 }
 
 void MPL3115Driver::updateKalmanStatus (GliderVarioStatus &varioStatus) {
 
-	/// todo fill me
+	// Nothing to do here
 
 }
 
 
 void MPL3115Driver::driverThreadFunction() {
 
-	/// todo fill me
+	int numRetries = 0;
+
+	if (ioPort == nullptr) {
+		LOG4CXX_ERROR (logger,"No valid I/O port for driver " << getDriverName()
+				<< ". The driver is not operable");
+	} else {
+		while (!getStopDriverThread() && ( errorMaxNumRetries == 0 || numRetries <= errorMaxNumRetries)) {
+			try {
+				ioPort->open();
+				numRetries = 0;
+				processingMainLoop ();
+				ioPort->close();
+			} catch (std::exception const& e) {
+				numRetries ++;
+				LOG4CXX_ERROR(logger,"Error in main loop of driver \"" << getDriverName()
+						<< "\":" << e.what());
+				ioPort->close();
+
+				sleep(errorTimeout);
+			}
+		}
+	}
 }
 
+void MPL3115Driver::processingMainLoop() {
+
+	setupMPL3115();
+
+	while (!getStopDriverThread()) {
+
+		startConversionMPL3155();
+
+		readoutMPL3155();
+	}
+
+}
 
 } /* namespace openEV */

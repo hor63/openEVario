@@ -1,8 +1,8 @@
 /*
  * MPL3115Driver.h
  *
- *  Created on: Feb 04, 2020
- *      Author: kai_horstmann
+ *  Created on: Dec 28, 2020
+ *      Author: hor
  *
  *   This file is part of openEVario, an electronic variometer for glider planes
  *   Copyright (C) 2020  Kai Horstmann
@@ -34,6 +34,7 @@
 
 #include "drivers/GliderVarioDriverBase.h"
 #include "MPL3115Lib.h"
+#include "util/io/I2CPort.h"
 
 namespace openEV::drivers::MPL3115 {
 
@@ -72,24 +73,6 @@ public:
     		GliderVarioStatus &varioStatus,
 			GliderVarioMainPriv &varioMain) override;
 
-    /** \brief Start data acquisition
-     *
-     * \see GliderVarioDriverBase::start()
-     */
-    void run() override;
-
-    /** \brief Suspend the driver temporarily
-     *
-     * \see GliderVarioDriverBase::suspend()
-     */
-    virtual void suspend() override;
-
-    /** \brief Resume data acquisition when it was suspended before by suspend()
-     *
-     * \see GliderVarioDriverBase::resume()
-     */
-    virtual void resume() override;
-
     /** \brief Callback to update the Kalman filter status based on received data.
      *
      * \see GliderVarioDriverBase::updateKalmanStatus()
@@ -104,7 +87,64 @@ protected:
      * \see GliderVarioDriverBase::driverThreadFunction()
      *
      */
-    void driverThreadFunction() override;
+    virtual void driverThreadFunction() override;
+
+    /** \brief The inner main loop of the driver after the port was opened
+     *
+     * Read data from the sensor, process them, and update the Kalman filter.
+     */
+    virtual void processingMainLoop ();
+
+    /** \brief Initialize the sensor
+     *
+     */
+    virtual void setupMPL3115();
+
+    /** \brief Start a conversion cycle on the sensor
+     *
+     */
+    virtual void startConversionMPL3155();
+
+    /** \brief Read out the sensor data
+     *
+     * Before reading out the data wait for the conversion to complete.
+     */
+    virtual void readoutMPL3155();
+
+private:
+
+    /** \brief Name of the communications port.
+     *
+     * I/O ports are defined in the IOPorts section of the configuration
+     */
+    std::string portName;
+
+    /** \brief Timeout in seconds between recovery attempts when an error in the main loop occurs.
+     *
+     * Configuration parameter is "errorTimeout" in the driver section.
+     */
+    int32_t errorTimeout = 10;
+
+    /** \brief Maximum number of retries upon consecutive errors in the main loop.
+     *
+     * A value <= 0 means that the number of retries is unlimited.
+     *
+     * When the maximum number of retries is exceeded the main loop terminates and the driver ceases to operate
+     *
+     * Configuration parameter is "errorMaxNumRetries" in the driver section.
+     *
+     */
+    int32_t errorMaxNumRetries = 0;
+
+    /// \brief The I/O port.
+    ///
+    /// Typically this is a serial port, either real RS-232, or Serial via USB or Bluetooth SPP. \n
+    /// TCP will work either.
+    io::I2CPort *ioPort = nullptr;
+
+	/// Pointer to the main vario object which also hosts the Kalman filter.
+    GliderVarioMainPriv *varioMain = nullptr;
+
 
 };
 
