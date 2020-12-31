@@ -36,35 +36,67 @@ namespace openEV::drivers::MPL3115 {
 
 	uint8_t constexpr MPL3115A2I2CAddr = 0x60;
 
-	/*
-	 *
-00h STATUS Sensor status register
-01h OUT_P_MSB Pressure data out MSB; Bits 12 to 19 of 20-bit real-time pressure sample.
-				Root pointer to pressure and temperature FIFO data.
-02h OUT_P_CSB Pressure data out CSB; Bits 4 to 11 of 20-bit real-time pressure sample
-03h OUT_P_LSB Pressure data out LSB; Bits 0 to 3 of 20-bit real-time pressure sample
-04h OUT_T_MSB R 00h Temperature data out MSB; Bits 4 to 11 of 12-bit real-time temperature sample
-05h OUT_T_LSB Temperature data out LSB; Bits 0 to 3 of 12-bit real-time temperature sample
+	uint8_t constexpr MPL3115WhoAmIValue = 0xC4;
 
-0Fh F_SETUP FIFO setup register; FIFO setup
+#if defined DOXYGEN
+    enum MPL3115Register {
+#else
+	OEV_ENUM(MPL3115Register,
+#endif
+		MPL3115_STATUS				= 0x00,	///< Sensor status register
+		MPL3115_OUT_P_MSB			= 0x01,	///< Pressure data out MSB; Bits 12 to 19 of 20-bit real-time pressure sample. \n
+											///< Root pointer to pressure and temperature FIFO data.
+		MPL3115_OUT_P_CSB			= 0x02, ///< Pressure data out CSB; Bits 4 to 11 of 20-bit real-time pressure sample
+		MPL3115_OUT_P_LSB			= 0x03, ///< Pressure data out LSB; Bits 0 to 3 of 20-bit real-time pressure sample
+		MPL3115_OUT_T_MSB			= 0x04, ///< Temperature data out MSB; Bits 4 to 11 of 12-bit real-time temperature sample
+		MPL3115_OUT_T_LSB			= 0x05, ///< Temperature data out LSB; Bits 0 to 3 of 12-bit real-time temperature sample
 
-0Ch WHO_AM_I Device identification register; Fixed device ID number
+		MPL3115_F_SETUP				= 0x0F, ///< FIFO setup register; FIFO setup
 
-11h SYSMOD System mode register; Current system mode
-12h INT_SOURCE Interrupt source register; Interrupt status
-13h PT_DATA_CFG PT data configuration register; Data event flag configuration
+		MPL3115_WHO_AM_I			= 0x0C, ///< Device identification register; Fixed device ID number
 
-26h CTRL_REG1 Control register 1 [1][4] No Modes, oversampling 27h Section 14.22.1
-27h CTRL_REG2 Control register 2 [1] No Acquisition time step 28h Section 14.22.2
-28h CTRL_REG3 Control register 3 [1][4] No Interrupt pin configuration 29h Section 14.22.3
-29h CTRL_REG4 Control register 4 [1][4] No Interrupt enables 2Ah Section 14.22.4
-2Ah CTRL_REG5 Control register 5 [1][4] No Interrupt output pin assignment 2Bh Section 14.22.5
+		MPL3115_SYSMOD				= 0x11, ///< System mode register; Current system mode
+		MPL3115_INT_SOURCE			= 0x12, ///< Interrupt source register; Interrupt status
+		MPL3115_PT_DATA_CFG			= 0x13, ///< PT data configuration register; Data event flag configuration
 
-2Bh OFF_P Pressure data user offset register; Pressure data offset
-2Ch OFF_T Temperature data user offset register; Temperature data offset
-2Dh OFF_H Altitude data user offset register; Altitude data offset
+		MPL3115_CTRL_REG1			= 0x26, ///< Control register 1 Modes, oversampling
+		MPL3115_CTRL_REG2			= 0x27, ///< Control register 2 Acquisition time step
+		MPL3115_CTRL_REG3			= 0x28, ///< Control register 3 Interrupt pin configuration (Don't care)
+		MPL3115_CTRL_REG4			= 0x29, ///< Control register 4 Interrupt enables (Not used, leave 0)
+		MPL3115_CTRL_REG5			= 0x2A, ///< Control register 5 Interrupt output pin assignment (Don't care)
 
-	 */
+		MPL3115_OFF_P				= 0x2B, ///< Pressure data user offset register; Pressure data offset
+		MPL3115_OFF_T				= 0x2C, ///< Temperature data user offset register; Temperature data offset
+		MPL3115_OFF_H				= 0x2D, ///< Altitude data user offset register; Altitude data offset
+#if defined DOXYGEN
+    };
+#else
+	);
+#endif
+
+	enum MPL3115StatusBits {
+		MPL3115Status_PTOW	= 7, ///< Pressure/altitude or temperature data overwrite.
+		MPL3115Status_POW	= 6, ///< Pressure/altitude data overwrite
+		MPL3115Status_TOW	= 5, ///< Temperature data overwrite
+		MPL3115Status_PTDR	= 3, ///< Pressure/altitude or temperature data ready
+		MPL3115Status_PDR	= 2, ///< New pressure/altitude data available
+		MPL3115Status_TDR	= 1, ///< New temperature data available
+	};
+
+	enum MPL3115Cfg1Bits {
+		MPL3115Cfg1_ALT		= 7, ///< Altitude (True), or barometric (false) mode
+		MPL3115Cfg1_OS		= 3, ///< Oversample ratio. This is a 3-bit value (bit 3-5). \n
+								 ///< The actual oversampling rate is actually 2^x.
+		MPL3115Cfg1_RST		= 2, ///< Software reset
+		MPL3115Cfg1_OST		= 1, ///< One-shot measurement immediately
+		MPL3115Cfg1_SBYB	= 0, ///< Active (true)/Standby (false)
+	};
+
+	enum MPL3115Cfg2Bits {
+		MPL3115Cfg2_LoadOutput	= 5, ///< This is to load the target values for SRC_PW/SRC_TW and SRC_PTH/SRC_TTH (Not used here)
+		MPL3115Cfg2_AlarmSel	= 4, ///< The bit selects the target value for SRC_PW/SRC_TW and SRC_PTH/SRC_TTH. (Don't care)
+		MPL3115Cfg2_ST			= 0, ///< Auto acquisition time step. Auto acquisition cycle in sec. Bits 0-3. Actual value is 2^x
+	};
 
 } // namespace openEV::drivers::MPL3115
 

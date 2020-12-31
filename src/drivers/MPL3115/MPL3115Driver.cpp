@@ -30,6 +30,7 @@
 #include <fstream>
 
 #include "MPL3115Driver.h"
+#include "MPL3115A2.h"
 #include "kalman/GliderVarioTransitionMatrix.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
 
