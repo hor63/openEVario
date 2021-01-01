@@ -34,9 +34,9 @@
 
 namespace openEV::drivers::MPL3115 {
 
-	uint8_t constexpr MPL3115A2I2CAddr = 0x60;
+	static constexpr uint8_t MPL3115A2I2CAddr = 0x60;
 
-	uint8_t constexpr MPL3115WhoAmIValue = 0xC4;
+	static constexpr uint8_t MPL3115WhoAmIValue = 0xC4;
 
 #if defined DOXYGEN
     enum MPL3115Register {
@@ -83,7 +83,23 @@ namespace openEV::drivers::MPL3115 {
 		MPL3115Status_TDR	= 1, ///< New temperature data available
 	};
 
-	enum MPL3115Cfg1Bits {
+	enum MPL3115PTDataCfgBits {
+		MPL3115PTDataCfg_DREM	= 2,	///< Data ready event mode.
+						///< 0 — Event detection disabled (reset value) If the DREM bit is cleared logic '0' and one or
+						///< more of the data ready event flags are enabled, then an event flag will be raised whenever
+						///< the system acquires a new set of data.
+						///< 1 — Generate data ready event flag on new pressure/altitude or temperature data. If the
+						///< DREM bit is set logic '1' and one or more of the data ready event flags (PDEFE, TDEFE) are
+						///< enabled, then an event flag will be raised upon change in state of the data.
+		MPL3115PTDataCfg_PDEFE	= 1,	///< Data event flag enable on new pressure/altitude
+						///< 0 — Event detection disabled (reset value)
+						///< 1 — Raise event flag on new pressure/altitude data
+		MPL3115PTDataCfg_TDEFE	= 0		///< Data event flag enable on new temperature data.
+						///< 0 — Event detection disabled (reset value)
+						///< 1 — Raise event flag on new temperature data
+	};
+
+	enum MPL3115Ctrl1Bits {
 		MPL3115Cfg1_ALT		= 7, ///< Altitude (True), or barometric (false) mode
 		MPL3115Cfg1_OS		= 3, ///< Oversample ratio. This is a 3-bit value (bit 3-5). \n
 								 ///< The actual oversampling rate is actually 2^x.
@@ -92,7 +108,7 @@ namespace openEV::drivers::MPL3115 {
 		MPL3115Cfg1_SBYB	= 0, ///< Active (true)/Standby (false)
 	};
 
-	enum MPL3115Cfg2Bits {
+	enum MPL3115Ctrl2Bits {
 		MPL3115Cfg2_LoadOutput	= 5, ///< This is to load the target values for SRC_PW/SRC_TW and SRC_PTH/SRC_TTH (Not used here)
 		MPL3115Cfg2_AlarmSel	= 4, ///< The bit selects the target value for SRC_PW/SRC_TW and SRC_PTH/SRC_TTH. (Don't care)
 		MPL3115Cfg2_ST			= 0, ///< Auto acquisition time step. Auto acquisition cycle in sec. Bits 0-3. Actual value is 2^x

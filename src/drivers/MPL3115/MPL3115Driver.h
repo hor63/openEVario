@@ -145,7 +145,6 @@ private:
 	/// Pointer to the main vario object which also hosts the Kalman filter.
     GliderVarioMainPriv *varioMain = nullptr;
 
-
 };
 
 } /* namespace openEV */

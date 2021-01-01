@@ -28,6 +28,8 @@
 #endif
 
 #include <fstream>
+#include <chrono>
+#include <thread>
 
 #include "MPL3115Driver.h"
 #include "MPL3115A2.h"
@@ -153,14 +155,134 @@ void MPL3115Driver::driverThreadFunction() {
 }
 
 void MPL3115Driver::processingMainLoop() {
+    std::chrono::system_clock::time_point nextStartConversion;
+
+    using namespace std::chrono_literals;
 
 	setupMPL3115();
+
+	nextStartConversion = std::chrono::system_clock::now();
 
 	while (!getStopDriverThread()) {
 
 		startConversionMPL3155();
 
+		std::this_thread::sleep_until(nextStartConversion + 60ms);
+
 		readoutMPL3155();
+		nextStartConversion += 100ms;
+		std::this_thread::sleep_until(nextStartConversion);
+	}
+
+}
+
+/// Like in the AVR libraries
+#define _BV(x) (1<<(x))
+
+void MPL3115Driver::setupMPL3115() {
+	uint8_t ctrl1AddrVal[2];
+	uint8_t ptDataCfgAddrVal[2];
+	uint8_t whoAmI = ioPort->readByteAtRegAddrByte(MPL3115A2I2CAddr, MPL3115_WHO_AM_I);
+	if (whoAmI != MPL3115WhoAmIValue) {
+		std::ostringstream str;
+		str << __FUNCTION__ << ": Who am I value is not 0x" << std::hex << uint32_t(MPL3115WhoAmIValue)
+				<< ", but 0x" << std::hex << uint32_t(whoAmI) << std::dec;
+		LOG4CXX_ERROR(logger,str.str());
+		throw GliderVarioExceptionBase(__FILE__,__LINE__,str.str().c_str());
+	}
+	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Who am I value is as expected 0x" << std::hex << uint32_t(whoAmI) << std::dec);
+
+	// First set the thing to standby mode.
+	ctrl1AddrVal[1] = ioPort->readByteAtRegAddrByte(MPL3115A2I2CAddr, MPL3115_CTRL_REG1);
+	ctrl1AddrVal[1] &= ~_BV(MPL3115Cfg1_SBYB);
+	ctrl1AddrVal[0] = MPL3115_CTRL_REG1;
+	ioPort->writeBlock(MPL3115A2I2CAddr, ctrl1AddrVal, sizeof(ctrl1AddrVal));
+
+	// Set up with 16-times oversampling
+	ctrl1AddrVal[1] &= ~(0b111 << MPL3115Cfg1_OS); // Do not forget to clear existing bits first :)
+	ctrl1AddrVal[1] |= 0b100 << MPL3115Cfg1_OS;
+	// ... and barometer mode (delete Altitude mode flag)
+	ctrl1AddrVal[1] &= ~_BV(MPL3115Cfg1_ALT);
+	ioPort->writeBlock(MPL3115A2I2CAddr, ctrl1AddrVal, sizeof(ctrl1AddrVal));
+
+	// Setup data event configuration
+	ptDataCfgAddrVal[0] = MPL3115_PT_DATA_CFG;
+	ptDataCfgAddrVal[1] =
+			_BV(MPL3115PTDataCfg_DREM) |
+			_BV(MPL3115PTDataCfg_PDEFE) |
+			_BV(MPL3115PTDataCfg_TDEFE);
+	ioPort->writeBlock(MPL3115A2I2CAddr, ptDataCfgAddrVal, sizeof(ptDataCfgAddrVal));
+
+	// Set the sensor to active mode
+	ctrl1AddrVal[1] |= _BV(MPL3115Cfg1_SBYB);
+	ioPort->writeBlock(MPL3115A2I2CAddr, ctrl1AddrVal, sizeof(ctrl1AddrVal));
+
+	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Set Sensor to 16-times oversampling, and polling mode. Activate it.");
+
+}
+
+void MPL3115Driver::startConversionMPL3155() {
+
+	uint8_t ctrl1AddrVal[2];
+
+	ctrl1AddrVal[0] = MPL3115_CTRL_REG1;
+
+	ctrl1AddrVal[1] = ioPort->readByteAtRegAddrByte(MPL3115A2I2CAddr, MPL3115_CTRL_REG1);
+	LOG4CXX_TRACE(logger,__FUNCTION__ << ": Ctrl1 = 0x" << std::hex << uint32_t(ctrl1AddrVal[1]) << std::dec);
+
+	// Delete the OST flag
+	ctrl1AddrVal[1] &= ~_BV(MPL3115Cfg1_OST);
+	LOG4CXX_TRACE(logger,__FUNCTION__ << ": Reset OST. Set Ctrl1 to 0x" << std::hex << uint32_t(ctrl1AddrVal[1]) << std::dec);
+
+	ioPort->writeBlock(MPL3115A2I2CAddr, ctrl1AddrVal, sizeof(ctrl1AddrVal));
+
+	// 	And set the OST flag again
+	ctrl1AddrVal[1] |= _BV(MPL3115Cfg1_OST);
+	LOG4CXX_TRACE(logger,__FUNCTION__ << ": Set OST. Set Ctrl1 to 0x" << std::hex << uint32_t(ctrl1AddrVal[1]) << std::dec);
+
+	ioPort->writeBlock(MPL3115A2I2CAddr, ctrl1AddrVal, sizeof(ctrl1AddrVal));
+
+}
+
+void MPL3115Driver::readoutMPL3155() {
+
+	uint8_t statusVal = 0;
+	uint8_t sensorValues[5];
+	float pressureVal = -9999.9999f;
+	float temperatureVal = -9999.9999f;
+
+	while ((statusVal & _BV(MPL3115Status_PTDR)) == 0) {
+		statusVal = ioPort->readByteAtRegAddrByte(MPL3115A2I2CAddr, MPL3115_STATUS);
+	}
+
+	ioPort->readBlockAtRegAddrByte(MPL3115A2I2CAddr, MPL3115_OUT_P_MSB, sensorValues, sizeof(sensorValues));
+
+	if ((statusVal & _BV(MPL3115Status_PDR)) != 0) {
+		uint32_t pressureValInt;
+		LOG4CXX_TRACE(logger,__FUNCTION__ << ": Pressure data are ready : "
+				<< std::hex << uint32_t(sensorValues[0]) << ':' << uint32_t(sensorValues[1]) << ':' << uint32_t(sensorValues[2])
+				<< std::dec);
+		pressureValInt = (((sensorValues[0] << 8) | sensorValues[1]) << 4) | (sensorValues[1] >> 4);
+		pressureVal = float (pressureValInt) / 400.0f; // Integer value is Pa*4, and I want mBar, i.e. hPa.
+
+	}
+
+	if ((statusVal & _BV(MPL3115Status_TDR)) != 0) {
+		LOG4CXX_TRACE(logger,__FUNCTION__ << ": Temperature data are ready : "
+				<< std::hex << uint32_t(sensorValues[3]) << ':' << uint32_t(sensorValues[4])
+				<< std::dec);
+
+		temperatureVal = float(sensorValues[3]) + float(sensorValues[4]) / 256.0f;
+	}
+
+	if ((statusVal & (_BV(MPL3115Status_PDR)|_BV(MPL3115Status_TDR))) == _BV(MPL3115Status_PDR)) {
+		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Pressure is " << pressureVal << " millibar.");
+	}
+	if ((statusVal & (_BV(MPL3115Status_PDR)|_BV(MPL3115Status_TDR))) == _BV(MPL3115Status_TDR)) {
+		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Temperature is " << temperatureVal << " DegC.");
+	}
+	if ((statusVal & (_BV(MPL3115Status_PDR)|_BV(MPL3115Status_TDR))) == (_BV(MPL3115Status_PDR)|_BV(MPL3115Status_TDR))) {
+		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Pressure is " << pressureVal << " millibar, Temperature is " << temperatureVal << " DegC.");
 	}
 
 }
