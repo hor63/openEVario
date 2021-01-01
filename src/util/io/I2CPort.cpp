@@ -142,7 +142,7 @@ void I2CPort::openInternal() {
 	}
 #endif // if HAVE_SMBUS_H
 
-	LOG4CXX_DEBUG(logger,__FUNCTION__ << "Device " << getDeviceName() << " functions = " << std::hex << funcs << std::dec << ": "
+	LOG4CXX_DEBUG(logger,__FUNCTION__ << "Device " << getDeviceName() << " functions = 0x" << std::hex << funcs << std::dec << ": "
 			<< " useRawI2C = " << useRawI2C
 			<< ", useSmBusI2CBlockFunctions = " << useSmBusI2CBlockFunctions
 			<< ", useSimpleByteSmBusFunctions = " << useSimpleByteSmBusFunctions
@@ -187,7 +187,7 @@ void I2CPort::writeByte(uint16_t devAddr, uint8_t data) {
 			throw e;
 		}
 
-		LOG4CXX_TRACE(logger, __FUNCTION__ << ": Wrote 0X" << std::hex << data << std::dec
+		LOG4CXX_TRACE(logger, __FUNCTION__ << ": Wrote 0x" << std::hex << uint32_t(data) << std::dec
 				<< " with ioctl to " << getDeviceName());
 
 	} else if (useSimpleByteSmBusFunctions && !is10BitAddr) {
@@ -205,7 +205,7 @@ void I2CPort::writeByte(uint16_t devAddr, uint8_t data) {
 			throw e;
 		}
 
-		LOG4CXX_TRACE(logger, __FUNCTION__ << ": Wrote 0X" << std::hex << data << std::dec
+		LOG4CXX_TRACE(logger, __FUNCTION__ << ": Wrote 0x" << std::hex << uint32_t(data) << std::dec
 				<< " with i2c_smbus_write_byte to " << getDeviceName());
 
 	} else {
@@ -262,8 +262,8 @@ void I2CPort::writeBlock(uint16_t devAddr, uint8_t *data, uint16_t dataLen) {
 		// Depending on the data length employ different SMBUS calls to mimic a plain block write
 		switch (dataLen) {
 		case 0:
-			LOG4CXX_WARN(logger,__FUNCTION__ << ": Why the hell do you want to send 0 (ZERO!) bytes to device "
-					<< std::hex << devAddr << std::dec << '?');
+			LOG4CXX_WARN(logger,__FUNCTION__ << ": Why the hell do you want to send 0 (ZERO!) bytes to device 0x"
+					<< std::hex << uint32_t(devAddr) << std::dec << '?');
 			break;
 		case 1:
 
@@ -283,7 +283,7 @@ void I2CPort::writeBlock(uint16_t devAddr, uint8_t *data, uint16_t dataLen) {
 					throw e;
 				}
 
-				LOG4CXX_TRACE(logger, __FUNCTION__ << ": Wrote 0X" << std::hex << data << std::dec
+				LOG4CXX_TRACE(logger, __FUNCTION__ << ": Wrote 0x" << std::hex << uint32_t(*data) << std::dec
 						<< " with i2c_smbus_write_byte to " << getDeviceName());
 
 			} else {
@@ -315,8 +315,8 @@ void I2CPort::writeBlock(uint16_t devAddr, uint8_t *data, uint16_t dataLen) {
 					throw e;
 				}
 
-				LOG4CXX_TRACE(logger, __FUNCTION__ << ": Wrote 0X" << std::hex << data[1]
-						<< " to register 0X" << data[0] << std::dec
+				LOG4CXX_TRACE(logger, __FUNCTION__ << ": Wrote 0x" << std::hex << uint32_t(data[1])
+						<< " to register 0x" << uint32_t(data[0]) << std::dec
 						<< " with i2c_smbus_write_byte_data to " << getDeviceName());
 
 			} else {
@@ -347,7 +347,7 @@ void I2CPort::writeBlock(uint16_t devAddr, uint8_t *data, uint16_t dataLen) {
 					LOG4CXX_ERROR(logger,str.str());
 					throw e;
 				}
-				LOG4CXX_TRACE(logger, __FUNCTION__ << ": Wrote " <<  dataLen
+				LOG4CXX_TRACE(logger, __FUNCTION__ << ": Wrote " << dataLen
 						<< " bytes with i2c_smbus_write_i2c_block_data to " << getDeviceName());
 
 			} else {
@@ -402,7 +402,7 @@ uint8_t I2CPort::readByte(uint16_t devAddr) {
 			throw e;
 		}
 
-		LOG4CXX_TRACE(logger, __FUNCTION__ << ": Read 0X" << std::hex << data << std::dec
+		LOG4CXX_TRACE(logger, __FUNCTION__ << ": Read 0x" << std::hex << uint32_t(data) << std::dec
 				<< " with ioctl from " << getDeviceName());
 
 	} else if (useSimpleByteSmBusFunctions && !is10BitAddr) {
@@ -423,7 +423,7 @@ uint8_t I2CPort::readByte(uint16_t devAddr) {
 			data = uint8_t(rc);
 		}
 
-		LOG4CXX_TRACE(logger, __FUNCTION__ << ": Read 0X" << std::hex << data << std::dec
+		LOG4CXX_TRACE(logger, __FUNCTION__ << ": Read 0x" << std::hex << uint32_t(data) << std::dec
 				<< " with i2c_smbus_read_byte from " << getDeviceName());
 
 	} else {
@@ -479,8 +479,8 @@ uint8_t I2CPort::readByteAtRegAddrByte(uint16_t devAddr, uint8_t regAddr) {
 			throw e;
 		}
 
-		LOG4CXX_TRACE(logger, __FUNCTION__ << ": Read 0X" << std::hex << data
-				<< " with ioctl from register " << regAddr << std::dec << "from " << getDeviceName());
+		LOG4CXX_TRACE(logger, __FUNCTION__ << ": Read 0x" << std::hex << uint32_t(data)
+				<< " with ioctl from register 0x" << uint32_t(regAddr) << std::dec << " from " << getDeviceName());
 
 	} else if (useSimpleByteAddressSmBusFunctions && !is10BitAddr) {
 
@@ -500,8 +500,8 @@ uint8_t I2CPort::readByteAtRegAddrByte(uint16_t devAddr, uint8_t regAddr) {
 			data = uint8_t(rc);
 		}
 
-		LOG4CXX_TRACE(logger, __FUNCTION__ << ": Read 0X" << std::hex << data
-				<< " with i2c_smbus_read_byte_data from register " << regAddr << std::dec << "from " << getDeviceName());
+		LOG4CXX_TRACE(logger, __FUNCTION__ << ": Read 0x" << std::hex << uint32_t(data)
+				<< " with i2c_smbus_read_byte_data from register 0x" << uint32_t(regAddr) << std::dec << " from " << getDeviceName());
 
 	} else {
 		std::ostringstream str;
@@ -607,8 +607,8 @@ void I2CPort::readBlockAtRegAddrByte(
 		}
 
 		LOG4CXX_TRACE(logger, __FUNCTION__ << ": Read " << dataLen
-				<< " bytes with ioctl from register "
-				<< std::hex << regAddr << std::dec << "from " << getDeviceName());
+				<< " bytes with ioctl from register 0x"
+				<< std::hex << uint32_t(regAddr) << std::dec << " from " << getDeviceName());
 
 	} else if (useSmBusI2CBlockFunctions && !is10BitAddr) {
 
@@ -627,8 +627,8 @@ void I2CPort::readBlockAtRegAddrByte(
 		}
 
 		LOG4CXX_TRACE(logger, __FUNCTION__ << ": Read " << dataLen
-				<< " bytes with i2c_smbus_read_i2c_block_data from register "
-				<< std::hex << regAddr << std::dec << "from " << getDeviceName());
+				<< " bytes with i2c_smbus_read_i2c_block_data from register 0x"
+				<< std::hex << uint32_t(regAddr) << std::dec << " from " << getDeviceName());
 
 	} else {
 		std::ostringstream str;
