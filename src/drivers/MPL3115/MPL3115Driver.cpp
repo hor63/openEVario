@@ -248,8 +248,8 @@ void MPL3115Driver::readoutMPL3155() {
 
 	uint8_t statusVal = 0;
 	uint8_t sensorValues[5];
-	float pressureVal = -9999.9999f;
-	float temperatureVal = -9999.9999f;
+	double pressureVal = -9999.9999;
+	double temperatureVal = -9999.9999f;
 
 	while ((statusVal & _BV(MPL3115Status_PTDR)) == 0) {
 		statusVal = ioPort->readByteAtRegAddrByte(MPL3115A2I2CAddr, MPL3115_STATUS);
@@ -259,30 +259,23 @@ void MPL3115Driver::readoutMPL3155() {
 
 	if ((statusVal & _BV(MPL3115Status_PDR)) != 0) {
 		uint32_t pressureValInt;
-		LOG4CXX_TRACE(logger,__FUNCTION__ << ": Pressure data are ready : "
-				<< std::hex << uint32_t(sensorValues[0]) << ':' << uint32_t(sensorValues[1]) << ':' << uint32_t(sensorValues[2])
-				<< std::dec);
-		pressureValInt = (((sensorValues[0] << 8) | sensorValues[1]) << 4) | (sensorValues[1] >> 4);
-		pressureVal = float (pressureValInt) / 400.0f; // Integer value is Pa*4, and I want mBar, i.e. hPa.
+		pressureValInt = (((uint32_t(sensorValues[0]) << 8) | uint32_t(sensorValues[1])) << 4) | (uint32_t(sensorValues[2]) >> 4);
+		pressureVal = double(pressureValInt);
+		pressureVal /=  400.0; // Integer value is Pa*4, and I want mBar, i.e. hPa.
 
+		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Pressure is "
+				<< std::hex << uint32_t(sensorValues[0]) << ':' << uint32_t(sensorValues[1]) << ':' << uint32_t(sensorValues[2])
+				<< " = 0x" << std::hex << pressureValInt << std::dec << " = " << pressureValInt
+				<< " = " << pressureVal << " millibar.");
 	}
 
 	if ((statusVal & _BV(MPL3115Status_TDR)) != 0) {
-		LOG4CXX_TRACE(logger,__FUNCTION__ << ": Temperature data are ready : "
+		temperatureVal = (double(sensorValues[3])) + (double(sensorValues[4])) / 256.0f;
+
+		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Temperature is "
 				<< std::hex << uint32_t(sensorValues[3]) << ':' << uint32_t(sensorValues[4])
-				<< std::dec);
+				<< std::dec << " =  " << temperatureVal << " DegC.");
 
-		temperatureVal = float(sensorValues[3]) + float(sensorValues[4]) / 256.0f;
-	}
-
-	if ((statusVal & (_BV(MPL3115Status_PDR)|_BV(MPL3115Status_TDR))) == _BV(MPL3115Status_PDR)) {
-		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Pressure is " << pressureVal << " millibar.");
-	}
-	if ((statusVal & (_BV(MPL3115Status_PDR)|_BV(MPL3115Status_TDR))) == _BV(MPL3115Status_TDR)) {
-		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Temperature is " << temperatureVal << " DegC.");
-	}
-	if ((statusVal & (_BV(MPL3115Status_PDR)|_BV(MPL3115Status_TDR))) == (_BV(MPL3115Status_PDR)|_BV(MPL3115Status_TDR))) {
-		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Pressure is " << pressureVal << " millibar, Temperature is " << temperatureVal << " DegC.");
 	}
 
 }
