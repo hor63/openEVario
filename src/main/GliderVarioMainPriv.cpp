@@ -553,7 +553,7 @@ void GliderVarioMainPriv::registerPortDrivers() {
 void GliderVarioMainPriv::intializeStatus() {
 
 	// Initialize the first Kalman status with initial sensor readings
-	driverList.initializeKalmanStatus(*currentStatus,*this);
+	driverList.initializeKalmanStatus(*currentStatus,measurementVector,*this);
 
 	double baseIntervalSec = programOptions.idlePredictionCycleMilliSec / 1000.0;
 	LOG4CXX_DEBUG(logger,"baseIntervalSec = " << baseIntervalSec);
@@ -800,14 +800,14 @@ void GliderVarioMainPriv::intializeStatus() {
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_QFF,currentStatus->STATUS_IND_QFF) == 0.0) {
-		currentStatus->qff = pressureStdMSL;
+		currentStatus->qff = PressureStdMSL;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_QFF,currentStatus->STATUS_IND_QFF) = 100.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_QFF,currentStatus->STATUS_IND_QFF) =
 				SQUARE(0.1) * baseIntervalSec; // Slow (1mbar / 10sec)
 	}
 
 	if (currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LAST_PRESSURE,currentStatus->STATUS_IND_LAST_PRESSURE) == 0.0) {
-		currentStatus->lastPressure = pressureStdMSL;
+		currentStatus->lastPressure = PressureStdMSL;
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LAST_PRESSURE,currentStatus->STATUS_IND_LAST_PRESSURE) = 100.0f;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_LAST_PRESSURE,currentStatus->STATUS_IND_LAST_PRESSURE) =
 				SQUARE(0.1) * baseIntervalSec;

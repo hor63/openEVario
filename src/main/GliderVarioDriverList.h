@@ -36,6 +36,7 @@
 #include "util/GliderVarioExceptionBase.h"
 #include "main/ProgramOptions.h"
 #include "kalman/GliderVarioStatus.h"
+#include "kalman/GliderVarioMeasurementVector.h"
 
 
 namespace openEV {
@@ -139,6 +140,7 @@ public:
 	 */
 	void initializeKalmanStatus(
 			GliderVarioStatus &currentStatus,
+			GliderVarioMeasurementVector &measurements,
 			GliderVarioMainPriv &varioMain);
 
 	/** \brief Start data capturing from all drivers

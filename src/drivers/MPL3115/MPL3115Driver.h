@@ -71,6 +71,7 @@ public:
      */
     virtual void initializeStatus(
     		GliderVarioStatus &varioStatus,
+			GliderVarioMeasurementVector &measurements,
 			GliderVarioMainPriv &varioMain) override;
 
     /** \brief Callback to update the Kalman filter status based on received data.
@@ -111,6 +112,11 @@ protected:
      */
     virtual void readoutMPL3155();
 
+    void initQFF(
+    		GliderVarioStatus &varioStatus,
+    		GliderVarioMeasurementVector &measurements,
+    		GliderVarioMainPriv &varioMain);
+
 private:
 
     /** \brief Name of the communications port.
@@ -144,6 +150,15 @@ private:
 
 	/// Pointer to the main vario object which also hosts the Kalman filter.
     GliderVarioMainPriv *varioMain = nullptr;
+
+    bool kalmanInitDone = false;
+    static constexpr int NumInitValues = 0x10;
+    FloatType initValues[NumInitValues];
+    int numValidInitValues = 0;
+
+    FloatType pressureVal = NAN;
+
+    FloatType temperatureVal = NAN;
 
 };
 

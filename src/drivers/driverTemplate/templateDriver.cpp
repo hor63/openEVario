@@ -89,6 +89,7 @@ void templateDriver::readConfiguration (Properties4CXX::Properties const &config
 
 void templateDriver::initializeStatus(
 		GliderVarioStatus &varioStatus,
+		GliderVarioMeasurementVector &measurements,
 		GliderVarioMainPriv &varioMain) {
 
 	/// todo fill me

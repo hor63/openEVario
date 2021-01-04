@@ -204,6 +204,7 @@ public:
      */
     virtual void initializeStatus(
     		GliderVarioStatus &varioStatus,
+			GliderVarioMeasurementVector &measurements,
 			GliderVarioMainPriv &varioMain) = 0;
 
     /** \brief Start capturing data from the sensor, and updating the Kalman filter

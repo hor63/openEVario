@@ -70,6 +70,7 @@ public:
      */
     virtual void initializeStatus(
     		GliderVarioStatus &varioStatus,
+			GliderVarioMeasurementVector &measurements,
 			GliderVarioMainPriv &varioMain) override;
 
     /** \brief Start data acquisition

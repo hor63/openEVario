@@ -115,9 +115,42 @@ void MPL3115Driver::readConfiguration (Properties4CXX::Properties const &configu
 
 }
 
+#define SQUARE(x) ((x)*(x))
+
 void MPL3115Driver::initializeStatus(
 		GliderVarioStatus &varioStatus,
+		GliderVarioMeasurementVector &measurements,
 		GliderVarioMainPriv &varioMain) {
+
+	// Wait for 20 seconds for 16 samples to appear, and a defined temperature value
+	for (int i = 0; i < 20; i++) {
+		if (numValidInitValues < NumInitValues || isnan(temperatureVal)) {
+			using namespace std::chrono_literals; // used for the term "1s" below. 's' being the second literal.
+
+			LOG4CXX_TRACE(logger,__FUNCTION__ << " Only " << numValidInitValues <<
+					" valid samples collected. Wait another second");
+			std::this_thread::sleep_for(1s);
+		} else {
+			break;
+		}
+	}
+
+	if (numValidInitValues >= NumInitValues) {
+		float avgPressure = 0.0f;
+		for (int i = 0 ; i < NumInitValues; i++) {
+			avgPressure += initValues[i];
+			LOG4CXX_TRACE(logger," initValues[" << i << "] = " << initValues[i]);
+		}
+		avgPressure /= FloatType(NumInitValues);
+		LOG4CXX_TRACE(logger," avgPressure = " << avgPressure);
+
+		if (!isnan(measurements.gpsMSL)) {
+			initQFF(varioStatus,measurements,varioMain);
+		}
+
+
+
+	}
 
 }
 
@@ -248,8 +281,6 @@ void MPL3115Driver::readoutMPL3155() {
 
 	uint8_t statusVal = 0;
 	uint8_t sensorValues[5];
-	double pressureVal = -9999.9999;
-	double temperatureVal = -9999.9999f;
 
 	while ((statusVal & _BV(MPL3115Status_PTDR)) == 0) {
 		statusVal = ioPort->readByteAtRegAddrByte(MPL3115A2I2CAddr, MPL3115_STATUS);
@@ -257,26 +288,80 @@ void MPL3115Driver::readoutMPL3155() {
 
 	ioPort->readBlockAtRegAddrByte(MPL3115A2I2CAddr, MPL3115_OUT_P_MSB, sensorValues, sizeof(sensorValues));
 
-	if ((statusVal & _BV(MPL3115Status_PDR)) != 0) {
-		uint32_t pressureValInt;
-		pressureValInt = (((uint32_t(sensorValues[0]) << 8) | uint32_t(sensorValues[1])) << 4) | (uint32_t(sensorValues[2]) >> 4);
-		pressureVal = double(pressureValInt);
-		pressureVal /=  400.0; // Integer value is Pa*4, and I want mBar, i.e. hPa.
-
-		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Pressure is "
-				<< std::hex << uint32_t(sensorValues[0]) << ':' << uint32_t(sensorValues[1]) << ':' << uint32_t(sensorValues[2])
-				<< " = 0x" << std::hex << pressureValInt << std::dec << " = " << pressureValInt
-				<< " = " << pressureVal << " millibar.");
-	}
-
 	if ((statusVal & _BV(MPL3115Status_TDR)) != 0) {
-		temperatureVal = (double(sensorValues[3])) + (double(sensorValues[4])) / 256.0f;
+		temperatureVal = (FloatType(sensorValues[3])) + (FloatType(sensorValues[4])) / 256.0f;
 
-		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Temperature is "
+		LOG4CXX_TRACE(logger,__FUNCTION__ << ": Temperature is "
 				<< std::hex << uint32_t(sensorValues[3]) << ':' << uint32_t(sensorValues[4])
 				<< std::dec << " =  " << temperatureVal << " DegC.");
 
 	}
+
+	if ((statusVal & _BV(MPL3115Status_PDR)) != 0) {
+		uint32_t pressureValInt;
+		pressureValInt = (((uint32_t(sensorValues[0]) << 8) | uint32_t(sensorValues[1])) << 4) | (uint32_t(sensorValues[2]) >> 4);
+		pressureVal = FloatType(pressureValInt) / 400.0f; // Integer value is Pa*4. Value in mBar.
+
+		LOG4CXX_TRACE(logger,__FUNCTION__ << ": Pressure registers "
+				<< std::hex << uint32_t(sensorValues[0]) << ':' << uint32_t(sensorValues[1]) << ':' << uint32_t(sensorValues[2])
+				<< " = 0x" << std::hex << pressureValInt << std::dec << " = " << pressureValInt
+				);
+		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Pressure = " << pressureVal << " mBar."
+				);
+
+		if (getIsKalmanUpdateRunning() && !isnan(temperatureVal)) {
+			GliderVarioMainPriv::LockedCurrentStatus lockedStatus(*varioMain);
+
+			/// todo: Obtain the temperature by default from an external thermometer, not from the sweltering cockpit
+			GliderVarioMeasurementUpdater::staticPressureUpd(
+					pressureVal, temperatureVal, 0.5*0.5,
+					*lockedStatus.getMeasurementVector(), *lockedStatus.getCurrentStatus());
+
+		} else {
+			if (numValidInitValues < NumInitValues) {
+				initValues[numValidInitValues] = pressureVal;
+				numValidInitValues ++;
+			}
+		}
+
+	} else {
+		// Missed cycle in the initialization phase. Start from scratch.
+		numValidInitValues = 0;
+	}
+
+}
+
+void MPL3115Driver::initQFF(
+		GliderVarioStatus &varioStatus,
+		GliderVarioMeasurementVector &measurements,
+		GliderVarioMainPriv &varioMain) {
+
+	GliderVarioStatus::StatusCoVarianceType &systemNoiseCov = varioStatus.getSystemNoiseCovariance_Q();
+	GliderVarioStatus::StatusCoVarianceType &errorCov = varioStatus.getErrorCovariance_P();
+	double baseIntervalSec = varioMain.getProgramOptions().idlePredictionCycleMilliSec / 1000.0;
+
+	FloatType pressureFactor = GliderVarioMeasurementUpdater::calcBarometricFactor(
+    		measurements.gpsMSL,
+			temperatureVal
+			);
+	LOG4CXX_DEBUG (logger,__FUNCTION__ << " pressureFactor = " << pressureFactor);
+
+	varioStatus.qff = pressureVal / pressureFactor;
+
+	// Assume quite a bit lower variance of qff pressure as the initial altitude variance (9)
+	errorCov.coeffRef(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF)
+			= SQUARE(1);
+	systemNoiseCov.coeffRef(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF) =
+			SQUARE(0.01) * baseIntervalSec; // 0.01hPa/sec
+
+	LOG4CXX_DEBUG (logger,"	QFF = " << varioStatus.qff
+			<< ", initial variance = "
+			<< errorCov.coeff(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF)
+			<< ", variance increment = "
+			<< systemNoiseCov.coeff(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF)
+			<< " / " << baseIntervalSec << "s");
+
+
 
 }
 

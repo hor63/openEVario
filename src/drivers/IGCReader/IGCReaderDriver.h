@@ -86,6 +86,7 @@ public:
 
     virtual void initializeStatus(
     		GliderVarioStatus &varioStatus,
+			GliderVarioMeasurementVector &measurements,
 			GliderVarioMainPriv &varioMain) override;
 
     virtual void startup(GliderVarioMainPriv &varioMain) override;

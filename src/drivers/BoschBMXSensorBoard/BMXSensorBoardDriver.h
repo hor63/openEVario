@@ -83,6 +83,7 @@ public:
      */
     virtual void initializeStatus(
     		GliderVarioStatus &varioStatus,
+			GliderVarioMeasurementVector &measurements,
 			GliderVarioMainPriv &varioMain) override;
 
     /** \brief Callback to update the Kalman filter status based on received data.

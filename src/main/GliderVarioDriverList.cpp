@@ -358,12 +358,13 @@ void GliderVarioDriverList::startupDrivers (GliderVarioMainPriv &varioMain) {
 
 void GliderVarioDriverList::initializeKalmanStatus(
 		GliderVarioStatus &currentStatus,
+		GliderVarioMeasurementVector &measurements,
 		GliderVarioMainPriv &varioMain) {
 
 	auto iter = driverInstanceList.begin();
 
 	while (iter != driverInstanceList.end()) {
-		iter->second->initializeStatus(currentStatus,varioMain);
+		iter->second->initializeStatus(currentStatus,measurements,varioMain);
 
 		iter ++;
 	}

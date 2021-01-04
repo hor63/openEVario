@@ -548,6 +548,7 @@ void BMXSensorBoardDriver::initializeStatusMag(
 
 void BMXSensorBoardDriver::initializeStatus(
 		GliderVarioStatus &varioStatus,
+		GliderVarioMeasurementVector &measurements,
 		GliderVarioMainPriv &varioMain) {
 
 	// Try 20 times, and wait for a second if no data yet available

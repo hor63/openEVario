@@ -143,9 +143,10 @@ void NmeaGPSDriver::readConfiguration (Properties4CXX::Properties const &configu
 
 void NmeaGPSDriver::initializeStatus(
 		GliderVarioStatus &varioStatus,
+		GliderVarioMeasurementVector &measurements,
 		GliderVarioMainPriv &varioMain) {
 
-	/// todo fill me
+	/// Initialization is done later. GPS acquisition can take minutes.
 
 }
 

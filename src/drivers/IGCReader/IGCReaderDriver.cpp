@@ -138,6 +138,7 @@ void IGCReaderDriver::readConfiguration (Properties4CXX::Properties const &confi
 
 void IGCReaderDriver::initializeStatus(
 		GliderVarioStatus &varioStatus,
+		GliderVarioMeasurementVector &measurements,
 		GliderVarioMainPriv &varioMain) {
 
 	openIGCFile();
@@ -177,10 +178,10 @@ void IGCReaderDriver::initializeStatus(
 
 		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_QFF,varioStatus.STATUS_IND_QFF) == 0.0f) {
 			// calculated factor to calculate the pressure at altGPS with a temperature lapse of 1K/100m
-			double factAltGPS = altToPressureStdTemp(firstRec->second.altGPS,-0.01) / pressureStdMSL;
-			double factBaroHeight = altToPressureStdTemp(firstRec->second.altBaro) / pressureStdMSL;
+			double factAltGPS = altToPressureStdTemp(firstRec->second.altGPS,-0.01) / PressureStdMSL;
+			double factBaroHeight = altToPressureStdTemp(firstRec->second.altBaro) / PressureStdMSL;
 
-			varioStatus.qff = pressureStdMSL * factBaroHeight / factAltGPS;
+			varioStatus.qff = PressureStdMSL * factBaroHeight / factAltGPS;
 			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_QFF,varioStatus.STATUS_IND_QFF) = 100.0f;
 			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_QFF,varioStatus.STATUS_IND_QFF) =
 					SQUARE(0.1) * baseIntervalSec; // Veryyyy slow (10mbar / 100sec)
