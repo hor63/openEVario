@@ -1350,7 +1350,7 @@ void NMEASet::initQFF(GliderVarioMainPriv::LockedCurrentStatus &currStat) {
 
 	FloatType pressureFactor = GliderVarioMeasurementUpdater::calcBarometricFactor(
     		currVarioStatus.altMSL,
-			measurementVector.tempLocalK
+			measurementVector.tempLocalC
 			);
 	LOG4CXX_DEBUG (logger,"NMEASet::initQFF pressureFactor = " << pressureFactor);
 
