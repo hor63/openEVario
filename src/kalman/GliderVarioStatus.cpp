@@ -107,7 +107,7 @@ GliderVarioStatus::GliderVarioStatus () :
 
 
     statusVector_x(STATUS_IND_GRAVITY)= GRAVITY;
-    statusVector_x(STATUS_IND_LAST_PRESSURE) = pressureStdMSL;
+    statusVector_x(STATUS_IND_LAST_PRESSURE) = PressureStdMSL;
 
 }
 

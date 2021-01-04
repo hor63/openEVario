@@ -110,7 +110,7 @@ TEST_F(GliderVarioMeasurementVectorTest, AccessorTest) {
     i++;
     EXPECT_EQ (measVector.getMeasureVector()( measVector.MEASURE_IND_DYNAMIC_PRESSURE), measVector.dynamicPressure);
     i++;
-    EXPECT_EQ (measVector.getMeasureVector()( measVector.MEASURE_IND_TEMP_LOCAL_K), measVector.tempLocalK);
+    EXPECT_EQ (measVector.getMeasureVector()( measVector.MEASURE_IND_TEMP_LOCAL_K), measVector.tempLocalC);
     i++;
 
     EXPECT_EQ (measVector.MEASURE_NUM_ROWS, i) << "Not all accessors have been tested.";

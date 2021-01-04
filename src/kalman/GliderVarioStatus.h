@@ -123,9 +123,15 @@ static FloatType constexpr Rspec     = R/M;
  * Standard sea level pressure according to ICAO standard atmosphere in hPascal
  * \sa [ICAO Standard atmosphere](https://en.wikipedia.org/wiki/International_Standard_Atmosphere#ICAO_Standard_Atmosphere)
  */
-static FloatType constexpr pressureStdMSL = 1013.25f;
-static FloatType constexpr tempLapseStd = -0.65f / 100.0f; ///< Temperature lapse of the standard ICAO atmosphere in K/m
-static FloatType constexpr tempLapseIndiffBoundLayer = -1.0f / 100.0f; ///< Temperature lapse of the the indifferent mixed boundary layer in K/m
+static FloatType constexpr PressureStdMSL = 1013.25f;
+static FloatType constexpr TempLapseStd = -0.65f / 100.0f; ///< Temperature lapse of the standard ICAO atmosphere in K/m
+static FloatType constexpr TempLapseIndiffBoundLayer = -1.0f / 100.0f; ///< Temperature lapse of the the indifferent mixed boundary layer in K/m
+
+/**
+ * Exponent of the Barometric formula for a dry atmosphere with a temperature lapse for the mixed boundary laye
+ * [Wikipedia: Barometric formula](https://en.wikipedia.org/wiki/Barometric_formula). Use formula 1 which includes a temperature gradient
+ */
+static FloatType constexpr BarometricFormulaExponent = GRAVITY * M / R / TempLapseIndiffBoundLayer;
 
 /** \brief Calculate the pressure from the altitude above MSL with the Barometric formula at standard temperature 15C.
  *
@@ -147,7 +153,7 @@ static inline double altToPressureStdTemp (double altitude,double temperatureLap
 
 	static double constexpr T0 = 288.15		; // 15C at MSL according to the standard atmosphere
 
-	return  (pressureStdMSL * pow(1 - ((temperatureLapse * altitude ) / T0),exp));
+	return  (PressureStdMSL * pow(1 - ((temperatureLapse * altitude ) / T0),exp));
 
 }
 

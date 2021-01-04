@@ -856,13 +856,12 @@ FloatType GliderVarioMeasurementUpdater::calcBarometricFactor(
 		float altMSL,
 		float currTempC
 		) {
-    static FloatType constexpr exponent = GRAVITY * M / R / tempLapseIndiffBoundLayer;
     FloatType pFactor;
     // Temperature in Kelvin
     FloatType currTempK = currTempC + CtoK;
 
 
-    pFactor = powf ((currTempK - (tempLapseIndiffBoundLayer * altMSL)) / currTempK,exponent);
+    pFactor = powf ((currTempK - (TempLapseIndiffBoundLayer * altMSL)) / currTempK,BarometricFormulaExponent);
 
 	return pFactor;
 }
