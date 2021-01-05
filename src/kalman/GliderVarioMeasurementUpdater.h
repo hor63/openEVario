@@ -282,16 +282,44 @@ public:
      * or vice versa by which you divide your measured pressure P<SUB>alt</SUB>
      * to obtain the pressured reduced to sea level P<SUB>base</SUB>.
      *
-     * I am ignoring water vapor in the calculation.
+     * I am assuming a dry atmosphere, and I am ignoring the effects of water vapor.
      *
      * @param altMSL The altitude above mean sea level
      * @param currTempC Temperature in Celsius at the altitude \p altMsl, i.e. your local measured temperature.
      * @return Factor for calculating altitude pressure P<SUB>alt</SUB> from base pressure at sea level P<SUB>base</SUB>
      */
     static FloatType calcBarometricFactor(
-    		float altMSL,
-			float currTempC
+    		FloatType altMSL,
+			FloatType currTempC
 			);
+
+
+    /** \brief Calculate the altitude MSL from the local pressure, and temperature
+     *
+     * Calculate the altitude MSL from the local pressure, the local temperature, and the pressure at sea level QFF.
+     *
+     * Use the
+     * [Barometric formula](https://en.wikipedia.org/wiki/Barometric_formula).
+     * Use formula 1 which includes a temperature gradient. \n
+     * Reverse it and resolve it by the altitude.
+     * Use the fixed temperature gradient \ref altToPressureStdTemp for the indifferent boundary layer.
+     *
+     * I am assuming a dry atmosphere, and I am ignoring the effects of water vapor.
+     *
+     * \p QFF can be measured before take-off, or the (similar) QNH from nearby airports be used.
+     * With the absolute GNSS altitude the system can initialize the QFF itself when the GNSS driver diver
+     * obtains a valid 3-D fix.
+     *
+     * @param pressure The local pressure in hPa, i.e. mBar
+     * @param QFF The pressure on sea level in hPa, i.e. mBar.
+     * @param temperatureAlt Temperature in Celsius.
+     * @return Altitude in meter
+     */
+    static FloatType calcAltFromPressure (
+    		double pressure,
+			double QFF,
+			double temperatureAlt
+    		);
 
     // This stuff is used only for unit tests.
     // These variables contain copies of the local variables used for the measurement updates.

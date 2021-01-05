@@ -853,8 +853,8 @@ GliderVarioMeasurementUpdater::dynamicPressureUpd (
 }
 
 FloatType GliderVarioMeasurementUpdater::calcBarometricFactor(
-		float altMSL,
-		float currTempC
+		FloatType altMSL,
+		FloatType currTempC
 		) {
     FloatType pFactor;
     // Temperature in Kelvin
@@ -1055,5 +1055,15 @@ bool GliderVarioMeasurementUpdater::getUnitTestMode() {
     return GliderVarioMeasurementUpdater::unitTestMode;
 }
 
+FloatType GliderVarioMeasurementUpdater::calcAltFromPressure(
+		double pressure,
+		double QFF,
+		double temperatureAlt
+		) {
+
+	temperatureAlt += CtoK;
+
+	return (temperatureAlt -(pow ((pressure / QFF),(1.0/BarometricFormulaExponent)) * temperatureAlt)) / TempLapseIndiffBoundLayer;
+}
 
 } /* namespace openEV */
