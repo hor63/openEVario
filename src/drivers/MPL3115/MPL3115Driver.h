@@ -112,10 +112,19 @@ protected:
      */
     virtual void readoutMPL3155();
 
+    /** \brief Initialize the QFF based on the latest GPS altitude, and averaged pressure used for status initialization
+     *
+     * @param[in,out] varioStatus Status and Co-variance of the Kalman filter to be initialized.
+	 * @param[in,out] measurements Current measurement vector.
+	 * Used for cross-referencing measurements of other drivers during the initialization phase
+	 * @param[in,out] varioMain mainVario object; provides all additional information like program parameters, and the parsed properties.
+     * @param avgPressure Averaged pressure measurements used for status initialization
+     */
     void initQFF(
     		GliderVarioStatus &varioStatus,
     		GliderVarioMeasurementVector &measurements,
-    		GliderVarioMainPriv &varioMain);
+    		GliderVarioMainPriv &varioMain,
+			FloatType avgPressure);
 
 private:
 
