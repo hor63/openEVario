@@ -127,7 +127,7 @@ void MPL3115Driver::initializeStatus(
 		if (numValidInitValues < NumInitValues || isnan(temperatureVal)) {
 			using namespace std::chrono_literals; // used for the term "1s" below. 's' being the second literal.
 
-			LOG4CXX_TRACE(logger,__FUNCTION__ << " Only " << numValidInitValues <<
+			LOG4CXX_TRACE(logger,__FUNCTION__ << ": Only " << numValidInitValues <<
 					" valid samples collected. Wait another second");
 			std::this_thread::sleep_for(1s);
 		} else {
@@ -136,21 +136,60 @@ void MPL3115Driver::initializeStatus(
 	}
 
 	if (numValidInitValues >= NumInitValues) {
-		float avgPressure = 0.0f;
+		FloatType avgPressure = 0.0f;
+		double baseIntervalSec = varioMain.getProgramOptions().idlePredictionCycleMilliSec / 1000.0;
+
 		for (int i = 0 ; i < NumInitValues; i++) {
 			avgPressure += initValues[i];
 			LOG4CXX_TRACE(logger," initValues[" << i << "] = " << initValues[i]);
 		}
 		avgPressure /= FloatType(NumInitValues);
-		LOG4CXX_DEBUG(logger,__FUNCTION__ << " avgPressure = " << avgPressure);
+		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": avgPressure = " << avgPressure);
 
 		if (!isnan(measurements.gpsMSL)) {
-			initQFF(varioStatus,measurements,varioMain);
+			initQFF(varioStatus,measurements,varioMain,avgPressure);
 		}
+
+		if (isnan(varioStatus.altMSL) && !isnan(varioStatus.qff) && !isnan(measurements.tempLocalC)) {
+			if (!isnan(varioStatus.qff) && !isnan(measurements.tempLocalC)) {
+			auto const currTempK = measurements.tempLocalC + CtoK;
+			varioStatus.altMSL  = (currTempK -(pow((avgPressure / varioStatus.qff),(1.0/BarometricFormulaExponent)) * currTempK)) / TempLapseIndiffBoundLayer;
+			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Initial altitude from QFF:" << varioStatus.qff
+					<< ", Temp (K): " << currTempK
+					<< " = " << varioStatus.altMSL);
+
+			// 5 mbar initial uncertainty translated into 40m.
+			varioStatus.getErrorCovariance_P().
+							coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) = SQUARE(5.0*8.0);
+
+			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Initial variance = "
+					<< varioStatus.getErrorCovariance_P().
+					coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL));
+			} else {
+				LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Either QFF or local temperature or both are undefined.");
+			}
+
+		} else {
+			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": altMSL is already defined = " << varioStatus.altMSL);
+		}
+
+		if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+				coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL)) ||
+				(varioStatus.getSystemNoiseCovariance_Q().
+				coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) > SQUARE(4.0) * baseIntervalSec)) {
+
+			varioStatus.getSystemNoiseCovariance_Q().
+							coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) = SQUARE(4.0) * baseIntervalSec;
+			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": System noise increment = "
+					<< varioStatus.getSystemNoiseCovariance_Q().
+												coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL));
+		}
+
 	} else {
 		LOG4CXX_WARN(logger,__FUNCTION__ << "Could not obtain " << NumInitValues
 				<< " valid measurements in a row for 20 seconds. Cannot initialize the Kalman filter state.");
 	}
+
 
 }
 
@@ -309,7 +348,7 @@ void MPL3115Driver::readoutMPL3155() {
 		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Pressure = " << pressureVal << " mBar."
 				);
 
-		if (getIsKalmanUpdateRunning() && !isnan(temperatureVal)) {
+		if (getIsKalmanUpdateRunning()) {
 			GliderVarioMainPriv::LockedCurrentStatus lockedStatus(*varioMain);
 
 			/// todo: Obtain the temperature by default from an external thermometer, not from the sweltering cockpit
@@ -334,7 +373,8 @@ void MPL3115Driver::readoutMPL3155() {
 void MPL3115Driver::initQFF(
 		GliderVarioStatus &varioStatus,
 		GliderVarioMeasurementVector &measurements,
-		GliderVarioMainPriv &varioMain) {
+		GliderVarioMainPriv &varioMain,
+		FloatType avgPressure) {
 
 	GliderVarioStatus::StatusCoVarianceType &systemNoiseCov = varioStatus.getSystemNoiseCovariance_Q();
 	GliderVarioStatus::StatusCoVarianceType &errorCov = varioStatus.getErrorCovariance_P();
@@ -346,13 +386,13 @@ void MPL3115Driver::initQFF(
 			);
 	LOG4CXX_DEBUG (logger,__FUNCTION__ << " pressureFactor = " << pressureFactor);
 
-	varioStatus.qff = pressureVal / pressureFactor;
+	varioStatus.qff = avgPressure / pressureFactor;
 
 	// Assume quite a bit lower variance of qff pressure as the initial altitude variance (9)
 	errorCov.coeffRef(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF)
 			= SQUARE(1);
 	systemNoiseCov.coeffRef(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF) =
-			SQUARE(0.01) * baseIntervalSec; // 0.01hPa/sec
+			SQUARE(0.1) * baseIntervalSec; // 0.05hPa/sec
 
 	LOG4CXX_DEBUG (logger,"	QFF = " << varioStatus.qff
 			<< ", initial variance = "
