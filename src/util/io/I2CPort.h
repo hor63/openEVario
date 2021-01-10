@@ -206,10 +206,10 @@ protected:
 	 *
 	 * Check if \p devAddr is a 10-bit I2C address, and return \p true when true.
 	 * When the address is a 10-bit address but the Linux device driver does not support 10-bit addresses
-	 * throw \ref GliderVarioPortI2C10BitAddr
+	 * throw \ref GliderVarioPortI2C10BitAddrException
 	 *
 	 * @param devAddr Address of the I2C slave
-	 * @throws GliderVarioPortI2C10BitAddr
+	 * @throws GliderVarioPortI2C10BitAddrException
 	 */
 	bool check10BitAddr(uint16_t devAddr);
 

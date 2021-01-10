@@ -199,8 +199,10 @@ public:
      *
      * This call is invoked after \ref startup(). So you can expect that the driver thread is up and running already.
      *
-     * @param varioStatus Status and Co-variance of the Kalman filter to be initialized.
-	 * @param varioMain mainVario object; provides all additional information like program parameters, and the parsed properties.
+     * @param[in,out] varioStatus Status and Co-variance of the Kalman filter to be initialized.
+	 * @param[in,out] measurements Current measurement vector.
+	 * Used for cross-referencing measurements of other drivers during the initialization phase
+	 * @param[in,out] varioMain mainVario object; provides all additional information like program parameters, and the parsed properties.
      */
     virtual void initializeStatus(
     		GliderVarioStatus &varioStatus,

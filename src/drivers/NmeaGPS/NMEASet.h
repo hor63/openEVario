@@ -707,7 +707,7 @@ private:
 	 * Then set NMEASet::GnssRecord::pDoPDefined true
 	 *
 	 * @param newSentence The sentence from which relevant data are to be extracted.
-	 * @param vDoPIndex Index of the VDOP field in \ref NMEASentence::fields
+	 * @param pDoPIndex Index of the PDOP field in \ref NMEASentence::fields
 	 * @throws NMEASetParseException
 	 */
 	void extractPDoPFromSentence(NMEASentence const& newSentence,int pDoPIndex);
@@ -788,7 +788,7 @@ private:
 	/** \brief Update the Kalman filter with the current altitude from the GNSS receiver
 	 *
 	 * The Kalman filter is only updated when the standard deviation of the altitude is less than
-	 * \ref NmeaGPSDriver::maxStdDeviationAlititudeUpdate
+	 * \ref NmeaGPSDriver::maxStdDeviationAltitudeUpdate
 	 *
 	 * @param endOfCycle true when the function is called in promiscuous mode at the end of a GNSS fix cycle,
 	 *  or when all expected sentences in targeted mode are received.

@@ -274,7 +274,7 @@ public:
      * temperature gradient is calculated by the
      * [Barometric formula](https://en.wikipedia.org/wiki/Barometric_formula). Use formula 1 which includes a temperature gradient
      *
-     * The temperature gradient which is used in this function is \ref tempLapseIndiffBoundLayer, i.e. -1K/100m
+     * The temperature gradient which is used in this function is \ref TempLapseIndiffBoundLayer, i.e. -1K/100m
      * This is the gradient in the boundary layer which is mixed by thermals, and essentially dry adiabatic indifferent.
      *
      * This function calculates the factor by which the base pressure at sea level P<SUB>base</SUB>

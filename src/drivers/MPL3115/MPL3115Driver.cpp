@@ -142,14 +142,14 @@ void MPL3115Driver::initializeStatus(
 			LOG4CXX_TRACE(logger," initValues[" << i << "] = " << initValues[i]);
 		}
 		avgPressure /= FloatType(NumInitValues);
-		LOG4CXX_TRACE(logger," avgPressure = " << avgPressure);
+		LOG4CXX_DEBUG(logger,__FUNCTION__ << " avgPressure = " << avgPressure);
 
 		if (!isnan(measurements.gpsMSL)) {
 			initQFF(varioStatus,measurements,varioMain);
 		}
-
-
-
+	} else {
+		LOG4CXX_WARN(logger,__FUNCTION__ << "Could not obtain " << NumInitValues
+				<< " valid measurements in a row for 20 seconds. Cannot initialize the Kalman filter state.");
 	}
 
 }
