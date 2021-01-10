@@ -271,100 +271,117 @@ void BMXSensorBoardDriver::initializeStatusAccel(
 	LOG4CXX_DEBUG(logger,"absoluteAccel = " << absoluteAccel);
 
 	// Try to assess pitch and roll angle from the accelerometer.
-	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_PITCH,varioStatus.STATUS_IND_PITCH) == 0.0f) {
-		varioStatus.pitchAngle = FastMath::fastASin(avgAccelX/absoluteAccel);
-		LOG4CXX_DEBUG(logger,"Initial pitchAngle = " << varioStatus.pitchAngle);
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_PITCH,varioStatus.STATUS_IND_PITCH) = 3.0f * 3.0f;
-		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_PITCH,varioStatus.STATUS_IND_PITCH) =
-				SQUARE(2.0) * baseIntervalSec;
-	}
+	varioStatus.pitchAngle = FastMath::fastASin(avgAccelX/absoluteAccel);
+	LOG4CXX_DEBUG(logger,"Initial pitchAngle = " << varioStatus.pitchAngle);
 
-	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL) == 0.0f) {
-		varioStatus.rollAngle = -FastMath::fastASin(avgAccelY/absoluteAccel);
-		LOG4CXX_DEBUG(logger,"Initial rollAngle = " << varioStatus.rollAngle);
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL) =
-				SQUARE(3.0f/ FastMath::fastCos(varioStatus.pitchAngle));
-		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL) =
-				SQUARE(2.0) * baseIntervalSec;
-	}
+	varioStatus.rollAngle = -FastMath::fastASin(avgAccelY/absoluteAccel);
+	LOG4CXX_DEBUG(logger,"Initial rollAngle = " << varioStatus.rollAngle);
 
 	// Gravity and accelerometers are siamese twins. So I handle gravity here too.
 
-	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_GRAVITY,varioStatus.STATUS_IND_GRAVITY) == 0.0f) {
-		varioStatus.gravity = calibrationData.gravity;
-		LOG4CXX_DEBUG(logger,"Initial gravity = " << varioStatus.gravity);
-		/* Multiply the variance by 2.0 for two reasons:
-		 * 1. The stored values may have shifted in the meantime
-		 * 2. Before updating the calibration data file the variance must have improved sufficiently to be updated.
-		 */
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_GRAVITY,varioStatus.STATUS_IND_GRAVITY) = calibrationData.gravityVariance * 2.0f;
-		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_GRAVITY,varioStatus.STATUS_IND_GRAVITY) =
-				SQUARE(0.05) * baseIntervalSec;
-	}
+	varioStatus.gravity = calibrationData.gravity;
+	LOG4CXX_DEBUG(logger,"Initial gravity = " << varioStatus.gravity);
+	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_GRAVITY,varioStatus.STATUS_IND_GRAVITY) =
+			calibrationData.gravityVariance * 2.0f;
+	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_GRAVITY,varioStatus.STATUS_IND_GRAVITY) =
+			SQUARE(0.1) * baseIntervalSec;
 
 
-	// With the fast-cycle accelerometer the accuracy of position and speed increase but I can allow for a much higher variance of the acceleration itself
+	// With the fast-cycle accelerometer the accuracy of position and speed increase
+	// but I can allow for a much higher variance of the acceleration itself
 	// But the accuracy of the position should vastly improve by the dead-reckoning
-	if (varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_LATITUDE_OFFS,varioStatus.STATUS_IND_LATITUDE_OFFS) == 0.0) {
-		// Lüneburg airport EDHG
-		varioStatus.latitude(53.2483333333);
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_LATITUDE_OFFS,varioStatus.STATUS_IND_LATITUDE_OFFS) = 10000.0f;
-		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_LATITUDE_OFFS,varioStatus.STATUS_IND_LATITUDE_OFFS) =
-				SQUARE(3.0) * baseIntervalSec;
+
+	// If position system noise was defined before adjust it here when it was defined higher before.
+	// With the accelerometer I am pretty precise in the short term.
+	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+			coeffRef(varioStatus.STATUS_IND_LATITUDE_OFFS,varioStatus.STATUS_IND_LATITUDE_OFFS)) ||
+			(varioStatus.getSystemNoiseCovariance_Q().
+			coeffRef(varioStatus.STATUS_IND_LATITUDE_OFFS,varioStatus.STATUS_IND_LATITUDE_OFFS)
+			> SQUARE(3.0) * baseIntervalSec)) {
+		varioStatus.getSystemNoiseCovariance_Q().
+				coeffRef(varioStatus.STATUS_IND_LATITUDE_OFFS,varioStatus.STATUS_IND_LATITUDE_OFFS) =
+						SQUARE(3.0) * baseIntervalSec;
 	}
 
-	if (varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_LONGITUDE_OFFS,varioStatus.STATUS_IND_LONGITUDE_OFFS) == 0.0f) {
-		// Lüneburg airport EDHG
-		varioStatus.longitude(10.4586111111);
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_LONGITUDE_OFFS,varioStatus.STATUS_IND_LONGITUDE_OFFS) = 10000.0f;
-		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_LONGITUDE_OFFS,varioStatus.STATUS_IND_LONGITUDE_OFFS) =
-				SQUARE(3.0) * baseIntervalSec;
+	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+			coeffRef(varioStatus.STATUS_IND_LONGITUDE_OFFS,varioStatus.STATUS_IND_LONGITUDE_OFFS)) ||
+			(varioStatus.getSystemNoiseCovariance_Q().
+			coeffRef(varioStatus.STATUS_IND_LONGITUDE_OFFS,varioStatus.STATUS_IND_LONGITUDE_OFFS)
+			> SQUARE(3.0) * baseIntervalSec)) {
+		varioStatus.getSystemNoiseCovariance_Q().
+				coeffRef(varioStatus.STATUS_IND_LONGITUDE_OFFS,varioStatus.STATUS_IND_LONGITUDE_OFFS) =
+						SQUARE(3.0) * baseIntervalSec;
 	}
 
-	if (varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) == 0.0f) {
-		// Lüneburg airport EDHG
-		varioStatus.altMSL = 49.0f;
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) = 1000.0f;
-		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) =
+	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+			coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL)) ||
+			(varioStatus.getSystemNoiseCovariance_Q().
+			coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL)
+			> SQUARE(4.0) * baseIntervalSec)) {
+		varioStatus.getSystemNoiseCovariance_Q().
+				coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) =
 				SQUARE(4.0) * baseIntervalSec;
 	}
 
-
-	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_SPEED_GROUND_N,varioStatus.STATUS_IND_SPEED_GROUND_N) == 0.0f) {
-		varioStatus.groundSpeedNorth = 0.0f;
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_N,varioStatus.STATUS_IND_SPEED_GROUND_N) = 100.0f;
-		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_N,varioStatus.STATUS_IND_SPEED_GROUND_N) =
+	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+			coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_N,varioStatus.STATUS_IND_SPEED_GROUND_N)) ||
+			(varioStatus.getSystemNoiseCovariance_Q().
+			coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_N,varioStatus.STATUS_IND_SPEED_GROUND_N)
+			> SQUARE(2.0) * baseIntervalSec)){
+		varioStatus.getSystemNoiseCovariance_Q().
+				coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_N,varioStatus.STATUS_IND_SPEED_GROUND_N) =
 				SQUARE(2.0) * baseIntervalSec;
 	}
 
-	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_SPEED_GROUND_E,varioStatus.STATUS_IND_SPEED_GROUND_E) == 0.0f) {
-		varioStatus.groundSpeedEast = 0.0f;
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_E,varioStatus.STATUS_IND_SPEED_GROUND_E) = 100.0f;
-		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_E,varioStatus.STATUS_IND_SPEED_GROUND_E) =
+	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+			coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_E,varioStatus.STATUS_IND_SPEED_GROUND_E)) ||
+			(varioStatus.getSystemNoiseCovariance_Q().
+					coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_E,varioStatus.STATUS_IND_SPEED_GROUND_E)
+					> SQUARE(2.0) * baseIntervalSec)) {
+		varioStatus.getSystemNoiseCovariance_Q().
+				coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_E,varioStatus.STATUS_IND_SPEED_GROUND_E) =
 				SQUARE(2.0) * baseIntervalSec;
 	}
 
-	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_ACC_HEADING,varioStatus.STATUS_IND_ACC_HEADING) == 0.0f) {
-		varioStatus.accelHeading = 0.0f;
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ACC_HEADING,varioStatus.STATUS_IND_ACC_HEADING) = 4.0f;
-		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ACC_HEADING,varioStatus.STATUS_IND_ACC_HEADING) =
-				SQUARE(10.0) * baseIntervalSec;
+	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+			coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS)) ||
+			(varioStatus.getSystemNoiseCovariance_Q().
+			coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) > SQUARE(2.0) * baseIntervalSec) ) {
+		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) =
+				SQUARE(2.0) * baseIntervalSec;
 	}
 
-	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_ACC_CROSS,varioStatus.STATUS_IND_ACC_CROSS) == 0.0f) {
-		varioStatus.accelCross = 0.0f;
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ACC_CROSS,varioStatus.STATUS_IND_ACC_CROSS) = 1.0f;
-		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ACC_CROSS,varioStatus.STATUS_IND_ACC_CROSS) =
-				SQUARE(10.0) * baseIntervalSec;
+	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+			coeffRef(varioStatus.STATUS_IND_VERTICAL_SPEED,varioStatus.STATUS_IND_VERTICAL_SPEED)) ||
+			(varioStatus.getSystemNoiseCovariance_Q().
+			coeffRef(varioStatus.STATUS_IND_VERTICAL_SPEED,varioStatus.STATUS_IND_VERTICAL_SPEED)
+			> SQUARE(2.0) * baseIntervalSec)) {
+		varioStatus.getSystemNoiseCovariance_Q().
+				coeffRef(varioStatus.STATUS_IND_VERTICAL_SPEED,varioStatus.STATUS_IND_VERTICAL_SPEED) =
+				SQUARE(2.0) * baseIntervalSec;
 	}
 
-	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_ACC_VERTICAL,varioStatus.STATUS_IND_ACC_VERTICAL) == 0.0f) {
-		varioStatus.accelVertical = 0.0f;
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ACC_VERTICAL,varioStatus.STATUS_IND_ACC_VERTICAL) = 4.0f;
-		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ACC_VERTICAL,varioStatus.STATUS_IND_ACC_VERTICAL) =
-				SQUARE(20.0) * baseIntervalSec;
-	}
+	// Set acceleration values unconditionally. These are my turf.
+	varioStatus.accelHeading = 0.0f;
+	varioStatus.getErrorCovariance_P().
+			coeffRef(varioStatus.STATUS_IND_ACC_HEADING,varioStatus.STATUS_IND_ACC_HEADING) = 4.0f;
+	varioStatus.getSystemNoiseCovariance_Q().
+			coeffRef(varioStatus.STATUS_IND_ACC_HEADING,varioStatus.STATUS_IND_ACC_HEADING) =
+				SQUARE(2.0) * baseIntervalSec;
 
+	varioStatus.accelCross = 0.0f;
+	varioStatus.getErrorCovariance_P().
+			coeffRef(varioStatus.STATUS_IND_ACC_CROSS,varioStatus.STATUS_IND_ACC_CROSS) = 1.0f;
+			varioStatus.getSystemNoiseCovariance_Q().
+					coeffRef(varioStatus.STATUS_IND_ACC_CROSS,varioStatus.STATUS_IND_ACC_CROSS) =
+					SQUARE(2.0) * baseIntervalSec;
+
+	varioStatus.accelVertical = 0.0f;
+	varioStatus.getErrorCovariance_P().
+			coeffRef(varioStatus.STATUS_IND_ACC_VERTICAL,varioStatus.STATUS_IND_ACC_VERTICAL) = 4.0f;
+	varioStatus.getSystemNoiseCovariance_Q().
+			coeffRef(varioStatus.STATUS_IND_ACC_VERTICAL,varioStatus.STATUS_IND_ACC_VERTICAL) =
+			SQUARE(3.0) * baseIntervalSec;
 
 }
 
@@ -391,63 +408,80 @@ void BMXSensorBoardDriver::initializeStatusGyro(
 
 	// Assume the plane is static, and the measurement is the current gyro bias.
 
-	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_GYRO_BIAS_X,varioStatus.STATUS_IND_GYRO_BIAS_X) == 0.0f) {
-		varioStatus.gyroBiasX = avgGyroX;
-		LOG4CXX_DEBUG(logger,"Initial gyroBiasX = " << varioStatus.gyroBiasX);
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_X,varioStatus.STATUS_IND_GYRO_BIAS_X) =
-				1.0f;
-		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_X,varioStatus.STATUS_IND_GYRO_BIAS_X) =
-				SQUARE(0.1) * baseIntervalSec;
+	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+			coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING))||
+			(varioStatus.getSystemNoiseCovariance_Q().
+			coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) > SQUARE(1.0) * baseIntervalSec)) {
+		varioStatus.getSystemNoiseCovariance_Q().
+				coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) =
+				SQUARE(1.0) * baseIntervalSec;
 	}
 
-	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_ROTATION_X,varioStatus.STATUS_IND_ROTATION_X) == 0.0f) {
-		varioStatus.rollRateX = 0;
-		LOG4CXX_DEBUG(logger,"Initial rollRateX = " << varioStatus.rollRateX);
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ROTATION_X,varioStatus.STATUS_IND_ROTATION_X) =
-				1.0f;
-		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ROTATION_X,varioStatus.STATUS_IND_ROTATION_X) =
-				SQUARE(10) * baseIntervalSec;
+	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+			coeffRef(varioStatus.STATUS_IND_PITCH,varioStatus.STATUS_IND_PITCH)) ||
+			(varioStatus.getSystemNoiseCovariance_Q().
+			coeffRef(varioStatus.STATUS_IND_PITCH,varioStatus.STATUS_IND_PITCH) > SQUARE(1.0) * baseIntervalSec)) {
+		varioStatus.getSystemNoiseCovariance_Q().
+				coeffRef(varioStatus.STATUS_IND_PITCH,varioStatus.STATUS_IND_PITCH) =
+				SQUARE(1.0) * baseIntervalSec;
 	}
 
-	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_GYRO_BIAS_Y,varioStatus.STATUS_IND_GYRO_BIAS_Y) == 0.0f) {
-		varioStatus.gyroBiasY = avgGyroY;
-		LOG4CXX_DEBUG(logger,"Initial gyroBiasY = " << varioStatus.gyroBiasY);
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_Y,varioStatus.STATUS_IND_GYRO_BIAS_Y) =
-				1.0f;
-		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_Y,varioStatus.STATUS_IND_GYRO_BIAS_Y) =
-				SQUARE(0.1) * baseIntervalSec;
+	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+			coeffRef(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL)) ||
+			(varioStatus.getSystemNoiseCovariance_Q().
+			coeffRef(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL) > SQUARE(1.0) * baseIntervalSec)) {
+		varioStatus.getSystemNoiseCovariance_Q().
+				coeffRef(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL) =
+				SQUARE(1.0) * baseIntervalSec;
 	}
 
-	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_ROTATION_Y,varioStatus.STATUS_IND_ROTATION_Y) == 0.0f) {
-		varioStatus.pitchRateY = 0;
-		LOG4CXX_DEBUG(logger,"Initial pitchRateY = " << varioStatus.pitchRateY);
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ROTATION_Y,varioStatus.STATUS_IND_ROTATION_Y) =
-				4.0f;
-		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ROTATION_Y,varioStatus.STATUS_IND_ROTATION_Y) =
-				SQUARE(10) * baseIntervalSec;
-	}
+	// Set the initial status and variances of turn rates and gyro bias unconditionally.
+	// These settings are solely my turf.
+	varioStatus.gyroBiasX = avgGyroX;
+	LOG4CXX_DEBUG(logger,"Initial gyroBiasX = " << varioStatus.gyroBiasX);
+	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_X,varioStatus.STATUS_IND_GYRO_BIAS_X) =
+			1.0f;
+	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_X,varioStatus.STATUS_IND_GYRO_BIAS_X) =
+			SQUARE(0.1) * baseIntervalSec;
 
-	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_GYRO_BIAS_Z,varioStatus.STATUS_IND_GYRO_BIAS_Z) == 0.0f) {
-		varioStatus.gyroBiasZ = avgGyroZ;
-		LOG4CXX_DEBUG(logger,"Initial gyroBiasZ = " << varioStatus.gyroBiasZ);
-		/* Multiply the variance by 2.0 for two reasons:
-		 * 1. The stored values may have shifted in the meantime
-		 * 2. Before updating the calibration data file the variance must have improved sufficiently to be updated.
-		 */
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_Z,varioStatus.STATUS_IND_GYRO_BIAS_Z) =
-				0.5f;
-		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_Z,varioStatus.STATUS_IND_GYRO_BIAS_Z) =
-				SQUARE(0.1) * baseIntervalSec;
-	}
+	varioStatus.rollRateX = 0;
+	LOG4CXX_DEBUG(logger,"Initial rollRateX = " << varioStatus.rollRateX);
+	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ROTATION_X,varioStatus.STATUS_IND_ROTATION_X) =
+			1.0f;
+	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ROTATION_X,varioStatus.STATUS_IND_ROTATION_X) =
+			SQUARE(4.0) * baseIntervalSec;
 
-	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_ROTATION_Z,varioStatus.STATUS_IND_ROTATION_Z) == 0.0f) {
-		varioStatus.yawRateZ = 0;
-		LOG4CXX_DEBUG(logger,"Initial yawRateZ = " << varioStatus.yawRateZ);
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ROTATION_Z,varioStatus.STATUS_IND_ROTATION_Z) =
-				4.0f;
-		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ROTATION_Z,varioStatus.STATUS_IND_ROTATION_Z) =
-				SQUARE(10) * baseIntervalSec;
-	}
+	varioStatus.gyroBiasY = avgGyroY;
+	LOG4CXX_DEBUG(logger,"Initial gyroBiasY = " << varioStatus.gyroBiasY);
+	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_Y,varioStatus.STATUS_IND_GYRO_BIAS_Y) =
+			1.0f;
+	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_Y,varioStatus.STATUS_IND_GYRO_BIAS_Y) =
+			SQUARE(0.1) * baseIntervalSec;
+
+	varioStatus.pitchRateY = 0;
+	LOG4CXX_DEBUG(logger,"Initial pitchRateY = " << varioStatus.pitchRateY);
+	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ROTATION_Y,varioStatus.STATUS_IND_ROTATION_Y) =
+			4.0f;
+	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ROTATION_Y,varioStatus.STATUS_IND_ROTATION_Y) =
+			SQUARE(4.0) * baseIntervalSec;
+
+	varioStatus.gyroBiasZ = avgGyroZ;
+	LOG4CXX_DEBUG(logger,"Initial gyroBiasZ = " << varioStatus.gyroBiasZ);
+	/* Multiply the variance by 2.0 for two reasons:
+	 * 1. The stored values may have shifted in the meantime
+	 * 2. Before updating the calibration data file the variance must have improved sufficiently to be updated.
+	 */
+	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_Z,varioStatus.STATUS_IND_GYRO_BIAS_Z) =
+			0.5f;
+	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_Z,varioStatus.STATUS_IND_GYRO_BIAS_Z) =
+			SQUARE(0.1) * baseIntervalSec;
+
+	varioStatus.yawRateZ = 0;
+	LOG4CXX_DEBUG(logger,"Initial yawRateZ = " << varioStatus.yawRateZ);
+	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ROTATION_Z,varioStatus.STATUS_IND_ROTATION_Z) =
+			4.0f;
+	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ROTATION_Z,varioStatus.STATUS_IND_ROTATION_Z) =
+			SQUARE(4.0) * baseIntervalSec;
 
 }
 
@@ -494,53 +528,79 @@ void BMXSensorBoardDriver::initializeStatusMag(
 		LOG4CXX_DEBUG(logger,"worldMagY = " << worldMagVector[1]);
 		LOG4CXX_DEBUG(logger,"worldMagZ = " << worldMagVector[2]);
 
-		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) == 0.0f) {
-
+		if (isnan(varioStatus.heading)) {
 			varioStatus.heading = FastMath::fastATan2(-worldMagVector[1],worldMagVector[0]);
 			LOG4CXX_DEBUG(logger,"Initial heading = " << varioStatus.heading);
 			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) = 5.0f * 5.0f;
-			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) =
-					SQUARE(5.0) * baseIntervalSec;
 		}
 
-		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_MAGNETIC_INCLINATION,varioStatus.STATUS_IND_MAGNETIC_INCLINATION) == 0.0f) {
+		if (isnan(varioStatus.magneticInclination)) {
 			varioStatus.magneticInclination = FastMath::fastATan2(
 					-avgMagZ,sqrtf(avgMagX*avgMagX + avgMagY*avgMagY));
 			if (varioStatus.magneticInclination > 90.0f) {
 				varioStatus.magneticInclination -= 360.0f;
 			}
 			LOG4CXX_DEBUG(logger,"Initial magnetic inclination = " << varioStatus.magneticInclination);
-			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_MAGNETIC_INCLINATION,varioStatus.STATUS_IND_MAGNETIC_INCLINATION) = 5.0f * 5.0f;
-			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_MAGNETIC_INCLINATION,varioStatus.STATUS_IND_MAGNETIC_INCLINATION) =
-					SQUARE(0.1) * baseIntervalSec;
+			varioStatus.getErrorCovariance_P().
+					coeffRef(varioStatus.STATUS_IND_MAGNETIC_INCLINATION,varioStatus.STATUS_IND_MAGNETIC_INCLINATION)
+					= 5.0f * 5.0f;
 		}
 	}
 
+	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+			coeffRef(varioStatus.STATUS_IND_MAGNETIC_INCLINATION,varioStatus.STATUS_IND_MAGNETIC_INCLINATION))) {
+		varioStatus.getSystemNoiseCovariance_Q().
+				coeffRef(varioStatus.STATUS_IND_MAGNETIC_INCLINATION,varioStatus.STATUS_IND_MAGNETIC_INCLINATION) =
+				SQUARE(0.1) * baseIntervalSec;
+	}
+
+	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+			coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING))||
+			(varioStatus.getSystemNoiseCovariance_Q().
+			coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) > SQUARE(2.0) * baseIntervalSec)) {
+		varioStatus.getSystemNoiseCovariance_Q().
+				coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) =
+				SQUARE(2.0) * baseIntervalSec;
+	}
+
+	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+			coeffRef(varioStatus.STATUS_IND_PITCH,varioStatus.STATUS_IND_PITCH)) ||
+			(varioStatus.getSystemNoiseCovariance_Q().
+			coeffRef(varioStatus.STATUS_IND_PITCH,varioStatus.STATUS_IND_PITCH) > SQUARE(2.0) * baseIntervalSec)) {
+		varioStatus.getSystemNoiseCovariance_Q().
+				coeffRef(varioStatus.STATUS_IND_PITCH,varioStatus.STATUS_IND_PITCH) =
+				SQUARE(2.0) * baseIntervalSec;
+	}
+
+	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+			coeffRef(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL)) ||
+			(varioStatus.getSystemNoiseCovariance_Q().
+			coeffRef(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL) > SQUARE(1.0) * baseIntervalSec)) {
+		varioStatus.getSystemNoiseCovariance_Q().
+				coeffRef(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL) =
+				SQUARE(1.0) * baseIntervalSec;
+	}
+
+
+
 	// Set the magnetometer bias unconditionally
-	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_COMPASS_DEVIATION_X,varioStatus.STATUS_IND_COMPASS_DEVIATION_X) == 0.0f) {
-		varioStatus.compassDeviationX = calibrationData.magXBias;
-		LOG4CXX_DEBUG(logger,"Initial compassDeviationX = " << varioStatus.compassDeviationX);
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_X,varioStatus.STATUS_IND_COMPASS_DEVIATION_X) = calibrationData.magXVariance * 4.0f;
-		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_X,varioStatus.STATUS_IND_COMPASS_DEVIATION_X) =
-				SQUARE(0.1) * baseIntervalSec;
-	}
+	varioStatus.compassDeviationX = calibrationData.magXBias;
+	LOG4CXX_DEBUG(logger,"Initial compassDeviationX = " << varioStatus.compassDeviationX);
+	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_X,varioStatus.STATUS_IND_COMPASS_DEVIATION_X) = calibrationData.magXVariance * 4.0f;
+	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_X,varioStatus.STATUS_IND_COMPASS_DEVIATION_X) =
+			SQUARE(0.1) * baseIntervalSec;
 
-	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_COMPASS_DEVIATION_Y,varioStatus.STATUS_IND_COMPASS_DEVIATION_Y) == 0.0f) {
-		varioStatus.compassDeviationY = calibrationData.magYBias;
-		LOG4CXX_DEBUG(logger,"Initial compassDeviationY = " << varioStatus.compassDeviationY);
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_Y,varioStatus.STATUS_IND_COMPASS_DEVIATION_Y) = calibrationData.magYVariance * 4.0f;
-		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_Y,varioStatus.STATUS_IND_COMPASS_DEVIATION_Y) =
-				SQUARE(0.1) * baseIntervalSec;
-	}
+	varioStatus.compassDeviationY = calibrationData.magYBias;
+	LOG4CXX_DEBUG(logger,"Initial compassDeviationY = " << varioStatus.compassDeviationY);
+	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_Y,varioStatus.STATUS_IND_COMPASS_DEVIATION_Y) = calibrationData.magYVariance * 4.0f;
+	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_Y,varioStatus.STATUS_IND_COMPASS_DEVIATION_Y) =
+			SQUARE(0.1) * baseIntervalSec;
 
-	if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_COMPASS_DEVIATION_Z,varioStatus.STATUS_IND_COMPASS_DEVIATION_Z) == 0.0f) {
-		varioStatus.compassDeviationZ = calibrationData.magZBias;
-		LOG4CXX_DEBUG(logger,"Initial compassDeviationZ = " << varioStatus.compassDeviationZ);
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_Z,varioStatus.STATUS_IND_COMPASS_DEVIATION_Z) = calibrationData.magZVariance * 4.0f;
-		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_Z,varioStatus.STATUS_IND_COMPASS_DEVIATION_Z) =
-				SQUARE(0.1) * baseIntervalSec;
-	}
-
+	varioStatus.compassDeviationZ = calibrationData.magZBias;
+	LOG4CXX_DEBUG(logger,"Initial compassDeviationZ = " << varioStatus.compassDeviationZ);
+	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_Z,varioStatus.STATUS_IND_COMPASS_DEVIATION_Z) = calibrationData.magZVariance * 4.0f;
+	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_Z,varioStatus.STATUS_IND_COMPASS_DEVIATION_Z) =
+			SQUARE(0.1) * baseIntervalSec;
 
 }
 
