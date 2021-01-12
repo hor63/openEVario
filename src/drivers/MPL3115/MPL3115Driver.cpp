@@ -150,23 +150,24 @@ void MPL3115Driver::initializeStatus(
 			initQFF(varioStatus,measurements,varioMain,avgPressure);
 		}
 
-		if (isnan(varioStatus.altMSL) && !isnan(varioStatus.qff) && !isnan(measurements.tempLocalC)) {
-			if (!isnan(varioStatus.qff) && !isnan(measurements.tempLocalC)) {
-			auto const currTempK = measurements.tempLocalC + CtoK;
+		if (isnan(varioStatus.altMSL)) {
+			if (!isnan(varioStatus.qff) && !isnan(temperatureVal) /*!isnan(measurements.tempLocalC)*/) {
+			auto const currTempK = temperatureVal /*measurements.tempLocalC*/ + CtoK;
 			varioStatus.altMSL  = (currTempK -(pow((avgPressure / varioStatus.qff),(1.0/BarometricFormulaExponent)) * currTempK)) / TempLapseIndiffBoundLayer;
 			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Initial altitude from QFF:" << varioStatus.qff
 					<< ", Temp (K): " << currTempK
 					<< " = " << varioStatus.altMSL);
 
-			// 5 mbar initial uncertainty translated into 40m.
+			// 1 mbar initial uncertainty translated into 8m.
 			varioStatus.getErrorCovariance_P().
-							coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) = SQUARE(5.0*8.0);
+							coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) = SQUARE(1.0*8.0);
 
 			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Initial variance = "
 					<< varioStatus.getErrorCovariance_P().
 					coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL));
 			} else {
-				LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Either QFF or local temperature or both are undefined.");
+				LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Either QFF or local temperature or both are undefined. QFF = "
+						<< varioStatus.qff << ", temperature = " << temperatureVal);
 			}
 
 		} else {
