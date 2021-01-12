@@ -570,6 +570,11 @@ void GliderVarioMainPriv::intializeStatus() {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(i,i) = NAN;
 	}
 
+	// Re-initialize some values like in the constructor.
+	currentStatus->getStatusVector_x()(GliderVarioStatus::STATUS_IND_GRAVITY)= GRAVITY;
+	currentStatus->getStatusVector_x()(GliderVarioStatus::STATUS_IND_LAST_PRESSURE) = PressureStdMSL;
+	currentStatus->getStatusVector_x()(GliderVarioStatus::STATUS_IND_QFF) = PressureStdMSL;
+
 
 	// Initialize the Kalman status with initial sensor readings
 	// and variances based on sensor cycle and performance
@@ -599,7 +604,7 @@ void GliderVarioMainPriv::intializeStatus() {
 
 	// Initialized by accelerometer, e.g. BMXSensorBoardDriver::initializeStatusAccel(),
 	// and by GNSS receiver and IGC driver
-	if (isnan(currentStatus->getStatusVector_x().coeffRef(currentStatus->STATUS_IND_LATITUDE_OFFS,currentStatus->STATUS_IND_LATITUDE_OFFS))) {
+	if (isnan(currentStatus->latitudeOffsC)) {
 		// Lüneburg airport EDHG
 		currentStatus->latitude(53.2483333333);
 	}
@@ -612,7 +617,7 @@ void GliderVarioMainPriv::intializeStatus() {
 	}
 
 	// Initialized by accelerometer, e.g. BMXSensorBoardDriver::initializeStatusAccel()
-	if (isnan(currentStatus->getStatusVector_x().coeffRef(currentStatus->STATUS_IND_LONGITUDE_OFFS,currentStatus->STATUS_IND_LONGITUDE_OFFS))) {
+	if (isnan(currentStatus->longitudeOffsC)) {
 		// Lüneburg airport EDHG
 		currentStatus->longitude(10.4586111111);
 	}
@@ -953,14 +958,14 @@ void GliderVarioMainPriv::intializeStatus() {
 	LOG4CXX_DEBUG(logger,"GliderVarioMainPriv::intializeStatus():" );
 	for (auto i = 0U; i < currentStatus->STATUS_NUM_ROWS;i++) {
 		LOG4CXX_DEBUG(logger,'	' << GliderVarioStatus::StatusComponentIndex(i)
-				<< ": Initial value = " << currentStatus->getStatusVector_x().coeff(i)
+				<< ": Initial value = " << currentStatus->getStatusVector_x()(i)
 				<< ", Variance = " << currentStatus->getErrorCovariance_P().coeffRef(i,i)
 				<< ", variance increment = "
 				<< currentStatus->getSystemNoiseCovariance_Q().coeff(i,i) / baseIntervalSec << "/sec"
 				);
 
 
-		if (isnan(currentStatus->getStatusVector_x().coeffRef(i,i))) {
+		if (isnan(currentStatus->getStatusVector_x()(i))) {
 			std::ostringstream str;
 			str << __PRETTY_FUNCTION__ << ": currentStatus->getStatusVector_x().coeffRef("
 					<< GliderVarioStatus::StatusComponentIndex(i) << "," << GliderVarioStatus::StatusComponentIndex(i)
