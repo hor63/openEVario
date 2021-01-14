@@ -154,6 +154,7 @@ void MPL3115Driver::initializeStatus(
 			if (!isnan(varioStatus.qff) && !isnan(temperatureVal) /*!isnan(measurements.tempLocalC)*/) {
 			auto const currTempK = temperatureVal /*measurements.tempLocalC*/ + CtoK;
 			varioStatus.altMSL  = (currTempK -(pow((avgPressure / varioStatus.qff),(1.0/BarometricFormulaExponent)) * currTempK)) / TempLapseIndiffBoundLayer;
+			varioStatus.lastPressure = avgPressure;
 			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Initial altitude from QFF:" << varioStatus.qff
 					<< ", Temp (K): " << currTempK
 					<< " = " << varioStatus.altMSL);
@@ -180,7 +181,7 @@ void MPL3115Driver::initializeStatus(
 				coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) > SQUARE(4.0) * baseIntervalSec)) {
 
 			varioStatus.getSystemNoiseCovariance_Q().
-							coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) = SQUARE(4.0) * baseIntervalSec;
+							coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) = SQUARE(2.0) * baseIntervalSec;
 			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": System noise increment = "
 					<< varioStatus.getSystemNoiseCovariance_Q().
 												coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL));
@@ -354,7 +355,7 @@ void MPL3115Driver::readoutMPL3155() {
 
 			/// todo: Obtain the temperature by default from an external thermometer, not from the sweltering cockpit
 			GliderVarioMeasurementUpdater::staticPressureUpd(
-					pressureVal, temperatureVal, 0.5*0.5,
+					pressureVal, temperatureVal, SQUARE(0.5),
 					*lockedStatus.getMeasurementVector(), *lockedStatus.getCurrentStatus());
 
 		} else {
@@ -381,7 +382,7 @@ void MPL3115Driver::initQFF(
 	GliderVarioStatus::StatusCoVarianceType &errorCov = varioStatus.getErrorCovariance_P();
 	double baseIntervalSec = varioMain.getProgramOptions().idlePredictionCycleMilliSec / 1000.0;
 
-	FloatType pressureFactor = GliderVarioMeasurementUpdater::calcBarometricFactor(
+	FloatType pressureFactor = calcBarometricFactor(
     		measurements.gpsMSL,
 			temperatureVal
 			);
@@ -393,7 +394,7 @@ void MPL3115Driver::initQFF(
 	errorCov.coeffRef(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF)
 			= SQUARE(1);
 	systemNoiseCov.coeffRef(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF) =
-			SQUARE(0.1) * baseIntervalSec; // 0.05hPa/sec
+			SQUARE(0.05) * baseIntervalSec; // 0.1hPa/sec
 
 	LOG4CXX_DEBUG (logger,"	QFF = " << varioStatus.qff
 			<< ", initial variance = "
