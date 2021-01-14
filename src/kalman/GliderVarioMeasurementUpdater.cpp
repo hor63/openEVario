@@ -758,14 +758,12 @@ GliderVarioMeasurementUpdater::staticPressureUpd (
         GliderVarioMeasurementVector &measurementVector,
         GliderVarioStatus &varioStatus
 ) {
-    Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,1);
+    Eigen::SparseMatrix<FloatType> measRowT1(GliderVarioStatus::STATUS_NUM_ROWS,1);
+    Eigen::SparseMatrix<FloatType> measRowT2(GliderVarioStatus::STATUS_NUM_ROWS,1);
 
     FloatType pFactor;
     FloatType p;
     FloatType p1;
-
-
-    // measRowT.setZero();
 
     // calculate and fill in local variables here.
     measurementVector.staticPressure = measuredStaticPressure;
@@ -777,26 +775,78 @@ GliderVarioMeasurementUpdater::staticPressureUpd (
     // The pressure 10m above to assess the derivate for altitude deviations
     p1 = varioStatus.qff * calcBarometricFactor(varioStatus.altMSL + 10.0f,measuredTemperature);
 
-    measRowT.insert(GliderVarioStatus::STATUS_IND_QFF,0) = pFactor;
-    measRowT.insert(GliderVarioStatus::STATUS_IND_ALT_MSL,0) = (p1 - p) / 10.0f;
+    measRowT1.insert(GliderVarioStatus::STATUS_IND_ALT_MSL,0) = (p1 - p) / 10.0f;
 
     if (unitTestMode) {
         // Save internal statuses for unit tests
         calculatedValueTst1 = p;
-        measRowTTst1 = measRowT;
+        measRowTTst1 = measRowT1;
     }
 
-    LOG4CXX_DEBUG(logger,"staticPressureUpd: measured static pressure = " <<  measuredStaticPressure
+    LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measured static pressure = " <<  measuredStaticPressure
     		<< ", measured temperature = " <<  (measuredTemperature)
     		<< ", calculated pressure = " << p << ", variance = " << staticPressureVariance);
 
-    LOG4CXX_DEBUG(logger,"		QFF derivate = " << pFactor << ", altitude derivate = " << measRowT.coeff(GliderVarioStatus::STATUS_IND_ALT_MSL,0));
+
+#if defined HAVE_LOG4CXX_H
+    if (logger->isTraceEnabled()) {
+    	std::ostringstream str;
+    	GliderVarioStatus::StatusCoVarianceType &errCov = varioStatus.getErrorCovariance_P();
+    	for (int i=0;i<GliderVarioStatus::STATUS_NUM_ROWS;i++) {
+    		for (GliderVarioStatus::StatusCoVarianceType::InnerIterator it(errCov,i);it;++it) {
+    			if (it.row() == GliderVarioStatus::STATUS_IND_QFF || it.col() == GliderVarioStatus::STATUS_IND_QFF) {
+    				str << "\n	errCov[" << GliderVarioStatus::StatusComponentIndex(it.row())
+    						<< ',' << GliderVarioStatus::StatusComponentIndex(it.col())
+							<< "= " << it.value();
+    			}
+    		}
+    	}
+    	LOG4CXX_TRACE(logger,"  Error Covariance for QFF before update:" << str.str());
+
+    	str = std::ostringstream();
+    	for (int i=0;i<GliderVarioStatus::STATUS_NUM_ROWS;i++) {
+    		for (GliderVarioStatus::StatusCoVarianceType::InnerIterator it(errCov,i);it;++it) {
+    			if (it.row() == GliderVarioStatus::STATUS_IND_LAST_PRESSURE || it.col() == GliderVarioStatus::STATUS_IND_LAST_PRESSURE) {
+    				str << "\n	errCov[" << GliderVarioStatus::StatusComponentIndex(it.row())
+    						<< ',' << GliderVarioStatus::StatusComponentIndex(it.col())
+							<< "= " << it.value();
+    			}
+    		}
+    	}
+    	LOG4CXX_TRACE(logger,"  Error Covariance for LAST_PRESSURE before update:" << str.str());
+    	str = std::ostringstream();
+    	for (int i=0;i<GliderVarioStatus::STATUS_NUM_ROWS;i++) {
+    		for (GliderVarioStatus::StatusCoVarianceType::InnerIterator it(errCov,i);it;++it) {
+    			if (it.row() == GliderVarioStatus::STATUS_IND_ALT_MSL || it.col() == GliderVarioStatus::STATUS_IND_ALT_MSL) {
+    				str << "\n	errCov[" << GliderVarioStatus::StatusComponentIndex(it.row())
+    						<< ',' << GliderVarioStatus::StatusComponentIndex(it.col())
+							<< "= " << it.value();
+    			}
+    		}
+    	}
+    	LOG4CXX_TRACE(logger,"  Error Covariance for ALT_MSL: before update" << str.str());
+    }
+#endif
+
+    LOG4CXX_DEBUG(logger,"		Altitude derivate = " << measRowT1.coeff(GliderVarioStatus::STATUS_IND_ALT_MSL,0));
 
     calcSingleMeasureUpdate (
             measuredStaticPressure,
             p,
             staticPressureVariance,
-            measRowT,
+            measRowT1,
+            varioStatus
+    );
+
+    measRowT2.insert(GliderVarioStatus::STATUS_IND_QFF,0) = pFactor;
+
+    LOG4CXX_DEBUG(logger,"		QFF derivate = " << pFactor );
+
+    calcSingleMeasureUpdate (
+            measuredStaticPressure,
+            p,
+            staticPressureVariance,
+            measRowT2,
             varioStatus
     );
 
