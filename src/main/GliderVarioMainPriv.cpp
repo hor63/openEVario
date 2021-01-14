@@ -564,7 +564,7 @@ void GliderVarioMainPriv::intializeStatus() {
 	// What is afterwards still NAN will be initialized with default values down below.
 	//
 
-	for (int i;i < currentStatus->STATUS_NUM_ROWS; i++) {
+	for (int i=0;i < currentStatus->STATUS_NUM_ROWS; i++) {
 		currentStatus->getErrorCovariance_P().coeffRef(i,i) = NAN;
 		currentStatus->getStatusVector_x()(i) = NAN;
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(i,i) = NAN;
@@ -942,7 +942,7 @@ void GliderVarioMainPriv::intializeStatus() {
 	}
 	if (isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_QFF,currentStatus->STATUS_IND_QFF))) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_QFF,currentStatus->STATUS_IND_QFF) =
-				SQUARE(0.1) * baseIntervalSec; // Slow (1mbar / 10sec)
+				SQUARE(0.05) * baseIntervalSec; // Slow (1mbar / 20sec)
 	}
 
 	if (isnan(currentStatus->lastPressure)) {
