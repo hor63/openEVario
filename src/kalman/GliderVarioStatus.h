@@ -151,10 +151,44 @@ static inline double altToPressureStdTemp (double altitude,double temperatureLap
 	// Exponent term
 	double const exp = g0*M/(R*temperatureLapse); // Exponential term of the Barometric formula
 
-	static double constexpr T0 = 288.15		; // 15C at MSL according to the standard atmosphere
+	static double constexpr T0 = 15.0f + CtoK		; // 15C at MSL according to the standard atmosphere
 
 	return  (PressureStdMSL * pow(1 - ((temperatureLapse * altitude ) / T0),exp));
 
+}
+
+/** Calculate the factor from pressure at sea level to the current altitude MSL
+ *
+ * The pressure at a certain altitude based on altitude, temperature at the altitude (local measurement), and an assumed
+ * temperature gradient is calculated by the
+ * [Barometric formula](https://en.wikipedia.org/wiki/Barometric_formula). Use formula 1 which includes a temperature gradient
+ *
+ * The temperature gradient which is used in this function is \ref TempLapseIndiffBoundLayer, i.e. -1K/100m
+ * This is the gradient in the boundary layer which is mixed by thermals, and essentially dry adiabatic indifferent.
+ *
+ * This function calculates the factor by which the base pressure at sea level P<SUB>base</SUB>
+ * is multiplied to get the altitude pressure P<SUB>alt</SUB>,
+ * or vice versa by which you divide your measured pressure P<SUB>alt</SUB>
+ * to obtain the pressured reduced to sea level P<SUB>base</SUB>.
+ *
+ * I am assuming a dry atmosphere, and I am ignoring the effects of water vapor.
+ *
+ * @param altMSL The altitude above mean sea level
+ * @param currTempC Temperature in Celsius at the altitude \p altMsl, i.e. your local measured temperature.
+ * @return Factor for calculating altitude pressure P<SUB>alt</SUB> from base pressure at sea level P<SUB>base</SUB>
+ */
+static inline FloatType calcBarometricFactor(
+		FloatType altMSL,
+		FloatType currTempC
+		) {
+    FloatType pFactor;
+    // Temperature in Kelvin
+    FloatType currTempK = currTempC + CtoK;
+
+
+    pFactor = powf ((currTempK - (TempLapseIndiffBoundLayer * altMSL)) / currTempK,BarometricFormulaExponent);
+
+	return pFactor;
 }
 
 /**
