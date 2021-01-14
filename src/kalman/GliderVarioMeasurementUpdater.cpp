@@ -902,20 +902,6 @@ GliderVarioMeasurementUpdater::dynamicPressureUpd (
     );
 }
 
-FloatType GliderVarioMeasurementUpdater::calcBarometricFactor(
-		FloatType altMSL,
-		FloatType currTempC
-		) {
-    FloatType pFactor;
-    // Temperature in Kelvin
-    FloatType currTempK = currTempC + CtoK;
-
-
-    pFactor = powf ((currTempK - (TempLapseIndiffBoundLayer * altMSL)) / currTempK,BarometricFormulaExponent);
-
-	return pFactor;
-}
-
 bool GliderVarioMeasurementUpdater::calcInverse3D (
 		Eigen::SparseMatrix <FloatType> &inverse,
 		Eigen::SparseMatrix <FloatType> const &org) {
