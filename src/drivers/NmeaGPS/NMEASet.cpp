@@ -1348,7 +1348,7 @@ void NMEASet::initQFF(GliderVarioMainPriv::LockedCurrentStatus &currStat) {
 	GliderVarioMeasurementVector& measurementVector = *currStat.getMeasurementVector();
 	double baseIntervalSec = varioMain->getProgramOptions().idlePredictionCycleMilliSec / 1000.0;
 
-	FloatType pressureFactor = GliderVarioMeasurementUpdater::calcBarometricFactor(
+	FloatType pressureFactor = calcBarometricFactor(
     		currVarioStatus.altMSL,
 			measurementVector.tempLocalC
 			);
@@ -1358,16 +1358,16 @@ void NMEASet::initQFF(GliderVarioMainPriv::LockedCurrentStatus &currStat) {
 
 	// Assume the same variance of qff pressure as the initial altitude variance
 	errorCov.coeffRef(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF)
-			= SQUARE(currGnssRecord.altDeviation * 0.08f) * 20.0; // Convert the altitude deviation into Pascal (8hPa/100m)
+			= SQUARE(currGnssRecord.altDeviation / 8.0f) * 20.0; // Convert the altitude deviation into Pascal (8m/hPa)
 	systemNoiseCov.coeffRef(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF) =
-			SQUARE(0.1) * baseIntervalSec; // 0.1hPa/sec
+			SQUARE(0.05) * baseIntervalSec; // 0.1hPa/sec
 
 	LOG4CXX_DEBUG (logger,"	QFF = " << currVarioStatus.qff
 			<< ", initial variance = "
 			<< errorCov.coeff(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF)
 			<< ", variance increment = "
-			<< systemNoiseCov.coeff(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF)
-			<< " / " << baseIntervalSec << "s");
+			<< systemNoiseCov.coeff(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF) / baseIntervalSec
+			<< " / " << "s");
 
 
 }
