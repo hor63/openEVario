@@ -102,6 +102,9 @@ void MPL3115Driver::readConfiguration (Properties4CXX::Properties const &configu
 		throw;
 	}
 
+	useTemperatureSensor = configuration.getPropertyValue(
+    		std::string("useTemperatureSensor"),
+			useTemperatureSensor);
     errorTimeout = configuration.getPropertyValue(
     		std::string("errorTimeout"),
 			(long long)(errorTimeout));
@@ -110,6 +113,7 @@ void MPL3115Driver::readConfiguration (Properties4CXX::Properties const &configu
 			(long long)(errorMaxNumRetries));
 
 	LOG4CXX_INFO(logger,"	portName = " << portName);
+	LOG4CXX_INFO(logger,"	useTemperatureSensor = " << useTemperatureSensor);
 	LOG4CXX_INFO(logger,"	errorTimeout = " << errorTimeout);
 	LOG4CXX_INFO(logger,"	errorMaxNumRetries = " << errorMaxNumRetries);
 
@@ -352,10 +356,14 @@ void MPL3115Driver::readoutMPL3155() {
 
 		if (getIsKalmanUpdateRunning()) {
 			GliderVarioMainPriv::LockedCurrentStatus lockedStatus(*varioMain);
+			FloatType &tempLocalC = lockedStatus.getMeasurementVector()->tempLocalC;
 
-			/// todo: Obtain the temperature by default from an external thermometer, not from the sweltering cockpit
+			if (useTemperatureSensor) {
+				tempLocalC = temperatureVal;
+			}
+
 			GliderVarioMeasurementUpdater::staticPressureUpd(
-					pressureVal, temperatureVal, SQUARE(0.5),
+					pressureVal, tempLocalC, SQUARE(0.5),
 					*lockedStatus.getMeasurementVector(), *lockedStatus.getCurrentStatus());
 
 		} else {

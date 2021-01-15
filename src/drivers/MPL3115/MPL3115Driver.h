@@ -134,6 +134,17 @@ private:
      */
     std::string portName;
 
+    /**
+     * Use the builtin temperature sensor. The current temperature is used for calculating altitude from pressure and vice versa,
+	 * by means of the Barometric formula.
+	 * Using the temperature sensor of the pressure sensor is not advised, and should only be used as a back-stop
+	 * When an accurate external temperature sensor is not available.
+	 * Reason is that the temperature in the cockpit is usually quite a bit higher than outside due to the greenhouse
+	 * effect of the canopy.
+	 * Optional. Default false.
+     */
+    bool useTemperatureSensor = false;
+
     /** \brief Timeout in seconds between recovery attempts when an error in the main loop occurs.
      *
      * Configuration parameter is "errorTimeout" in the driver section.
