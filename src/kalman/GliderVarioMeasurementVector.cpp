@@ -71,8 +71,6 @@ GliderVarioMeasurementVector::GliderVarioMeasurementVector() :
 	// Initialize the temperature to 15°C
 	measureVector [MEASURE_IND_TEMP_LOCAL_C] = 15.0f;
 
-	/// \todo Remove after testing
-	measureVector [MEASURE_IND_STATIC_PRESSURE] = 1000.0f;
 }
 
 GliderVarioMeasurementVector::~GliderVarioMeasurementVector() {
