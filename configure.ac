@@ -318,6 +318,7 @@ AC_CONFIG_FILES(Makefile
                 src/drivers/BoschBMXSensorBoard/Makefile
                 src/drivers/NmeaGPS/Makefile
                 src/drivers/MPL3115/Makefile
+                src/drivers/MS4515/Makefile
                 test/src/Makefile)
 
 AC_OUTPUT

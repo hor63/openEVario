@@ -22705,7 +22705,7 @@ DX_RULES="${DX_SNIPPET_doc}"
 #echo DX_ENV=$DX_ENV
 
 
-ac_config_files="$ac_config_files Makefile 3rdParty/apache/Makefile src/util/Makefile src/kalman/Makefile src/main/Makefile src/Makefile src/drivers/simul/Makefile src/drivers/IGCReader/Makefile src/drivers/BoschBMXSensorBoard/Makefile src/drivers/NmeaGPS/Makefile src/drivers/MPL3115/Makefile test/src/Makefile"
+ac_config_files="$ac_config_files Makefile 3rdParty/apache/Makefile src/util/Makefile src/kalman/Makefile src/main/Makefile src/Makefile src/drivers/simul/Makefile src/drivers/IGCReader/Makefile src/drivers/BoschBMXSensorBoard/Makefile src/drivers/NmeaGPS/Makefile src/drivers/MPL3115/Makefile src/drivers/MS4515/Makefile test/src/Makefile"
 
 
 cat >confcache <<\_ACEOF
@@ -23859,6 +23859,7 @@ do
     "src/drivers/BoschBMXSensorBoard/Makefile") CONFIG_FILES="$CONFIG_FILES src/drivers/BoschBMXSensorBoard/Makefile" ;;
     "src/drivers/NmeaGPS/Makefile") CONFIG_FILES="$CONFIG_FILES src/drivers/NmeaGPS/Makefile" ;;
     "src/drivers/MPL3115/Makefile") CONFIG_FILES="$CONFIG_FILES src/drivers/MPL3115/Makefile" ;;
+    "src/drivers/MS4515/Makefile") CONFIG_FILES="$CONFIG_FILES src/drivers/MS4515/Makefile" ;;
     "test/src/Makefile") CONFIG_FILES="$CONFIG_FILES test/src/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
