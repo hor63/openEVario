@@ -32,7 +32,6 @@
 #include <thread>
 
 #include "MPL3115Driver.h"
-#include "MPL3115A2.h"
 #include "kalman/GliderVarioTransitionMatrix.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
 
@@ -102,6 +101,9 @@ void MPL3115Driver::readConfiguration (Properties4CXX::Properties const &configu
 		throw;
 	}
 
+	i2cAddress = (long long)(configuration.getPropertyValue(
+	    		std::string("i2cAddress"),
+				(long long)(i2cAddress)));
 	useTemperatureSensor = configuration.getPropertyValue(
     		std::string("useTemperatureSensor"),
 			useTemperatureSensor);
@@ -113,6 +115,7 @@ void MPL3115Driver::readConfiguration (Properties4CXX::Properties const &configu
 			(long long)(errorMaxNumRetries));
 
 	LOG4CXX_INFO(logger,"	portName = " << portName);
+	LOG4CXX_INFO(logger,"	i2cAddress = 0x" << std::hex <<  i2cAddress << std::dec);
 	LOG4CXX_INFO(logger,"	useTemperatureSensor = " << useTemperatureSensor);
 	LOG4CXX_INFO(logger,"	errorTimeout = " << errorTimeout);
 	LOG4CXX_INFO(logger,"	errorMaxNumRetries = " << errorMaxNumRetries);
@@ -260,7 +263,7 @@ void MPL3115Driver::processingMainLoop() {
 void MPL3115Driver::setupMPL3115() {
 	uint8_t ctrl1AddrVal[2];
 	uint8_t ptDataCfgAddrVal[2];
-	uint8_t whoAmI = ioPort->readByteAtRegAddrByte(MPL3115A2I2CAddr, MPL3115_WHO_AM_I);
+	uint8_t whoAmI = ioPort->readByteAtRegAddrByte(i2cAddress, MPL3115_WHO_AM_I);
 	if (whoAmI != MPL3115WhoAmIValue) {
 		std::ostringstream str;
 		str << __FUNCTION__ << ": Who am I value is not 0x" << std::hex << uint32_t(MPL3115WhoAmIValue)
@@ -271,17 +274,17 @@ void MPL3115Driver::setupMPL3115() {
 	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Who am I value is as expected 0x" << std::hex << uint32_t(whoAmI) << std::dec);
 
 	// First set the thing to standby mode.
-	ctrl1AddrVal[1] = ioPort->readByteAtRegAddrByte(MPL3115A2I2CAddr, MPL3115_CTRL_REG1);
+	ctrl1AddrVal[1] = ioPort->readByteAtRegAddrByte(i2cAddress, MPL3115_CTRL_REG1);
 	ctrl1AddrVal[1] &= ~_BV(MPL3115Cfg1_SBYB);
 	ctrl1AddrVal[0] = MPL3115_CTRL_REG1;
-	ioPort->writeBlock(MPL3115A2I2CAddr, ctrl1AddrVal, sizeof(ctrl1AddrVal));
+	ioPort->writeBlock(i2cAddress, ctrl1AddrVal, sizeof(ctrl1AddrVal));
 
 	// Set up with 16-times oversampling
 	ctrl1AddrVal[1] &= ~(0b111 << MPL3115Cfg1_OS); // Do not forget to clear existing bits first :)
 	ctrl1AddrVal[1] |= 0b100 << MPL3115Cfg1_OS;
 	// ... and barometer mode (delete Altitude mode flag)
 	ctrl1AddrVal[1] &= ~_BV(MPL3115Cfg1_ALT);
-	ioPort->writeBlock(MPL3115A2I2CAddr, ctrl1AddrVal, sizeof(ctrl1AddrVal));
+	ioPort->writeBlock(i2cAddress, ctrl1AddrVal, sizeof(ctrl1AddrVal));
 
 	// Setup data event configuration
 	ptDataCfgAddrVal[0] = MPL3115_PT_DATA_CFG;
@@ -289,11 +292,11 @@ void MPL3115Driver::setupMPL3115() {
 			_BV(MPL3115PTDataCfg_DREM) |
 			_BV(MPL3115PTDataCfg_PDEFE) |
 			_BV(MPL3115PTDataCfg_TDEFE);
-	ioPort->writeBlock(MPL3115A2I2CAddr, ptDataCfgAddrVal, sizeof(ptDataCfgAddrVal));
+	ioPort->writeBlock(i2cAddress, ptDataCfgAddrVal, sizeof(ptDataCfgAddrVal));
 
 	// Set the sensor to active mode
 	ctrl1AddrVal[1] |= _BV(MPL3115Cfg1_SBYB);
-	ioPort->writeBlock(MPL3115A2I2CAddr, ctrl1AddrVal, sizeof(ctrl1AddrVal));
+	ioPort->writeBlock(i2cAddress, ctrl1AddrVal, sizeof(ctrl1AddrVal));
 
 	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Set Sensor to 16-times oversampling, and polling mode. Activate it.");
 
@@ -305,20 +308,20 @@ void MPL3115Driver::startConversionMPL3155() {
 
 	ctrl1AddrVal[0] = MPL3115_CTRL_REG1;
 
-	ctrl1AddrVal[1] = ioPort->readByteAtRegAddrByte(MPL3115A2I2CAddr, MPL3115_CTRL_REG1);
+	ctrl1AddrVal[1] = ioPort->readByteAtRegAddrByte(i2cAddress, MPL3115_CTRL_REG1);
 	LOG4CXX_TRACE(logger,__FUNCTION__ << ": Ctrl1 = 0x" << std::hex << uint32_t(ctrl1AddrVal[1]) << std::dec);
 
 	// Delete the OST flag
 	ctrl1AddrVal[1] &= ~_BV(MPL3115Cfg1_OST);
 	LOG4CXX_TRACE(logger,__FUNCTION__ << ": Reset OST. Set Ctrl1 to 0x" << std::hex << uint32_t(ctrl1AddrVal[1]) << std::dec);
 
-	ioPort->writeBlock(MPL3115A2I2CAddr, ctrl1AddrVal, sizeof(ctrl1AddrVal));
+	ioPort->writeBlock(i2cAddress, ctrl1AddrVal, sizeof(ctrl1AddrVal));
 
 	// 	And set the OST flag again
 	ctrl1AddrVal[1] |= _BV(MPL3115Cfg1_OST);
 	LOG4CXX_TRACE(logger,__FUNCTION__ << ": Set OST. Set Ctrl1 to 0x" << std::hex << uint32_t(ctrl1AddrVal[1]) << std::dec);
 
-	ioPort->writeBlock(MPL3115A2I2CAddr, ctrl1AddrVal, sizeof(ctrl1AddrVal));
+	ioPort->writeBlock(i2cAddress, ctrl1AddrVal, sizeof(ctrl1AddrVal));
 
 }
 
@@ -328,10 +331,10 @@ void MPL3115Driver::readoutMPL3155() {
 	uint8_t sensorValues[5];
 
 	while ((statusVal & _BV(MPL3115Status_PTDR)) == 0) {
-		statusVal = ioPort->readByteAtRegAddrByte(MPL3115A2I2CAddr, MPL3115_STATUS);
+		statusVal = ioPort->readByteAtRegAddrByte(i2cAddress, MPL3115_STATUS);
 	}
 
-	ioPort->readBlockAtRegAddrByte(MPL3115A2I2CAddr, MPL3115_OUT_P_MSB, sensorValues, sizeof(sensorValues));
+	ioPort->readBlockAtRegAddrByte(i2cAddress, MPL3115_OUT_P_MSB, sensorValues, sizeof(sensorValues));
 
 	if ((statusVal & _BV(MPL3115Status_TDR)) != 0) {
 		temperatureVal = (FloatType(sensorValues[3])) + (FloatType(sensorValues[4])) / 256.0f;

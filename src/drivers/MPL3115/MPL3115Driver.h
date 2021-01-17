@@ -32,6 +32,7 @@
 
 #include "OEVCommon.h"
 
+#include "MPL3115A2.h"
 #include "drivers/GliderVarioDriverBase.h"
 #include "MPL3115Lib.h"
 #include "util/io/I2CPort.h"
@@ -133,6 +134,8 @@ private:
      * I/O ports are defined in the IOPorts section of the configuration
      */
     std::string portName;
+
+    uint8_t i2cAddress = MPL3115A2I2CAddr;
 
     /**
      * Use the builtin temperature sensor. The current temperature is used for calculating altitude from pressure and vice versa,
