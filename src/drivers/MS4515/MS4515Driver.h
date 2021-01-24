@@ -46,6 +46,13 @@ namespace openEV::drivers::MS4515 {
 class MS4515Driver  : public GliderVarioDriverBase {
 public:
 
+	enum SensorType {
+		SENSOR_TYPE_UNDEFINED, ///< Unknown sensor type.
+		SENSOR_TYPE_A, ///< Sensor type A defines pMin as 10%, and pMax as 90% of the physical measurement range of 0x3fff.
+		SENSOR_TYPE_B, ///< Sensor type B defines pMin as 5%, and pMax as 95% of the physical measurement range of 0x3fff.
+	};
+
+
 	MS4515Driver(
     	    char const *driverName,
 			char const *description,
@@ -80,6 +87,30 @@ public:
      * \see GliderVarioDriverBase::updateKalmanStatus()
      */
     virtual void updateKalmanStatus (GliderVarioStatus &varioStatus) override;
+
+    /** \brief Convert pressure sensor reading to pressure in mBar for a Type A sensor
+     *
+     * Look up "Interfacing To MEAS Digital Pressure Modules" in the
+     * \ref openEV::drivers::MS4515 namespace description how to retrieve
+     * the binary register values from the register bank of the sensor.
+     *
+     * The formula is: \n
+     * (output - 16383*loFact) * (pMax-pMin) / (16383*hiFact) + pMin \n
+     * \p loFact is 0.05 for B-type, and 0.1 for A-type sensors. \n
+     * \p hiFact is 0.9 for B-type, and 0.8 for A-type sensors.
+     *
+     * Constant factors in the formula up there are pre-calculated in \ref readConfiguration():
+     * - \ref f1 = 16383*loFact
+     * - \ref f2 = (pMax-pMin)/(16383*hiFact)
+     *
+     * Thus the formula becomes \n
+     * (output - f1) * f2 + pMin
+     *
+     * @param registerVal Binary value from registers 0 and 1 of the sensor.
+     * @return Converted value in mBar
+     */
+    FloatType convertRegisterPressureToMBar (FloatType registerVal) const;
+
 
 protected:
 
@@ -154,9 +185,44 @@ private:
     FloatType initValues[NumInitValues];
     int numValidInitValues = 0;
 
+    /** \brief Type of sensor (A or B)
+     *
+     * \see SensorType for definitions of A and B types.
+     *
+     */
+    SensorType sensorType = SENSOR_TYPE_UNDEFINED;
+
+    /// Latest pressure value in mBar
     FloatType pressureVal = NAN;
 
+    /// Latest temperature value in C
     FloatType temperatureVal = NAN;
+
+    /** \brief Minimum pressure of the defined range in mBar.
+     *
+     * The configuration values are defined in in inH20 (See my rant in \ref InchH20toMBar)
+     * because the sensors are defined this way, and you can simply transcribe from the sensor type.
+     */
+    FloatType pMin = NAN;
+
+    /** \brief Maximum pressure of the defined range in mBar
+     *
+     * \see \ref pMin
+     */
+    FloatType pMax = NAN;
+
+    /** \brief Helper for convertRegisterPressureToMBar()
+     *
+     * \see \ref convertRegisterPressureToMBar() what is it for and how it is calculated.
+     */
+    FloatType f1 = NAN;
+
+    /** \brief Helper for convertRegisterPressureToMBar()
+     *
+     * \see \ref convertRegisterPressureToMBar() what is it for and how it is calculated.
+     */
+    FloatType f2 = NAN;
+
 
 };
 

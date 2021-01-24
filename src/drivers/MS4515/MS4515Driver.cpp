@@ -85,7 +85,7 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
 		auto portNameConfig = configuration.searchProperty("portName");
 
 		if (portNameConfig->isList() || portNameConfig->isStruct()) {
-			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"Configuration variable \"PortName\" is a struct or a string list.");
+			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"Configuration variable \"portName\" is a struct or a string list.");
 		}
 
 		portName = portNameConfig->getStringValue();
@@ -95,10 +95,126 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
 			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"I/O Port is not an I2C port.");
 		}
 	} catch (std::exception const& e) {
-		LOG4CXX_ERROR(logger, "Read configuration of driver \"" << driverName
+		LOG4CXX_ERROR(logger, "Read configuration \"portName\" of driver \"" << driverName
 				<< "\" failed:"
 				<< e.what());
 		throw;
+	}
+
+	try {
+		auto sensorTypeConfig =  configuration.searchProperty("sensorType");
+
+		if (sensorTypeConfig->isList() || sensorTypeConfig->isStruct()) {
+			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"Configuration variable \"sensorType\" is a struct or a string list.");
+		}
+
+		// Be generous. Accept lowercase letter 'a' as valid sensor type too.
+		if (sensorTypeConfig->getStringValue().compare("A") || sensorTypeConfig->getStringValue().compare("a")) {
+			sensorType = SENSOR_TYPE_A;
+		}
+
+		// Be generous. Accept lowercase letter 'b' as valid sensor type too.
+		if (sensorTypeConfig->getStringValue().compare("B") || sensorTypeConfig->getStringValue().compare("b")) {
+			sensorType = SENSOR_TYPE_B;
+		}
+
+		if (sensorType == SENSOR_TYPE_UNDEFINED) {
+			std::stringstream str;
+			str << __FUNCTION__ << ": Configuration value of \"sensorType\" for driver \"" << driverName
+					<< "\" is :\"" << sensorTypeConfig->getStringValue() << "\". Valid values are 'A' or 'B'.";
+			LOG4CXX_ERROR (logger, str.str());
+			throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
+		}
+
+	} catch (std::exception const& e) {
+		std::ostringstream str;
+
+		str << "Read configuration \"sensorType\" of driver \"" << driverName
+				<< "\" failed: "
+				<< e.what();
+		LOG4CXX_ERROR(logger, str.str());
+		throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
+	}
+
+	{
+		double tmpVal;
+
+		tmpVal = configuration.getPropertyValue("pMin_inH2O", NAN);
+
+		if (!isnan(tmpVal)) {
+			pMin = tmpVal * InchH20toMBar;
+		}
+
+		tmpVal = configuration.getPropertyValue("pMin_hPa", NAN);
+		if (!isnan(tmpVal)) {
+			if (!isnan(pMin)) {
+				std::ostringstream str;
+
+				str << "Read pMin configuration for driver \"" << driverName
+						<< "\" failed: Both configurations \"pMin_inH2O\" and \"pMin_hPa\" are defined. "
+						"Only one of these is allowed.";
+				LOG4CXX_ERROR(logger, str.str());
+				throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
+			} else {
+				pMin = tmpVal;
+			}
+		}
+
+		if (isnan(pMin)) {
+			std::ostringstream str;
+			str << "Read pMin configuration for driver \"" << driverName
+					<< "\" failed: Either neither configurations \"pMin_inH2O\" and \"pMin_hPa\" are defined, "
+					"or the value is not numeric.";
+
+		}
+
+
+		tmpVal = configuration.getPropertyValue("pMax_inH2O", NAN);
+
+		if (!isnan(tmpVal)) {
+			pMax = tmpVal * InchH20toMBar;
+		}
+
+		tmpVal = configuration.getPropertyValue("pMax_hPa", NAN);
+		if (!isnan(tmpVal)) {
+			if (!isnan(pMax)) {
+				std::ostringstream str;
+
+				str << "Read pMax configuration for driver \"" << driverName
+						<< "\" failed: Both configurations \"pMax_inH2O\" and \"pMax_hPa\" are defined. "
+						"Only one of these is allowed.";
+				LOG4CXX_ERROR(logger, str.str());
+				throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
+			} else {
+				pMax = tmpVal;
+			}
+		}
+
+		if (isnan(pMax)) {
+			std::ostringstream str;
+			str << "Read pMax configuration for driver \"" << driverName
+					<< "\" failed: Either neither configurations \"pMax_inH2O\" and \"pMax_hPa\" are defined, "
+					"or the value is not numeric.";
+
+		}
+
+	}
+
+	// See description of convertRegisterPressureToMBar() for these calculations
+	{
+		double loFact;
+		double hiFact;
+
+		if (sensorType == SENSOR_TYPE_A) {
+			loFact = 0.1;
+			hiFact = 0.8;
+		} else {
+			loFact = 0.05;
+			hiFact = 0.9;
+		}
+
+	     f1 = 16383.0*loFact;
+	     f2 = (pMax-pMin)/(16383.0*hiFact);
 	}
 
 	i2cAddress = (long long)(configuration.getPropertyValue(
@@ -114,11 +230,17 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
     		std::string("errorTimeout"),
 			(long long)(errorMaxNumRetries));
 
+    LOG4CXX_INFO(logger,"	sensorType = " << configuration.searchProperty("sensorType")->getStringValue());
+    LOG4CXX_INFO(logger,"	pMin = " << pMin);
+    LOG4CXX_INFO(logger,"	pMax = " << pMax);
 	LOG4CXX_INFO(logger,"	portName = " << portName);
-	LOG4CXX_INFO(logger,"	i2cAddress = 0x" << std::hex <<  i2cAddress << std::dec);
+	LOG4CXX_INFO(logger,"	i2cAddress = 0x" << std::hex <<  uint32_t(i2cAddress) << std::dec);
 	LOG4CXX_INFO(logger,"	useTemperatureSensor = " << useTemperatureSensor);
 	LOG4CXX_INFO(logger,"	errorTimeout = " << errorTimeout);
 	LOG4CXX_INFO(logger,"	errorMaxNumRetries = " << errorMaxNumRetries);
+
+    LOG4CXX_DEBUG(logger,"	f1 = " << f1);
+    LOG4CXX_DEBUG(logger,"	f2 = " << f2);
 
 }
 
@@ -243,8 +365,8 @@ void MS4515Driver::processingMainLoop() {
 		//std::this_thread::sleep_until(nextStartConversion + 60ms);
 
 		readoutMS4515();
-		//nextStartConversion += 100ms;
-		//std::this_thread::sleep_until(nextStartConversion);
+		nextStartConversion += 20ms;
+		std::this_thread::sleep_until(nextStartConversion);
 	}
 
 }
@@ -263,8 +385,12 @@ void MS4515Driver::readoutMS4515() {
 	uint16_t temperatureRawVal;
 
 	ioPort->readBlock(i2cAddress, sensorValues, sizeof(sensorValues));
-
 	status = (sensorValues[MS4515_BRIDGE_HIGH] & MS4515_STATUS_MASK) >> MS4515_STATUS_BIT;
+	if (status == MS4515_STATUS_STALE) {
+		LOG4CXX_TRACE(logger,__FUNCTION__<< " stale status. Read again");
+		ioPort->readBlock(i2cAddress, sensorValues, sizeof(sensorValues));
+		status = (sensorValues[MS4515_BRIDGE_HIGH] & MS4515_STATUS_MASK) >> MS4515_STATUS_BIT;
+	}
 	pressureRawVal =
 			(uint16_t(sensorValues[MS4515_BRIDGE_HIGH]) & MS4515_PRESSURE_HIGH_BYTE_MASK) << 8 |
 			uint16_t(sensorValues[MS4515_BRIDGE_LOW]);

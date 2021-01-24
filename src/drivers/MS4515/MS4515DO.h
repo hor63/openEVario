@@ -38,7 +38,25 @@
 
 namespace openEV::drivers::MS4515 {
 
-	static constexpr uint32_t MS4515DOI2CAddr = 0x40;
+	/// Default I2C address of a MS4515
+	static constexpr uint32_t MS4515DOI2CAddr = 0x46;
+
+	/** Conversion between pressure in Inches of Water column (inH2) to mBar.
+	 *
+	 * Seriously, is *ANYONE* using crap units like this still these days???? \n
+	 * And I am not talking about Imperial Units which are precisely defined to metric ones
+	 * but ones which depend on material properties like here density of water (depending on temperature),
+	 * and gravity. \n
+	 * Do a Google search and you get a lot slightly different values on the last digits. \n
+	 * Main reason seems that no one can agree on the temperature of the water in that column,
+	 * and thus density. In addition the pressure value also depends on the local Gravity :D
+	 *
+	 * I cannot believe that TE Connectivity (formerly Measurement Specialties - MEAS Sensors)
+	 * are using something so ill defined.
+	 *
+	 * \see [Wikipedia: Inch of water](https://en.wikipedia.org/wiki/Inch_of_water)
+	 */
+	static constexpr FloatType InchH20toMBar = 2.49082;
 
 #if defined DOXYGEN
     enum MS4515Register {
