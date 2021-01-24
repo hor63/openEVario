@@ -115,7 +115,7 @@ void MPL3115Driver::readConfiguration (Properties4CXX::Properties const &configu
 			(long long)(errorMaxNumRetries));
 
 	LOG4CXX_INFO(logger,"	portName = " << portName);
-	LOG4CXX_INFO(logger,"	i2cAddress = 0x" << std::hex <<  i2cAddress << std::dec);
+	LOG4CXX_INFO(logger,"	i2cAddress = 0x" << std::hex <<  uint32_t(i2cAddress) << std::dec);
 	LOG4CXX_INFO(logger,"	useTemperatureSensor = " << useTemperatureSensor);
 	LOG4CXX_INFO(logger,"	errorTimeout = " << errorTimeout);
 	LOG4CXX_INFO(logger,"	errorMaxNumRetries = " << errorMaxNumRetries);
