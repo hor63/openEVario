@@ -109,7 +109,7 @@ void NmeaGPSDriver::readConfiguration (Properties4CXX::Properties const &configu
     		std::string("errorTimeout"),
 			(long long)(errorTimeout));
     errorMaxNumRetries = configuration.getPropertyValue(
-    		std::string("errorTimeout"),
+    		std::string("errorMaxNumRetries"),
 			(long long)(errorMaxNumRetries));
     CEP = configuration.getPropertyValue(
     		std::string("CEP"),

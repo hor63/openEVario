@@ -111,7 +111,7 @@ void MPL3115Driver::readConfiguration (Properties4CXX::Properties const &configu
     		std::string("errorTimeout"),
 			(long long)(errorTimeout));
     errorMaxNumRetries = configuration.getPropertyValue(
-    		std::string("errorTimeout"),
+    		std::string("errorMaxNumRetries"),
 			(long long)(errorMaxNumRetries));
 
 	LOG4CXX_INFO(logger,"	portName = " << portName);

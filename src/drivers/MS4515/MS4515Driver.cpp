@@ -227,7 +227,7 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
     		std::string("errorTimeout"),
 			(long long)(errorTimeout));
     errorMaxNumRetries = configuration.getPropertyValue(
-    		std::string("errorTimeout"),
+    		std::string("errorMaxNumRetries"),
 			(long long)(errorMaxNumRetries));
 
     LOG4CXX_INFO(logger,"	sensorType = " << configuration.searchProperty("sensorType")->getStringValue());
