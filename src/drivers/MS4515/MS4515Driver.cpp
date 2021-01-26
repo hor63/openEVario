@@ -129,7 +129,7 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
 	} catch (std::exception const& e) {
 		std::ostringstream str;
 
-		str << "Read configuration \"sensorType\" of driver \"" << driverName
+		str << "Read configuration \"sensorType\" for driver \"" << driverName
 				<< "\" failed: "
 				<< e.what();
 		LOG4CXX_ERROR(logger, str.str());
@@ -374,7 +374,37 @@ void MS4515Driver::processingMainLoop() {
 /// Like in the AVR libraries
 #define _BV(x) (1<<(x))
 
+/** \brief Convert pressure sensor reading to pressure in mBar for a Type A sensor
+ *
+ * Look up "Interfacing To MEAS Digital Pressure Modules" in the
+ * \ref openEV::drivers::MS4515 namespace description how to retrieve
+ * the binary register values from the register bank of the sensor.
+ *
+ * The formula is: \n
+ * (output - 16383*loFact) * (pMax-pMin) / (16383*hiFact) + pMin \n
+ * \p loFact is 0.05 for B-type, and 0.1 for A-type sensors. \n
+ * \p hiFact is 0.9 for B-type, and 0.8 for A-type sensors.
+ *
+ * Constant factors in the formula up there are pre-calculated in \ref readConfiguration():
+ * - \ref f1 = 16383*loFact
+ * - \ref f2 = (pMax-pMin)/(16383*hiFact)
+ *
+ * Thus the formula becomes \n
+ * (output - f1) * f2 + pMin
+ *
+ * @param registerVal Binary value from registers 0 and 1 of the sensor.
+ * @return Converted value in mBar
+ */
+FloatType MS4515Driver::convertRegisterPressureToMBar(
+		FloatType registerVal) const {
+	FloatType rc;
 
+	rc = (registerVal - f1) * f2 + pMin;
+
+	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Pressure = " << rc << " hPa");
+
+	return rc;
+}
 
 void MS4515Driver::readoutMS4515() {
 
@@ -408,6 +438,8 @@ void MS4515Driver::readoutMS4515() {
 	temperatureVal = FloatType(temperatureRawVal) * (50.0f/511.0f) - 50.0f;
 
 	LOG4CXX_DEBUG(logger, __FUNCTION__ << ": temperatureVal = " << temperatureVal);
+
+	pressureVal = convertRegisterPressureToMBar(pressureRawVal);
 
 }
 
