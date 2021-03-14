@@ -192,6 +192,12 @@ private:
      */
     SensorType sensorType = SENSOR_TYPE_UNDEFINED;
 
+    /// Estimated bias of the sensor in mBar&hPa
+    FloatType pressureBias = 0.0f;
+
+    /// Measurement variance is calculated as 2% of the measurement range.
+    FloatType pressureVariance = 4.0f;
+
     /// Latest pressure value in mBar
     FloatType pressureVal = NAN;
 
