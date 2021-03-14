@@ -254,7 +254,7 @@ public:
      * [Wikipedia: Dynamic pressure](https://en.wikipedia.org/wiki/Dynamic_pressure). The required air density comes from
      * [Wikipedia: Density of air](https://en.wikipedia.org/wiki/Density_of_air)
      * I am ignoring water vapor in all calculations.
-     * @param[in] measuredDynamicPressure Dynamic (pitot) pressure in Pascal (difference between static and total pressure).
+     * @param[in] measuredDynamicPressure Dynamic (pitot) pressure in hPa(mBar) (difference between static and total pressure).
      * @param[in] measuredTemperature Ambient temperature in Degrees Celsius at the current altitude
      * @param[in] dynamicPressureVariance Variance of the dynamic pressure
      * @param[in,out] measurementVector The applicable column is updated for information purposes.

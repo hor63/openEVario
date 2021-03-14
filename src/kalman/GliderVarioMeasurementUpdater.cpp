@@ -867,9 +867,13 @@ GliderVarioMeasurementUpdater::dynamicPressureUpd (
     // This term is used repeatedly
     // Note, pressure must be in Pascal
     FloatType pressRspecTemp = varioStatus.lastPressure * (100.0f / RspecTimes2) / (measuredTemperature + CtoK);
-    FloatType tmp1;
+    FloatType tmp1, tmp2;
     FloatType dynPressure;
     Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,1);
+
+    // Convert the measured pressure to Pa
+    measuredDynamicPressure *= 100.0f;
+    dynamicPressureVariance *= 10000.0f;
 
     measRowT.reserve(GliderVarioStatus::STATUS_NUM_ROWS);
 
@@ -880,8 +884,10 @@ GliderVarioMeasurementUpdater::dynamicPressureUpd (
     tmp1 = pressRspecTemp * varioStatus.trueAirSpeed;
     dynPressure = tmp1 * varioStatus.trueAirSpeed;
 
+    tmp2 = pressRspecTemp * (varioStatus.trueAirSpeed + 1.0f) * (varioStatus.trueAirSpeed + 1.0f);
+
     // True derivate
-    measRowT.insert(GliderVarioStatus::STATUS_IND_TAS,0) = tmp1 * 2.0f;
+    measRowT.insert(GliderVarioStatus::STATUS_IND_TAS,0) = tmp2 - dynPressure;
 
 
     if (unitTestMode) {
@@ -891,7 +897,8 @@ GliderVarioMeasurementUpdater::dynamicPressureUpd (
     }
 
     LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measuredDynamicPressure = " <<  measuredDynamicPressure
-    		<< ", calculated dynPressure = " << dynPressure << ", variance = " << dynamicPressureVariance);
+    		<< "Pa, calculated dynPressure = " << dynPressure << "Pa, variance = " << dynamicPressureVariance
+			<< ": derivative = " << measRowT.coeff(GliderVarioStatus::STATUS_IND_TAS,0));
 
     calcSingleMeasureUpdate (
             measuredDynamicPressure,
