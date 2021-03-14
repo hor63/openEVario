@@ -217,6 +217,11 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
 	     f2 = (pMax-pMin)/(16383.0*hiFact);
 	}
 
+	// Expected error is 2% of the measurement range
+	pressureVariance = (pMax - pMin) * 0.02;
+	// Variance is square of the expected error
+	pressureVariance = pressureVariance * pressureVariance;
+
 	i2cAddress = (long long)(configuration.getPropertyValue(
 	    		std::string("i2cAddress"),
 				(long long)(i2cAddress)));
@@ -273,44 +278,10 @@ void MS4515Driver::initializeStatus(
 			LOG4CXX_TRACE(logger," initValues[" << i << "] = " << initValues[i]);
 		}
 		avgPressure /= FloatType(NumInitValues);
-		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": avgPressure = " << avgPressure);
+		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": avgPressure = pressureBias = " << avgPressure);
 
-		if (isnan(varioStatus.altMSL)) {
-			if (!isnan(varioStatus.qff) && !isnan(temperatureVal) /*!isnan(measurements.tempLocalC)*/) {
-			auto const currTempK = temperatureVal /*measurements.tempLocalC*/ + CtoK;
-			varioStatus.altMSL  = (currTempK -(pow((avgPressure / varioStatus.qff),(1.0/BarometricFormulaExponent)) * currTempK)) / TempLapseIndiffBoundLayer;
-			varioStatus.lastPressure = avgPressure;
-			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Initial altitude from QFF:" << varioStatus.qff
-					<< ", Temp (K): " << currTempK
-					<< " = " << varioStatus.altMSL);
-
-			// 1 mbar initial uncertainty translated into 8m.
-			varioStatus.getErrorCovariance_P().
-							coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) = SQUARE(1.0*8.0);
-
-			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Initial variance = "
-					<< varioStatus.getErrorCovariance_P().
-					coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL));
-			} else {
-				LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Either QFF or local temperature or both are undefined. QFF = "
-						<< varioStatus.qff << ", temperature = " << temperatureVal);
-			}
-
-		} else {
-			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": altMSL is already defined = " << varioStatus.altMSL);
-		}
-
-		if (isnan(varioStatus.getSystemNoiseCovariance_Q().
-				coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL)) ||
-				(varioStatus.getSystemNoiseCovariance_Q().
-				coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) > SQUARE(4.0) * baseIntervalSec)) {
-
-			varioStatus.getSystemNoiseCovariance_Q().
-							coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) = SQUARE(2.0) * baseIntervalSec;
-			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": System noise increment = "
-					<< varioStatus.getSystemNoiseCovariance_Q().
-												coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL));
-		}
+		// Store the avg pressure as offset
+		pressureBias = avgPressure;
 
 	} else {
 		LOG4CXX_WARN(logger,__FUNCTION__ << "Could not obtain " << NumInitValues
@@ -374,27 +345,6 @@ void MS4515Driver::processingMainLoop() {
 /// Like in the AVR libraries
 #define _BV(x) (1<<(x))
 
-/** \brief Convert pressure sensor reading to pressure in mBar for a Type A sensor
- *
- * Look up "Interfacing To MEAS Digital Pressure Modules" in the
- * \ref openEV::drivers::MS4515 namespace description how to retrieve
- * the binary register values from the register bank of the sensor.
- *
- * The formula is: \n
- * (output - 16383*loFact) * (pMax-pMin) / (16383*hiFact) + pMin \n
- * \p loFact is 0.05 for B-type, and 0.1 for A-type sensors. \n
- * \p hiFact is 0.9 for B-type, and 0.8 for A-type sensors.
- *
- * Constant factors in the formula up there are pre-calculated in \ref readConfiguration():
- * - \ref f1 = 16383*loFact
- * - \ref f2 = (pMax-pMin)/(16383*hiFact)
- *
- * Thus the formula becomes \n
- * (output - f1) * f2 + pMin
- *
- * @param registerVal Binary value from registers 0 and 1 of the sensor.
- * @return Converted value in mBar
- */
 FloatType MS4515Driver::convertRegisterPressureToMBar(
 		FloatType registerVal) const {
 	FloatType rc;
@@ -410,17 +360,15 @@ void MS4515Driver::readoutMS4515() {
 
 	uint8_t statusVal = 0;
 	uint8_t sensorValues[4];
-	uint8_t status;
+	uint8_t status = MS4515_STATUS_STALE;
 	uint16_t pressureRawVal;
 	uint16_t temperatureRawVal;
 
-	ioPort->readBlock(i2cAddress, sensorValues, sizeof(sensorValues));
-	status = (sensorValues[MS4515_BRIDGE_HIGH] & MS4515_STATUS_MASK) >> MS4515_STATUS_BIT;
-	if (status == MS4515_STATUS_STALE) {
-		LOG4CXX_TRACE(logger,__FUNCTION__<< " stale status. Read again");
+	do {
 		ioPort->readBlock(i2cAddress, sensorValues, sizeof(sensorValues));
 		status = (sensorValues[MS4515_BRIDGE_HIGH] & MS4515_STATUS_MASK) >> MS4515_STATUS_BIT;
-	}
+		LOG4CXX_TRACE(logger,__FUNCTION__<< " Status = " << MS4515Status(status));
+	} while (status == MS4515_STATUS_STALE);
 	pressureRawVal =
 			(uint16_t(sensorValues[MS4515_BRIDGE_HIGH]) & MS4515_PRESSURE_HIGH_BYTE_MASK) << 8 |
 			uint16_t(sensorValues[MS4515_BRIDGE_LOW]);
@@ -440,6 +388,24 @@ void MS4515Driver::readoutMS4515() {
 	LOG4CXX_DEBUG(logger, __FUNCTION__ << ": temperatureVal = " << temperatureVal);
 
 	pressureVal = convertRegisterPressureToMBar(pressureRawVal);
+
+	if (getIsKalmanUpdateRunning()) {
+		GliderVarioMainPriv::LockedCurrentStatus lockedStatus(*varioMain);
+		FloatType &tempLocalC = lockedStatus.getMeasurementVector()->tempLocalC;
+
+		if (useTemperatureSensor) {
+			tempLocalC = temperatureVal;
+		}
+
+		GliderVarioMeasurementUpdater::dynamicPressureUpd(pressureVal /* - pressureBias*/, tempLocalC, pressureVariance,
+				*lockedStatus.getMeasurementVector(), *lockedStatus.getCurrentStatus());
+	} else {
+		if (numValidInitValues < NumInitValues) {
+			initValues[numValidInitValues] = pressureVal;
+			numValidInitValues ++;
+		}
+	}
+
 
 }
 
