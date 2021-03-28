@@ -133,6 +133,33 @@ void GliderVarioDriverBase::shutdown() {
 
 }
 
+void GliderVarioDriverBase::readOrCreateConfigValue(
+		Properties4CXX::Properties* calibrationDataParameters,
+		char const* parameterName,
+		double& value
+		) {
+
+	try {
+		Properties4CXX::Property const * prop = calibrationDataParameters->searchProperty(parameterName);
+		value = prop->getDoubleValue();
+	} catch (Properties4CXX::ExceptionPropertyNotFound const &e) {
+		calibrationDataParameters->addProperty(new Properties4CXX::PropertyDouble(parameterName,value));
+	}
+	catch (std::exception const &e) {}
+
+}
+
+void GliderVarioDriverBase::writeConfigValue (
+		Properties4CXX::Properties* calibrationDataParameters,
+		char const* parameterName,
+		double value
+		) {
+	calibrationDataParameters->deletePropery(parameterName);
+	calibrationDataParameters->addProperty(new Properties4CXX::PropertyDouble(parameterName,value));
+}
+
+
+
 
 #if !defined DOXYGEN
 GliderVarioDriverBase::SensorCapabilityHelperClass GliderVarioDriverBase::SensorCapabilityHelperObj;
