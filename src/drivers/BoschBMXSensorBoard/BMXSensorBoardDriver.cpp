@@ -120,40 +120,40 @@ void BMXSensorBoardDriver::driverInit(GliderVarioMainPriv &varioMain) {
 			calibrationDataParameters = new Properties4CXX::Properties(calibrationDataFileName);
 
 		}
+
+		readOrCreateConfigValue(calibrationDataParameters,"magXFactor",calibrationData.magXFactor);
+		readOrCreateConfigValue(calibrationDataParameters,"magYFactor",calibrationData.magYFactor);
+		readOrCreateConfigValue(calibrationDataParameters,"magZFactor",calibrationData.magZFactor);
+		readOrCreateConfigValue(calibrationDataParameters,"magXBias",calibrationData.magXBias);
+		readOrCreateConfigValue(calibrationDataParameters,"magYBias",calibrationData.magYBias);
+		readOrCreateConfigValue(calibrationDataParameters,"magZBias",calibrationData.magZBias);
+		readOrCreateConfigValue(calibrationDataParameters,"magXVariance",calibrationData.magXVariance);
+		readOrCreateConfigValue(calibrationDataParameters,"magYVariance",calibrationData.magYVariance);
+		readOrCreateConfigValue(calibrationDataParameters,"magZVariance",calibrationData.magZVariance);
+
+		readOrCreateConfigValue(calibrationDataParameters,"gyrXFactor",calibrationData.gyrXFactor);
+		readOrCreateConfigValue(calibrationDataParameters,"gyrYFactor",calibrationData.gyrYFactor);
+		readOrCreateConfigValue(calibrationDataParameters,"gyrZFactor",calibrationData.gyrZFactor);
+		readOrCreateConfigValue(calibrationDataParameters,"gyrXBias",calibrationData.gyrXBias);
+		readOrCreateConfigValue(calibrationDataParameters,"gyrYBias",calibrationData.gyrYBias);
+		readOrCreateConfigValue(calibrationDataParameters,"gyrZBias",calibrationData.gyrZBias);
+		readOrCreateConfigValue(calibrationDataParameters,"gyrXVariance",calibrationData.gyrXVariance);
+		readOrCreateConfigValue(calibrationDataParameters,"gyrYVariance",calibrationData.gyrYVariance);
+		readOrCreateConfigValue(calibrationDataParameters,"gyrZVariance",calibrationData.gyrZVariance);
+
+		readOrCreateConfigValue(calibrationDataParameters,"accelXBias",calibrationData.accelXBias);
+		readOrCreateConfigValue(calibrationDataParameters,"accelYBias",calibrationData.accelYBias);
+		readOrCreateConfigValue(calibrationDataParameters,"accelZBias",calibrationData.accelZBias);
+		readOrCreateConfigValue(calibrationDataParameters,"accelXFactor",calibrationData.accelXFactor);
+		readOrCreateConfigValue(calibrationDataParameters,"accelYFactor",calibrationData.accelYFactor);
+		readOrCreateConfigValue(calibrationDataParameters,"accelZFactor",calibrationData.accelZFactor);
+		readOrCreateConfigValue(calibrationDataParameters,"accelXVariance",calibrationData.accelXVariance);
+		readOrCreateConfigValue(calibrationDataParameters,"accelYVariance",calibrationData.accelYVariance);
+		readOrCreateConfigValue(calibrationDataParameters,"accelZVariance",calibrationData.accelZVariance);
+
+		readOrCreateConfigValue(calibrationDataParameters,"gravityValue",calibrationData.gravity);
+		readOrCreateConfigValue(calibrationDataParameters,"gravityVariance",calibrationData.gravityVariance);
 	}
-
-	readOrCreateConfigValue(calibrationDataParameters,"magXFactor",calibrationData.magXFactor);
-	readOrCreateConfigValue(calibrationDataParameters,"magYFactor",calibrationData.magYFactor);
-	readOrCreateConfigValue(calibrationDataParameters,"magZFactor",calibrationData.magZFactor);
-	readOrCreateConfigValue(calibrationDataParameters,"magXBias",calibrationData.magXBias);
-	readOrCreateConfigValue(calibrationDataParameters,"magYBias",calibrationData.magYBias);
-	readOrCreateConfigValue(calibrationDataParameters,"magZBias",calibrationData.magZBias);
-	readOrCreateConfigValue(calibrationDataParameters,"magXVariance",calibrationData.magXVariance);
-	readOrCreateConfigValue(calibrationDataParameters,"magYVariance",calibrationData.magYVariance);
-	readOrCreateConfigValue(calibrationDataParameters,"magZVariance",calibrationData.magZVariance);
-
-	readOrCreateConfigValue(calibrationDataParameters,"gyrXFactor",calibrationData.gyrXFactor);
-	readOrCreateConfigValue(calibrationDataParameters,"gyrYFactor",calibrationData.gyrYFactor);
-	readOrCreateConfigValue(calibrationDataParameters,"gyrZFactor",calibrationData.gyrZFactor);
-	readOrCreateConfigValue(calibrationDataParameters,"gyrXBias",calibrationData.gyrXBias);
-	readOrCreateConfigValue(calibrationDataParameters,"gyrYBias",calibrationData.gyrYBias);
-	readOrCreateConfigValue(calibrationDataParameters,"gyrZBias",calibrationData.gyrZBias);
-	readOrCreateConfigValue(calibrationDataParameters,"gyrXVariance",calibrationData.gyrXVariance);
-	readOrCreateConfigValue(calibrationDataParameters,"gyrYVariance",calibrationData.gyrYVariance);
-	readOrCreateConfigValue(calibrationDataParameters,"gyrZVariance",calibrationData.gyrZVariance);
-
-	readOrCreateConfigValue(calibrationDataParameters,"accelXBias",calibrationData.accelXBias);
-	readOrCreateConfigValue(calibrationDataParameters,"accelYBias",calibrationData.accelYBias);
-	readOrCreateConfigValue(calibrationDataParameters,"accelZBias",calibrationData.accelZBias);
-	readOrCreateConfigValue(calibrationDataParameters,"accelXFactor",calibrationData.accelXFactor);
-	readOrCreateConfigValue(calibrationDataParameters,"accelYFactor",calibrationData.accelYFactor);
-	readOrCreateConfigValue(calibrationDataParameters,"accelZFactor",calibrationData.accelZFactor);
-	readOrCreateConfigValue(calibrationDataParameters,"accelXVariance",calibrationData.accelXVariance);
-	readOrCreateConfigValue(calibrationDataParameters,"accelYVariance",calibrationData.accelYVariance);
-	readOrCreateConfigValue(calibrationDataParameters,"accelZVariance",calibrationData.accelZVariance);
-
-	readOrCreateConfigValue(calibrationDataParameters,"gravityValue",calibrationData.gravity);
-	readOrCreateConfigValue(calibrationDataParameters,"gravityVariance",calibrationData.gravityVariance);
 
 }
 
