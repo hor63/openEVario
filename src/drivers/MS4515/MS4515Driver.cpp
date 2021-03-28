@@ -61,7 +61,7 @@ MS4515Driver::MS4515Driver(
 	initLogger();
 #endif /* HAVE_LOG4CXX_H */
 
-	setSensorCapability(STATIC_PRESSURE	);
+	setSensorCapability(DYNAMIC_PRESSURE);
 
 }
 
@@ -217,8 +217,8 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
 	     f2 = (pMax-pMin)/(16383.0*hiFact);
 	}
 
-	// Expected error is 2% of the measurement range
-	pressureVariance = (pMax - pMin) * 0.02;
+	// Expected error is assessed by the full measurement range.
+	pressureVariance = (pMax - pMin) * pressureErrorFactor;
 	// Variance is square of the expected error
 	pressureVariance = pressureVariance * pressureVariance;
 
@@ -236,8 +236,9 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
 			(long long)(errorMaxNumRetries));
 
     LOG4CXX_INFO(logger,"	sensorType = " << configuration.searchProperty("sensorType")->getStringValue());
-    LOG4CXX_INFO(logger,"	pMin = " << pMin);
-    LOG4CXX_INFO(logger,"	pMax = " << pMax);
+    LOG4CXX_INFO(logger,"	pMin (mBar) = " << pMin);
+    LOG4CXX_INFO(logger,"	pMax (mBar)= " << pMax);
+    LOG4CXX_INFO(logger,"	pressureVariance (mBar^2) = " << pressureVariance);
 	LOG4CXX_INFO(logger,"	portName = " << portName);
 	LOG4CXX_INFO(logger,"	i2cAddress = 0x" << std::hex <<  uint32_t(i2cAddress) << std::dec);
 	LOG4CXX_INFO(logger,"	useTemperatureSensor = " << useTemperatureSensor);

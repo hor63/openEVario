@@ -52,6 +52,15 @@ public:
 		SENSOR_TYPE_B, ///< Sensor type B defines pMin as 5%, and pMax as 95% of the physical measurement range of 0x3fff.
 	};
 
+    /** \brief Expected error of the sensor as factor of the measurement range.
+     *
+     * Expected error is calculated as 0.25% of the measurement range.
+     * However I am not using the full range of the sensor.
+     * A sensor for 50mBar is good for 300km/h on MSL pressure.
+     * Typical everyday use is up to 150 where the vario is supposed to really useful.
+     * Therefore another 0.25 factor multiplied
+     */
+    static constexpr FloatType pressureErrorFactor = 0.25f * 0.25f * 0.01;
 
 	MS4515Driver(
     	    char const *driverName,
@@ -195,8 +204,8 @@ private:
     /// Estimated bias of the sensor in mBar&hPa
     FloatType pressureBias = 0.0f;
 
-    /// Measurement variance is calculated as 2% of the measurement range.
-    FloatType pressureVariance = 4.0f;
+    /// Actual pressure variance
+    FloatType pressureVariance = pressureErrorFactor * pressureErrorFactor;
 
     /// Latest pressure value in mBar
     FloatType pressureVal = NAN;
