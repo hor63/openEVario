@@ -46,7 +46,7 @@ namespace openEV::drivers::MS4515 {
 	 * Seriously, is *ANYONE* using crap units like this still these days???? \n
 	 * And I am not talking about Imperial Units which are precisely defined to metric ones
 	 * but ones which depend on material properties like here density of water (depending on temperature),
-	 * and gravity. \n
+	 * and gravity of Earth. \n
 	 * Do a Google search and you get a lot slightly different values on the last digits. \n
 	 * Main reason seems that no one can agree on the temperature of the water in that column,
 	 * and thus density. In addition the pressure value also depends on the local Gravity :D
