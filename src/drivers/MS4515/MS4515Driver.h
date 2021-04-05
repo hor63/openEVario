@@ -62,6 +62,8 @@ public:
      */
     static constexpr FloatType pressureErrorFactor = 0.25f * 0.25f * 0.01;
 
+    static constexpr char const * const pressureBiasCalibrationName = "pressureBias";
+
 	MS4515Driver(
     	    char const *driverName,
 			char const *description,
@@ -201,8 +203,8 @@ private:
      */
     SensorType sensorType = SENSOR_TYPE_UNDEFINED;
 
-    /// Estimated bias of the sensor in mBar&hPa
-    FloatType pressureBias = 0.0f;
+    /// Estimated bias of the sensor in mBar/hPa
+    FloatType pressureBias = NAN;
 
     /// Actual pressure variance
     FloatType pressureVariance = pressureErrorFactor * pressureErrorFactor;
@@ -238,6 +240,11 @@ private:
      */
     FloatType f2 = NAN;
 
+    /// Name of the calibration data parameter file
+    std::string calibrationDataFileName;
+
+    /// Loaded and parsed calibration data
+    Properties4CXX::Properties *calibrationDataParameters = nullptr;
 
 };
 
