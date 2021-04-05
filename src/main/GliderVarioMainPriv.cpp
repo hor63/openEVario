@@ -431,6 +431,8 @@ void GliderVarioMainPriv::startup () {
     // Start the internal threads of the drivers. These will open the ports, and start acquiring sensor data
     driverList.startupDrivers(*this);
 
+    // Initialize the status to NAN. Let the drivers initialize the Kalman status with initial measurements.
+    // Finally initialize all remaining items still NAN with default values.
 	intializeStatus();
 
 }
