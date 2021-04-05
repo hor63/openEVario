@@ -75,6 +75,28 @@ void MS4515Driver::driverInit(GliderVarioMainPriv &varioMain) {
 
 	this->varioMain = &varioMain;
 
+	// Read the calibration data file, and extract the initial parameters
+	if (calibrationDataParameters) {
+		try {
+			calibrationDataParameters->readConfiguration();
+		} catch (std::exception const &e) {
+			LOG4CXX_ERROR(logger,"Driver " << driverName
+					<< ": Error reading calibration data from file " << calibrationDataFileName
+					<< ": " << e.what());
+			// The file does not exist, or it has unexpected/undefined content.
+			// Therefore I am initializing the calibration parameters fresh.
+			delete calibrationDataParameters;
+			calibrationDataParameters = new Properties4CXX::Properties(calibrationDataFileName);
+
+		}
+
+		double pressureBiasD = pressureBias;
+		readOrCreateConfigValue(calibrationDataParameters,pressureBiasCalibrationName,pressureBiasD);
+		pressureBias = FloatType(pressureBiasD);
+		LOG4CXX_DEBUG (logger,__FUNCTION__ << ": Driver " << getDriverName()
+				<< " Read pressure bias from calibration data = " << pressureBias);
+	}
+
 }
 
 void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configuration) {
@@ -165,7 +187,8 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
 			str << "Read pMin configuration for driver \"" << driverName
 					<< "\" failed: Either neither configurations \"pMin_inH2O\" and \"pMin_hPa\" are defined, "
 					"or the value is not numeric.";
-
+			LOG4CXX_ERROR(logger, str.str());
+			throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
 		}
 
 
@@ -195,7 +218,8 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
 			str << "Read pMax configuration for driver \"" << driverName
 					<< "\" failed: Either neither configurations \"pMax_inH2O\" and \"pMax_hPa\" are defined, "
 					"or the value is not numeric.";
-
+			LOG4CXX_ERROR(logger, str.str());
+			throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
 		}
 
 	}
@@ -217,6 +241,18 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
 	     f2 = (pMax-pMin)/(16383.0*hiFact);
 	}
 
+    try {
+    	auto fileNameProp = configuration.searchProperty("calibrationDataFile");
+
+		if (!fileNameProp->isList() && !fileNameProp->isStruct()) {
+	    	calibrationDataFileName = fileNameProp->getStringValue();
+	    	calibrationDataParameters = new Properties4CXX::Properties(calibrationDataFileName);
+		}
+
+    } catch (...) {
+    	LOG4CXX_INFO(logger,"Driver" << driverName << ": No calibration data file specified");
+    }
+
 	// Expected error is assessed by the full measurement range.
 	pressureVariance = (pMax - pMin) * pressureErrorFactor;
 	// Variance is square of the expected error
@@ -235,6 +271,7 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
     		std::string("errorMaxNumRetries"),
 			(long long)(errorMaxNumRetries));
 
+    LOG4CXX_INFO(logger,"Driver" << driverName << " data>");
     LOG4CXX_INFO(logger,"	sensorType = " << configuration.searchProperty("sensorType")->getStringValue());
     LOG4CXX_INFO(logger,"	pMin (mBar) = " << pMin);
     LOG4CXX_INFO(logger,"	pMax (mBar)= " << pMax);
@@ -244,6 +281,9 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
 	LOG4CXX_INFO(logger,"	useTemperatureSensor = " << useTemperatureSensor);
 	LOG4CXX_INFO(logger,"	errorTimeout = " << errorTimeout);
 	LOG4CXX_INFO(logger,"	errorMaxNumRetries = " << errorMaxNumRetries);
+	if(calibrationDataParameters) {
+		LOG4CXX_INFO(logger,"	Calibration data file name = " << calibrationDataFileName);
+	}
 
     LOG4CXX_DEBUG(logger,"	f1 = " << f1);
     LOG4CXX_DEBUG(logger,"	f2 = " << f2);
@@ -275,20 +315,65 @@ void MS4515Driver::initializeStatus(
 		double baseIntervalSec = varioMain.getProgramOptions().idlePredictionCycleMilliSec / 1000.0;
 
 		for (int i = 0 ; i < NumInitValues; i++) {
-			avgPressure += initValues[i];
+			avgPressure += FloatType(initValues[i]);
 			LOG4CXX_TRACE(logger," initValues[" << i << "] = " << initValues[i]);
 		}
-		avgPressure /= FloatType(NumInitValues);
-		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": avgPressure = pressureBias = " << avgPressure);
+		avgPressure = convertRegisterPressureToMBar (avgPressure / FloatType(NumInitValues));
+		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": avgPressure = " << avgPressure << " mBar");
 
-		// Store the avg pressure as offset
-		pressureBias = avgPressure;
+		// Store the avg pressure as offset only when the instrument is obviously not switched on during flight.
+		// or during high-wind conditions on the field (> 20 km/h)
+
+		if (isnan(pressureBias)) {
+			// No pre-loaded bias value from calibration data.
+			// Assume initial startup in controlled environment.
+			pressureBias = avgPressure;
+			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": No bias from calibration data available. pressureBias = " << pressureBias << " mBar");
+		} else {
+
+			// Dynamic pressure in mBar at about 20km/h on the ground at 0C. Variations at different temperatures
+			// and atmospheric pressures are insignificant here.
+			// I only want a threshold to differentiate between switching the device on in high-wind conditions or even in flight.
+			static constexpr FloatType PressureLimit = 0.2;
+
+			if (fabs(avgPressure - pressureBias) < PressureLimit) {
+				// Not too far off.
+				// Assume the measured value is the new offset/bias of the sensor.
+				LOG4CXX_DEBUG(logger,__FUNCTION__ << ":  New pressureBias = " << avgPressure << " mBar");
+				pressureBias = avgPressure;
+			}
+
+		}
+
+		if (pressureBias == avgPressure && calibrationDataParameters) {
+			// The bias has been updated or freshly set.
+			try {
+
+				writeConfigValue(calibrationDataParameters, pressureBiasCalibrationName, pressureBias);
+
+				std::ofstream of(calibrationDataFileName,of.out | of.trunc);
+				if (of.good()) {
+					calibrationDataParameters->writeOut(of);
+					LOG4CXX_DEBUG(logger,__FUNCTION__ << ": written new avg. measurement as bias.");
+				}
+			} catch (std::exception const &e) {
+				LOG4CXX_ERROR(logger,"Error in " << __PRETTY_FUNCTION__
+						<< ". Cannot write calibration data. Error = " << e.what());
+			}
+			catch (...) {}
+		}
+
+#warning Initialize the Kalman status.
 
 	} else {
 		LOG4CXX_WARN(logger,__FUNCTION__ << "Could not obtain " << NumInitValues
 				<< " valid measurements in a row for 20 seconds. Cannot initialize the Kalman filter state.");
+
 	}
 
+	if (isnan(pressureBias)) {
+		pressureBias = 0.0f;
+	}
 
 }
 
@@ -352,7 +437,9 @@ FloatType MS4515Driver::convertRegisterPressureToMBar(
 
 	rc = (registerVal - f1) * f2 + pMin;
 
-	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Pressure = " << rc << " hPa");
+	LOG4CXX_TRACE(logger,__FUNCTION__
+			<< ": Register value = " << std::hex << uint16_t(registerVal) << std::dec
+			<< "; Pressure = " << rc << " hPa");
 
 	return rc;
 }
