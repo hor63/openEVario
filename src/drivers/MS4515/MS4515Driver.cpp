@@ -253,10 +253,9 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
     	LOG4CXX_INFO(logger,"Driver" << driverName << ": No calibration data file specified");
     }
 
-	// Expected error is assessed by the full measurement range.
-	pressureVariance = (pMax - pMin) * pressureErrorFactor;
-	// Variance is square of the expected error
-	pressureVariance = pressureVariance * pressureVariance;
+    pressureRange = fabs(pMax - pMin);
+	// Expected static error is assessed by the full measurement range.
+	pressureErrorStatic = pressureErrorStaticFactor * pressureRange;
 
 	i2cAddress = (long long)(configuration.getPropertyValue(
 	    		std::string("i2cAddress"),
@@ -275,7 +274,8 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
     LOG4CXX_INFO(logger,"	sensorType = " << configuration.searchProperty("sensorType")->getStringValue());
     LOG4CXX_INFO(logger,"	pMin (mBar) = " << pMin);
     LOG4CXX_INFO(logger,"	pMax (mBar)= " << pMax);
-    LOG4CXX_INFO(logger,"	pressureVariance (mBar^2) = " << pressureVariance);
+    LOG4CXX_INFO(logger,"	pressureRange (mBar) = " << pressureRange);
+    LOG4CXX_INFO(logger,"	pressureErrorStatic (mBar) = " << pressureErrorStatic);
 	LOG4CXX_INFO(logger,"	portName = " << portName);
 	LOG4CXX_INFO(logger,"	i2cAddress = 0x" << std::hex <<  uint32_t(i2cAddress) << std::dec);
 	LOG4CXX_INFO(logger,"	useTemperatureSensor = " << useTemperatureSensor);
@@ -499,7 +499,7 @@ void MS4515Driver::readoutMS4515() {
 
 	LOG4CXX_DEBUG(logger, __FUNCTION__ << ": temperatureVal = " << temperatureVal);
 
-	pressureVal = convertRegisterPressureToMBar(pressureRawVal);
+    FloatType pressureVal = convertRegisterPressureToMBar(pressureRawVal);
 
 	if (getIsKalmanUpdateRunning()) {
 		GliderVarioMainPriv::LockedCurrentStatus lockedStatus(*varioMain);
@@ -509,7 +509,13 @@ void MS4515Driver::readoutMS4515() {
 			tempLocalC = temperatureVal;
 		}
 
-		GliderVarioMeasurementUpdater::dynamicPressureUpd(pressureVal - pressureBias, tempLocalC, pressureVariance,
+	    pressureVal -= pressureBias;
+
+		FloatType pressureVariance = fabs(pressureVal) * pressureErrorDynFactor + pressureErrorStatic;
+		pressureVariance = pressureVariance * pressureVariance;
+		LOG4CXX_TRACE(logger,__FUNCTION__<< ": pressureVariance = " << pressureVariance);
+
+		GliderVarioMeasurementUpdater::dynamicPressureUpd(pressureVal, tempLocalC, pressureVariance,
 				*lockedStatus.getMeasurementVector(), *lockedStatus.getCurrentStatus());
 	} else {
 		if (numValidInitValues < NumInitValues) {

@@ -52,15 +52,23 @@ public:
 		SENSOR_TYPE_B, ///< Sensor type B defines pMin as 5%, and pMax as 95% of the physical measurement range of 0x3fff.
 	};
 
-    /** \brief Expected error of the sensor as factor of the measurement range.
+    /** \brief Dynamic part of the expected error of the sensor as factor of the measurement range.
      *
-     * Expected error is calculated as 0.25% of the measurement range.
-     * However I am not using the full range of the sensor.
-     * A sensor for 50mBar is good for 300km/h on MSL pressure.
-     * Typical everyday use is up to 150 where the vario is supposed to really useful.
-     * Therefore another 0.25 factor multiplied
+     * The dynamic part of the expected error is calculated as 1% of the <measured value>/<measurement range>.
+     * The dynamic error and the static error calculated by \ref pressureErrorStaticFactor are added together to
+     * calculate the variance for a measured value.
+     * The combination of a small static error, and a dynamic component comes from the relative accuracy at low values
+     * due to automatic offset detection at startup, and the fact that the dynamic pressure is square to the air speed.
      */
-    static constexpr FloatType pressureErrorFactor = 0.25f * 0.25f * 0.01;
+    static constexpr FloatType pressureErrorDynFactor = 0.01;
+
+    /** \brief Static part of the expected error of the sensor as factor of the measurement range.
+     *
+     * The static part of the expected error is calculated as 0.1% of the <measurement range>.
+     *
+     * \see \ref pressureErrorDynFactor
+     */
+    static constexpr FloatType pressureErrorStaticFactor = 0.001;
 
     static constexpr char const * const pressureBiasCalibrationName = "pressureBias";
 
@@ -80,7 +88,7 @@ public:
 
     /** \brief Read the configuration
      *
-     * \see GliderVarioDriverBase::readConfiguration()
+     * \see \ref GliderVarioDriverBase::readConfiguration()
      */
     virtual void readConfiguration (Properties4CXX::Properties const &configuration) override;
 
@@ -206,18 +214,12 @@ private:
     /// Estimated bias of the sensor in mBar/hPa
     FloatType pressureBias = NAN;
 
-    /// Actual pressure variance
-    FloatType pressureVariance = pressureErrorFactor * pressureErrorFactor;
-
-    /// Latest pressure value in mBar
-    FloatType pressureVal = NAN;
-
     /// Latest temperature value in C
     FloatType temperatureVal = NAN;
 
     /** \brief Minimum pressure of the defined range in mBar.
      *
-     * The configuration values are defined in in inH20 (See my rant in \ref InchH20toMBar)
+     * The configuration values can be defined in in inH20 (See my rant in \ref InchH20toMBar)
      * because the sensors are defined this way, and you can simply transcribe from the sensor type.
      */
     FloatType pMin = NAN;
@@ -227,6 +229,19 @@ private:
      * \see \ref pMin
      */
     FloatType pMax = NAN;
+
+    /** \brief Pressure range of the sensor in mBar.
+     *
+     * Range is \ref pMax - \ref pMin.
+     */
+    FloatType pressureRange = NAN;
+
+    /** \brief Static error component of measurements
+     *
+     * This value is calculated in readConfiguration() because it only depends on the range.
+     * \see pressureErrorDynFactor
+     */
+    FloatType pressureErrorStatic = NAN;
 
     /** \brief Helper for convertRegisterPressureToMBar()
      *
