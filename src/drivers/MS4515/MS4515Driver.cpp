@@ -312,13 +312,14 @@ void MS4515Driver::initializeStatus(
 
 	if (numValidInitValues >= NumInitValues) {
 		FloatType avgPressure = 0.0f;
+		FloatType initialTAS = 0.0f;
 		double baseIntervalSec = varioMain.getProgramOptions().idlePredictionCycleMilliSec / 1000.0;
 
 		for (int i = 0 ; i < NumInitValues; i++) {
 			avgPressure += FloatType(initValues[i]);
 			LOG4CXX_TRACE(logger," initValues[" << i << "] = " << initValues[i]);
 		}
-		avgPressure = convertRegisterPressureToMBar (avgPressure / FloatType(NumInitValues));
+		avgPressure /= FloatType(NumInitValues);
 		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": avgPressure = " << avgPressure << " mBar");
 
 		// Store the avg pressure as offset only when the instrument is obviously not switched on during flight.
@@ -339,7 +340,7 @@ void MS4515Driver::initializeStatus(
 			if (fabs(avgPressure - pressureBias) < PressureLimit) {
 				// Not too far off.
 				// Assume the measured value is the new offset/bias of the sensor.
-				LOG4CXX_DEBUG(logger,__FUNCTION__ << ":  New pressureBias = " << avgPressure << " mBar");
+				LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Old Pressure bias = " << pressureBias << ", new pressureBias = " << avgPressure << " mBar");
 				pressureBias = avgPressure;
 			}
 
@@ -361,9 +362,32 @@ void MS4515Driver::initializeStatus(
 						<< ". Cannot write calibration data. Error = " << e.what());
 			}
 			catch (...) {}
+		} else {
+			// There is a significant pressure on the sensor.
+			// Convert it into into IAS. On the ground this is approximately TAS
+			// When there is already an actual pressure value available, even better.
+			FloatType currStaticPressure;
+			if (!isnan(varioStatus.lastPressure)) {
+				currStaticPressure = varioStatus.lastPressure;
+			} else {
+				currStaticPressure = PressureStdMSL;
+			}
+
+			FloatType airDensity = currStaticPressure*100.0f / Rspec / (temperatureVal + CtoK);
+			initialTAS = sqrtf(200.0f * avgPressure / airDensity);
+
+			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": TAS @ "
+					<< temperatureVal << "C, " << currStaticPressure << "mBar = "
+					<< initialTAS << "m/s.");
 		}
 
-#warning Initialize the Kalman status.
+		// All data is collected. Initialize the status
+		varioStatus.trueAirSpeed = initialTAS;
+		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) = 100.0f;
+		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) =
+					SQUARE(2.0) * baseIntervalSec;
+
+
 
 	} else {
 		LOG4CXX_WARN(logger,__FUNCTION__ << "Could not obtain " << NumInitValues
@@ -485,7 +509,7 @@ void MS4515Driver::readoutMS4515() {
 			tempLocalC = temperatureVal;
 		}
 
-		GliderVarioMeasurementUpdater::dynamicPressureUpd(pressureVal /* - pressureBias*/, tempLocalC, pressureVariance,
+		GliderVarioMeasurementUpdater::dynamicPressureUpd(pressureVal - pressureBias, tempLocalC, pressureVariance,
 				*lockedStatus.getMeasurementVector(), *lockedStatus.getCurrentStatus());
 	} else {
 		if (numValidInitValues < NumInitValues) {
