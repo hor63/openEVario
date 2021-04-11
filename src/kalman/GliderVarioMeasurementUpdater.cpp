@@ -867,7 +867,7 @@ GliderVarioMeasurementUpdater::dynamicPressureUpd (
     // This term is used repeatedly
     // Note, pressure must be in Pascal
     FloatType pressRspecTemp = varioStatus.lastPressure * (100.0f / RspecTimes2) / (measuredTemperature + CtoK);
-    FloatType tmp1, tmp2;
+    FloatType tmp2;
     FloatType dynPressure;
     Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,1);
 
@@ -881,12 +881,19 @@ GliderVarioMeasurementUpdater::dynamicPressureUpd (
     // Develop the dynamic pressure gradually to get the derivates of the variables most efficiently
     // dyn pressure = 0.5 * density * speed * speed
     // dyn pressure = 0.5 * (pressure / Rspec /temp) * speed * speed
-    tmp1 = pressRspecTemp * varioStatus.trueAirSpeed;
-    dynPressure = tmp1 * varioStatus.trueAirSpeed;
 
-    tmp2 = pressRspecTemp * (varioStatus.trueAirSpeed + 1.0f) * (varioStatus.trueAirSpeed + 1.0f);
+    // At negative speeds force the calculated pressure to go negative. Otherwise an increase in pressure will
+    // result in a further *decrease* of the calculated speed. Therefore use the absolute value of speed once.
+    // The results are horribly inaccurate at higher speeds, but this will occur only close to 0.
+    // In actual flight this is a non-issue because the speed is always positive except for some hard-core
+    // aerobatics, but that is way beyond the design envelope of this instrument.
+    dynPressure = pressRspecTemp * fabs(varioStatus.trueAirSpeed) * varioStatus.trueAirSpeed;
 
-    // True derivate
+	tmp2 = varioStatus.trueAirSpeed + 1.0f;
+    tmp2 = pressRspecTemp * fabs(tmp2) * tmp2;
+
+    // At negative speeds force the derivate to negative. Otherwise an increase in pressure will
+    // result in a further *decrease* of the calculated speed. Therefore use the absolute value of speed once
     measRowT.insert(GliderVarioStatus::STATUS_IND_TAS,0) = tmp2 - dynPressure;
 
 
