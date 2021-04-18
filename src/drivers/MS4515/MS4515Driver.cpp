@@ -502,25 +502,34 @@ void MS4515Driver::readoutMS4515() {
     FloatType pressureVal = convertRegisterPressureToMBar(pressureRawVal);
 
 	if (getIsKalmanUpdateRunning()) {
-		GliderVarioMainPriv::LockedCurrentStatus lockedStatus(*varioMain);
-		FloatType &tempLocalC = lockedStatus.getMeasurementVector()->tempLocalC;
 
-		if (useTemperatureSensor) {
-			tempLocalC = temperatureVal;
-		}
+		// When the sensor is saturated skip the measurement
+		if (pressureVal >= pMin && pressureVal <= pMax) {
+			GliderVarioMainPriv::LockedCurrentStatus lockedStatus(*varioMain);
+			FloatType &tempLocalC = lockedStatus.getMeasurementVector()->tempLocalC;
 
-	    pressureVal -= pressureBias;
+			if (useTemperatureSensor) {
+				tempLocalC = temperatureVal;
+			}
 
-		FloatType pressureVariance = fabs(pressureVal) * pressureErrorDynFactor + pressureErrorStatic;
-		pressureVariance = pressureVariance * pressureVariance;
-		LOG4CXX_TRACE(logger,__FUNCTION__<< ": pressureVariance = " << pressureVariance);
+			pressureVal -= pressureBias;
 
-		GliderVarioMeasurementUpdater::dynamicPressureUpd(pressureVal, tempLocalC, pressureVariance,
-				*lockedStatus.getMeasurementVector(), *lockedStatus.getCurrentStatus());
+			FloatType pressureVariance = fabs(pressureVal) * pressureErrorDynFactor + pressureErrorStatic;
+			pressureVariance = pressureVariance * pressureVariance;
+			LOG4CXX_TRACE(logger,__FUNCTION__<< ": pressureVariance = " << pressureVariance);
+
+			GliderVarioMeasurementUpdater::dynamicPressureUpd(pressureVal, tempLocalC, pressureVariance,
+					*lockedStatus.getMeasurementVector(), *lockedStatus.getCurrentStatus());
+		} // if (pressureVal >= pMin && pressureVal <= pMax)
 	} else {
-		if (numValidInitValues < NumInitValues) {
-			initValues[numValidInitValues] = pressureVal;
-			numValidInitValues ++;
+		// When the sensor is saturated reset collecting initial values
+		if (pressureVal >= pMin && pressureVal <= pMax) {
+			if (numValidInitValues < NumInitValues) {
+				initValues[numValidInitValues] = pressureVal;
+				numValidInitValues ++;
+			}
+		} else {
+			numValidInitValues = 0;
 		}
 	}
 

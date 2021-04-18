@@ -350,30 +350,39 @@ void MPL3115Driver::readoutMPL3155() {
 		pressureValInt = (((uint32_t(sensorValues[0]) << 8) | uint32_t(sensorValues[1])) << 4) | (uint32_t(sensorValues[2]) >> 4);
 		pressureVal = FloatType(pressureValInt) / 400.0f; // Integer value is Pa*4. Value in mBar.
 
-		LOG4CXX_TRACE(logger,__FUNCTION__ << ": Pressure registers "
-				<< std::hex << uint32_t(sensorValues[0]) << ':' << uint32_t(sensorValues[1]) << ':' << uint32_t(sensorValues[2])
-				<< " = 0x" << std::hex << pressureValInt << std::dec << " = " << pressureValInt
-				);
-		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Pressure = " << pressureVal << " mBar."
-				);
+		// Only accept values within the operational range
+		if (pressureVal >= 500.0f && pressureVal <= 1500.0f) {
 
-		if (getIsKalmanUpdateRunning()) {
-			GliderVarioMainPriv::LockedCurrentStatus lockedStatus(*varioMain);
-			FloatType &tempLocalC = lockedStatus.getMeasurementVector()->tempLocalC;
+			LOG4CXX_TRACE(logger,__FUNCTION__ << ": Pressure registers "
+					<< std::hex << uint32_t(sensorValues[0]) << ':' << uint32_t(sensorValues[1]) << ':' << uint32_t(sensorValues[2])
+					<< " = 0x" << std::hex << pressureValInt << std::dec << " = " << pressureValInt
+					);
+			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Pressure = " << pressureVal << " mBar."
+					);
 
-			if (useTemperatureSensor) {
-				tempLocalC = temperatureVal;
+			if (getIsKalmanUpdateRunning()) {
+				GliderVarioMainPriv::LockedCurrentStatus lockedStatus(*varioMain);
+				FloatType &tempLocalC = lockedStatus.getMeasurementVector()->tempLocalC;
+
+				if (useTemperatureSensor) {
+					tempLocalC = temperatureVal;
+				}
+
+				GliderVarioMeasurementUpdater::staticPressureUpd(
+						pressureVal, tempLocalC, SQUARE(0.5),
+						*lockedStatus.getMeasurementVector(), *lockedStatus.getCurrentStatus());
+
+			} else {
+				if (numValidInitValues < NumInitValues) {
+					initValues[numValidInitValues] = pressureVal;
+					numValidInitValues ++;
+				}
 			}
 
-			GliderVarioMeasurementUpdater::staticPressureUpd(
-					pressureVal, tempLocalC, SQUARE(0.5),
-					*lockedStatus.getMeasurementVector(), *lockedStatus.getCurrentStatus());
-
-		} else {
-			if (numValidInitValues < NumInitValues) {
-				initValues[numValidInitValues] = pressureVal;
-				numValidInitValues ++;
-			}
+		} else { // if (pressureVal >= 500.0f && pressureVal <= 1500.0f) {
+			// and if you are out of the operational range re-start initialization data collection.
+			// More likely the sensor is screwed you you connected the static system to a pump or the oxygen system :D
+			numValidInitValues = 0;
 		}
 
 	} else {
