@@ -39,9 +39,28 @@
 
 namespace openEV::drivers::MS4515 {
 
-/** \brief Driver for Bosch BMX160 IMU which is mounted on the hovImuBoard sensor board
+/** \brief Driver for TE Connectivity Measurement Specialists (MEAS) 4515DO pressure sensors.
  *
- * This driver communicates with the BMX SensorBoard to obtain accelerometer, gyroscope, and magnetometer
+ * This driver focuses and assumes sole use of the sensor as differential sensor for measuring dynamic (impact) pressure
+ * as a measure of air speed.
+ *
+ * The driver first reads the factory calibration values from the ROM in the sensor.
+ * In the startup phase it tries to determine the 0-offset by measuring pressure a couple times, assuming the plane is standing still,
+ * and no significant wind is blowing into it. \n
+ * If the wind is stronger or the device is even switched on mid-flight it falls back to a previously stored 0-offset value.
+ * For this purpose a measured 0-offset is compared with the previous value.
+ * If the new 0-offser differs less 0.2mBar (~20km/h at MSL pressure) from the previous 0-offset the new value is taken as new 0-offset,
+ * and also immediately stored back to the calibration data file. Else the previous 0-offset is taken.\n
+ * Reading and storing of 0-offsets is optional and enabled by configuring the calibration data file name.
+ *
+ * You should use either a 20inH2O(~50mBar) or a 10inH2O sensor. The 20inH2O sensor is good up to 300km/h, the 10inH2O sensor still up to 210km/h.
+ * Anyway use a differential sensor with two ports, one for static pressure the other one for total pressure.
+ *
+ * \see [MS4515DO online at TE Connectivity](https://www.te.com/usa-en/product-CAT-BLPS0001.html)
+ * \see [MS4515DO Datasheet](https://www.te.com/commerce/DocumentDelivery/DDEController?Action=showdoc&DocId=Data+Sheet%7FMS4515DO%7FB10%7Fpdf%7FEnglish%7FENG_DS_MS4515DO_B10.pdf%7FCAT-BLPS0001)
+ * \see [Interface to MS Connectivity digital pressure modules](https://www.te.com/commerce/DocumentDelivery/DDEController?Action=showdoc&DocId=Specification+Or+Standard%7FInterfacing_to_DigitalPressure_Modules%7FA3%7Fpdf%7FEnglish%7FENG_SS_Interfacing_to_DigitalPressure_Modules_A3.pdf%7FCAT-BLPS0001)
+ * \see [Configuration, POR, and Power consumption](https://www.te.com/commerce/DocumentDelivery/DDEController?Action=showdoc&DocId=Specification+Or+Standard%7FConfiguration_POR_and_Power_Consumption%7FA3%7Fpdf%7FEnglish%7FENG_SS_Configuration_POR_and_Power_Consumption_A3.pdf%7FCAT-BLPS0001)
+ *
  */
 class MS4515Driver  : public GliderVarioDriverBase {
 public:
@@ -54,7 +73,7 @@ public:
 
     /** \brief Dynamic part of the expected error of the sensor as factor of the measurement range.
      *
-     * The dynamic part of the expected error is calculated as 1% of the <measured value>/<measurement range>.
+     * The dynamic part of the expected error is calculated as 1% of the &lt;measured value&gt;/&lt;measurement range&gt;.
      * The dynamic error and the static error calculated by \ref pressureErrorStaticFactor are added together to
      * calculate the variance for a measured value.
      * The combination of a small static error, and a dynamic component comes from the relative accuracy at low values
@@ -64,7 +83,7 @@ public:
 
     /** \brief Static part of the expected error of the sensor as factor of the measurement range.
      *
-     * The static part of the expected error is calculated as 0.1% of the <measurement range>.
+     * The static part of the expected error is calculated as 0.1% of the &lt;measurement range&gt;.
      *
      * \see \ref pressureErrorDynFactor
      */
