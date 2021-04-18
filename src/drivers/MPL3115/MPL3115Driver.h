@@ -39,9 +39,12 @@
 
 namespace openEV::drivers::MPL3115 {
 
-/** \brief Driver for Bosch BMX160 IMU which is mounted on the hovImuBoard sensor board
+/** \brief Driver for the MPL3115A2 absolute pressure sensor from NXP
  *
- * This driver communicates with the BMX SensorBoard to obtain accelerometer, gyroscope, and magnetometer
+ * This driver communicates with the sensor via I2C.
+ *
+ * \see [MPL3115A2 web site](https://www.nxp.com/products/sensors/pressure-sensors/barometric-pressure-15-to-150-kpa/20-to-110-kpa-absolute-digital-pressure-sensor:MPL3115A2)
+ * \see [MPL3115A2 data sheet](https://www.nxp.com/docs/en/data-sheet/MPL3150A2.pdf)
  */
 class MPL3115Driver  : public GliderVarioDriverBase {
 public:
