@@ -1,5 +1,8 @@
+#  Created on: Apr 21 2021
+#      Author: hor
+#
 #    This file is part of openEVario, an electronic variometer for glider planes
-#    Copyright (C) 2016  Kai Horstmann
+#    Copyright (C) 2021  Kai Horstmann
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -18,7 +21,7 @@
 SUBDIRS=util kalman main drivers/simul drivers/IGCReader drivers/BoschBMXSensorBoard drivers/NmeaGPS
 
 if BUILD_I2C_PORT_DRIVER
-SUBDIRS+=drivers/MPL3115 drivers/MS4515
+SUBDIRS+=drivers/MPL3115 drivers/MS4515 drivers/AMS5915
 endif
 
 bin_PROGRAMS=openEVario$(EXEEXT)
