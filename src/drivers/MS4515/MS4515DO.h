@@ -22,8 +22,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef DRIVERS_MS4515_MPL3315A2_H_
-#define DRIVERS_MS4515_MPL3315A2_H_
+#ifndef DRIVERS_MS4515DO_H_
+#define DRIVERS_MS4515DO_H_
 
 //#include <stdint.h>
 
@@ -107,4 +107,4 @@ namespace openEV::drivers::MS4515 {
 
 } // namespace openEV::drivers::MS4515
 
-#endif /* DRIVERS_MS4515_MPL3315A2_H_ */
+#endif /* DRIVERS_MS4515DO_H_ */
