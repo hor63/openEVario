@@ -54,21 +54,19 @@ namespace openEV::drivers::AMS5915 {
 	);
 #endif
 
+	/// Bit mask (6 lower bits) of the high byte of the pressure registers
+	static constexpr uint8_t AMS5915_PRESSURE_HIGH_BYTE_MASK = 0b00111111;
+
+	/// Bit mask (upper 3 bits of the lower byte
+	static constexpr uint8_t AMS5915_TEMP_LOW_BYTE_MASK = 0b11100000;
+	/// Number of bits to shift the temperature value to the right.
+	static constexpr uint8_t AMS5915_TEMP_SHIFT_COUNT = 5;
+
 	/// Pressure register value at minimum measurement range
 	static constexpr uint32_t AMS5915PressureRangeMinCount = 1638;
 
 	/// Pressure register value at maximum measurement range
 	static constexpr uint32_t AMS5915PressureRangeMaxCount = 14745;
-
-	/// Temperature register value at -25C
-	static constexpr uint32_t AMS5915TempRangeMinCount = 256;
-	/// Temperature range minimum = -25C
-	static constexpr FloatType AMS5915TempRangeMin = -25.0f;
-
-	/// Temperature register value at +85C
-	static constexpr uint32_t AMS5915TempRangeMaxCount = 1382;
-	/// Temperature range maximum = +85C
-	static constexpr FloatType AMS5915TempRangeMax = 85.0f;
 
 } // namespace openEV::drivers::AMS5915
 

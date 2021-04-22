@@ -123,122 +123,29 @@ void AMS5915Driver::readConfiguration (Properties4CXX::Properties const &configu
 		throw;
 	}
 
-	try {
-		auto sensorTypeConfig =  configuration.searchProperty("sensorType");
-
-		if (sensorTypeConfig->isList() || sensorTypeConfig->isStruct()) {
-			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"Configuration variable \"sensorType\" is a struct or a string list.");
-		}
-
-		// Be generous. Accept lowercase letter 'a' as valid sensor type too.
-		if (sensorTypeConfig->getStringValue().compare("A") || sensorTypeConfig->getStringValue().compare("a")) {
-			sensorType = SENSOR_TYPE_A;
-		}
-
-		// Be generous. Accept lowercase letter 'b' as valid sensor type too.
-		if (sensorTypeConfig->getStringValue().compare("B") || sensorTypeConfig->getStringValue().compare("b")) {
-			sensorType = SENSOR_TYPE_B;
-		}
-
-		if (sensorType == SENSOR_TYPE_UNDEFINED) {
-			std::stringstream str;
-			str << __FUNCTION__ << ": Configuration value of \"sensorType\" for driver \"" << driverName
-					<< "\" is :\"" << sensorTypeConfig->getStringValue() << "\". Valid values are 'A' or 'B'.";
-			LOG4CXX_ERROR (logger, str.str());
-			throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
-		}
-
-	} catch (std::exception const& e) {
-		std::ostringstream str;
-
-		str << "Read configuration \"sensorType\" for driver \"" << driverName
-				<< "\" failed: "
-				<< e.what();
-		LOG4CXX_ERROR(logger, str.str());
-		throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
-	}
-
 	{
-		double tmpVal;
 
-		tmpVal = configuration.getPropertyValue("pMin_inH2O", NAN);
-
-		if (!isnan(tmpVal)) {
-			pMin = tmpVal * InchH20toMBar;
-		}
-
-		tmpVal = configuration.getPropertyValue("pMin_hPa", NAN);
-		if (!isnan(tmpVal)) {
-			if (!isnan(pMin)) {
-				std::ostringstream str;
-
-				str << "Read pMin configuration for driver \"" << driverName
-						<< "\" failed: Both configurations \"pMin_inH2O\" and \"pMin_hPa\" are defined. "
-						"Only one of these is allowed.";
-				LOG4CXX_ERROR(logger, str.str());
-				throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
-			} else {
-				pMin = tmpVal;
-			}
-		}
-
+		pMin = configuration.getPropertyValue("pMin", NAN);
 		if (isnan(pMin)) {
 			std::ostringstream str;
 			str << "Read pMin configuration for driver \"" << driverName
-					<< "\" failed: Either neither configurations \"pMin_inH2O\" and \"pMin_hPa\" are defined, "
+					<< "\" failed: Either configurations \"pMin\" is not defined, "
 					"or the value is not numeric.";
 			LOG4CXX_ERROR(logger, str.str());
 			throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
 		}
 
 
-		tmpVal = configuration.getPropertyValue("pMax_inH2O", NAN);
-
-		if (!isnan(tmpVal)) {
-			pMax = tmpVal * InchH20toMBar;
-		}
-
-		tmpVal = configuration.getPropertyValue("pMax_hPa", NAN);
-		if (!isnan(tmpVal)) {
-			if (!isnan(pMax)) {
-				std::ostringstream str;
-
-				str << "Read pMax configuration for driver \"" << driverName
-						<< "\" failed: Both configurations \"pMax_inH2O\" and \"pMax_hPa\" are defined. "
-						"Only one of these is allowed.";
-				LOG4CXX_ERROR(logger, str.str());
-				throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
-			} else {
-				pMax = tmpVal;
-			}
-		}
-
+		pMax = configuration.getPropertyValue("pMax", NAN);
 		if (isnan(pMax)) {
 			std::ostringstream str;
 			str << "Read pMax configuration for driver \"" << driverName
-					<< "\" failed: Either neither configurations \"pMax_inH2O\" and \"pMax_hPa\" are defined, "
+					<< "\" failed: Either configurations \"pMax\" is not defined, "
 					"or the value is not numeric.";
 			LOG4CXX_ERROR(logger, str.str());
 			throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
 		}
 
-	}
-
-	// See description of convertRegisterPressureToMBar() for these calculations
-	{
-		double loFact;
-		double hiFact;
-
-		if (sensorType == SENSOR_TYPE_A) {
-			loFact = 0.1;
-			hiFact = 0.8;
-		} else {
-			loFact = 0.05;
-			hiFact = 0.9;
-		}
-
-	     f1 = 16383.0*loFact;
-	     f2 = (pMax-pMin)/(16383.0*hiFact);
 	}
 
     try {
@@ -254,6 +161,7 @@ void AMS5915Driver::readConfiguration (Properties4CXX::Properties const &configu
     }
 
     pressureRange = fabs(pMax - pMin);
+    pressureResolution = (pMax - pMin) / (AMS5915PressureRangeMaxCount - AMS5915PressureRangeMinCount);
 	// Expected static error is assessed by the full measurement range.
 	pressureErrorStatic = pressureErrorStaticFactor * pressureRange;
 
@@ -271,10 +179,10 @@ void AMS5915Driver::readConfiguration (Properties4CXX::Properties const &configu
 			(long long)(errorMaxNumRetries));
 
     LOG4CXX_INFO(logger,"Driver" << driverName << " data>");
-    LOG4CXX_INFO(logger,"	sensorType = " << configuration.searchProperty("sensorType")->getStringValue());
     LOG4CXX_INFO(logger,"	pMin (mBar) = " << pMin);
     LOG4CXX_INFO(logger,"	pMax (mBar)= " << pMax);
     LOG4CXX_INFO(logger,"	pressureRange (mBar) = " << pressureRange);
+    LOG4CXX_INFO(logger,"	pressureResolution (mBar/bit) = " << pressureResolution);
     LOG4CXX_INFO(logger,"	pressureErrorStatic (mBar) = " << pressureErrorStatic);
 	LOG4CXX_INFO(logger,"	portName = " << portName);
 	LOG4CXX_INFO(logger,"	i2cAddress = 0x" << std::hex <<  uint32_t(i2cAddress) << std::dec);
@@ -284,9 +192,6 @@ void AMS5915Driver::readConfiguration (Properties4CXX::Properties const &configu
 	if(calibrationDataParameters) {
 		LOG4CXX_INFO(logger,"	Calibration data file name = " << calibrationDataFileName);
 	}
-
-    LOG4CXX_DEBUG(logger,"	f1 = " << f1);
-    LOG4CXX_DEBUG(logger,"	f2 = " << f2);
 
 }
 
@@ -456,13 +361,13 @@ void AMS5915Driver::processingMainLoop() {
 #define _BV(x) (1<<(x))
 
 FloatType AMS5915Driver::convertRegisterPressureToMBar(
-		FloatType registerVal) const {
+		uint16_t registerVal) const {
 	FloatType rc;
 
-	rc = (registerVal - f1) * f2 + pMin;
+	rc = FloatType(registerVal - AMS5915PressureRangeMinCount) * pressureResolution + pMin;
 
 	LOG4CXX_TRACE(logger,__FUNCTION__
-			<< ": Register value = " << std::hex << uint16_t(registerVal) << std::dec
+			<< ": Register value = " << std::hex << registerVal << std::dec
 			<< "; Pressure = " << rc << " hPa");
 
 	return rc;
@@ -472,30 +377,25 @@ void AMS5915Driver::readoutAMS5915() {
 
 	uint8_t statusVal = 0;
 	uint8_t sensorValues[4];
-	uint8_t status = AMS5915_STATUS_STALE;
 	uint16_t pressureRawVal;
 	uint16_t temperatureRawVal;
 
-	do {
-		ioPort->readBlock(i2cAddress, sensorValues, sizeof(sensorValues));
-		status = (sensorValues[AMS5915_BRIDGE_HIGH] & AMS5915_STATUS_MASK) >> AMS5915_STATUS_BIT;
-		LOG4CXX_TRACE(logger,__FUNCTION__<< " Status = " << AMS5915Status(status));
-	} while (status == AMS5915_STATUS_STALE);
+	ioPort->readBlock(i2cAddress, sensorValues, sizeof(sensorValues));
 	pressureRawVal =
-			(uint16_t(sensorValues[AMS5915_BRIDGE_HIGH]) & AMS5915_PRESSURE_HIGH_BYTE_MASK) << 8 |
-			uint16_t(sensorValues[AMS5915_BRIDGE_LOW]);
+			uint16_t(sensorValues[AMS5915_PRESSURE_HIGH] & AMS5915_PRESSURE_HIGH_BYTE_MASK) << 8 |
+			uint16_t(sensorValues[AMS5915_PRESSURE_LOW]);
 	temperatureRawVal =
 			(uint16_t(sensorValues[AMS5915_TEMP_HIGH]) << 8 |
-			(uint16_t(sensorValues[AMS5915_TEMP_LOW]) & AMS5915_TEMPERATURE_LOW_MASK)) >> AMS5915_TEMPERATURE_LOW_BIT;
+			uint16_t(sensorValues[AMS5915_TEMP_LOW] & AMS5915_TEMP_LOW_BYTE_MASK)) >> AMS5915_TEMP_SHIFT_COUNT;
 
-	LOG4CXX_TRACE(logger,__FUNCTION__<< ": status = " << AMS5915Status(status)
-			<< " values = " << std::hex
+	LOG4CXX_TRACE(logger,__FUNCTION__<< ": values = " << std::hex
 			<< uint32_t(sensorValues[0]) << ':' << uint32_t(sensorValues[1]) << ':'
 			<< uint32_t(sensorValues[2]) << ':' << uint32_t(sensorValues[3])
 			<< ", pressureRaw = 0x" << std::hex << pressureRawVal << " = " << std::dec << pressureRawVal
 			<< ", temperatureRawVal = 0x" << std::hex << temperatureRawVal << std::dec << " = " << temperatureRawVal);
 
-	temperatureVal = FloatType(temperatureRawVal) * (50.0f/511.0f) - 50.0f;
+	// Formula directly taken from data sheet Rev. 3.1, pg. 11
+	temperatureVal = FloatType(temperatureRawVal) * (200.0f/2048.0f) - 50.0f;
 
 	LOG4CXX_DEBUG(logger, __FUNCTION__ << ": temperatureVal = " << temperatureVal);
 

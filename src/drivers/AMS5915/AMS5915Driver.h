@@ -65,12 +65,6 @@ namespace openEV::drivers::AMS5915 {
 class AMS5915Driver  : public GliderVarioDriverBase {
 public:
 
-	enum SensorType {
-		SENSOR_TYPE_UNDEFINED, ///< Unknown sensor type.
-		SENSOR_TYPE_A, ///< Sensor type A defines pMin as 10%, and pMax as 90% of the physical measurement range of 0x3fff.
-		SENSOR_TYPE_B, ///< Sensor type B defines pMin as 5%, and pMax as 95% of the physical measurement range of 0x3fff.
-	};
-
     /** \brief Dynamic part of the expected error of the sensor as factor of the measurement range.
      *
      * The dynamic part of the expected error is calculated as 1% of the &lt;measured value&gt;/&lt;measurement range&gt;.
@@ -126,28 +120,15 @@ public:
      */
     virtual void updateKalmanStatus (GliderVarioStatus &varioStatus) override;
 
-    /** \brief Convert pressure sensor reading to pressure in mBar for a Type A sensor
+    /** \brief Convert pressure sensor reading to pressure in mBar
      *
-     * Look up "Interfacing To MEAS Digital Pressure Modules" in the
-     * \ref openEV::drivers::AMS5915 namespace description how to retrieve
-     * the binary register values from the register bank of the sensor.
+     * Calculation is simple: Interpolate the sensor reading between \ref pMin at a register value \ref AMS5915PressureRangeMinCount
+     * and \ref pMax at a register value \ref AMS5915PressureRangeMaxCount
      *
-     * The formula is: \n
-     * (output - 16383*loFact) * (pMax-pMin) / (16383*hiFact) + pMin \n
-     * \p loFact is 0.05 for B-type, and 0.1 for A-type sensors. \n
-     * \p hiFact is 0.9 for B-type, and 0.8 for A-type sensors.
-     *
-     * Constant factors in the formula up there are pre-calculated in \ref readConfiguration():
-     * - \ref f1 = 16383*loFact
-     * - \ref f2 = (pMax-pMin)/(16383*hiFact)
-     *
-     * Thus the formula becomes \n
-     * (output - f1) * f2 + pMin
-     *
-     * @param registerVal Binary value from registers 0 and 1 of the sensor.
+     * @param registerVal Binary value from register index \ref AMS5915_PRESSURE_HIGH and \ref AMS5915_PRESSURE_LOW.
      * @return Converted value in mBar
      */
-    FloatType convertRegisterPressureToMBar (FloatType registerVal) const;
+    FloatType convertRegisterPressureToMBar (uint16_t registerVal) const;
 
 
 protected:
@@ -223,13 +204,6 @@ private:
     FloatType initValues[NumInitValues];
     int numValidInitValues = 0;
 
-    /** \brief Type of sensor (A or B)
-     *
-     * \see SensorType for definitions of A and B types.
-     *
-     */
-    SensorType sensorType = SENSOR_TYPE_UNDEFINED;
-
     /// Estimated bias of the sensor in mBar/hPa
     FloatType pressureBias = NAN;
 
@@ -238,14 +212,11 @@ private:
 
     /** \brief Minimum pressure of the defined range in mBar.
      *
-     * The configuration values can be defined in in inH20 (See my rant in \ref InchH20toMBar)
-     * because the sensors are defined this way, and you can simply transcribe from the sensor type.
      */
     FloatType pMin = NAN;
 
     /** \brief Maximum pressure of the defined range in mBar
      *
-     * \see \ref pMin
      */
     FloatType pMax = NAN;
 
@@ -255,24 +226,19 @@ private:
      */
     FloatType pressureRange = NAN;
 
+    /** \brief Resolution of the sensor in mBar/bit of register reading
+     *
+     * Calculated from (pMax - pMin)/(AMS5915PressureRangeMaxCount - AMS5915PressureRangeMinCount) .
+     *
+     */
+    FloatType pressureResolution = NAN;
+
     /** \brief Static error component of measurements
      *
      * This value is calculated in readConfiguration() because it only depends on the range.
      * \see pressureErrorDynFactor
      */
     FloatType pressureErrorStatic = NAN;
-
-    /** \brief Helper for convertRegisterPressureToMBar()
-     *
-     * \see \ref convertRegisterPressureToMBar() what is it for and how it is calculated.
-     */
-    FloatType f1 = NAN;
-
-    /** \brief Helper for convertRegisterPressureToMBar()
-     *
-     * \see \ref convertRegisterPressureToMBar() what is it for and how it is calculated.
-     */
-    FloatType f2 = NAN;
 
     /// Name of the calibration data parameter file
     std::string calibrationDataFileName;
