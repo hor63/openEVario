@@ -320,6 +320,7 @@ AC_CONFIG_FILES(Makefile
                 src/drivers/MPL3115/Makefile
                 src/drivers/MS4515/Makefile
                 src/drivers/AMS5915/Makefile
+                src/drivers/TE-MEAS-AbsPressure/Makefile
                 test/src/Makefile)
 
 AC_OUTPUT
