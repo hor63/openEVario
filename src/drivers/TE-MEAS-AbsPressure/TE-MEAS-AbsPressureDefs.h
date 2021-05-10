@@ -67,7 +67,7 @@ namespace openEV::drivers::TE_MEAS_AbsPressure {
 	);
 #endif
 
-	uint8_t static inline CMD_PROM_READ_REG (uint reg) {
+	uint8_t static inline CMD_PROM_READ_REG (uint8_t reg) {
 		return CMD_PROM_Read_Base | (reg & 0b00000111)<<1;
 	}
 
