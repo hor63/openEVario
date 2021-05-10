@@ -80,7 +80,7 @@ void GliderVarioDriverBase::driverThreadEntry (GliderVarioDriverBase* tis) {
 	}
 	catch (std::exception &e) {
 		std::ostringstream str;
-		str << "Uncought exception in driver "
+		str << "Uncaught exception in driver "
 				<< tis->driverName << ":" << tis->instanceName
 				<< ". Message = " << e.what();
 		LOG4CXX_ERROR(logger,str.str());
