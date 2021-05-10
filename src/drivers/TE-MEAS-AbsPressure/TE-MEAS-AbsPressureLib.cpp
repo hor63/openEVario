@@ -29,7 +29,6 @@
 
 #include "OEVCommon.h"
 
-
 #include "TE-MEAS-AbsPressureLib.h"
 #include "TE-MEAS-AbsPressureDriver.h"
 
@@ -39,12 +38,10 @@ static std::string const TE_MEAS_AbsPressureDriverLibName = "TE_MEAS_AbsPressure
 
 TE_MEAS_AbsPressureLib TE_MEAS_AbsPressureLib::theOneAndOnly;
 
-
 static GliderVarioDriverBase* getNewTE_MEAS_AbsPressureInstance (
 	    char const *driverName,
 		char const *description,
 		char const *instanceName) {
-
 
 	for (int i = 0; i < DriverNamesNum; ++i) {
 		if (!strcmp(DriverNames[i],driverName)) {
@@ -61,9 +58,7 @@ TE_MEAS_AbsPressureLib::TE_MEAS_AbsPressureLib()
 		"Absolute atmospheric pressure sensors from TE Connectivity MEAS"}
 {
 
-
 }
-
 
 TE_MEAS_AbsPressureLib::~TE_MEAS_AbsPressureLib() {
 
@@ -84,6 +79,5 @@ void TE_MEAS_AbsPressureLib::addDrivers(GliderVarioDriverList &gliderVarioDriver
 		gliderVarioDriverList.addDriver(listItem);
 	}
 }
-
 
 } /* namespace openEV */
