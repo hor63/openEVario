@@ -107,6 +107,9 @@ void TE_MEAS_AbsPressureDriver::readConfiguration (Properties4CXX::Properties co
 	useTemperatureSensor = configuration.getPropertyValue(
     		std::string("useTemperatureSensor"),
 			useTemperatureSensor);
+	checkCRC = configuration.getPropertyValue(
+    		std::string("checkCRC"),
+			checkCRC);
     errorTimeout = configuration.getPropertyValue(
     		std::string("errorTimeout"),
 			(long long)(errorTimeout));
@@ -117,6 +120,7 @@ void TE_MEAS_AbsPressureDriver::readConfiguration (Properties4CXX::Properties co
 	LOG4CXX_INFO(logger,"	portName = " << portName);
 	LOG4CXX_INFO(logger,"	i2cAddress = 0x" << std::hex <<  uint32_t(i2cAddress) << std::dec);
 	LOG4CXX_INFO(logger,"	useTemperatureSensor = " << useTemperatureSensor);
+	LOG4CXX_INFO(logger,"	checkCRC = " << checkCRC);
 	LOG4CXX_INFO(logger,"	errorTimeout = " << errorTimeout);
 	LOG4CXX_INFO(logger,"	errorMaxNumRetries = " << errorMaxNumRetries);
 
@@ -223,7 +227,13 @@ void TE_MEAS_AbsPressureDriver::driverThreadFunction() {
 				numRetries = 0;
 				processingMainLoop ();
 				ioPort->close();
-			} catch (std::exception const& e) {
+			}
+			catch (TE_MEAS_AbsPressureCRCErrorException const & e1) {
+				LOG4CXX_FATAL(logger,"CRC error Error of driver \"" << getDriverName()
+						<< "\". Stop processing. Reason: " << e1.what());
+				return;
+			}
+			catch (std::exception const& e) {
 				numRetries ++;
 				LOG4CXX_ERROR(logger,"Error in main loop of driver \"" << getDriverName()
 						<< "\":" << e.what());
@@ -240,17 +250,17 @@ void TE_MEAS_AbsPressureDriver::processingMainLoop() {
 
     using namespace std::chrono_literals;
 
-	setupTE_MEAS_AbsPressure();
+	setupSensor();
 
 	nextStartConversion = std::chrono::system_clock::now();
 
 	while (!getStopDriverThread()) {
 
-		startConversionMPL3155();
+		startPressureConversion();
 
 		std::this_thread::sleep_until(nextStartConversion + 60ms);
 
-		readoutMPL3155();
+		readoutPressure();
 		nextStartConversion += 100ms;
 		std::this_thread::sleep_until(nextStartConversion);
 	}
@@ -260,92 +270,97 @@ void TE_MEAS_AbsPressureDriver::processingMainLoop() {
 /// Like in the AVR libraries
 #define _BV(x) (1<<(x))
 
-void TE_MEAS_AbsPressureDriver::setupTE_MEAS_AbsPressure() {
-	uint8_t ctrl1AddrVal[2];
-	uint8_t ptDataCfgAddrVal[2];
-	uint8_t whoAmI = ioPort->readByteAtRegAddrByte(i2cAddress, TE_MEAS_AbsPressure_WHO_AM_I);
-	if (whoAmI != TE_MEAS_AbsPressureWhoAmIValue) {
-		std::ostringstream str;
-		str << __FUNCTION__ << ": Who am I value is not 0x" << std::hex << uint32_t(TE_MEAS_AbsPressureWhoAmIValue)
-				<< ", but 0x" << std::hex << uint32_t(whoAmI) << std::dec;
-		LOG4CXX_ERROR(logger,str.str());
-		throw GliderVarioExceptionBase(__FILE__,__LINE__,str.str().c_str());
+void TE_MEAS_AbsPressureDriver::setupSensor() {
+    using namespace std::chrono_literals;
+
+	// Reset the sensor.
+	ioPort->writeByte(i2cAddress, CMD_Reset);
+	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Sent reset to " << getDriverName());
+
+	// Let the sensor run through its start code
+	std::this_thread::sleep_for(20ms);
+
+	// Read out the coefficients from the RAM.
+	for (uint8_t i = 0; i < lenPromArray;++i) {
+		uint8_t buf[2];
+		// Send the PROM read command
+		ioPort->writeByte(i2cAddress, CMD_PROM_READ_REG (i));
+		LOG4CXX_TRACE(logger,__FUNCTION__ << ": Send read Prom word #" << uint32_t(i));
+		std::this_thread::sleep_for(5ms);
+		ioPort->readBlock(i2cAddress, buf, sizeof(buf));
+		promArray[i] = buf[0] << 8 | buf[1];
+		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": PROM word #" << uint32_t(i) << " = " << std::hex << promArray[i] << std::dec);
 	}
-	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Who am I value is as expected 0x" << std::hex << uint32_t(whoAmI) << std::dec);
 
-	// First set the thing to standby mode.
-	ctrl1AddrVal[1] = ioPort->readByteAtRegAddrByte(i2cAddress, TE_MEAS_AbsPressure_CTRL_REG1);
-	ctrl1AddrVal[1] &= ~_BV(TE_MEAS_AbsPressureCfg1_SBYB);
-	ctrl1AddrVal[0] = TE_MEAS_AbsPressure_CTRL_REG1;
-	ioPort->writeBlock(i2cAddress, ctrl1AddrVal, sizeof(ctrl1AddrVal));
 
-	// Set up with 16-times oversampling
-	ctrl1AddrVal[1] &= ~(0b111 << TE_MEAS_AbsPressureCfg1_OS); // Do not forget to clear existing bits first :)
-	ctrl1AddrVal[1] |= 0b100 << TE_MEAS_AbsPressureCfg1_OS;
-	// ... and barometer mode (delete Altitude mode flag)
-	ctrl1AddrVal[1] &= ~_BV(TE_MEAS_AbsPressureCfg1_ALT);
-	ioPort->writeBlock(i2cAddress, ctrl1AddrVal, sizeof(ctrl1AddrVal));
-
-	// Setup data event configuration
-	ptDataCfgAddrVal[0] = TE_MEAS_AbsPressure_PT_DATA_CFG;
-	ptDataCfgAddrVal[1] =
-			_BV(TE_MEAS_AbsPressurePTDataCfg_DREM) |
-			_BV(TE_MEAS_AbsPressurePTDataCfg_PDEFE) |
-			_BV(TE_MEAS_AbsPressurePTDataCfg_TDEFE);
-	ioPort->writeBlock(i2cAddress, ptDataCfgAddrVal, sizeof(ptDataCfgAddrVal));
-
-	// Set the sensor to active mode
-	ctrl1AddrVal[1] |= _BV(TE_MEAS_AbsPressureCfg1_SBYB);
-	ioPort->writeBlock(i2cAddress, ctrl1AddrVal, sizeof(ctrl1AddrVal));
-
-	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Set Sensor to 16-times oversampling, and polling mode. Activate it.");
+	verifyCRC();
 
 }
 
-void TE_MEAS_AbsPressureDriver::startConversionMPL3155() {
+void TE_MEAS_AbsPressureDriver::verifyCRC() {
+
+	// Extract the CRC stored in the PROM.
+	uint16_t crcStored = promArray[7] & 0xF;
+
+	// Start verbatim part from AN520
+	int cnt; // simple counter
+	uint16_t n_rem; // crc reminder
+	uint16_t crc_read; // original value of the crc
+	uint8_t n_bit;
+	n_rem = 0x00;
+	crc_read=promArray[7]; //save read CRC
+	promArray[7]=(0xFF00 & (promArray[7])); //CRC byte is replaced by 0
+	for (cnt = 0; cnt < 16; cnt++) { // operation is performed on bytes
+		// choose LSB or MSB
+		if (cnt%2==1) {
+			n_rem ^= (uint16_t) ((promArray[cnt>>1]) & 0x00FF);
+		}
+		else {
+			n_rem ^= (uint16_t) (promArray[cnt>>1]>>8);
+		}
+		for (n_bit = 8; n_bit > 0; n_bit--) {
+			if (n_rem & (0x8000)){
+				n_rem = (n_rem << 1) ^ 0x3000;
+			}
+			else {
+				n_rem = (n_rem << 1);
+			}
+		}
+	}
+	n_rem= (0x000F & (n_rem >> 12)); // final 4-bit reminder is CRC code
+	promArray[7]=crc_read; // restore the crc_read to its original place
+	// End verbatim part from AN520
+
+	// ... and start of my stuff
+	if (crcStored != n_rem) {
+		std::ostringstream str;
+		str << "Driver " << getDriverName() << ": CRC mismatch: CRC in the PROM = 0x" << std::hex << crcStored
+				<< "; calculated CRC = 0x" << n_rem;
+		if (checkCRC) {
+			throw TE_MEAS_AbsPressureCRCErrorException (__FILE__, __LINE__, str.str().c_str());
+		} else {
+			LOG4CXX_WARN(logger,__FUNCTION__ << str.str());
+		}
+	}
+}
+
+void TE_MEAS_AbsPressureDriver::startPressureConversion() {
 
 	uint8_t ctrl1AddrVal[2];
 
-	ctrl1AddrVal[0] = TE_MEAS_AbsPressure_CTRL_REG1;
-
-	ctrl1AddrVal[1] = ioPort->readByteAtRegAddrByte(i2cAddress, TE_MEAS_AbsPressure_CTRL_REG1);
-	LOG4CXX_TRACE(logger,__FUNCTION__ << ": Ctrl1 = 0x" << std::hex << uint32_t(ctrl1AddrVal[1]) << std::dec);
-
-	// Delete the OST flag
-	ctrl1AddrVal[1] &= ~_BV(TE_MEAS_AbsPressureCfg1_OST);
-	LOG4CXX_TRACE(logger,__FUNCTION__ << ": Reset OST. Set Ctrl1 to 0x" << std::hex << uint32_t(ctrl1AddrVal[1]) << std::dec);
-
-	ioPort->writeBlock(i2cAddress, ctrl1AddrVal, sizeof(ctrl1AddrVal));
-
-	// 	And set the OST flag again
-	ctrl1AddrVal[1] |= _BV(TE_MEAS_AbsPressureCfg1_OST);
-	LOG4CXX_TRACE(logger,__FUNCTION__ << ": Set OST. Set Ctrl1 to 0x" << std::hex << uint32_t(ctrl1AddrVal[1]) << std::dec);
-
-	ioPort->writeBlock(i2cAddress, ctrl1AddrVal, sizeof(ctrl1AddrVal));
+	ioPort->writeByte(i2cAddress, CMD_Convert_D1_OSR_4096);
+	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Sent command " << CMD_Convert_D1_OSR_4096 << " to " << getDriverName());
 
 }
 
-void TE_MEAS_AbsPressureDriver::readoutMPL3155() {
+void TE_MEAS_AbsPressureDriver::readoutPressure() {
 
 	uint8_t statusVal = 0;
-	uint8_t sensorValues[5];
+	uint8_t sensorValues[3];
 
-	while ((statusVal & _BV(TE_MEAS_AbsPressureStatus_PTDR)) == 0) {
-		statusVal = ioPort->readByteAtRegAddrByte(i2cAddress, TE_MEAS_AbsPressure_STATUS);
-	}
+	ioPort->readBlock(i2cAddress, sensorValues, sizeof(sensorValues));
 
-	ioPort->readBlockAtRegAddrByte(i2cAddress, TE_MEAS_AbsPressure_OUT_P_MSB, sensorValues, sizeof(sensorValues));
-
-	if ((statusVal & _BV(TE_MEAS_AbsPressureStatus_TDR)) != 0) {
-		temperatureVal = (FloatType(sensorValues[3])) + (FloatType(sensorValues[4])) / 256.0f;
-
-		LOG4CXX_TRACE(logger,__FUNCTION__ << ": Temperature is "
-				<< std::hex << uint32_t(sensorValues[3]) << ':' << uint32_t(sensorValues[4])
-				<< std::dec << " =  " << temperatureVal << " DegC.");
-
-	}
-
-	if ((statusVal & _BV(TE_MEAS_AbsPressureStatus_PDR)) != 0) {
+	if (sensorValues[0] != 0 || sensorValues[1] != 0 || sensorValues[2] != 0 ) {
 		uint32_t pressureValInt;
 		pressureValInt = (((uint32_t(sensorValues[0]) << 8) | uint32_t(sensorValues[1])) << 4) | (uint32_t(sensorValues[2]) >> 4);
 		pressureVal = FloatType(pressureValInt) / 400.0f; // Integer value is Pa*4. Value in mBar.

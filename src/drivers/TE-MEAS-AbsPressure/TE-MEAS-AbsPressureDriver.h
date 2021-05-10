@@ -31,6 +31,7 @@
 #include <map>
 
 #include "OEVCommon.h"
+#include "util/GliderVarioExceptionBase.h"
 
 #include "TE-MEAS-AbsPressureDefs.h"
 #include "drivers/GliderVarioDriverBase.h"
@@ -52,6 +53,17 @@ namespace openEV::drivers::TE_MEAS_AbsPressure {
 			};
 	static constexpr int DriverNamesNum = sizeof(DriverNames) / sizeof(DriverNames[0]);
 
+class TE_MEAS_AbsPressureCRCErrorException: public GliderVarioExceptionBase {
+
+public:
+	TE_MEAS_AbsPressureCRCErrorException(
+				char const *source,
+				int line,
+				char const *description)
+	: GliderVarioExceptionBase(source,line,description)
+	{}
+
+	};
 
 /** \brief Driver for the MS56xx and MS58xx series of absolute pressure sensors from TE Connectivity MEAS.
  *
@@ -116,10 +128,29 @@ protected:
      */
     virtual void processingMainLoop ();
 
-    /** \brief Initialize the sensor
+    /** \brief Read the coeffcients from the PROM of the sensor
      *
+     * The method is suitable for both variants of the PROM layout because
+     * \ref lenPromArray determines the length of the PROM array, and can be overwritten
+     * by a derived class.
      */
-    virtual void setupTE_MEAS_AbsPressure();
+    virtual void setupSensor();
+
+    /** \brief Verify the CRC checksum stored in the PROM with the calculated one.
+     *
+     * The code is copied verbatim from
+     * TE CONNECTIVITY [ Application Note AN520](https://www.te.com.cn/commerce/DocumentDelivery/DDEController?Action=showdoc&DocId=Specification+Or+Standard%7FAN520_C-code_example_for_MS56xx%7FA%7Fpdf%7FEnglish%7FENG_SS_AN520_C-code_example_for_MS56xx_A.pdf%7FCAT-BLPS0003)
+     * except renaming variables, and using uint16_t instead of unsigned int and the likes (AVR code!!!)
+     *
+     * When the CRC check fails it throws a \ref TE_MEAS_AbsPressureCRCErrorException exception
+     * when \ref checkCRC is set true in the configuration.
+     *
+     * This method suits the 8-pin sensors with the CRC in the 7th word.
+     * The the 4-pin sensors this method must be overridden.
+     *
+     * \throws TE_MEAS_AbsPressureCRCErrorException
+     */
+	virtual void verifyCRC();
 
     /** \brief Start a pressure conversion cycle on the sensor
      *
@@ -142,13 +173,6 @@ protected:
      * Before reading out the data wait for the conversion to complete.
      */
     virtual void readoutTemperature();
-
-    /** \brief Read the coeffcients from the PROM of the sensor
-     *
-     * This variant implements the MS5611 or MS5803 style with the CRC in the 7th byte
-     * The other method with CRC in byte #0 is implemented by an overloaded class.
-     */
-    virtual void ReadoutCoefficients();
 
     /** \brief Initialize the QFF based on the latest GPS altitude, and averaged pressure used for status initialization
      *
@@ -175,15 +199,22 @@ private:
     uint8_t i2cAddress = TE_MEAS_AbsPressureI2CAddr;
 
     /**
-     * Use the builtin temperature sensor. The current temperature is used for calculating altitude from pressure and vice versa,
+     * \brief Use the builtin temperature sensor. The current temperature is used for calculating altitude from pressure and vice versa,
 	 * by means of the Barometric formula.
+	 *
 	 * Using the temperature sensor of the pressure sensor is not advised, and should only be used as a back-stop
 	 * When an accurate external temperature sensor is not available.
 	 * Reason is that the temperature in the cockpit is usually quite a bit higher than outside due to the greenhouse
 	 * effect of the canopy.
-	 * Optional. Default false.
      */
     bool useTemperatureSensor = false;
+
+    /** \brief Check the CRC checksum of the PROM containing the conversion coefficients
+     *
+     * When true a failed CRC check will throw an exception during sensor startup and render the sensor unusable
+     * When false a CRC check failure will only print a logger warning.
+     */
+    bool checkCRC = true;
 
     /** \brief Timeout in seconds between recovery attempts when an error in the main loop occurs.
      *
@@ -215,6 +246,13 @@ private:
     ///
     /// The array fits both variants of the PROM layout.
     uint16_t promArray[PROM_REG_COUNT];
+
+    /** \brief The applicable length of the PROM array is 8 words for the 8-pin sensors, but only 7 words for the 4-pin sensors.
+     *
+     * The default is an 8-pin sensor.
+     * The value can be overwritten by the constructor of the derived 4-pin sensor class.
+     */
+    uint8_t lenPromArray = PROM_REG_COUNT;
 
     bool kalmanInitDone = false;
     static constexpr int NumInitValues = 0x10;
