@@ -258,7 +258,7 @@ void TE_MEAS_AbsPressureDriver::processingMainLoop() {
 
 		startPressureConversion();
 
-		std::this_thread::sleep_until(nextStartConversion + 60ms);
+		std::this_thread::sleep_for(10ms);
 
 		readoutPressure();
 		nextStartConversion += 100ms;
@@ -304,43 +304,48 @@ void TE_MEAS_AbsPressureDriver::verifyCRC() {
 
 	// Start verbatim part from AN520
 	int cnt; // simple counter
-	uint16_t n_rem; // crc reminder
-	uint16_t crc_read; // original value of the crc
-	uint8_t n_bit;
-	n_rem = 0x00;
-	crc_read=promArray[7]; //save read CRC
+	uint16_t nRem; // crc reminder
+	uint16_t crcRead; // original value of the crc
+	uint8_t nBit;
+	nRem = 0x00;
+	crcRead = promArray[7]; //save read CRC
+
+	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": CRC value in the PROM is" << crcStored);
+
 	promArray[7]=(0xFF00 & (promArray[7])); //CRC byte is replaced by 0
 	for (cnt = 0; cnt < 16; cnt++) { // operation is performed on bytes
 		// choose LSB or MSB
 		if (cnt%2==1) {
-			n_rem ^= (uint16_t) ((promArray[cnt>>1]) & 0x00FF);
+			nRem ^= (uint16_t) ((promArray[cnt>>1]) & 0x00FF);
 		}
 		else {
-			n_rem ^= (uint16_t) (promArray[cnt>>1]>>8);
+			nRem ^= (uint16_t) (promArray[cnt>>1]>>8);
 		}
-		for (n_bit = 8; n_bit > 0; n_bit--) {
-			if (n_rem & (0x8000)){
-				n_rem = (n_rem << 1) ^ 0x3000;
+		for (nBit = 8; nBit > 0; nBit--) {
+			if (nRem & (0x8000)){
+				nRem = (nRem << 1) ^ 0x3000;
 			}
 			else {
-				n_rem = (n_rem << 1);
+				nRem = (nRem << 1);
 			}
 		}
 	}
-	n_rem= (0x000F & (n_rem >> 12)); // final 4-bit reminder is CRC code
-	promArray[7]=crc_read; // restore the crc_read to its original place
+	nRem= (0x000F & (nRem >> 12)); // final 4-bit reminder is CRC code
+	promArray[7]=crcRead; // restore the crc_read to its original place
 	// End verbatim part from AN520
 
 	// ... and start of my stuff
-	if (crcStored != n_rem) {
+	if (crcStored != nRem) {
 		std::ostringstream str;
 		str << "Driver " << getDriverName() << ": CRC mismatch: CRC in the PROM = 0x" << std::hex << crcStored
-				<< "; calculated CRC = 0x" << n_rem;
+				<< "; calculated CRC = 0x" << nRem;
 		if (checkCRC) {
 			throw TE_MEAS_AbsPressureCRCErrorException (__FILE__, __LINE__, str.str().c_str());
 		} else {
 			LOG4CXX_WARN(logger,__FUNCTION__ << str.str());
 		}
+	} else {
+		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Calculated CRC value " << nRem << " is equal to the CRC in the PROM. CRC check successful.");
 	}
 }
 
@@ -358,20 +363,18 @@ void TE_MEAS_AbsPressureDriver::readoutPressure() {
 	uint8_t statusVal = 0;
 	uint8_t sensorValues[3];
 
-	ioPort->readBlock(i2cAddress, sensorValues, sizeof(sensorValues));
+	ioPort->readBlockAtRegAddrByte(i2cAddress, 0, sensorValues, sizeof(sensorValues));
+
+	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Read sensor values = 0x"
+			<< std::hex << uint16_t(sensorValues[0]) << ", 0x" << uint16_t(sensorValues[1]) << ", 0x" << uint16_t(sensorValues[2])
+			<< std::dec <<" from " << getDriverName());
 
 	if (sensorValues[0] != 0 || sensorValues[1] != 0 || sensorValues[2] != 0 ) {
-		uint32_t pressureValInt;
-		pressureValInt = (((uint32_t(sensorValues[0]) << 8) | uint32_t(sensorValues[1])) << 4) | (uint32_t(sensorValues[2]) >> 4);
-		pressureVal = FloatType(pressureValInt) / 400.0f; // Integer value is Pa*4. Value in mBar.
 
+		/* !!!-
 		// Only accept values within the operational range
 		if (pressureVal >= 500.0f && pressureVal <= 1500.0f) {
 
-			LOG4CXX_TRACE(logger,__FUNCTION__ << ": Pressure registers "
-					<< std::hex << uint32_t(sensorValues[0]) << ':' << uint32_t(sensorValues[1]) << ':' << uint32_t(sensorValues[2])
-					<< " = 0x" << std::hex << pressureValInt << std::dec << " = " << pressureValInt
-					);
 			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Pressure = " << pressureVal << " mBar."
 					);
 
@@ -399,12 +402,19 @@ void TE_MEAS_AbsPressureDriver::readoutPressure() {
 			// More likely the sensor is screwed you you connected the static system to a pump or the oxygen system :D
 			numValidInitValues = 0;
 		}
+		*/
 
 	} else {
 		// Missed cycle in the initialization phase. Start from scratch.
 		numValidInitValues = 0;
 	}
 
+}
+
+void TE_MEAS_AbsPressureDriver::startTemperatureConversion() {
+}
+
+void TE_MEAS_AbsPressureDriver::readoutTemperature() {
 }
 
 void TE_MEAS_AbsPressureDriver::initQFF(
