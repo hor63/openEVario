@@ -252,6 +252,11 @@ void TE_MEAS_AbsPressureDriver::processingMainLoop() {
 
 	setupSensor();
 
+	// read the temperature initially.
+	startTemperatureConversion();
+	std::this_thread::sleep_for(5ms);
+	readoutTemperature();
+
 	nextStartConversion = std::chrono::system_clock::now();
 
 	while (!getStopDriverThread()) {
@@ -261,6 +266,14 @@ void TE_MEAS_AbsPressureDriver::processingMainLoop() {
 		std::this_thread::sleep_for(10ms);
 
 		readoutPressure();
+
+		// read the temperature for the next cycle.
+		// Temperature changes are comparingly sedate due to the thermal inertia of the sensor.
+		startTemperatureConversion();
+		std::this_thread::sleep_for(5ms);
+		readoutTemperature();
+
+		// Keep a fixed cycle independent from the communications times.
 		nextStartConversion += 100ms;
 		std::this_thread::sleep_until(nextStartConversion);
 	}
@@ -289,10 +302,12 @@ void TE_MEAS_AbsPressureDriver::setupSensor() {
 		std::this_thread::sleep_for(5ms);
 		ioPort->readBlock(i2cAddress, buf, sizeof(buf));
 		promArray[i] = buf[0] << 8 | buf[1];
-		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": PROM word #" << uint32_t(i) << " = " << std::hex << promArray[i] << std::dec);
+		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": PROM word #" << uint32_t(i) << " = 0x"
+				<< std::hex << promArray[i] << std::dec << " = " << promArray[i]);
 	}
 
 
+	// Verify that the PROM content is not corrupted.
 	verifyCRC();
 
 }
@@ -351,8 +366,6 @@ void TE_MEAS_AbsPressureDriver::verifyCRC() {
 
 void TE_MEAS_AbsPressureDriver::startPressureConversion() {
 
-	uint8_t ctrl1AddrVal[2];
-
 	ioPort->writeByte(i2cAddress, CMD_Convert_D1_OSR_4096);
 	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Sent command " << CMD_Convert_D1_OSR_4096 << " to " << getDriverName());
 
@@ -360,7 +373,6 @@ void TE_MEAS_AbsPressureDriver::startPressureConversion() {
 
 void TE_MEAS_AbsPressureDriver::readoutPressure() {
 
-	uint8_t statusVal = 0;
 	uint8_t sensorValues[3];
 
 	ioPort->readBlockAtRegAddrByte(i2cAddress, 0, sensorValues, sizeof(sensorValues));
@@ -371,12 +383,59 @@ void TE_MEAS_AbsPressureDriver::readoutPressure() {
 
 	if (sensorValues[0] != 0 || sensorValues[1] != 0 || sensorValues[2] != 0 ) {
 
-		/* !!!-
-		// Only accept values within the operational range
-		if (pressureVal >= 500.0f && pressureVal <= 1500.0f) {
+		int32_t D1 = (int32_t(sensorValues[0])<<16) | (int32_t(sensorValues[1])<<8) | int32_t(sensorValues[2]);
 
-			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Pressure = " << pressureVal << " mBar."
-					);
+		int64_t OFF = (int64_t(promArray[2])<<16) + ((int64_t(promArray[4])*int64_t(deltaTemp))>>7);
+		int64_t SENS = (int64_t(promArray[1])<<15) + ((int64_t(promArray[3])*int64_t(deltaTemp))>>8);
+
+		// Second order temperature compensation
+		int64_t OFF2 = 0LL;
+		int64_t SENSE2 = 0LL;
+
+		LOG4CXX_TRACE(logger,__FUNCTION__ << ": Calculate first order            D1 = " << D1
+				<< ", OFF = " << OFF
+				<< ", SENS = " << SENS
+				<< ", dT = " << deltaTemp
+				<< ", TEMP = " << tempCentiC
+				<< ", pressureVal = " << pressureVal
+				);
+
+		if (tempCentiC < 2000L) {
+			int64_t tempSquare20 = int64_t(tempCentiC - 2000L) * int64_t(tempCentiC - 2000L);
+			OFF2 = 3LL * tempSquare20;
+			SENSE2 = (7LL * tempSquare20) >> 3;
+
+			if (tempCentiC < -1500L) {
+				SENSE2 += 2LL * (int64_t(tempCentiC) + 1500LL) * (int64_t(tempCentiC) + 1500LL);
+			}
+		} else { // if (TEMP < 2000)
+			if (tempCentiC > 4500) {
+				SENSE2 = (int64_t(tempCentiC - 4500L) * int64_t(tempCentiC - 4500L)) >> 3;
+			}
+		} // if (TEMP < 2000) {} else
+
+		OFF -= OFF2;
+		SENS -= SENSE2;
+
+		int64_t P = (((int64_t(D1)*SENS)>>21) - OFF)>>15;
+
+		pressureVal = FloatType(P) / 100.0f;
+
+		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Calculate Pressure Second order: D1 = " << D1
+				<< ", OFF = " << OFF
+				<< ", SENS = " << SENS
+				<< ", dT = " << deltaTemp
+				<< ", TEMP = " << tempCentiC
+				<< ", pressureVal = " << pressureVal
+				<< ", OFF2 = " << OFF2
+				<< ", SENSE2 = " << SENSE2
+				<< ", P = " << P
+				);
+
+		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Pressure = " << pressureVal);
+
+		// Only accept values within the operational range
+		if (pressureVal >= 200.0f && pressureVal <= 1500.0f) {
 
 			if (getIsKalmanUpdateRunning()) {
 				GliderVarioMainPriv::LockedCurrentStatus lockedStatus(*varioMain);
@@ -387,7 +446,7 @@ void TE_MEAS_AbsPressureDriver::readoutPressure() {
 				}
 
 				GliderVarioMeasurementUpdater::staticPressureUpd(
-						pressureVal, tempLocalC, SQUARE(0.5),
+						pressureVal, tempLocalC, SQUARE(0.1),
 						*lockedStatus.getMeasurementVector(), *lockedStatus.getCurrentStatus());
 
 			} else {
@@ -398,23 +457,58 @@ void TE_MEAS_AbsPressureDriver::readoutPressure() {
 			}
 
 		} else { // if (pressureVal >= 500.0f && pressureVal <= 1500.0f) {
+			LOG4CXX_WARN(logger,__FUNCTION__ << ": Pressure = " << pressureVal << " mBar is outside the expected range!");
 			// and if you are out of the operational range re-start initialization data collection.
 			// More likely the sensor is screwed you you connected the static system to a pump or the oxygen system :D
 			numValidInitValues = 0;
 		}
-		*/
 
 	} else {
 		// Missed cycle in the initialization phase. Start from scratch.
 		numValidInitValues = 0;
+		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": 0-values from A/D");
 	}
 
 }
 
 void TE_MEAS_AbsPressureDriver::startTemperatureConversion() {
+	ioPort->writeByte(i2cAddress, CMD_Convert_D2_OSR_1024);
+	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Sent command " << CMD_Convert_D2_OSR_1024 << " to " << getDriverName());
 }
 
 void TE_MEAS_AbsPressureDriver::readoutTemperature() {
+
+	uint8_t sensorValues[3];
+
+	ioPort->readBlockAtRegAddrByte(i2cAddress, 0, sensorValues, sizeof(sensorValues));
+
+	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Read sensor values = 0x"
+			<< std::hex << uint16_t(sensorValues[0]) << ", 0x" << uint16_t(sensorValues[1]) << ", 0x" << uint16_t(sensorValues[2])
+			<< std::dec <<" from " << getDriverName());
+
+	if (sensorValues[0] != 0 || sensorValues[1] != 0 || sensorValues[2] != 0 ) {
+
+	int32_t D2 = (int32_t(sensorValues[0])<<16) | (int32_t(sensorValues[1])<<8) | int32_t(sensorValues[2]);
+	deltaTemp = D2 - (int32_t(promArray[5]) << 8);
+
+	tempCentiC = 2000L + ((int64_t(deltaTemp) * int64_t(promArray[6]))>>23);
+
+	// Second order temperature compensation
+	if (tempCentiC < 2000L) {
+		tempCentiC -= int32_t((int64_t(deltaTemp) * int64_t(deltaTemp)) >> 31);
+	}
+
+	temperatureVal = FloatType(tempCentiC) / 100.0f;
+
+
+	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Calculate temp: D2 = " << D2
+			<< ", dT = " << deltaTemp
+			<< ", T = " << tempCentiC
+			<< ", temperatureVal = " << temperatureVal);
+
+	} // if (sensorValues[0] != 0 || sensorValues[1] != 0 || sensorValues[2] != 0 )
+
+
 }
 
 void TE_MEAS_AbsPressureDriver::initQFF(

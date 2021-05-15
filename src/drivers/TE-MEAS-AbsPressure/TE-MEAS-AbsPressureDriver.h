@@ -261,7 +261,22 @@ private:
 
     FloatType pressureVal = NAN;
 
-    FloatType temperatureVal = NAN;
+    /** \brief Temperature in 1/100C
+     *
+     * Used for temperature compensation of pressure calculation
+     *
+     */
+    int32_t tempCentiC = 2000;
+
+    /** \brief Difference from the reference temperature
+     *
+     * Used for temperature compensation for pressure calculation.
+     * Unit is direct A/D units
+     */
+    int32_t deltaTemp = 0;
+
+    /// \brief Temperature in C
+    FloatType temperatureVal = 20.0f;
 
 };
 
