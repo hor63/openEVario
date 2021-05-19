@@ -43,10 +43,8 @@ static GliderVarioDriverBase* getNewTE_MEAS_AbsPressureInstance (
 		char const *description,
 		char const *instanceName) {
 
-	for (int i = 0; i < DriverNamesNum; ++i) {
-		if (!strcmp(DriverNames[i],driverName)) {
-			return new TE_MEAS_AbsPressureDriver (driverName,description,instanceName);
-		}
+	if (!strcmp(DriverNames[DRIVER_TYPE_MS5803],driverName)) {
+		return new MS5803Driver (driverName,description,instanceName);
 	}
 
 	return 0;

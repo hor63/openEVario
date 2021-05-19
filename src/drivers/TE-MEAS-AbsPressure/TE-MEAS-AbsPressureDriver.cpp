@@ -312,58 +312,6 @@ void TE_MEAS_AbsPressureDriver::setupSensor() {
 
 }
 
-void TE_MEAS_AbsPressureDriver::verifyCRC() {
-
-	// Extract the CRC stored in the PROM.
-	uint16_t crcStored = promArray[7] & 0xF;
-
-	// Start verbatim part from AN520
-	int cnt; // simple counter
-	uint16_t nRem; // crc reminder
-	uint16_t crcRead; // original value of the crc
-	uint8_t nBit;
-	nRem = 0x00;
-	crcRead = promArray[7]; //save read CRC
-
-	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": CRC value in the PROM is" << crcStored);
-
-	promArray[7]=(0xFF00 & (promArray[7])); //CRC byte is replaced by 0
-	for (cnt = 0; cnt < 16; cnt++) { // operation is performed on bytes
-		// choose LSB or MSB
-		if (cnt%2==1) {
-			nRem ^= (uint16_t) ((promArray[cnt>>1]) & 0x00FF);
-		}
-		else {
-			nRem ^= (uint16_t) (promArray[cnt>>1]>>8);
-		}
-		for (nBit = 8; nBit > 0; nBit--) {
-			if (nRem & (0x8000)){
-				nRem = (nRem << 1) ^ 0x3000;
-			}
-			else {
-				nRem = (nRem << 1);
-			}
-		}
-	}
-	nRem= (0x000F & (nRem >> 12)); // final 4-bit reminder is CRC code
-	promArray[7]=crcRead; // restore the crc_read to its original place
-	// End verbatim part from AN520
-
-	// ... and start of my stuff
-	if (crcStored != nRem) {
-		std::ostringstream str;
-		str << "Driver " << getDriverName() << ": CRC mismatch: CRC in the PROM = 0x" << std::hex << crcStored
-				<< "; calculated CRC = 0x" << nRem;
-		if (checkCRC) {
-			throw TE_MEAS_AbsPressureCRCErrorException (__FILE__, __LINE__, str.str().c_str());
-		} else {
-			LOG4CXX_WARN(logger,__FUNCTION__ << str.str());
-		}
-	} else {
-		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Calculated CRC value " << nRem << " is equal to the CRC in the PROM. CRC check successful.");
-	}
-}
-
 void TE_MEAS_AbsPressureDriver::startPressureConversion() {
 
 	ioPort->writeByte(i2cAddress, CMD_Convert_D1_OSR_4096);
@@ -383,59 +331,11 @@ void TE_MEAS_AbsPressureDriver::readoutPressure() {
 
 	if (sensorValues[0] != 0 || sensorValues[1] != 0 || sensorValues[2] != 0 ) {
 
-		int32_t D1 = (int32_t(sensorValues[0])<<16) | (int32_t(sensorValues[1])<<8) | int32_t(sensorValues[2]);
-
-		int64_t OFF = (int64_t(promArray[2])<<16) + ((int64_t(promArray[4])*int64_t(deltaTemp))>>7);
-		int64_t SENS = (int64_t(promArray[1])<<15) + ((int64_t(promArray[3])*int64_t(deltaTemp))>>8);
-
-		// Second order temperature compensation
-		int64_t OFF2 = 0LL;
-		int64_t SENSE2 = 0LL;
-
-		LOG4CXX_TRACE(logger,__FUNCTION__ << ": Calculate first order            D1 = " << D1
-				<< ", OFF = " << OFF
-				<< ", SENS = " << SENS
-				<< ", dT = " << deltaTemp
-				<< ", TEMP = " << tempCentiC
-				<< ", pressureVal = " << pressureVal
-				);
-
-		if (tempCentiC < 2000L) {
-			int64_t tempSquare20 = int64_t(tempCentiC - 2000L) * int64_t(tempCentiC - 2000L);
-			OFF2 = 3LL * tempSquare20;
-			SENSE2 = (7LL * tempSquare20) >> 3;
-
-			if (tempCentiC < -1500L) {
-				SENSE2 += 2LL * (int64_t(tempCentiC) + 1500LL) * (int64_t(tempCentiC) + 1500LL);
-			}
-		} else { // if (TEMP < 2000)
-			if (tempCentiC > 4500) {
-				SENSE2 = (int64_t(tempCentiC - 4500L) * int64_t(tempCentiC - 4500L)) >> 3;
-			}
-		} // if (TEMP < 2000) {} else
-
-		OFF -= OFF2;
-		SENS -= SENSE2;
-
-		int64_t P = (((int64_t(D1)*SENS)>>21) - OFF)>>15;
-
-		pressureVal = FloatType(P) / 100.0f;
-
-		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Calculate Pressure Second order: D1 = " << D1
-				<< ", OFF = " << OFF
-				<< ", SENS = " << SENS
-				<< ", dT = " << deltaTemp
-				<< ", TEMP = " << tempCentiC
-				<< ", pressureVal = " << pressureVal
-				<< ", OFF2 = " << OFF2
-				<< ", SENSE2 = " << SENSE2
-				<< ", P = " << P
-				);
-
-		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Pressure = " << pressureVal);
+		// Call sensor type specific method of sub-class
+		convertPressure(sensorValues);
 
 		// Only accept values within the operational range
-		if (pressureVal >= 200.0f && pressureVal <= 1500.0f) {
+		if (pressureVal >= 200.0f && pressureVal <= 1300.0f) {
 
 			if (getIsKalmanUpdateRunning()) {
 				GliderVarioMainPriv::LockedCurrentStatus lockedStatus(*varioMain);
@@ -487,8 +387,13 @@ void TE_MEAS_AbsPressureDriver::readoutTemperature() {
 			<< std::dec <<" from " << getDriverName());
 
 	if (sensorValues[0] != 0 || sensorValues[1] != 0 || sensorValues[2] != 0 ) {
+		convertTemperature(sensorValues);
+	} // if (sensorValues[0] != 0 || sensorValues[1] != 0 || sensorValues[2] != 0 )
 
-	int32_t D2 = (int32_t(sensorValues[0])<<16) | (int32_t(sensorValues[1])<<8) | int32_t(sensorValues[2]);
+}
+
+void TE_MEAS_AbsPressureDriver::convertTemperature(const uint8_t rawValue[]) {
+	int32_t D2 = (int32_t(rawValue[0])<<16) | (int32_t(rawValue[1])<<8) | int32_t(rawValue[2]);
 	deltaTemp = D2 - (int32_t(promArray[5]) << 8);
 
 	tempCentiC = 2000L + ((int64_t(deltaTemp) * int64_t(promArray[6]))>>23);
@@ -505,9 +410,6 @@ void TE_MEAS_AbsPressureDriver::readoutTemperature() {
 			<< ", dT = " << deltaTemp
 			<< ", T = " << tempCentiC
 			<< ", temperatureVal = " << temperatureVal);
-
-	} // if (sensorValues[0] != 0 || sensorValues[1] != 0 || sensorValues[2] != 0 )
-
 
 }
 
@@ -542,8 +444,135 @@ void TE_MEAS_AbsPressureDriver::initQFF(
 			<< systemNoiseCov.coeff(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF)
 			<< " / " << baseIntervalSec << "s");
 
+}
 
+EightPinDriver::~EightPinDriver() {
+}
 
+void EightPinDriver::verifyCRC() {
+
+	// Extract the CRC stored in the PROM.
+	uint16_t crcStored = promArray[7] & 0xF;
+
+	// Start verbatim part from AN520
+	int cnt; // simple counter
+	uint16_t nRem; // crc reminder
+	uint16_t crcRead; // original value of the crc
+	uint8_t nBit;
+	nRem = 0x00;
+	crcRead = promArray[7]; //save read CRC
+
+	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": CRC value in the PROM is" << crcStored);
+
+	promArray[7]=(0xFF00 & (promArray[7])); //CRC byte is replaced by 0
+	for (cnt = 0; cnt < 16; cnt++) { // operation is performed on bytes
+		// choose LSB or MSB
+		if (cnt%2==1) {
+			nRem ^= (uint16_t) ((promArray[cnt>>1]) & 0x00FF);
+		}
+		else {
+			nRem ^= (uint16_t) (promArray[cnt>>1]>>8);
+		}
+		for (nBit = 8; nBit > 0; nBit--) {
+			if (nRem & (0x8000)){
+				nRem = (nRem << 1) ^ 0x3000;
+			}
+			else {
+				nRem = (nRem << 1);
+			}
+		}
+	}
+	nRem= (0x000F & (nRem >> 12)); // final 4-bit reminder is CRC code
+	promArray[7]=crcRead; // restore the crc_read to its original place
+	// End verbatim part from AN520
+
+	// ... and start of my stuff
+	if (crcStored != nRem) {
+		std::ostringstream str;
+		str << "Driver " << getDriverName() << ": CRC mismatch: CRC in the PROM = 0x" << std::hex << crcStored
+				<< "; calculated CRC = 0x" << nRem;
+		if (checkCRC) {
+			throw TE_MEAS_AbsPressureCRCErrorException (__FILE__, __LINE__, str.str().c_str());
+		} else {
+			LOG4CXX_WARN(logger,__FUNCTION__ << str.str());
+		}
+	} else {
+		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Calculated CRC value " << nRem << " is equal to the CRC in the PROM. CRC check successful.");
+	}
+}
+
+SevenPinDriver::~SevenPinDriver() {
+}
+
+void SevenPinDriver::verifyCRC() {
+}
+
+MS5803Driver::~MS5803Driver() {
+}
+
+void MS5803Driver::convertTemperature(const uint8_t rawValue[]) {
+
+	// un-compensated conversion by the base class
+	TE_MEAS_AbsPressureDriver::convertTemperature(rawValue);
+
+	// Second order temperature compensation
+	if (tempCentiC < 2000L) {
+		tempCentiC -= int32_t((int64_t(deltaTemp) * int64_t(deltaTemp)) >> 31);
+
+		temperatureVal = FloatType(tempCentiC) / 100.0f;
+
+		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Second order compensation: T = " << tempCentiC
+				<< ", temperatureVal = " << temperatureVal);
+	}
+}
+
+void MS5803Driver::convertPressure(const uint8_t rawValue[]) {
+	int32_t D1 = (int32_t(rawValue[0])<<16) | (int32_t(rawValue[1])<<8) | int32_t(rawValue[2]);
+
+	int64_t OFF = (int64_t(promArray[2])<<16) + ((int64_t(promArray[4])*int64_t(deltaTemp))>>7);
+	int64_t SENS = (int64_t(promArray[1])<<15) + ((int64_t(promArray[3])*int64_t(deltaTemp))>>8);
+
+	// Second order temperature compensation
+	int64_t OFF2 = 0LL;
+	int64_t SENSE2 = 0LL;
+
+	LOG4CXX_TRACE(logger,__FUNCTION__ << ": Calculate first order            D1 = " << D1
+			<< ", OFF = " << OFF
+			<< ", SENS = " << SENS
+			);
+
+	if (tempCentiC < 2000L) {
+		int64_t tempSquare20 = int64_t(tempCentiC - 2000L) * int64_t(tempCentiC - 2000L);
+		OFF2 = 3LL * tempSquare20;
+		SENSE2 = (7LL * tempSquare20) >> 3;
+
+		if (tempCentiC < -1500L) {
+			SENSE2 += 2LL * (int64_t(tempCentiC) + 1500LL) * (int64_t(tempCentiC) + 1500LL);
+		}
+	} else { // if (TEMP < 2000)
+		if (tempCentiC > 4500) {
+			SENSE2 = (int64_t(tempCentiC - 4500L) * int64_t(tempCentiC - 4500L)) >> 3;
+		}
+	} // if (TEMP < 2000) {} else
+
+	OFF -= OFF2;
+	SENS -= SENSE2;
+
+	int64_t P = (((int64_t(D1)*SENS)>>21) - OFF)>>15;
+
+	pressureVal = FloatType(P) / 100.0f;
+
+	LOG4CXX_TRACE(logger,__FUNCTION__ << ": Calculate Pressure Second order: D1 = " << D1
+			<< ", OFF = " << OFF
+			<< ", SENS = " << SENS
+			<< ", dT = " << deltaTemp
+			<< ", TEMP = " << tempCentiC
+			<< ", OFF2 = " << OFF2
+			<< ", SENSE2 = " << SENSE2
+			<< ", P = " << P
+			);
+
+	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Pressure = " << pressureVal);
 }
 
 } /* namespace openEV */

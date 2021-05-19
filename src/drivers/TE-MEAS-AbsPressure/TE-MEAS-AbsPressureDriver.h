@@ -40,6 +40,16 @@
 
 namespace openEV::drivers::TE_MEAS_AbsPressure {
 
+	enum DriverTypes {
+		DRIVER_TYPE_MS5607,
+		DRIVER_TYPE_MS5611,
+		DRIVER_TYPE_MS5637,
+		DRIVER_TYPE_MS5803,
+		DRIVER_TYPE_MS5805,
+		DRIVER_TYPE_MS5837,
+		DRIVER_TYPE_MS5839,
+		DRIVER_TYPE_MS5840
+	};
 	static char const * (DriverNames []) =
 			{
 					"TE-MEAS-MS5607",
@@ -74,7 +84,7 @@ public:
  *
  * \see [TE MEAS pressure sensor list](https://www.te.com/global-en/plp/meas/ZEvrl8.html?q=&n=135117%20540192%20540193%20540195%20540174%20540175%20540176%20664985%20664984&d=685834%20685838&type=products&samples=N&inStoreWithoutPL=false&instock=N)
  */
-class TE_MEAS_AbsPressureDriver  : public GliderVarioDriverBase {
+class TE_MEAS_AbsPressureDriver : public GliderVarioDriverBase {
 public:
 
 	TE_MEAS_AbsPressureDriver(
@@ -89,7 +99,6 @@ public:
      * \see GliderVarioDriverBase::driverInit()
      */
     virtual void driverInit(GliderVarioMainPriv &varioMain) override;
-
 
     /** \brief Read the configuration
      *
@@ -113,82 +122,6 @@ public:
     virtual void updateKalmanStatus (GliderVarioStatus &varioStatus) override;
 
 protected:
-
-
-    /** \brief The main worker thread of this driver
-     *
-     * \see GliderVarioDriverBase::driverThreadFunction()
-     *
-     */
-    virtual void driverThreadFunction() override;
-
-    /** \brief The inner main loop of the driver after the port was opened
-     *
-     * Read data from the sensor, process them, and update the Kalman filter.
-     */
-    virtual void processingMainLoop ();
-
-    /** \brief Read the coeffcients from the PROM of the sensor
-     *
-     * The method is suitable for both variants of the PROM layout because
-     * \ref lenPromArray determines the length of the PROM array, and can be overwritten
-     * by a derived class.
-     */
-    virtual void setupSensor();
-
-    /** \brief Verify the CRC checksum stored in the PROM with the calculated one.
-     *
-     * The code is copied verbatim from
-     * TE CONNECTIVITY [ Application Note AN520](https://www.te.com.cn/commerce/DocumentDelivery/DDEController?Action=showdoc&DocId=Specification+Or+Standard%7FAN520_C-code_example_for_MS56xx%7FA%7Fpdf%7FEnglish%7FENG_SS_AN520_C-code_example_for_MS56xx_A.pdf%7FCAT-BLPS0003)
-     * except renaming variables, and using uint16_t instead of unsigned int and the likes (AVR code!!!)
-     *
-     * When the CRC check fails it throws a \ref TE_MEAS_AbsPressureCRCErrorException exception
-     * when \ref checkCRC is set true in the configuration.
-     *
-     * This method suits the 8-pin sensors with the CRC in the 7th word.
-     * The the 4-pin sensors this method must be overridden.
-     *
-     * \throws TE_MEAS_AbsPressureCRCErrorException
-     */
-	virtual void verifyCRC();
-
-    /** \brief Start a pressure conversion cycle on the sensor
-     *
-     */
-    virtual void startPressureConversion();
-
-    /** \brief Read out the sensor pressure data
-     *
-     * Before reading out the data wait for the pressure conversion to complete.
-     */
-    virtual void readoutPressure();
-
-    /** \brief Start a temperature conversion cycle on the sensor
-     *
-     */
-    virtual void startTemperatureConversion();
-
-    /** \brief Read out the sensor tempereature data
-     *
-     * Before reading out the data wait for the conversion to complete.
-     */
-    virtual void readoutTemperature();
-
-    /** \brief Initialize the QFF based on the latest GPS altitude, and averaged pressure used for status initialization
-     *
-     * @param[in,out] varioStatus Status and Co-variance of the Kalman filter to be initialized.
-	 * @param[in,out] measurements Current measurement vector.
-	 * Used for cross-referencing measurements of other drivers during the initialization phase
-	 * @param[in,out] varioMain mainVario object; provides all additional information like program parameters, and the parsed properties.
-     * @param avgPressure Averaged pressure measurements used for status initialization
-     */
-    void initQFF(
-    		GliderVarioStatus &varioStatus,
-    		GliderVarioMeasurementVector &measurements,
-    		GliderVarioMainPriv &varioMain,
-			FloatType avgPressure);
-
-private:
 
     /** \brief Name of the communications port.
      *
@@ -278,8 +211,171 @@ private:
     /// \brief Temperature in C
     FloatType temperatureVal = 20.0f;
 
+    /** \brief The main worker thread of this driver
+     *
+     * \see GliderVarioDriverBase::driverThreadFunction()
+     *
+     */
+    virtual void driverThreadFunction() override;
+
+    /** \brief The inner main loop of the driver after the port was opened
+     *
+     * Read data from the sensor, process them, and update the Kalman filter.
+     */
+    virtual void processingMainLoop ();
+
+    /** \brief Read the coeffcients from the PROM of the sensor
+     *
+     * The method is suitable for both variants of the PROM layout because
+     * \ref lenPromArray determines the length of the PROM array, and can be overwritten
+     * by a derived class.
+     */
+    virtual void setupSensor();
+
+    /** \brief Verify the CRC checksum stored in the PROM with the calculated one.
+     *
+     * Since there are at least two different algorithms for the calculation the
+     * method is pure virtual, and must be implemented by a sub-class.
+     *
+     * The code is copied verbatim from
+     * TE CONNECTIVITY [ Application Note AN520](https://www.te.com.cn/commerce/DocumentDelivery/DDEController?Action=showdoc&DocId=Specification+Or+Standard%7FAN520_C-code_example_for_MS56xx%7FA%7Fpdf%7FEnglish%7FENG_SS_AN520_C-code_example_for_MS56xx_A.pdf%7FCAT-BLPS0003)
+     * except renaming variables, and using uint16_t instead of unsigned int and the likes (AVR code!!!)
+     *
+     * When the CRC check fails it throws a \ref TE_MEAS_AbsPressureCRCErrorException exception
+     * when \ref checkCRC is set true in the configuration.
+     *
+     * This method suits the 8-pin sensors with the CRC in the 7th word.
+     * The the 4-pin sensors this method must be overridden.
+     *
+     * \throws TE_MEAS_AbsPressureCRCErrorException
+     */
+	virtual void verifyCRC() = 0;
+
+    /** \brief Start a pressure conversion cycle on the sensor
+     *
+     */
+    virtual void startPressureConversion();
+
+    /** \brief Read out the sensor pressure data
+     *
+     * The conversion from raw A/D values to the physical value occurs in \ref convertPressure()
+     *
+     * Before reading out the data wait for the pressure conversion to complete.
+     */
+    virtual void readoutPressure();
+
+    /** \brief Convert the 3-byte raw value into the pressure in hPa
+     *
+     * Pure virtual due to slightly different calculations for each sensor type.
+     *
+     */
+    virtual void convertPressure(uint8_t const rawValue[]) = 0;
+
+    /** \brief Start a temperature conversion cycle on the sensor
+     *
+     */
+    virtual void startTemperatureConversion();
+
+    /** \brief Read out the sensor temperature data
+     *
+     * The conversion from raw A/D values to the physical value occurs in \ref convertTemperature()
+     *
+     * Before reading out the data wait for the conversion to complete.
+     */
+    virtual void readoutTemperature();
+
+    /** \brief Convert the 3-byte raw value into the temperature in C
+     *
+     * The base implementation does not implementation second order compensation.
+     * The function calculates \ref tempCentiC, \ref deltaTemp, and \ref temperatureVal.
+     *
+     */
+    virtual void convertTemperature(uint8_t const rawValue[]);
+
+    /** \brief Initialize the QFF based on the latest GPS altitude, and averaged pressure used for status initialization
+     *
+     * @param[in,out] varioStatus Status and Co-variance of the Kalman filter to be initialized.
+	 * @param[in,out] measurements Current measurement vector.
+	 * Used for cross-referencing measurements of other drivers during the initialization phase
+	 * @param[in,out] varioMain mainVario object; provides all additional information like program parameters, and the parsed properties.
+     * @param avgPressure Averaged pressure measurements used for status initialization
+     */
+    void initQFF(
+    		GliderVarioStatus &varioStatus,
+    		GliderVarioMeasurementVector &measurements,
+    		GliderVarioMainPriv &varioMain,
+			FloatType avgPressure);
+
+}; // class TE_MEAS_AbsPressureDriver
+
+/** \brief Intermediate class which implements the CRC check applicable to the 8-pin sensors.
+ *
+ * The 8-pin sensors have a 8-byte PROM area. The checksum is in the byte #7.
+ *
+ */
+class EightPinDriver : public TE_MEAS_AbsPressureDriver{
+public:
+
+	EightPinDriver(
+    	    char const *driverName,
+			char const *description,
+			char const *instanceName
+			)
+	: TE_MEAS_AbsPressureDriver (driverName,description,instanceName)
+	{}
+
+	virtual ~EightPinDriver();
+
+	virtual void verifyCRC() override;
+
+}; // class EightPinDriver
+
+/** \brief Intermediate class which implements the CRC check applicable to the 4-pin sensors.
+ *
+ * The 4-pin sensors have a 7-byte PROM area. The checksum is in the byte #0.
+ *
+ */
+class SevenPinDriver : public TE_MEAS_AbsPressureDriver{
+public:
+
+	SevenPinDriver(
+    	    char const *driverName,
+			char const *description,
+			char const *instanceName
+			)
+	: TE_MEAS_AbsPressureDriver (driverName,description,instanceName)
+	{}
+
+	virtual ~SevenPinDriver();
+
+	virtual void verifyCRC() override;
+
+}; // class SevenPinDriver
+
+class MS5803Driver : public EightPinDriver{
+public:
+
+	MS5803Driver(
+    	    char const *driverName,
+			char const *description,
+			char const *instanceName
+			)
+	: EightPinDriver (driverName,description,instanceName)
+	{}
+
+	virtual ~MS5803Driver();
+
+	/** \ref Perform temperature conversion with second order temperature compensation
+	 *
+	 * @param rawValue
+	 *
+	 * \see TE_MEAS_AbsPressureDriver::convertTemperature()
+	 */
+    virtual void convertTemperature(uint8_t const rawValue[]) override;
+
+    virtual void convertPressure(uint8_t const rawValue[]) override;
 };
 
-} /* namespace openEV */
+} /* namespace openEV::drivers::TE_MEAS_AbsPressure */
 #endif /* ABSPRESSURETE_MEAS_AbsPressureDRIVER_H_ */
 
