@@ -47,6 +47,18 @@ static GliderVarioDriverBase* getNewTE_MEAS_AbsPressureInstance (
 		return new MS5803Driver (driverName,description,instanceName);
 	}
 
+	if (!strcmp(DriverNames[DRIVER_TYPE_MS5607],driverName)) {
+		return new MS5607Driver (driverName,description,instanceName);
+	}
+
+	if (!strcmp(DriverNames[DRIVER_TYPE_MS5611],driverName)) {
+		return new MS5611Driver (driverName,description,instanceName);
+	}
+
+	if (!strcmp(DriverNames[DRIVER_TYPE_MS5637],driverName)) {
+		return new MS5637Driver (driverName,description,instanceName);
+	}
+
 	return 0;
 }
 

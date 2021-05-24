@@ -335,18 +335,22 @@ public:
  * The 4-pin sensors have a 7-byte PROM area. The checksum is in the byte #0.
  *
  */
-class SevenPinDriver : public TE_MEAS_AbsPressureDriver{
+class FourPinDriver : public TE_MEAS_AbsPressureDriver{
 public:
 
-	SevenPinDriver(
+	FourPinDriver(
     	    char const *driverName,
 			char const *description,
 			char const *instanceName
 			)
 	: TE_MEAS_AbsPressureDriver (driverName,description,instanceName)
-	{}
+	{
+		// The PROM array of all the 4-pin sensors is only 7 words long.
+		// the 8th word is un-used, and will later be set 0.
+		lenPromArray = 7;
+	}
 
-	virtual ~SevenPinDriver();
+	virtual ~FourPinDriver();
 
 	virtual void verifyCRC() override;
 
@@ -364,6 +368,78 @@ public:
 	{}
 
 	virtual ~MS5803Driver();
+
+	/** \ref Perform temperature conversion with second order temperature compensation
+	 *
+	 * @param rawValue
+	 *
+	 * \see TE_MEAS_AbsPressureDriver::convertTemperature()
+	 */
+    virtual void convertTemperature(uint8_t const rawValue[]) override;
+
+    virtual void convertPressure(uint8_t const rawValue[]) override;
+};
+
+class MS5607Driver : public EightPinDriver{
+public:
+
+	MS5607Driver(
+    	    char const *driverName,
+			char const *description,
+			char const *instanceName
+			)
+	: EightPinDriver (driverName,description,instanceName)
+	{}
+
+	virtual ~MS5607Driver();
+
+	/** \ref Perform temperature conversion with second order temperature compensation
+	 *
+	 * @param rawValue
+	 *
+	 * \see TE_MEAS_AbsPressureDriver::convertTemperature()
+	 */
+    virtual void convertTemperature(uint8_t const rawValue[]) override;
+
+    virtual void convertPressure(uint8_t const rawValue[]) override;
+};
+
+class MS5611Driver : public EightPinDriver{
+public:
+
+	MS5611Driver(
+    	    char const *driverName,
+			char const *description,
+			char const *instanceName
+			)
+	: EightPinDriver (driverName,description,instanceName)
+	{}
+
+	virtual ~MS5611Driver();
+
+	/** \ref Perform temperature conversion with second order temperature compensation
+	 *
+	 * @param rawValue
+	 *
+	 * \see TE_MEAS_AbsPressureDriver::convertTemperature()
+	 */
+    virtual void convertTemperature(uint8_t const rawValue[]) override;
+
+    virtual void convertPressure(uint8_t const rawValue[]) override;
+};
+
+class MS5637Driver : public FourPinDriver{
+public:
+
+	MS5637Driver(
+    	    char const *driverName,
+			char const *description,
+			char const *instanceName
+			)
+	: FourPinDriver (driverName,description,instanceName)
+	{}
+
+	virtual ~MS5637Driver();
 
 	/** \ref Perform temperature conversion with second order temperature compensation
 	 *
