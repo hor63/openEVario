@@ -41,7 +41,7 @@
 namespace openEV::drivers::TE_MEAS_AbsPressure {
 
 	enum DriverTypes {
-		DRIVER_TYPE_MS5607,
+		DRIVER_TYPE_MS5607 = 0,
 		DRIVER_TYPE_MS5611,
 		DRIVER_TYPE_MS5637,
 		DRIVER_TYPE_MS5803,
@@ -74,6 +74,14 @@ public:
 	{}
 
 	};
+
+/** \brief This variable defines unconnected test mode for this driver.
+ *
+ * Instead of using an I2C port at all the driver only uses test/example data from the data sheets
+ * to verify the correct implementation of the temperature and pressure conversion.
+ *
+ */
+#define TE_MEAS_ABS_PRESSURE_TEST_MODE 0
 
 /** \brief Driver for the MS56xx and MS58xx series of absolute pressure sensors from TE Connectivity MEAS.
  *
@@ -306,6 +314,11 @@ protected:
     		GliderVarioMainPriv &varioMain,
 			FloatType avgPressure);
 
+#if TE_MEAS_ABS_PRESSURE_TEST_MODE
+    virtual void testFillPromData() = 0;
+    virtual void testGetTemperatureVal(uint8_t data[]) = 0;
+    virtual void testGetPressureVal(uint8_t data[]) = 0;
+#endif
 }; // class TE_MEAS_AbsPressureDriver
 
 /** \brief Intermediate class which implements the CRC check applicable to the 8-pin sensors.
@@ -369,6 +382,8 @@ public:
 
 	virtual ~MS5803Driver();
 
+protected:
+
 	/** \ref Perform temperature conversion with second order temperature compensation
 	 *
 	 * @param rawValue
@@ -378,6 +393,12 @@ public:
     virtual void convertTemperature(uint8_t const rawValue[]) override;
 
     virtual void convertPressure(uint8_t const rawValue[]) override;
+
+#if TE_MEAS_ABS_PRESSURE_TEST_MODE
+    virtual void testFillPromData();
+    virtual void testGetTemperatureVal(uint8_t data[]);
+    virtual void testGetPressureVal(uint8_t data[]);
+#endif
 };
 
 class MS5607Driver : public EightPinDriver{
@@ -393,6 +414,8 @@ public:
 
 	virtual ~MS5607Driver();
 
+protected:
+
 	/** \ref Perform temperature conversion with second order temperature compensation
 	 *
 	 * @param rawValue
@@ -402,6 +425,12 @@ public:
     virtual void convertTemperature(uint8_t const rawValue[]) override;
 
     virtual void convertPressure(uint8_t const rawValue[]) override;
+
+#if TE_MEAS_ABS_PRESSURE_TEST_MODE
+    virtual void testFillPromData();
+    virtual void testGetTemperatureVal(uint8_t data[]);
+    virtual void testGetPressureVal(uint8_t data[]);
+#endif
 };
 
 class MS5611Driver : public EightPinDriver{
@@ -417,6 +446,8 @@ public:
 
 	virtual ~MS5611Driver();
 
+protected:
+
 	/** \ref Perform temperature conversion with second order temperature compensation
 	 *
 	 * @param rawValue
@@ -426,6 +457,12 @@ public:
     virtual void convertTemperature(uint8_t const rawValue[]) override;
 
     virtual void convertPressure(uint8_t const rawValue[]) override;
+
+#if TE_MEAS_ABS_PRESSURE_TEST_MODE
+    virtual void testFillPromData();
+    virtual void testGetTemperatureVal(uint8_t data[]);
+    virtual void testGetPressureVal(uint8_t data[]);
+#endif
 };
 
 class MS5637Driver : public FourPinDriver{
@@ -441,6 +478,8 @@ public:
 
 	virtual ~MS5637Driver();
 
+protected:
+
 	/** \ref Perform temperature conversion with second order temperature compensation
 	 *
 	 * @param rawValue
@@ -450,6 +489,12 @@ public:
     virtual void convertTemperature(uint8_t const rawValue[]) override;
 
     virtual void convertPressure(uint8_t const rawValue[]) override;
+
+#if TE_MEAS_ABS_PRESSURE_TEST_MODE
+    virtual void testFillPromData();
+    virtual void testGetTemperatureVal(uint8_t data[]);
+    virtual void testGetPressureVal(uint8_t data[]);
+#endif
 };
 
 } /* namespace openEV::drivers::TE_MEAS_AbsPressure */

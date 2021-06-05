@@ -90,10 +90,12 @@ void TE_MEAS_AbsPressureDriver::readConfiguration (Properties4CXX::Properties co
 
 		portName = portNameConfig->getStringValue();
 
+#if !TE_MEAS_ABS_PRESSURE_TEST_MODE
 		ioPort = dynamic_cast<io::I2CPort*> (io::PortBase::getPortByName(portName));
 		if (ioPort == nullptr) {
 			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"I/O Port is not an I2C port.");
 		}
+#endif
 	} catch (std::exception const& e) {
 		LOG4CXX_ERROR(logger, "Read configuration of driver \"" << driverName
 				<< "\" failed:"
@@ -107,9 +109,16 @@ void TE_MEAS_AbsPressureDriver::readConfiguration (Properties4CXX::Properties co
 	useTemperatureSensor = configuration.getPropertyValue(
     		std::string("useTemperatureSensor"),
 			useTemperatureSensor);
+#if TE_MEAS_ABS_PRESSURE_TEST_MODE
+	// If in test mode the CRC check is guaranteed to fail because
+	// only coefficient example values are given in the data sheets
+	// but not a complete set of PROM memory.
+	checkCRC = false;
+#else
 	checkCRC = configuration.getPropertyValue(
     		std::string("checkCRC"),
 			checkCRC);
+#endif
     errorTimeout = configuration.getPropertyValue(
     		std::string("errorTimeout"),
 			(long long)(errorTimeout));
@@ -217,16 +226,26 @@ void TE_MEAS_AbsPressureDriver::driverThreadFunction() {
 
 	int numRetries = 0;
 
-	if (ioPort == nullptr) {
+	if (
+#if TE_MEAS_ABS_PRESSURE_TEST_MODE
+			0
+#else
+			ioPort == nullptr
+#endif
+			) {
 		LOG4CXX_ERROR (logger,"No valid I/O port for driver " << getDriverName()
 				<< ". The driver is not operable");
 	} else {
 		while (!getStopDriverThread() && ( errorMaxNumRetries == 0 || numRetries <= errorMaxNumRetries)) {
 			try {
+#if !TE_MEAS_ABS_PRESSURE_TEST_MODE
 				ioPort->open();
+#endif
 				numRetries = 0;
 				processingMainLoop ();
+#if !TE_MEAS_ABS_PRESSURE_TEST_MODE
 				ioPort->close();
+#endif
 			}
 			catch (TE_MEAS_AbsPressureCRCErrorException const & e1) {
 				LOG4CXX_FATAL(logger,"CRC error Error of driver \"" << getDriverName()
@@ -237,7 +256,9 @@ void TE_MEAS_AbsPressureDriver::driverThreadFunction() {
 				numRetries ++;
 				LOG4CXX_ERROR(logger,"Error in main loop of driver \"" << getDriverName()
 						<< "\":" << e.what());
+#if !TE_MEAS_ABS_PRESSURE_TEST_MODE
 				ioPort->close();
+#endif
 
 				sleep(errorTimeout);
 			}
@@ -286,13 +307,18 @@ void TE_MEAS_AbsPressureDriver::processingMainLoop() {
 void TE_MEAS_AbsPressureDriver::setupSensor() {
     using namespace std::chrono_literals;
 
+#if !TE_MEAS_ABS_PRESSURE_TEST_MODE
 	// Reset the sensor.
 	ioPort->writeByte(i2cAddress, CMD_Reset);
 	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Sent reset to " << getDriverName());
+#endif
 
 	// Let the sensor run through its start code
 	std::this_thread::sleep_for(20ms);
 
+#if TE_MEAS_ABS_PRESSURE_TEST_MODE
+    testFillPromData();
+#else
 	// Read out the coefficients from the RAM.
 	for (uint8_t i = 0; i < lenPromArray;++i) {
 		uint8_t buf[2];
@@ -305,7 +331,7 @@ void TE_MEAS_AbsPressureDriver::setupSensor() {
 		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": PROM word #" << uint32_t(i) << " = 0x"
 				<< std::hex << promArray[i] << std::dec << " = " << promArray[i]);
 	}
-
+#endif
 
 	// Verify that the PROM content is not corrupted.
 	verifyCRC();
@@ -314,16 +340,21 @@ void TE_MEAS_AbsPressureDriver::setupSensor() {
 
 void TE_MEAS_AbsPressureDriver::startPressureConversion() {
 
+#if !TE_MEAS_ABS_PRESSURE_TEST_MODE
 	ioPort->writeByte(i2cAddress, CMD_Convert_D1_OSR_4096);
 	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Sent command " << CMD_Convert_D1_OSR_4096 << " to " << getDriverName());
-
+#endif
 }
 
 void TE_MEAS_AbsPressureDriver::readoutPressure() {
 
 	uint8_t sensorValues[3];
 
+#if TE_MEAS_ABS_PRESSURE_TEST_MODE
+    testGetPressureVal(sensorValues);
+#else
 	ioPort->readBlockAtRegAddrByte(i2cAddress, 0, sensorValues, sizeof(sensorValues));
+#endif
 
 	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Read sensor values = 0x"
 			<< std::hex << uint16_t(sensorValues[0]) << ", 0x" << uint16_t(sensorValues[1]) << ", 0x" << uint16_t(sensorValues[2])
@@ -372,15 +403,21 @@ void TE_MEAS_AbsPressureDriver::readoutPressure() {
 }
 
 void TE_MEAS_AbsPressureDriver::startTemperatureConversion() {
+#if !TE_MEAS_ABS_PRESSURE_TEST_MODE
 	ioPort->writeByte(i2cAddress, CMD_Convert_D2_OSR_1024);
 	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Sent command " << CMD_Convert_D2_OSR_1024 << " to " << getDriverName());
+#endif
 }
 
 void TE_MEAS_AbsPressureDriver::readoutTemperature() {
 
 	uint8_t sensorValues[3];
 
+#if TE_MEAS_ABS_PRESSURE_TEST_MODE
+    testGetTemperatureVal(sensorValues);
+#else
 	ioPort->readBlockAtRegAddrByte(i2cAddress, 0, sensorValues, sizeof(sensorValues));
+#endif
 
 	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Read sensor values = 0x"
 			<< std::hex << uint16_t(sensorValues[0]) << ", 0x" << uint16_t(sensorValues[1]) << ", 0x" << uint16_t(sensorValues[2])
@@ -631,6 +668,33 @@ void MS5803Driver::convertPressure(const uint8_t rawValue[]) {
 	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Pressure = " << pressureVal);
 }
 
+#if TE_MEAS_ABS_PRESSURE_TEST_MODE
+void MS5803Driver::testFillPromData() {
+	promArray[1] = 40127;
+	promArray[2] = 36924;
+	promArray[3] = 23317;
+	promArray[4] = 23282;
+	promArray[5] = 33464;
+	promArray[6] = 28312;
+}
+
+void MS5803Driver::testGetTemperatureVal(uint8_t data[]) {
+	uint32_t val = 8569150;
+
+	data[0] = uint8_t((val >> 16) & 0xffU);
+	data[1] = uint8_t((val >> 8) & 0xffU);
+	data[2] = uint8_t(val & 0xffU);
+}
+
+void MS5803Driver::testGetPressureVal(uint8_t data[]) {
+	uint32_t val = 9085466;
+
+	data[0] = uint8_t((val >> 16) & 0xffU);
+	data[1] = uint8_t((val >> 8) & 0xffU);
+	data[2] = uint8_t(val & 0xffU);
+}
+#endif // #if TE_MEAS_ABS_PRESSURE_TEST_MODE
+
 MS5607Driver::~MS5607Driver() {
 }
 
@@ -700,6 +764,33 @@ void MS5607Driver::convertPressure(const uint8_t rawValue[]) {
 	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Pressure = " << pressureVal);
 }
 
+#if TE_MEAS_ABS_PRESSURE_TEST_MODE
+void MS5607Driver::testFillPromData() {
+	promArray[1] = 46372;
+	promArray[2] = 43981;
+	promArray[3] = 29059;
+	promArray[4] = 27842;
+	promArray[5] = 31553;
+	promArray[6] = 28165;
+}
+
+void MS5607Driver::testGetTemperatureVal(uint8_t data[]) {
+	uint32_t val = 8077636;
+
+	data[0] = uint8_t((val >> 16) & 0xffU);
+	data[1] = uint8_t((val >> 8) & 0xffU);
+	data[2] = uint8_t(val & 0xffU);
+}
+
+void MS5607Driver::testGetPressureVal(uint8_t data[]) {
+	uint32_t val = 6465444;
+
+	data[0] = uint8_t((val >> 16) & 0xffU);
+	data[1] = uint8_t((val >> 8) & 0xffU);
+	data[2] = uint8_t(val & 0xffU);
+}
+#endif // #if TE_MEAS_ABS_PRESSURE_TEST_MODE
+
 MS5611Driver::~MS5611Driver() {
 }
 
@@ -710,9 +801,7 @@ void MS5611Driver::convertTemperature(const uint8_t rawValue[]) {
 
 	// Second order temperature compensation only for the converted temperature
 	if (tempCentiC < 2000L) {
-		temperatureVal -=  FloatType(3LL * ((int64_t(deltaTemp) * int64_t(deltaTemp))) / (1LL<<33)) / 100.0f;
-	} else {
-		temperatureVal -= FloatType(5LL * ((int64_t(deltaTemp) * int64_t(deltaTemp))) / (1LL<<38)) / 100.0f;
+		temperatureVal -=  FloatType((int64_t(deltaTemp) * int64_t(deltaTemp)) / (1LL<<31)) / 100.0f;
 	}
 
 	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Second order compensation: T = " << tempCentiC
@@ -720,6 +809,103 @@ void MS5611Driver::convertTemperature(const uint8_t rawValue[]) {
 }
 
 void MS5611Driver::convertPressure(const uint8_t rawValue[]) {
+	int32_t D1 = (int32_t(rawValue[0])<<16) | (int32_t(rawValue[1])<<8) | int32_t(rawValue[2]);
+
+	int64_t OFF = (int64_t(promArray[2])<<16) + ((int64_t(promArray[4])*int64_t(deltaTemp)) / (1LL<<7));
+	int64_t SENS = (int64_t(promArray[1])<<15) + ((int64_t(promArray[3])*int64_t(deltaTemp)) / (1LL<<8));
+
+	// Second order temperature compensation
+	int64_t OFF2 = 0LL;
+	int64_t SENSE2 = 0LL;
+
+	LOG4CXX_TRACE(logger,__FUNCTION__ << ": Calculate first order            D1 = " << D1
+			<< ", OFF = " << OFF
+			<< ", SENS = " << SENS
+			);
+
+	if (tempCentiC < 2000L) {
+		int32_t tempSquare20 = tempCentiC - 2000L;
+		tempSquare20 *= tempSquare20;
+
+		OFF2 = (5LL * tempSquare20) / (1LL<<1);
+		SENSE2 = (5LL * tempSquare20) / (1LL<<2);
+
+		if (tempCentiC < -1500L) {
+			int32_t tempSquareMin15 = tempCentiC + 1500L;
+			tempSquareMin15 *= tempSquareMin15;
+
+			OFF2 += 7LL * tempSquareMin15;
+			SENSE2 += (11LL * tempSquareMin15) / (1LL<<1);
+		}
+	} // if (TEMP < 2000)
+
+	OFF -= OFF2;
+	SENS -= SENSE2;
+
+	int64_t P = (((int64_t(D1)*SENS) / (1LL<<21)) - OFF)  / (1LL<<15);
+
+	pressureVal = FloatType(P) / 100.0f;
+
+	LOG4CXX_TRACE(logger,__FUNCTION__ << ": Calculate Pressure Second order: D1 = " << D1
+			<< ", OFF = " << OFF
+			<< ", SENS = " << SENS
+			<< ", dT = " << deltaTemp
+			<< ", TEMP = " << tempCentiC
+			<< ", OFF2 = " << OFF2
+			<< ", SENSE2 = " << SENSE2
+			<< ", P = " << P
+			);
+
+	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Pressure = " << pressureVal);
+}
+
+#if TE_MEAS_ABS_PRESSURE_TEST_MODE
+void MS5611Driver::testFillPromData() {
+	promArray[1] = 40127;
+	promArray[2] = 36924;
+	promArray[3] = 23317;
+	promArray[4] = 23282;
+	promArray[5] = 33464;
+	promArray[6] = 28312;
+}
+
+void MS5611Driver::testGetTemperatureVal(uint8_t data[]) {
+	uint32_t val = 8569150;
+
+	data[0] = uint8_t((val >> 16) & 0xffU);
+	data[1] = uint8_t((val >> 8) & 0xffU);
+	data[2] = uint8_t(val & 0xffU);
+}
+
+void MS5611Driver::testGetPressureVal(uint8_t data[]) {
+	uint32_t val = 9085466;
+
+	data[0] = uint8_t((val >> 16) & 0xffU);
+	data[1] = uint8_t((val >> 8) & 0xffU);
+	data[2] = uint8_t(val & 0xffU);
+}
+#endif // #if TE_MEAS_ABS_PRESSURE_TEST_MODE
+
+MS5637Driver::~MS5637Driver() {
+}
+
+void MS5637Driver::convertTemperature(const uint8_t rawValue[]) {
+
+	// un-compensated conversion by the base class
+	TE_MEAS_AbsPressureDriver::convertTemperature(rawValue);
+
+	// Second order temperature compensation only for the converted temperature
+	if (tempCentiC < 2000L) {
+		temperatureVal -= FloatType((3LL * int64_t(deltaTemp) * int64_t(deltaTemp)) / (1LL<<33)) / 100.0f;
+	} else {
+		temperatureVal -= FloatType((5LL * int64_t(deltaTemp) * int64_t(deltaTemp)) / (1LL<<38)) / 100.0f;
+	}
+
+	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Second order compensation: T = " << tempCentiC
+			<< ", temperatureVal = " << temperatureVal);
+}
+
+void MS5637Driver::convertPressure(const uint8_t rawValue[]) {
 	int32_t D1 = (int32_t(rawValue[0])<<16) | (int32_t(rawValue[1])<<8) | int32_t(rawValue[2]);
 
 	int64_t OFF = (int64_t(promArray[2])<<17) + ((int64_t(promArray[4])*int64_t(deltaTemp)) / (1LL<<6));
@@ -747,7 +933,9 @@ void MS5611Driver::convertPressure(const uint8_t rawValue[]) {
 
 			OFF2 += 17LL * tempSquareMin15;
 			SENSE2 += 9LL * tempSquareMin15;
+
 		}
+
 	} // if (TEMP < 2000)
 
 	OFF -= OFF2;
@@ -770,66 +958,33 @@ void MS5611Driver::convertPressure(const uint8_t rawValue[]) {
 	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Pressure = " << pressureVal);
 }
 
-MS5637Driver::~MS5637Driver() {
+#if TE_MEAS_ABS_PRESSURE_TEST_MODE
+
+void MS5637Driver::testFillPromData() {
+	promArray[1] = 46372;
+	promArray[2] = 43981;
+	promArray[3] = 29059;
+	promArray[4] = 27842;
+	promArray[5] = 31553;
+	promArray[6] = 28165;
 }
 
-void MS5637Driver::convertTemperature(const uint8_t rawValue[]) {
+void MS5637Driver::testGetTemperatureVal(uint8_t data[]) {
+	uint32_t val = 8077636;
 
-	// un-compensated conversion by the base class
-	TE_MEAS_AbsPressureDriver::convertTemperature(rawValue);
-
-	// Second order temperature compensation only for the converted temperature
-	if (tempCentiC < 2000L) {
-
-		temperatureVal -= FloatType((11LL * int64_t(deltaTemp) * int64_t(deltaTemp)) / (1LL<<31)) / 100.0f;
-
-		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Second order compensation: T = " << tempCentiC
-				<< ", temperatureVal = " << temperatureVal);
-	}
+	data[0] = uint8_t((val >> 16) & 0xffU);
+	data[1] = uint8_t((val >> 8) & 0xffU);
+	data[2] = uint8_t(val & 0xffU);
 }
 
-void MS5637Driver::convertPressure(const uint8_t rawValue[]) {
-	int32_t D1 = (int32_t(rawValue[0])<<16) | (int32_t(rawValue[1])<<8) | int32_t(rawValue[2]);
+void MS5637Driver::testGetPressureVal(uint8_t data[]) {
+	uint32_t val = 6465444;
 
-	int64_t OFF = (int64_t(promArray[2])<<17) + ((int64_t(promArray[4])*int64_t(deltaTemp)) / (1LL<<6));
-	int64_t SENS = (int64_t(promArray[1])<<16) + ((int64_t(promArray[3])*int64_t(deltaTemp)) / (1LL<<7));
-
-	// Second order temperature compensation
-	int64_t OFF2 = 0LL;
-	int64_t SENSE2 = 0LL;
-
-	LOG4CXX_TRACE(logger,__FUNCTION__ << ": Calculate first order            D1 = " << D1
-			<< ", OFF = " << OFF
-			<< ", SENS = " << SENS
-			);
-
-	if (tempCentiC < 2000L) {
-		int32_t tempSquare20 = tempCentiC - 2000L;
-		tempSquare20 *= tempSquare20;
-
-		OFF2 = (31LL * tempSquare20) / (1LL<<3);
-		SENSE2 = (63LL * tempSquare20) / (1LL<<2);
-
-	} // if (TEMP < 2000)
-
-	OFF -= OFF2;
-	SENS -= SENSE2;
-
-	int64_t P = (((int64_t(D1)*SENS) / (1LL<<21)) - OFF) / (1LL<<15);
-
-	pressureVal = FloatType(P) / 100.0f;
-
-	LOG4CXX_TRACE(logger,__FUNCTION__ << ": Calculate Pressure Second order: D1 = " << D1
-			<< ", OFF = " << OFF
-			<< ", SENS = " << SENS
-			<< ", dT = " << deltaTemp
-			<< ", TEMP = " << tempCentiC
-			<< ", OFF2 = " << OFF2
-			<< ", SENSE2 = " << SENSE2
-			<< ", P = " << P
-			);
-
-	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Pressure = " << pressureVal);
+	data[0] = uint8_t((val >> 16) & 0xffU);
+	data[1] = uint8_t((val >> 8) & 0xffU);
+	data[2] = uint8_t(val & 0xffU);
 }
+
+#endif // #if TE_MEAS_ABS_PRESSURE_TEST_MODE
 
 } /* namespace openEV */
