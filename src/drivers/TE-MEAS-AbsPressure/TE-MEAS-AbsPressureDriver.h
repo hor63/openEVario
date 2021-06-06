@@ -497,6 +497,102 @@ protected:
 #endif
 };
 
+class MS5805Driver : public FourPinDriver{
+public:
+
+	MS5805Driver(
+    	    char const *driverName,
+			char const *description,
+			char const *instanceName
+			)
+	: FourPinDriver (driverName,description,instanceName)
+	{}
+
+	virtual ~MS5805Driver();
+
+protected:
+
+	/** \ref Perform temperature conversion with second order temperature compensation
+	 *
+	 * @param rawValue
+	 *
+	 * \see TE_MEAS_AbsPressureDriver::convertTemperature()
+	 */
+    virtual void convertTemperature(uint8_t const rawValue[]) override;
+
+    virtual void convertPressure(uint8_t const rawValue[]) override;
+
+#if TE_MEAS_ABS_PRESSURE_TEST_MODE
+    virtual void testFillPromData();
+    virtual void testGetTemperatureVal(uint8_t data[]);
+    virtual void testGetPressureVal(uint8_t data[]);
+#endif
+};
+
+class MS5837Driver : public FourPinDriver{
+public:
+
+	MS5837Driver(
+    	    char const *driverName,
+			char const *description,
+			char const *instanceName
+			)
+	: FourPinDriver (driverName,description,instanceName)
+	{}
+
+	virtual ~MS5837Driver();
+
+protected:
+
+	/** \ref Perform temperature conversion with second order temperature compensation
+	 *
+	 * @param rawValue
+	 *
+	 * \see TE_MEAS_AbsPressureDriver::convertTemperature()
+	 */
+    virtual void convertTemperature(uint8_t const rawValue[]) override;
+
+    virtual void convertPressure(uint8_t const rawValue[]) override;
+
+#if TE_MEAS_ABS_PRESSURE_TEST_MODE
+    virtual void testFillPromData();
+    virtual void testGetTemperatureVal(uint8_t data[]);
+    virtual void testGetPressureVal(uint8_t data[]);
+#endif
+};
+
+class MS5839_MS5840Driver : public FourPinDriver{
+public:
+
+	MS5839_MS5840Driver(
+    	    char const *driverName,
+			char const *description,
+			char const *instanceName
+			)
+	: FourPinDriver (driverName,description,instanceName)
+	{}
+
+	virtual ~MS5839_MS5840Driver();
+
+protected:
+
+	/** \ref Perform temperature conversion with second order temperature compensation
+	 *
+	 * @param rawValue
+	 *
+	 * \see TE_MEAS_AbsPressureDriver::convertTemperature()
+	 */
+    virtual void convertTemperature(uint8_t const rawValue[]) override;
+
+    virtual void convertPressure(uint8_t const rawValue[]) override;
+
+#if TE_MEAS_ABS_PRESSURE_TEST_MODE
+    virtual void testFillPromData();
+    virtual void testGetTemperatureVal(uint8_t data[]);
+    virtual void testGetPressureVal(uint8_t data[]);
+#endif
+};
+
 } /* namespace openEV::drivers::TE_MEAS_AbsPressure */
 #endif /* ABSPRESSURETE_MEAS_AbsPressureDRIVER_H_ */
 

@@ -431,7 +431,7 @@ void TE_MEAS_AbsPressureDriver::readoutTemperature() {
 
 void TE_MEAS_AbsPressureDriver::convertTemperature(const uint8_t rawValue[]) {
 	int32_t D2 = (int32_t(rawValue[0])<<16) | (int32_t(rawValue[1])<<8) | int32_t(rawValue[2]);
-	deltaTemp = D2 - (int32_t(promArray[5]) << 8);
+	deltaTemp = D2 - int32_t(promArray[5]) * 256L;
 
 	tempCentiC = 2000L + ((int64_t(deltaTemp) * int64_t(promArray[6])) / (1LL<<23));
 
@@ -644,7 +644,7 @@ void MS5803Driver::convertPressure(const uint8_t rawValue[]) {
 			int32_t tempSquare45 = tempCentiC - 4500L;
 			tempSquare45 *= tempSquare45;
 
-			SENSE2 -= int64_t(tempSquare45) / (1LL<<3);
+			SENSE2 = int64_t(tempSquare45) / 8LL;
 		}
 	} // if (TEMP < 2000) {} else
 
@@ -732,7 +732,7 @@ void MS5607Driver::convertPressure(const uint8_t rawValue[]) {
 		int32_t tempSquare20 = tempCentiC - 2000L;
 		tempSquare20 *= tempSquare20;
 
-		OFF2 = (61LL * tempSquare20) / (1LL<<4);
+		OFF2 = (61LL * tempSquare20) / 16LL;
 		SENSE2 = 2LL * tempSquare20;
 
 		if (tempCentiC < -1500L) {
@@ -827,15 +827,15 @@ void MS5611Driver::convertPressure(const uint8_t rawValue[]) {
 		int32_t tempSquare20 = tempCentiC - 2000L;
 		tempSquare20 *= tempSquare20;
 
-		OFF2 = (5LL * tempSquare20) / (1LL<<1);
-		SENSE2 = (5LL * tempSquare20) / (1LL<<2);
+		OFF2 = (5LL * tempSquare20) / 2LL;
+		SENSE2 = (5LL * tempSquare20) / 4LL;
 
 		if (tempCentiC < -1500L) {
 			int32_t tempSquareMin15 = tempCentiC + 1500L;
 			tempSquareMin15 *= tempSquareMin15;
 
 			OFF2 += 7LL * tempSquareMin15;
-			SENSE2 += (11LL * tempSquareMin15) / (1LL<<1);
+			SENSE2 += (11LL * tempSquareMin15) / 2LL;
 		}
 	} // if (TEMP < 2000)
 
@@ -924,8 +924,8 @@ void MS5637Driver::convertPressure(const uint8_t rawValue[]) {
 		int32_t tempSquare20 = tempCentiC - 2000L;
 		tempSquare20 *= tempSquare20;
 
-		OFF2 = (61LL * tempSquare20) / (1LL<<4);
-		SENSE2 = (29LL * tempSquare20) / (1LL<<4);
+		OFF2 = (61LL * tempSquare20) / 16LL;
+		SENSE2 = (29LL * tempSquare20) / 16LL;
 
 		if (tempCentiC < -1500L) {
 			int32_t tempSquareMin15 = tempCentiC + 1500L;
@@ -978,6 +978,285 @@ void MS5637Driver::testGetTemperatureVal(uint8_t data[]) {
 }
 
 void MS5637Driver::testGetPressureVal(uint8_t data[]) {
+	uint32_t val = 6465444;
+
+	data[0] = uint8_t((val >> 16) & 0xffU);
+	data[1] = uint8_t((val >> 8) & 0xffU);
+	data[2] = uint8_t(val & 0xffU);
+}
+
+#endif // #if TE_MEAS_ABS_PRESSURE_TEST_MODE
+
+MS5805Driver::~MS5805Driver() {
+}
+
+void MS5805Driver::convertTemperature(const uint8_t rawValue[]) {
+
+	// un-compensated conversion by the base class
+	TE_MEAS_AbsPressureDriver::convertTemperature(rawValue);
+
+	// Second order temperature compensation only for the converted temperature
+	if (tempCentiC < 2000L) {
+		temperatureVal -= FloatType((11LL * int64_t(deltaTemp) * int64_t(deltaTemp)) / (1LL<<35)) / 100.0f;
+
+		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Second order compensation: T = " << tempCentiC
+				<< ", temperatureVal = " << temperatureVal);
+	}
+}
+
+void MS5805Driver::convertPressure(const uint8_t rawValue[]) {
+	int32_t D1 = (int32_t(rawValue[0])<<16) | (int32_t(rawValue[1])<<8) | int32_t(rawValue[2]);
+
+	int64_t OFF = (int64_t(promArray[2])<<17) + ((int64_t(promArray[4])*int64_t(deltaTemp)) / (1LL<<6));
+	int64_t SENS = (int64_t(promArray[1])<<16) + ((int64_t(promArray[3])*int64_t(deltaTemp)) / (1LL<<7));
+
+	// Second order temperature compensation
+	int64_t OFF2 = 0LL;
+	int64_t SENSE2 = 0LL;
+
+	LOG4CXX_TRACE(logger,__FUNCTION__ << ": Calculate first order            D1 = " << D1
+			<< ", OFF = " << OFF
+			<< ", SENS = " << SENS
+			);
+
+	if (tempCentiC < 2000L) {
+		int32_t tempSquare20 = tempCentiC - 2000L;
+		tempSquare20 *= tempSquare20;
+
+		OFF2 = (31LL * tempSquare20) / 8LL;
+		SENSE2 = (63LL * tempSquare20) / 32LL;
+
+	} // if (TEMP < 2000)
+
+	OFF -= OFF2;
+	SENS -= SENSE2;
+
+	int64_t P = (((int64_t(D1)*SENS) / (1LL<<21)) - OFF)  / (1LL<<15);
+
+	pressureVal = FloatType(P) / 100.0f;
+
+	LOG4CXX_TRACE(logger,__FUNCTION__ << ": Calculate Pressure Second order: D1 = " << D1
+			<< ", OFF = " << OFF
+			<< ", SENS = " << SENS
+			<< ", dT = " << deltaTemp
+			<< ", TEMP = " << tempCentiC
+			<< ", OFF2 = " << OFF2
+			<< ", SENSE2 = " << SENSE2
+			<< ", P = " << P
+			);
+
+	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Pressure = " << pressureVal);
+}
+
+#if TE_MEAS_ABS_PRESSURE_TEST_MODE
+
+void MS5805Driver::testFillPromData() {
+	promArray[1] = 46372;
+	promArray[2] = 43981;
+	promArray[3] = 29059;
+	promArray[4] = 27842;
+	promArray[5] = 31553;
+	promArray[6] = 28165;
+}
+
+void MS5805Driver::testGetTemperatureVal(uint8_t data[]) {
+	uint32_t val = 8077636;
+
+	data[0] = uint8_t((val >> 16) & 0xffU);
+	data[1] = uint8_t((val >> 8) & 0xffU);
+	data[2] = uint8_t(val & 0xffU);
+}
+
+void MS5805Driver::testGetPressureVal(uint8_t data[]) {
+	uint32_t val = 6465444;
+
+	data[0] = uint8_t((val >> 16) & 0xffU);
+	data[1] = uint8_t((val >> 8) & 0xffU);
+	data[2] = uint8_t(val & 0xffU);
+}
+
+#endif // #if TE_MEAS_ABS_PRESSURE_TEST_MODE
+
+MS5837Driver::~MS5837Driver() {
+}
+
+void MS5837Driver::convertTemperature(const uint8_t rawValue[]) {
+
+	// un-compensated conversion by the base class
+	TE_MEAS_AbsPressureDriver::convertTemperature(rawValue);
+
+	// Second order temperature compensation only for the converted temperature
+	if (tempCentiC < 2000L) {
+		temperatureVal -= FloatType((11LL * int64_t(deltaTemp) * int64_t(deltaTemp)) / (1LL<<35)) / 100.0f;
+
+		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Second order compensation: T = " << tempCentiC
+				<< ", temperatureVal = " << temperatureVal);
+	}
+}
+
+void MS5837Driver::convertPressure(const uint8_t rawValue[]) {
+	int32_t D1 = (int32_t(rawValue[0])<<16) | (int32_t(rawValue[1])<<8) | int32_t(rawValue[2]);
+
+	int64_t OFF = (int64_t(promArray[2])<<17) + ((int64_t(promArray[4])*int64_t(deltaTemp)) / (1LL<<6));
+	int64_t SENS = (int64_t(promArray[1])<<16) + ((int64_t(promArray[3])*int64_t(deltaTemp)) / (1LL<<7));
+
+	// Second order temperature compensation
+	int64_t OFF2 = 0LL;
+	int64_t SENSE2 = 0LL;
+
+	LOG4CXX_TRACE(logger,__FUNCTION__ << ": Calculate first order            D1 = " << D1
+			<< ", OFF = " << OFF
+			<< ", SENS = " << SENS
+			);
+
+	if (tempCentiC < 2000L) {
+		int32_t tempSquare20 = tempCentiC - 2000L;
+		tempSquare20 *= tempSquare20;
+
+		OFF2 = (31LL * tempSquare20) / 8LL;
+		SENSE2 = (63LL * tempSquare20) / 32LL;
+
+	} // if (TEMP < 2000)
+
+	OFF -= OFF2;
+	SENS -= SENSE2;
+
+	int64_t P = (((int64_t(D1)*SENS) / (1LL<<21)) - OFF)  / (1LL<<15);
+
+	pressureVal = FloatType(P) / 100.0f;
+
+	LOG4CXX_TRACE(logger,__FUNCTION__ << ": Calculate Pressure Second order: D1 = " << D1
+			<< ", OFF = " << OFF
+			<< ", SENS = " << SENS
+			<< ", dT = " << deltaTemp
+			<< ", TEMP = " << tempCentiC
+			<< ", OFF2 = " << OFF2
+			<< ", SENSE2 = " << SENSE2
+			<< ", P = " << P
+			);
+
+	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Pressure = " << pressureVal);
+}
+
+#if TE_MEAS_ABS_PRESSURE_TEST_MODE
+
+void MS5837Driver::testFillPromData() {
+	promArray[1] = 46372;
+	promArray[2] = 43981;
+	promArray[3] = 29059;
+	promArray[4] = 27842;
+	promArray[5] = 31553;
+	promArray[6] = 28165;
+}
+
+void MS5837Driver::testGetTemperatureVal(uint8_t data[]) {
+	uint32_t val = 8077636;
+
+	data[0] = uint8_t((val >> 16) & 0xffU);
+	data[1] = uint8_t((val >> 8) & 0xffU);
+	data[2] = uint8_t(val & 0xffU);
+}
+
+void MS5837Driver::testGetPressureVal(uint8_t data[]) {
+	uint32_t val = 6465444;
+
+	data[0] = uint8_t((val >> 16) & 0xffU);
+	data[1] = uint8_t((val >> 8) & 0xffU);
+	data[2] = uint8_t(val & 0xffU);
+}
+
+#endif // #if TE_MEAS_ABS_PRESSURE_TEST_MODE
+
+MS5839_MS5840Driver::~MS5839_MS5840Driver() {
+}
+
+void MS5839_MS5840Driver::convertTemperature(const uint8_t rawValue[]) {
+
+	// un-compensated conversion by the base class
+	TE_MEAS_AbsPressureDriver::convertTemperature(rawValue);
+
+	// Second order temperature compensation only for the converted temperature
+	if (tempCentiC < 2000L) {
+		int64_t deltaTempSq = int64_t(deltaTemp) * int64_t(deltaTemp);
+		if (tempCentiC <= 1000L) {
+			temperatureVal -= FloatType((14LL * deltaTempSq) / (1LL<<35)) / 100.0f;
+		} else {
+			temperatureVal -= FloatType((12LL * deltaTempSq) / (1LL<<35)) / 100.0f;
+		}
+
+		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Second order compensation: T = " << tempCentiC
+				<< ", temperatureVal = " << temperatureVal);
+	}
+}
+
+void MS5839_MS5840Driver::convertPressure(const uint8_t rawValue[]) {
+	int32_t D1 = (int32_t(rawValue[0])<<16) | (int32_t(rawValue[1])<<8) | int32_t(rawValue[2]);
+
+	int64_t OFF = (int64_t(promArray[2])<<17) + ((int64_t(promArray[4])*int64_t(deltaTemp)) / (1LL<<6));
+	int64_t SENS = (int64_t(promArray[1])<<16) + ((int64_t(promArray[3])*int64_t(deltaTemp)) / (1LL<<7));
+
+	// Second order temperature compensation
+	int64_t OFF2 = 0LL;
+	int64_t SENSE2 = 0LL;
+
+	LOG4CXX_TRACE(logger,__FUNCTION__ << ": Calculate first order            D1 = " << D1
+			<< ", OFF = " << OFF
+			<< ", SENS = " << SENS
+			);
+
+	if (tempCentiC < 2000L) {
+		int32_t tempSquare20 = tempCentiC - 2000L;
+		tempSquare20 *= tempSquare20;
+
+		if (tempCentiC <= 1000L) {
+			OFF2 = (35LL * tempSquare20) / 8LL;
+			SENSE2 = (63LL * tempSquare20) / 32LL;
+		} else {
+			OFF2 = (30LL * tempSquare20) / 256LL;
+		}
+
+	} // if (TEMP < 2000)
+
+	OFF -= OFF2;
+	SENS -= SENSE2;
+
+	int64_t P = (((int64_t(D1)*SENS) / (1LL<<21)) - OFF)  / (1LL<<15);
+
+	pressureVal = FloatType(P) / 100.0f;
+
+	LOG4CXX_TRACE(logger,__FUNCTION__ << ": Calculate Pressure Second order: D1 = " << D1
+			<< ", OFF = " << OFF
+			<< ", SENS = " << SENS
+			<< ", dT = " << deltaTemp
+			<< ", TEMP = " << tempCentiC
+			<< ", OFF2 = " << OFF2
+			<< ", SENSE2 = " << SENSE2
+			<< ", P = " << P
+			);
+
+	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Pressure = " << pressureVal);
+}
+
+#if TE_MEAS_ABS_PRESSURE_TEST_MODE
+
+void MS5839_MS5840Driver::testFillPromData() {
+	promArray[1] = 46372;
+	promArray[2] = 43981;
+	promArray[3] = 29059;
+	promArray[4] = 27842;
+	promArray[5] = 31553;
+	promArray[6] = 28165;
+}
+
+void MS5839_MS5840Driver::testGetTemperatureVal(uint8_t data[]) {
+	uint32_t val = 8077636;
+
+	data[0] = uint8_t((val >> 16) & 0xffU);
+	data[1] = uint8_t((val >> 8) & 0xffU);
+	data[2] = uint8_t(val & 0xffU);
+}
+
+void MS5839_MS5840Driver::testGetPressureVal(uint8_t data[]) {
 	uint32_t val = 6465444;
 
 	data[0] = uint8_t((val >> 16) & 0xffU);
