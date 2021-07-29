@@ -41,7 +41,7 @@ static std::string const templateDriverLibName = "templateLib";
 templateLib templateLib::theOneAndOnly;
 
 
-static GliderVarioDriverBase* getNewtemplateInstance (
+static DriverBase* getNewtemplateInstance (
 	    char const *driverName,
 		char const *description,
 		char const *instanceName) {

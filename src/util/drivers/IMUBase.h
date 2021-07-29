@@ -13,13 +13,13 @@
 namespace openEV {
 namespace drivers {
 
-class IMUBase: public GliderVarioDriverBase {
+class IMUBase: public DriverBase {
 public:
 	IMUBase(
 			char const *driverName,
 			char const *description,
 			char const *instanceName,
-			GliderVarioDriverLibBase &driverLib
+			DriverLibBase &driverLib
 			);
 	virtual ~IMUBase();
 };

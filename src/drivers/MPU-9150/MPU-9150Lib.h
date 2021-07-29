@@ -30,7 +30,7 @@
 
 namespace openEV::drivers::TDK_MPU9150 {
 
-class MPU9150Lib : public GliderVarioDriverLibBase {
+class MPU9150Lib : public DriverLibBase {
 public:
 
 	virtual void addDrivers(GliderVarioDriverList &gliderVarioDriverList) override;

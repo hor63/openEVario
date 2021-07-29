@@ -30,7 +30,7 @@
 
 namespace openEV::drivers::TE_MEAS_AbsPressure {
 
-class TE_MEAS_AbsPressureLib : public GliderVarioDriverLibBase {
+class TE_MEAS_AbsPressureLib : public DriverLibBase {
 public:
 
 	virtual void addDrivers(GliderVarioDriverList &gliderVarioDriverList) override;

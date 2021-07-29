@@ -38,7 +38,7 @@ class GliderVarioDriverList;
 namespace drivers {
 
 // Forward declarations because the complex include hierarchy can have side effects on the order of includes
-class GliderVarioDriverBase;
+class DriverBase;
 
 /** \brief Driver library base class.
  *
@@ -47,7 +47,7 @@ class GliderVarioDriverBase;
  * Examples are the MPU-9x50 from TDK, formerly Invensense (MPU-9250, MPU-9150) which can are very similar.
  *
  */
-class OEV_UTILS_PUBLIC GliderVarioDriverLibBase {
+class OEV_UTILS_PUBLIC DriverLibBase {
 public:
 
 
@@ -68,7 +68,7 @@ public:
 	virtual void addDrivers(GliderVarioDriverList &gliderVarioDriverList) = 0;
 
 protected:
-	GliderVarioDriverLibBase(
+	DriverLibBase(
 			char const * libName,
 			char const * description)
 	: libName {libName},
@@ -76,7 +76,7 @@ protected:
 	{
 
 	}
-	virtual ~GliderVarioDriverLibBase();
+	virtual ~DriverLibBase();
 
 	/** \brief Driver list of this library
 	 * The driver list consists of a pair with the driver name (key) and description (mapped value).
@@ -87,7 +87,7 @@ protected:
 
 };
 
-typedef GliderVarioDriverLibBase* GliderVarioDriverLibBasePtr;
+typedef DriverLibBase* GliderVarioDriverLibBasePtr;
 
 } /* namespace drivers */
 } /* namespace openEV */

@@ -58,18 +58,18 @@ namespace drivers {
  * The actual driver implementation is never exposed to the main program but hidden in the shared library which
  * implements the driver
  */
-class OEV_UTILS_PUBLIC GliderVarioDriverBase {
+class OEV_UTILS_PUBLIC DriverBase {
 
 public:
 
-    GliderVarioDriverBase (
+    DriverBase (
     	    char const *driverName,
 			char const *description,
 			char const *instanceName,
-			GliderVarioDriverLibBase &driverLib
+			DriverLibBase &driverLib
 			);
 
-    virtual ~GliderVarioDriverBase () {}
+    virtual ~DriverBase () {}
 
     /// The list of sensor capabilities. Each one is a position in an integer.
     /// The capabilities are ORed into the capabilities of the driver in #sensorCapabilities.
@@ -137,11 +137,11 @@ public:
     	return instanceName.c_str();
     }
 
-    GliderVarioDriverLibBase &GetDriverLib () {
+    DriverLibBase &GetDriverLib () {
     	return driverLib;
     }
 
-    GliderVarioDriverLibBase const &GetDriverLib () const {
+    DriverLibBase const &GetDriverLib () const {
     	return driverLib;
     }
 
@@ -344,7 +344,7 @@ protected:
     std::string description;
     std::string instanceName;
 
-    GliderVarioDriverLibBase &driverLib;
+    DriverLibBase &driverLib;
 
     /// Pointer to the main object. Is being set by \ref startup() and set NULL by \ref shutdown()
     GliderVarioMainPriv *varioMain = 0;
@@ -381,20 +381,20 @@ protected:
      *
      * @param tis Pointer to the object to which the thread belongs
      */
-    static void driverThreadEntry (GliderVarioDriverBase* tis);
+    static void driverThreadEntry (DriverBase* tis);
 
 
 }; // class GliderVarioDriverBase
 
 /// Define a shared pointer to the driver object which keeps a reference count
-typedef std::shared_ptr<openEV::drivers::GliderVarioDriverBase> GliderVarioDriverBasePtr;
+typedef std::shared_ptr<openEV::drivers::DriverBase> GliderVarioDriverBasePtr;
 
 } // namespace drivers
 } // namespace openEV
 
 #include "main/GliderVarioDriverList.h"
 
-OEV_UTILS_PUBLIC std::ostream& operator << (std::ostream &o,openEV::drivers::GliderVarioDriverBase::SensorCapability ind);
+OEV_UTILS_PUBLIC std::ostream& operator << (std::ostream &o,openEV::drivers::DriverBase::SensorCapability ind);
 
 #endif /* GLIDERVARIODRIVERBASE_H_ */
 

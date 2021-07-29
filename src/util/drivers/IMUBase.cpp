@@ -14,9 +14,9 @@ IMUBase::IMUBase(
 		char const *driverName,
 		char const *description,
 		char const *instanceName,
-		GliderVarioDriverLibBase &driverLib
+		DriverLibBase &driverLib
 		)
-: GliderVarioDriverBase {driverName,description,instanceName,driverLib}
+: DriverBase {driverName,description,instanceName,driverLib}
 {
 	// TODO Auto-generated constructor stub
 

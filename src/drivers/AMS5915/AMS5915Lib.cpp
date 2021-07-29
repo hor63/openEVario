@@ -41,7 +41,7 @@ static std::string const AMS5915DriverLibName = "AMS5915";
 AMS5915Lib AMS5915Lib::theOneAndOnly;
 
 
-static GliderVarioDriverBase* getNewAMS5915Instance (
+static DriverBase* getNewAMS5915Instance (
 	    char const *driverName,
 		char const *description,
 		char const *instanceName) {
@@ -53,7 +53,7 @@ static GliderVarioDriverBase* getNewAMS5915Instance (
 }
 
 AMS5915Lib::AMS5915Lib()
-	: GliderVarioDriverLibBase{
+	: DriverLibBase{
 		AMS5915DriverLibName.c_str(),
 		"Differential and gage pressure Amsys sensors AMS5915"}
 {

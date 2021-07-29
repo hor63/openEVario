@@ -53,7 +53,7 @@ namespace openEV::drivers::BoschBMX160 {
  * Communications with the sensor board is via TCP/IP. The board connects to the computer via serial line using SLIP.
  *
  */
-class BMXSensorBoardDriver  : public GliderVarioDriverBase {
+class BMXSensorBoardDriver  : public DriverBase {
 public:
 
 	BMXSensorBoardDriver(

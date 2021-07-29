@@ -30,7 +30,7 @@
 
 namespace openEV::drivers::IGCReader {
 
-class IGCReaderLib : public GliderVarioDriverLibBase {
+class IGCReaderLib : public DriverLibBase {
 public:
 
 	virtual void addDrivers(GliderVarioDriverList &gliderVarioDriverList);

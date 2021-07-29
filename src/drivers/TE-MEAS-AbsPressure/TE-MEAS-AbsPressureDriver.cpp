@@ -54,7 +54,7 @@ TE_MEAS_AbsPressureDriver::TE_MEAS_AbsPressureDriver(
 		char const *description,
 		char const *instanceName
 		)
-: GliderVarioDriverBase {driverName,description,instanceName,TE_MEAS_AbsPressureLib::theOneAndOnly}
+: DriverBase {driverName,description,instanceName,TE_MEAS_AbsPressureLib::theOneAndOnly}
 {
 
 #if defined HAVE_LOG4CXX_H

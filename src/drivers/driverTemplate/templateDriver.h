@@ -41,7 +41,7 @@ namespace openEV::drivers::templ {
  *
  * This driver communicates with the BMX SensorBoard to obtain accelerometer, gyroscope, and magnetometer
  */
-class templateDriver  : public GliderVarioDriverBase {
+class templateDriver  : public DriverBase {
 public:
 
 	templateDriver(

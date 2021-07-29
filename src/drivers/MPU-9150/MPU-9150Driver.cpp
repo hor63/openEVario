@@ -55,7 +55,7 @@ MPU9150Driver::MPU9150Driver(
 		char const *description,
 		char const *instanceName
 		)
-: GliderVarioDriverBase {driverName,description,instanceName,MPU9150Lib::theOneAndOnly},
+: DriverBase {driverName,description,instanceName,MPU9150Lib::theOneAndOnly},
   calibrationDataUpdateCycle{0}
 {
 

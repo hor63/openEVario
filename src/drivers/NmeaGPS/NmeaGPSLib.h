@@ -30,7 +30,7 @@
 
 namespace openEV::drivers::NMEA0813 {
 
-class NmeaGPSLib : public GliderVarioDriverLibBase {
+class NmeaGPSLib : public DriverLibBase {
 public:
 
 	virtual void addDrivers(GliderVarioDriverList &gliderVarioDriverList) override;

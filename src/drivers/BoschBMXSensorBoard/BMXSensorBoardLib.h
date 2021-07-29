@@ -30,7 +30,7 @@
 
 namespace openEV::drivers::BoschBMX160 {
 
-class BMXSensorBoardLib : public GliderVarioDriverLibBase {
+class BMXSensorBoardLib : public DriverLibBase {
 public:
 
 	virtual void addDrivers(GliderVarioDriverList &gliderVarioDriverList) override;

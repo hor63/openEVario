@@ -41,7 +41,7 @@ static std::string const MS4515DriverLibName = "MS4515";
 MS4515Lib MS4515Lib::theOneAndOnly;
 
 
-static GliderVarioDriverBase* getNewMS4515Instance (
+static DriverBase* getNewMS4515Instance (
 	    char const *driverName,
 		char const *description,
 		char const *instanceName) {
@@ -53,7 +53,7 @@ static GliderVarioDriverBase* getNewMS4515Instance (
 }
 
 MS4515Lib::MS4515Lib()
-	: GliderVarioDriverLibBase{
+	: DriverLibBase{
 		MS4515DriverLibName.c_str(),
 		"Absolute atmospheric pressure sensors MS4515"}
 {

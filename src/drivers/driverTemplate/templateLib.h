@@ -30,7 +30,7 @@
 
 namespace openEV::drivers::templ {
 
-class templateLib : public GliderVarioDriverLibBase {
+class templateLib : public DriverLibBase {
 public:
 
 	virtual void addDrivers(GliderVarioDriverList &gliderVarioDriverList) override;

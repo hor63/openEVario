@@ -43,7 +43,7 @@ namespace openEV::drivers::NMEA0813 {
  *
  * This driver communicates with the BMX SensorBoard to obtain accelerometer, gyroscope, and magnetometer
  */
-class NmeaGPSDriver  : public GliderVarioDriverBase {
+class NmeaGPSDriver  : public DriverBase {
 public:
 
 	NmeaGPSDriver(

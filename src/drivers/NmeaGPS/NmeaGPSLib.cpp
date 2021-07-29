@@ -41,7 +41,7 @@ static std::string const NmeaGPSDriverLibName = "NmeaGPSLib";
 NmeaGPSLib NmeaGPSLib::theOneAndOnly;
 
 
-static GliderVarioDriverBase* getNewNmeaGPSInstance (
+static DriverBase* getNewNmeaGPSInstance (
 	    char const *driverName,
 		char const *description,
 		char const *instanceName) {
@@ -53,7 +53,7 @@ static GliderVarioDriverBase* getNewNmeaGPSInstance (
 }
 
 NmeaGPSLib::NmeaGPSLib()
-	: GliderVarioDriverLibBase{
+	: DriverLibBase{
 		NmeaGPSDriverLibName.c_str(),
 		"NmeaGPS driver for satellite navigation devices emitting NMEA 0813 sentences on serial ports or Bluetooth"}
 {

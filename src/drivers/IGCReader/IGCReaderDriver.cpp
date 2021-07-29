@@ -52,7 +52,7 @@ IGCReaderDriver::IGCReaderDriver(
 		char const *description,
 		char const *instanceName
 		)
-: GliderVarioDriverBase {driverName,description,instanceName,IGCReaderLib::theOneAndOnly}
+: DriverBase {driverName,description,instanceName,IGCReaderLib::theOneAndOnly}
 {
 
 #if defined HAVE_LOG4CXX_H
@@ -196,7 +196,7 @@ void IGCReaderDriver::initializeStatus(
 void IGCReaderDriver::startup(GliderVarioMainPriv &varioMain) {
 
 	if (!runSingleThreadDebug) {
-		GliderVarioDriverBase::startup(varioMain);
+		DriverBase::startup(varioMain);
 	} else {
 		// store the pointer here. I need it for run()
 		this->varioMain = &varioMain;

@@ -41,7 +41,7 @@ static std::string const MPL3115DriverLibName = "MPL3115";
 MPL3115Lib MPL3115Lib::theOneAndOnly;
 
 
-static GliderVarioDriverBase* getNewMPL3115Instance (
+static DriverBase* getNewMPL3115Instance (
 	    char const *driverName,
 		char const *description,
 		char const *instanceName) {
@@ -53,7 +53,7 @@ static GliderVarioDriverBase* getNewMPL3115Instance (
 }
 
 MPL3115Lib::MPL3115Lib()
-	: GliderVarioDriverLibBase{
+	: DriverLibBase{
 		MPL3115DriverLibName.c_str(),
 		"Absolute atmospheric pressure sensors MPL3115"}
 {

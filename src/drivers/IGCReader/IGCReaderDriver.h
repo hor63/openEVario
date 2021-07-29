@@ -64,7 +64,7 @@ namespace openEV::drivers::IGCReader {
  * \see [Wikipedia: Internationale Höhenformel](https://de.wikipedia.org/wiki/Barometrische_H%C3%B6henformel#Internationale_H%C3%B6henformel)
  * or [Wikipedia: Barometric formula](https://en.wikipedia.org/wiki/Barometric_formula#Pressure_equations)
  */
-class IGCReaderDriver  : public GliderVarioDriverBase {
+class IGCReaderDriver  : public DriverBase {
 public:
 
 	IGCReaderDriver(

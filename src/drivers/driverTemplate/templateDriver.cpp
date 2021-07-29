@@ -52,7 +52,7 @@ templateDriver::templateDriver(
 		char const *description,
 		char const *instanceName
 		)
-: GliderVarioDriverBase {driverName,description,instanceName,templateLib::theOneAndOnly}
+: DriverBase {driverName,description,instanceName,templateLib::theOneAndOnly}
 {
 
 #if defined HAVE_LOG4CXX_H
@@ -98,7 +98,7 @@ void templateDriver::initializeStatus(
 
 void templateDriver::run() {
 
-	GliderVarioDriverBase::run();
+	DriverBase::run();
 
 }
 

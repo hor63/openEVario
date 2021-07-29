@@ -62,7 +62,7 @@ namespace openEV::drivers::AMS5915 {
  * \see [Configuration, POR, and Power consumption](https://www.te.com/commerce/DocumentDelivery/DDEController?Action=showdoc&DocId=Specification+Or+Standard%7FConfiguration_POR_and_Power_Consumption%7FA3%7Fpdf%7FEnglish%7FENG_SS_Configuration_POR_and_Power_Consumption_A3.pdf%7FCAT-BLPS0001)
  *
  */
-class AMS5915Driver  : public GliderVarioDriverBase {
+class AMS5915Driver  : public DriverBase {
 public:
 
     /** \brief Dynamic part of the expected error of the sensor as factor of the measurement range.

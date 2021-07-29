@@ -58,7 +58,7 @@ BMXSensorBoardDriver::BMXSensorBoardDriver(
 		char const *description,
 		char const *instanceName
 		)
-: GliderVarioDriverBase {driverName,description,instanceName,BMXSensorBoardLib::theOneAndOnly},
+: DriverBase {driverName,description,instanceName,BMXSensorBoardLib::theOneAndOnly},
   calibrationDataUpdateCycle{0}
 {
 

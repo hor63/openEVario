@@ -46,7 +46,7 @@ namespace openEV::drivers::TDK_MPU9150 {
  * This driver communicates with the sensor via I2C to obtain accelerometer, gyroscope, and magnetometer data.
  *
  */
-class MPU9150Driver  : public GliderVarioDriverBase {
+class MPU9150Driver  : public DriverBase {
 public:
 
 	MPU9150Driver(

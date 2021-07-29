@@ -54,7 +54,7 @@ MPL3115Driver::MPL3115Driver(
 		char const *description,
 		char const *instanceName
 		)
-: GliderVarioDriverBase {driverName,description,instanceName,MPL3115Lib::theOneAndOnly}
+: DriverBase {driverName,description,instanceName,MPL3115Lib::theOneAndOnly}
 {
 
 #if defined HAVE_LOG4CXX_H

@@ -30,7 +30,7 @@
 
 namespace openEV::drivers::AMS5915 {
 
-class AMS5915Lib : public GliderVarioDriverLibBase {
+class AMS5915Lib : public DriverLibBase {
 public:
 
 	virtual void addDrivers(GliderVarioDriverList &gliderVarioDriverList) override;

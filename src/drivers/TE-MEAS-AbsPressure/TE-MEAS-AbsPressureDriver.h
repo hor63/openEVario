@@ -92,7 +92,7 @@ public:
  *
  * \see [TE MEAS pressure sensor list](https://www.te.com/global-en/plp/meas/ZEvrl8.html?q=&n=135117%20540192%20540193%20540195%20540174%20540175%20540176%20664985%20664984&d=685834%20685838&type=products&samples=N&inStoreWithoutPL=false&instock=N)
  */
-class TE_MEAS_AbsPressureDriver : public GliderVarioDriverBase {
+class TE_MEAS_AbsPressureDriver : public DriverBase {
 public:
 
 	TE_MEAS_AbsPressureDriver(

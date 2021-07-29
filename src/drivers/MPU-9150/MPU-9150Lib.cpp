@@ -41,7 +41,7 @@ static std::string const MPU9150DriverLibName = "MPU9150Lib";
 MPU9150Lib MPU9150Lib::theOneAndOnly;
 
 
-static GliderVarioDriverBase* getNewMPU9150Instance (
+static DriverBase* getNewMPU9150Instance (
 	    char const *driverName,
 		char const *description,
 		char const *instanceName) {

@@ -41,7 +41,7 @@ static std::string const BMXSensorBoardDriverLibName = "BMXSensorBoardLib";
 BMXSensorBoardLib BMXSensorBoardLib::theOneAndOnly;
 
 
-static GliderVarioDriverBase* getNewBMXSensorBoardInstance (
+static DriverBase* getNewBMXSensorBoardInstance (
 	    char const *driverName,
 		char const *description,
 		char const *instanceName) {
@@ -53,7 +53,7 @@ static GliderVarioDriverBase* getNewBMXSensorBoardInstance (
 }
 
 BMXSensorBoardLib::BMXSensorBoardLib()
-	: GliderVarioDriverLibBase{
+	: DriverLibBase{
 		BMXSensorBoardDriverLibName.c_str(),
 		"Driver library for Bosch BMX IMUs on the horImuBoard sensor board"}
 {

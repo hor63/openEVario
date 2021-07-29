@@ -54,7 +54,7 @@ AMS5915Driver::AMS5915Driver(
 		char const *description,
 		char const *instanceName
 		)
-: GliderVarioDriverBase {driverName,description,instanceName,AMS5915Lib::theOneAndOnly}
+: DriverBase {driverName,description,instanceName,AMS5915Lib::theOneAndOnly}
 {
 
 #if defined HAVE_LOG4CXX_H

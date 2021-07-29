@@ -30,7 +30,7 @@
 
 namespace openEV::drivers::MPL3115 {
 
-class MPL3115Lib : public GliderVarioDriverLibBase {
+class MPL3115Lib : public DriverLibBase {
 public:
 
 	virtual void addDrivers(GliderVarioDriverList &gliderVarioDriverList) override;

@@ -27,7 +27,7 @@
 
 namespace openEV::drivers {
 
-GliderVarioDriverLibBase::~GliderVarioDriverLibBase() {
+DriverLibBase::~DriverLibBase() {
 	// TODO Auto-generated destructor stub
 }
 

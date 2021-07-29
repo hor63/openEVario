@@ -46,11 +46,11 @@ static inline void initLogger() {
 
 namespace openEV::drivers {
 
-GliderVarioDriverBase::GliderVarioDriverBase (
+DriverBase::DriverBase (
 	    char const *driverName,
 		char const *description,
 		char const *instanceName,
-		GliderVarioDriverLibBase &driverLib
+		DriverLibBase &driverLib
 		)
 : sensorCapabilities {0},
   driverName {driverName},
@@ -61,18 +61,18 @@ GliderVarioDriverBase::GliderVarioDriverBase (
 	initLogger();
 }
 
-void GliderVarioDriverBase::startup(GliderVarioMainPriv &varioMain) {
+void DriverBase::startup(GliderVarioMainPriv &varioMain) {
 
 	this->varioMain = &varioMain;
 
 	if (!isDriverThreadRunning && !driverThread.joinable()){
-		driverThread = std::thread(GliderVarioDriverBase::driverThreadEntry,this);
+		driverThread = std::thread(DriverBase::driverThreadEntry,this);
 	}
 
 }
 
 
-void GliderVarioDriverBase::driverThreadEntry (GliderVarioDriverBase* tis) {
+void DriverBase::driverThreadEntry (DriverBase* tis) {
 
 	tis->isDriverThreadRunning = true;
 	try {
@@ -97,25 +97,25 @@ void GliderVarioDriverBase::driverThreadEntry (GliderVarioDriverBase* tis) {
 }
 
 
-void GliderVarioDriverBase::run() {
+void DriverBase::run() {
 
 	isKalmanUpdateRunning = true;
 
 }
 
-void GliderVarioDriverBase::suspend() {
+void DriverBase::suspend() {
 
 	isKalmanUpdateRunning = false;
 
 }
 
-void GliderVarioDriverBase::resume() {
+void DriverBase::resume() {
 
 	isKalmanUpdateRunning = true;
 
 }
 
-void GliderVarioDriverBase::shutdown() {
+void DriverBase::shutdown() {
 
 	if (!stopDriverThread) {
 		stopDriverThread = true;
@@ -133,7 +133,7 @@ void GliderVarioDriverBase::shutdown() {
 
 }
 
-void GliderVarioDriverBase::readOrCreateConfigValue(
+void DriverBase::readOrCreateConfigValue(
 		Properties4CXX::Properties* calibrationDataParameters,
 		char const* parameterName,
 		double& value
@@ -149,7 +149,7 @@ void GliderVarioDriverBase::readOrCreateConfigValue(
 
 }
 
-void GliderVarioDriverBase::writeConfigValue (
+void DriverBase::writeConfigValue (
 		Properties4CXX::Properties* calibrationDataParameters,
 		char const* parameterName,
 		double value
@@ -162,13 +162,13 @@ void GliderVarioDriverBase::writeConfigValue (
 
 
 #if !defined DOXYGEN
-GliderVarioDriverBase::SensorCapabilityHelperClass GliderVarioDriverBase::SensorCapabilityHelperObj;
+DriverBase::SensorCapabilityHelperClass DriverBase::SensorCapabilityHelperObj;
 #endif
 
 }
 
-std::ostream& operator << (std::ostream &o,openEV::drivers::GliderVarioDriverBase::SensorCapability ind) {
-	o << openEV::drivers::GliderVarioDriverBase::SensorCapabilityHelperObj.getString (ind);
+std::ostream& operator << (std::ostream &o,openEV::drivers::DriverBase::SensorCapability ind) {
+	o << openEV::drivers::DriverBase::SensorCapabilityHelperObj.getString (ind);
 	return o;
 }
 

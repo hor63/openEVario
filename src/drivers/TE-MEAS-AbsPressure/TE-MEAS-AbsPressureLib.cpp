@@ -38,7 +38,7 @@ static std::string const TE_MEAS_AbsPressureDriverLibName = "TE_MEAS_AbsPressure
 
 TE_MEAS_AbsPressureLib TE_MEAS_AbsPressureLib::theOneAndOnly;
 
-static GliderVarioDriverBase* getNewTE_MEAS_AbsPressureInstance (
+static DriverBase* getNewTE_MEAS_AbsPressureInstance (
 	    char const *driverName,
 		char const *description,
 		char const *instanceName) {
@@ -79,7 +79,7 @@ static GliderVarioDriverBase* getNewTE_MEAS_AbsPressureInstance (
 }
 
 TE_MEAS_AbsPressureLib::TE_MEAS_AbsPressureLib()
-	: GliderVarioDriverLibBase{
+	: DriverLibBase{
 		TE_MEAS_AbsPressureDriverLibName.c_str(),
 		"Absolute atmospheric pressure sensors from TE Connectivity MEAS"}
 {

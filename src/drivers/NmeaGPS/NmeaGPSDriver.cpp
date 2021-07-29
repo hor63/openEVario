@@ -53,7 +53,7 @@ NmeaGPSDriver::NmeaGPSDriver(
 		char const *description,
 		char const *instanceName
 		)
-: GliderVarioDriverBase {driverName,description,instanceName,NmeaGPSLib::theOneAndOnly},
+: DriverBase {driverName,description,instanceName,NmeaGPSLib::theOneAndOnly},
   nmeaSet{*this}
 {
 

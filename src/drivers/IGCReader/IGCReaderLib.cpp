@@ -41,7 +41,7 @@ static std::string const igcReaderDriverLibName = "IGCReaderLib";
 IGCReaderLib IGCReaderLib::theOneAndOnly;
 
 
-static GliderVarioDriverBase* getNewIGCReaderInstance (
+static DriverBase* getNewIGCReaderInstance (
 	    char const *driverName,
 		char const *description,
 		char const *instanceName) {
@@ -53,7 +53,7 @@ static GliderVarioDriverBase* getNewIGCReaderInstance (
 }
 
 IGCReaderLib::IGCReaderLib()
-	: GliderVarioDriverLibBase{igcReaderDriverLibName.c_str(),"Driver library for simulation and test drivers based on IGC file recordings"}
+	: DriverLibBase{igcReaderDriverLibName.c_str(),"Driver library for simulation and test drivers based on IGC file recordings"}
 {
 
 

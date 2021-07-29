@@ -30,7 +30,7 @@
 
 namespace openEV::drivers::MS4515 {
 
-class MS4515Lib : public GliderVarioDriverLibBase {
+class MS4515Lib : public DriverLibBase {
 public:
 
 	virtual void addDrivers(GliderVarioDriverList &gliderVarioDriverList) override;
