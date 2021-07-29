@@ -32,7 +32,7 @@
 
 #include "OEVCommon.h"
 
-#include "drivers/GliderVarioDriverBase.h"
+#include "drivers/DriverBase.h"
 #include "drivers/IGCReader/IGCReaderLib.h"
 #include "drivers/IGCReader/BRecord.h"
 #include "drivers/IGCReader/BRecordSection.h"

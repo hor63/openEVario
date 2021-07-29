@@ -26,7 +26,7 @@
 #ifndef DRIVERS_ABSPRESSUREMPL3115_ABSPRESSUREMPL3115LIB_H_
 #define DRIVERS_ABSPRESSUREMPL3115_ABSPRESSUREMPL3115LIB_H_
 
-#include "drivers/GliderVarioDriverLibBase.h"
+#include "drivers/DriverLibBase.h"
 
 namespace openEV::drivers::MPL3115 {
 

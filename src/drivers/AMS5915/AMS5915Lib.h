@@ -26,7 +26,7 @@
 #ifndef DRIVERS_AMS5915_AMS5915LIB_H_
 #define DRIVERS_AMS5915_AMS5915LIB_H_
 
-#include "drivers/GliderVarioDriverLibBase.h"
+#include "drivers/DriverLibBase.h"
 
 namespace openEV::drivers::AMS5915 {
 

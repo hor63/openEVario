@@ -26,7 +26,7 @@
 #ifndef DRIVERS_MS4515_MS4515LIB_H_
 #define DRIVERS_MS4515_MS4515LIB_H_
 
-#include "drivers/GliderVarioDriverLibBase.h"
+#include "drivers/DriverLibBase.h"
 
 namespace openEV::drivers::MS4515 {
 

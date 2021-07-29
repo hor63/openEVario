@@ -1,11 +1,11 @@
 /*
- * BMXSensorBoardDriver.h
+ * MPU9150Driver.h
  *
- *  Created on: Feb 04, 2020
+ *  Created on: Jun 07, 2021
  *      Author: kai_horstmann
  *
  *   This file is part of openEVario, an electronic variometer for glider planes
- *   Copyright (C) 2020  Kai Horstmann
+ *   Copyright (C) 2021  Kai Horstmann
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef BMXSENSORBOARDDRIVER_H_
-#define BMXSENSORBOARDDRIVER_H_
+#ifndef MPU9150DRIVER_H_
+#define MPU9150DRIVER_H_
 
 #include <fstream>
 #include <string>
@@ -34,34 +34,27 @@
 
 #include "OEVCommon.h"
 
-// Shared structures and constants with the sensor board MCU firmware.
-#include "horOvIp-I2C-Bridge/BMX160net.h"
+#include "util/io/I2CPort.h"
+#include "drivers/GliderVarioDriverBase.h"
+#include "MPU-9150Defs.h"
+#include "MPU-9150Lib.h"
 
-#include "drivers/DriverBase.h"
-#include "BMXSensorBoardLib.h"
-#include "util/io/DatagramPort.h"
+namespace openEV::drivers::TDK_MPU9150 {
 
-namespace openEV::drivers::BoschBMX160 {
-
-/** \brief Driver for Bosch BMX160 IMU which is mounted on the hovImuBoard sensor board
+/** \brief Driver for TDK/Invensense MPU-9150 9D IMU
  *
- * This driver communicates with the BMX SensorBoard to obtain accelerometer, gyroscope, and magnetometer.
- *
- * The hardware of sensor board is available as KiCad schematics and BOM in my GitHub repository [hovImuBoard](https://github.com/hor63/hovImuBoard)
- * The firmware for the AVR micro controller on the board is in my GitHub repository [horOvIp-I2C-Bridge](https://github.com/hor63/horOvIp-I2C-Bridge)
- *
- * Communications with the sensor board is via TCP/IP. The board connects to the computer via serial line using SLIP.
+ * This driver communicates with the sensor via I2C to obtain accelerometer, gyroscope, and magnetometer data.
  *
  */
-class BMXSensorBoardDriver  : public GliderVarioDriverBase {
+class MPU9150Driver  : public GliderVarioDriverBase {
 public:
 
-	BMXSensorBoardDriver(
+	MPU9150Driver(
     	    char const *driverName,
 			char const *description,
 			char const *instanceName
 			);
-	virtual ~BMXSensorBoardDriver();
+	virtual ~MPU9150Driver();
 
     /** \brief Initialize the driver
      *
@@ -117,6 +110,8 @@ private:
 
     std::string portName;
 
+    uint8_t i2cAddress = MPU_9150_I2CAddr;
+
     /** \brief Timeout in seconds between recovery attempts when an error in the main loop occurs.
      *
      * Configuration parameter is "errorTimeout" in the driver section.
@@ -134,8 +129,8 @@ private:
      */
     int32_t errorMaxNumRetries = 0;
 
-    /// \brief The I/O port. Typically this is a TCP port.
-    io::DatagramPort *ioPort = nullptr;
+    /// \brief The I/O port. Must be an I2C port.
+    io::I2CPort *ioPort = nullptr;
 
     /// Name of the calibration data parameter file
     std::string calibrationDataFileName;
@@ -144,7 +139,7 @@ private:
     Properties4CXX::Properties *calibrationDataParameters = nullptr;
 
     /// \brief BMX160 magnetometer trim data structure
-    struct bmm150_trim_registers magTrimData;
+    AK8975_mag_trim_registers magTrimData;
 
     /// \brief Is the status initialization done
     bool statusInitDone = false;
@@ -413,5 +408,5 @@ private:
 };
 
 } /* namespace openEV */
-#endif /* BMXSENSORBOARDDRIVER_H_ */
+#endif /* MPU9150DRIVER_H_ */
 

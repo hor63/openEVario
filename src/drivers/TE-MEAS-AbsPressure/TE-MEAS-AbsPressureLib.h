@@ -26,7 +26,7 @@
 #ifndef DRIVERS_ABSPRESSURETE_MEAS_AbsPressure_ABSPRESSURETE_MEAS_AbsPressureLIB_H_
 #define DRIVERS_ABSPRESSURETE_MEAS_AbsPressure_ABSPRESSURETE_MEAS_AbsPressureLIB_H_
 
-#include "drivers/GliderVarioDriverLibBase.h"
+#include "drivers/DriverLibBase.h"
 
 namespace openEV::drivers::TE_MEAS_AbsPressure {
 

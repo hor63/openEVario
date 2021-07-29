@@ -30,7 +30,7 @@
 #include <dlfcn.h>
 
 #include "GliderVarioDriverList.h"
-#include "drivers/GliderVarioDriverLibBase.h"
+#include "drivers/DriverLibBase.h"
 
 #if defined HAVE_LOG4CXX_H
 static log4cxx::LoggerPtr logger = 0;

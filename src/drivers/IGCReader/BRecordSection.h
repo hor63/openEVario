@@ -31,7 +31,7 @@
 
 #include "OEVCommon.h"
 
-#include "drivers/GliderVarioDriverBase.h"
+#include "drivers/DriverBase.h"
 #include "main/GliderVarioMainPriv.h"
 
 #include "BRecord.h"

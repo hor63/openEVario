@@ -26,7 +26,7 @@
 #ifndef DRIVERS_BMXSENSORBOARD_BMXSENSORBOARDLIB_H_
 #define DRIVERS_BMXSENSORBOARD_BMXSENSORBOARDLIB_H_
 
-#include "drivers/GliderVarioDriverLibBase.h"
+#include "drivers/DriverLibBase.h"
 
 namespace openEV::drivers::BoschBMX160 {
 

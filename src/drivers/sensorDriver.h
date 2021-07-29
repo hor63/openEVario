@@ -27,7 +27,7 @@
 #define SENSORDRIVER_H_
 
 #include "OEVCommon.h"
-#include "drivers/GliderVarioDriverLibBase.h"
+#include "drivers/DriverLibBase.h"
 
 
 extern "C" {

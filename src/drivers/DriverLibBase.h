@@ -93,7 +93,7 @@ typedef GliderVarioDriverLibBase* GliderVarioDriverLibBasePtr;
 } /* namespace openEV */
 
 #include "main/GliderVarioDriverList.h"
-#include "GliderVarioDriverBase.h"
+#include "DriverBase.h"
 
 
 #endif /* DRIVERS_GLIDERVARIODriverLIBBASE_H_ */

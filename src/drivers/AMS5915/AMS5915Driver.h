@@ -33,7 +33,7 @@
 #include "OEVCommon.h"
 
 #include "AMS5915Defs.h"
-#include "drivers/GliderVarioDriverBase.h"
+#include "drivers/DriverBase.h"
 #include "AMS5915Lib.h"
 #include "util/io/I2CPort.h"
 

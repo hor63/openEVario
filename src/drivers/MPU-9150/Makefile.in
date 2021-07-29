@@ -106,7 +106,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-subdir = src/drivers/TE-MEAS-AbsPressure
+subdir = src/drivers/BoschBMXSensorBoard
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps =  \
 	$(top_srcdir)/m4/ax_cxx_compile_build_stdcxx_11.m4 \
@@ -151,22 +151,22 @@ am__uninstall_files_from_dir = { \
 am__installdirs = "$(DESTDIR)$(pkglibdir)"
 LTLIBRARIES = $(pkglib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-openEVTE_MEAS_AbsPressure_la_DEPENDENCIES =  \
-	../../main/libopenEVMain.la ../../kalman/libopenEVKalman.la \
-	../../util/libopenEVUtil.la $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
-am_openEVTE_MEAS_AbsPressure_la_OBJECTS = TE-MEAS-AbsPressureMain.lo \
-	TE-MEAS-AbsPressureLib.lo TE-MEAS-AbsPressureDriver.lo
-openEVTE_MEAS_AbsPressure_la_OBJECTS =  \
-	$(am_openEVTE_MEAS_AbsPressure_la_OBJECTS)
+openEVBMXSensorBoard_la_DEPENDENCIES = ../../main/libopenEVMain.la \
+	../../kalman/libopenEVKalman.la ../../util/libopenEVUtil.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
+am_openEVBMXSensorBoard_la_OBJECTS = BMXSensorBoardMain.lo \
+	BMXSensorBoardLib.lo BMXSensorBoardDriver.lo
+openEVBMXSensorBoard_la_OBJECTS =  \
+	$(am_openEVBMXSensorBoard_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-openEVTE_MEAS_AbsPressure_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
+openEVBMXSensorBoard_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
-	$(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(openEVTE_MEAS_AbsPressure_la_LDFLAGS) $(LDFLAGS) -o $@
+	$(AM_CXXFLAGS) $(CXXFLAGS) $(openEVBMXSensorBoard_la_LDFLAGS) \
+	$(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -182,9 +182,9 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/TE-MEAS-AbsPressureDriver.Plo \
-	./$(DEPDIR)/TE-MEAS-AbsPressureLib.Plo \
-	./$(DEPDIR)/TE-MEAS-AbsPressureMain.Plo
+am__depfiles_remade = ./$(DEPDIR)/BMXSensorBoardDriver.Plo \
+	./$(DEPDIR)/BMXSensorBoardLib.Plo \
+	./$(DEPDIR)/BMXSensorBoardMain.Plo
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -204,8 +204,8 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(openEVTE_MEAS_AbsPressure_la_SOURCES)
-DIST_SOURCES = $(openEVTE_MEAS_AbsPressure_la_SOURCES)
+SOURCES = $(openEVBMXSensorBoard_la_SOURCES)
+DIST_SOURCES = $(openEVBMXSensorBoard_la_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -421,17 +421,17 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-pkglib_LTLIBRARIES = openEVTE_MEAS_AbsPressure.la
-openEVTE_MEAS_AbsPressure_la_SOURCES = TE-MEAS-AbsPressureMain.cpp TE-MEAS-AbsPressureLib.cpp TE-MEAS-AbsPressureDriver.cpp
-openEVTE_MEAS_AbsPressure_la_LDFLAGS = $(LD_NO_UNDEFINED_OPT) $(MAIN_LDFLAGS) $(LOG4CXX_LDFLAGS) -module
-openEVTE_MEAS_AbsPressure_la_LIBADD = ../../main/libopenEVMain.la ../../kalman/libopenEVKalman.la ../../util/libopenEVUtil.la $(LOG4CXX_LIBS) $(MAIN_LIBS) $(PTHREAD_LIBS)
-AM_CXXFLAGS = -I../../.. -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen \
+pkglib_LTLIBRARIES = openEVBMXSensorBoard.la
+openEVBMXSensorBoard_la_SOURCES = BMXSensorBoardMain.cpp BMXSensorBoardLib.cpp BMXSensorBoardDriver.cpp
+openEVBMXSensorBoard_la_LDFLAGS = $(LD_NO_UNDEFINED_OPT) $(MAIN_LDFLAGS) $(LOG4CXX_LDFLAGS) -module
+openEVBMXSensorBoard_la_LIBADD = ../../main/libopenEVMain.la ../../kalman/libopenEVKalman.la ../../util/libopenEVUtil.la $(LOG4CXX_LIBS) $(MAIN_LIBS) $(PTHREAD_LIBS)
+AM_CXXFLAGS = -I../../.. -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen -I$(top_srcdir)/3rdParty/horOvIp-I2C-Bridge \
 	$(LOG4CXX_CXXFLAGS) \
 	$(PTHREAD_CFLAGS) \
 	$(DLL_VISIBLE_CFLAGS) \
 	-DBUILDING_OEV_DRIVER=1
 
-libopenEVTE_MEAS_AbsPressure_la_CXXFLAGS = $(AM_CXXFLAGS) -DBUILDING_OEV_DRIVER=1
+libopenEVBMXSensorBoard_la_CXXFLAGS = $(AM_CXXFLAGS) -DBUILDING_OEV_DRIVER=1
 all: all-am
 
 .SUFFIXES:
@@ -445,9 +445,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/drivers/TE-MEAS-AbsPressure/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/drivers/BoschBMXSensorBoard/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/drivers/TE-MEAS-AbsPressure/Makefile
+	  $(AUTOMAKE) --gnu src/drivers/BoschBMXSensorBoard/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -501,8 +501,8 @@ clean-pkglibLTLIBRARIES:
 	  rm -f $${locs}; \
 	}
 
-openEVTE_MEAS_AbsPressure.la: $(openEVTE_MEAS_AbsPressure_la_OBJECTS) $(openEVTE_MEAS_AbsPressure_la_DEPENDENCIES) $(EXTRA_openEVTE_MEAS_AbsPressure_la_DEPENDENCIES) 
-	$(AM_V_CXXLD)$(openEVTE_MEAS_AbsPressure_la_LINK) -rpath $(pkglibdir) $(openEVTE_MEAS_AbsPressure_la_OBJECTS) $(openEVTE_MEAS_AbsPressure_la_LIBADD) $(LIBS)
+openEVBMXSensorBoard.la: $(openEVBMXSensorBoard_la_OBJECTS) $(openEVBMXSensorBoard_la_DEPENDENCIES) $(EXTRA_openEVBMXSensorBoard_la_DEPENDENCIES) 
+	$(AM_V_CXXLD)$(openEVBMXSensorBoard_la_LINK) -rpath $(pkglibdir) $(openEVBMXSensorBoard_la_OBJECTS) $(openEVBMXSensorBoard_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -510,9 +510,9 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TE-MEAS-AbsPressureDriver.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TE-MEAS-AbsPressureLib.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TE-MEAS-AbsPressureMain.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BMXSensorBoardDriver.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BMXSensorBoardLib.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BMXSensorBoardMain.Plo@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -675,9 +675,9 @@ clean-am: clean-generic clean-libtool clean-pkglibLTLIBRARIES \
 	mostlyclean-am
 
 distclean: distclean-am
-		-rm -f ./$(DEPDIR)/TE-MEAS-AbsPressureDriver.Plo
-	-rm -f ./$(DEPDIR)/TE-MEAS-AbsPressureLib.Plo
-	-rm -f ./$(DEPDIR)/TE-MEAS-AbsPressureMain.Plo
+		-rm -f ./$(DEPDIR)/BMXSensorBoardDriver.Plo
+	-rm -f ./$(DEPDIR)/BMXSensorBoardLib.Plo
+	-rm -f ./$(DEPDIR)/BMXSensorBoardMain.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -723,9 +723,9 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-		-rm -f ./$(DEPDIR)/TE-MEAS-AbsPressureDriver.Plo
-	-rm -f ./$(DEPDIR)/TE-MEAS-AbsPressureLib.Plo
-	-rm -f ./$(DEPDIR)/TE-MEAS-AbsPressureMain.Plo
+		-rm -f ./$(DEPDIR)/BMXSensorBoardDriver.Plo
+	-rm -f ./$(DEPDIR)/BMXSensorBoardLib.Plo
+	-rm -f ./$(DEPDIR)/BMXSensorBoardMain.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

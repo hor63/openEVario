@@ -34,7 +34,7 @@
 #include "util/GliderVarioExceptionBase.h"
 
 #include "TE-MEAS-AbsPressureDefs.h"
-#include "drivers/GliderVarioDriverBase.h"
+#include "drivers/DriverBase.h"
 #include "TE-MEAS-AbsPressureLib.h"
 #include "util/io/I2CPort.h"
 

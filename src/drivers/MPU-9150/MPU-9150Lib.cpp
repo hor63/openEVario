@@ -69,7 +69,7 @@ MPU9150Lib::~MPU9150Lib() {
 void MPU9150Lib::addDrivers(GliderVarioDriverList &gliderVarioDriverList) {
 	GliderVarioDriverList::DriverListItem listItem {
 		MPU9150DriverName,
-		"Driver library for TDK/Invensense MPU-9150 IMU",
+		"Driver for TDK/Invensense MPU-9150 IMU",
 		getNewMPU9150Instance};
 
 	gliderVarioDriverList.addDriver(listItem);

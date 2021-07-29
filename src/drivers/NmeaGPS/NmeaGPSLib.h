@@ -26,7 +26,7 @@
 #ifndef DRIVERS_NMEAGPSLIB_H_
 #define DRIVERS_NMEAGPSLIB_H_
 
-#include "drivers/GliderVarioDriverLibBase.h"
+#include "drivers/DriverLibBase.h"
 
 namespace openEV::drivers::NMEA0813 {
 

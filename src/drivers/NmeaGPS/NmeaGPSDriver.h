@@ -31,7 +31,7 @@
 
 #include "OEVCommon.h"
 
-#include "drivers/GliderVarioDriverBase.h"
+#include "drivers/DriverBase.h"
 #include "NmeaGPSLib.h"
 #include "NMEASet.h"
 

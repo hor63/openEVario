@@ -33,7 +33,7 @@
 #include "OEVCommon.h"
 
 #include "MS4515DO.h"
-#include "drivers/GliderVarioDriverBase.h"
+#include "drivers/DriverBase.h"
 #include "MS4515Lib.h"
 #include "util/io/I2CPort.h"
 

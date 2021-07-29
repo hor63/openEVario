@@ -33,7 +33,7 @@
 #include "OEVCommon.h"
 
 #include "MPL3115A2.h"
-#include "drivers/GliderVarioDriverBase.h"
+#include "drivers/DriverBase.h"
 #include "MPL3115Lib.h"
 #include "util/io/I2CPort.h"
 

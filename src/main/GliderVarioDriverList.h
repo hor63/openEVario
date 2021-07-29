@@ -199,8 +199,8 @@ protected:
 
 } /* namespace openEV */
 
-#include "drivers/GliderVarioDriverLibBase.h"
-#include "drivers/GliderVarioDriverBase.h"
+#include "drivers/DriverLibBase.h"
+#include "drivers/DriverBase.h"
 
 
 #endif /* MAIN_GLIDERVARIODRIVERLIST_H_ */

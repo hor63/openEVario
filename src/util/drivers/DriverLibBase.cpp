@@ -23,7 +23,7 @@
  *
  */
 
-#include "drivers/GliderVarioDriverLibBase.h"
+#include "drivers/DriverLibBase.h"
 
 namespace openEV::drivers {
 

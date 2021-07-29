@@ -26,7 +26,7 @@
 #ifndef DRIVERS_IGCREADER_IGCREADERLIB_H_
 #define DRIVERS_IGCREADER_IGCREADERLIB_H_
 
-#include "drivers/GliderVarioDriverLibBase.h"
+#include "drivers/DriverLibBase.h"
 
 namespace openEV::drivers::IGCReader {
 

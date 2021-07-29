@@ -32,7 +32,7 @@
 #include <sstream>
 
 #include "OEVCommon.h"
-#include "drivers/GliderVarioDriverBase.h"
+#include "drivers/DriverBase.h"
 
 #if defined HAVE_LOG4CXX_H
 static log4cxx::LoggerPtr logger = 0;
