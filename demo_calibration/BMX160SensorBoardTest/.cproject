@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+	<storageModule moduleId="org.eclipse.cdt.core.settings">
+		<cconfiguration id="mcu.config.gnu.debug.toolchain.769444094">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="mcu.config.gnu.debug.toolchain.769444094" moduleId="org.eclipse.cdt.core.settings" name="Debug">
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="mcu.errorparser.gnu" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="mcu.errorparser.ld" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="mcu.errorparser.cdt" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration buildProperties="" description="" id="mcu.config.gnu.debug.toolchain.769444094" name="Debug" optionalBuildProperties="" parent="org.eclipse.cdt.build.core.emptycfg">
+					<folderInfo id="mcu.config.gnu.debug.toolchain.769444094.350616814" name="/" resourcePath="">
+						<toolChain id="mcu.config.gnu.debug.toolchain.1559094137" name="GNU Toolchain" superClass="mcu.config.gnu.debug.toolchain">
+							<targetPlatform archList="avr,msp430,i386,x86-64" binaryParser="org.eclipse.cdt.core.ELF" id="mcu.target.elf.1306926779" isAbstract="false" name="Supported microcontrollers" osList="avr,msp430,i386,x86-64" superClass="mcu.target.elf"/>
+							<builder command="make" id="cdt.managedbuild.builder.gnu.cross.1545455855" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="cdt.managedbuild.builder.gnu.cross"/>
+							<tool id="mcu.tool.gnu.assembler.1151246285" name="Assembler" superClass="mcu.tool.gnu.assembler">
+								<inputType id="mcu.tool.gnu.assembler.input.S,sx.1976466382" name="Assembler code that must be preprocessed" superClass="mcu.tool.gnu.assembler.input.S,sx"/>
+								<inputType id="mcu.tool.gnu.assembler.input.s.1370371349" name="Assembler code" superClass="mcu.tool.gnu.assembler.input.s"/>
+							</tool>
+							<tool id="mcu.tool.gnu.c.compiler.510664425" name="C Compiler" superClass="mcu.tool.gnu.c.compiler">
+								<inputType id="mcu.tool.gnu.c.compiler.input.c.972407138" name="C source code that must be preprocessed" superClass="mcu.tool.gnu.c.compiler.input.c"/>
+								<inputType id="mcu.tool.gnu.c.compiler.input.i.1998143330" name="C source code that should not be preprocessed" superClass="mcu.tool.gnu.c.compiler.input.i"/>
+								<inputType id="mcu.tool.gnu.c.compiler.input.m.631683485" name="Objective-C source code" superClass="mcu.tool.gnu.c.compiler.input.m"/>
+								<inputType id="mcu.tool.gnu.c.compiler.input.mi.1276494751" name="Objective-C source code that should not be preprocessed" superClass="mcu.tool.gnu.c.compiler.input.mi"/>
+							</tool>
+							<tool id="mcu.tool.gnu.cxx.compiler.860375510" name="C++ Compiler" superClass="mcu.tool.gnu.cxx.compiler"/>
+							<tool id="mcu.tool.gnu.c.linker.777817415" name="C Linker" superClass="mcu.tool.gnu.c.linker">
+								<inputType id="mcu.tool.gnu.linker.input.1002667899" name="Object file" superClass="mcu.tool.gnu.linker.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
+							</tool>
+							<tool id="mcu.tool.gnu.cxx.linker.2092770462" name="C++ Linker" superClass="mcu.tool.gnu.cxx.linker"/>
+							<tool id="mcu.tool.gnu.archiver.1681592898" name="Archiver" superClass="mcu.tool.gnu.archiver"/>
+							<tool id="mcu.tool.gnu.objcopy.537169822" name="Object copy" superClass="mcu.tool.gnu.objcopy"/>
+							<tool id="mcu.tool.gnu.objdump.1008379036" name="Object dump" superClass="mcu.tool.gnu.objdump"/>
+							<tool id="mcu.tool.gnu.size.1802221890" name="Size information" superClass="mcu.tool.gnu.size"/>
+						</toolChain>
+					</folderInfo>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+	</storageModule>
+	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+		<project id="BMX160SensorBoardTest.null.1628131574" name="BMX160SensorBoardTest"/>
+	</storageModule>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Debug">
+			<resource resourceType="PROJECT" workspacePath="/BMX160SensorBoardTest"/>
+		</configuration>
+	</storageModule>
+</cproject>
