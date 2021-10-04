@@ -58,7 +58,7 @@ BMXSensorBoardDriver::BMXSensorBoardDriver(
 		char const *description,
 		char const *instanceName
 		)
-: DriverBase {driverName,description,instanceName,BMXSensorBoardLib::theOneAndOnly},
+: IMUBase {driverName,description,instanceName,BMXSensorBoardLib::theOneAndOnly},
   calibrationDataUpdateCycle{0}
 {
 

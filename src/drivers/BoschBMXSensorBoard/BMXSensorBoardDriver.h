@@ -38,6 +38,7 @@
 #include "horOvIp-I2C-Bridge/BMX160net.h"
 
 #include "drivers/DriverBase.h"
+#include "util/drivers/IMUBase.h"
 #include "BMXSensorBoardLib.h"
 #include "util/io/DatagramPort.h"
 
@@ -53,7 +54,7 @@ namespace openEV::drivers::BoschBMX160 {
  * Communications with the sensor board is via TCP/IP. The board connects to the computer via serial line using SLIP.
  *
  */
-class BMXSensorBoardDriver  : public DriverBase {
+class BMXSensorBoardDriver  : public IMUBase {
 public:
 
 	BMXSensorBoardDriver(
