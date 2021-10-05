@@ -53,7 +53,7 @@ namespace openEV {
 	    /// Idle loop cycle as double in milliseconds
 	    /// \see \ref idlePredictionCycle
 	    double idlePredictionCycleMilliSec = 20.0;
-	    OEVDuration maxTimeBetweenPredictionAndMeasurementUpdate = std::chrono::milliseconds(5);
+	    OEVDuration maxTimeBetweenPredictionAndMeasurementUpdate = std::chrono::milliseconds(15);
 	    /** \brief Run the idle thread in the main program to perform Kalman prediction cycles at least every \ref idlePredictionCycle.
 	     *
 	     * This will be set false only when a sensor driver has the capability \ref drivers::GliderVarioDriverBase::RUN_IDLE_LOOP. In this case the idle loop is executed
