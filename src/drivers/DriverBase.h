@@ -145,6 +145,27 @@ public:
     	return driverLib;
     }
 
+    /** \brief Set the update cycle of the driver instance
+     *
+     * @param updateCyle Cycle as OEVDuration
+     *
+     * \see updateCyle
+     */
+    void setUpdateCyle (OEVDuration updateCyle) {
+    	this->updateCyle = updateCyle;
+    }
+
+    /** \brief Get the update cycle of the driver instance
+     *
+     * @return Update cycle time as OEVDuration
+     *
+     * \see updateCyle
+     *
+     */
+    OEVDuration getUpdateCyle () {
+    	return updateCyle;
+    }
+
     // The abstract interface which must be implemented by each driver.
 
     /** \brief Initialize the driver
@@ -343,6 +364,17 @@ protected:
     std::string driverName;
     std::string description;
     std::string instanceName;
+
+    /** \brief The update cycle of the driver
+     *
+     * Most drivers are polling the sensor with an self-determined cycle.
+     * Therefore define the cycle in the driver base, and try to read it when loading the driver
+     * in \ref GliderVarioDriverList::loadDriverInstance()
+     * Some drivers (e.g. NMEA GPS or the BMX160 sensor board receive data at the pace defined by the active sensor.
+     * However define the cycle in the properties even for these drivers. I will use it to calculate the variance increment per cycle.
+     * Particularly for GPS receivers the rate can be anywhere between 1 Hz and 20 Hz.
+     */
+    OEVDuration updateCyle = std::chrono::milliseconds(100);
 
     DriverLibBase &driverLib;
 

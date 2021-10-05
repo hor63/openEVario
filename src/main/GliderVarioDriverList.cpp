@@ -315,6 +315,21 @@ void GliderVarioDriverList::loadDriverInstance(char const *driverInstanceName, P
 
 	DriverInstanceList::value_type newInstanceListItem {driverInstanceName,driverInstance};
 
+	// Try to read the cycle time. This is a common property for most drivers.
+	try {
+		std::chrono::milliseconds defaultUpdCycleMilli;
+		defaultUpdCycleMilli = std::chrono::duration_cast<std::chrono::milliseconds>(driverInstance->getUpdateCyle());
+		long long defaultUpdCycleMilliTicks = defaultUpdCycleMilli.count();
+		std::chrono::milliseconds updCycle(driverConfigStruct.getPropertyValue(std::string("updateCycle"), defaultUpdCycleMilliTicks));
+		driverInstance->setUpdateCyle(updCycle);
+		LOG4CXX_DEBUG(logger,"Cycle time of driver instance \"" << driverInstance->getInstanceName()
+				<< " is configured at " << updCycle.count() << " ms.");
+	} catch (Properties4CXX::ExceptionBase const& e) {
+		LOG4CXX_DEBUG(logger,"Cycle time of driver instance \"" << driverInstance->getInstanceName()
+				<< " is not configured."
+				<< " Default value is " << (std::chrono::duration_cast<std::chrono::milliseconds>(driverInstance->getUpdateCyle())).count() << " ms.");
+	}
+
 	driverInstance->readConfiguration(driverConfigStruct);
 
 	driverInstanceList.insert(newInstanceListItem);
