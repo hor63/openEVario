@@ -64,7 +64,7 @@ private:
 	 * i.e. I received a start character '$' before, and the current sentence is not discarded.
 	 *
 	 */
-	bool currSentenceActive = true;
+	bool currSentenceActive = false;
 
 	NMEASet& nmeaSet;
 
