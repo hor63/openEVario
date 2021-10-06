@@ -323,11 +323,16 @@ void GliderVarioDriverList::loadDriverInstance(char const *driverInstanceName, P
 		std::chrono::milliseconds updCycle(driverConfigStruct.getPropertyValue(std::string("updateCycle"), defaultUpdCycleMilliTicks));
 		driverInstance->setUpdateCyle(updCycle);
 		LOG4CXX_DEBUG(logger,"Cycle time of driver instance \"" << driverInstance->getInstanceName()
-				<< " is configured at " << updCycle.count() << " ms.");
-	} catch (Properties4CXX::ExceptionBase const& e) {
-		LOG4CXX_DEBUG(logger,"Cycle time of driver instance \"" << driverInstance->getInstanceName()
-				<< " is not configured."
-				<< " Default value is " << (std::chrono::duration_cast<std::chrono::milliseconds>(driverInstance->getUpdateCyle())).count() << " ms.");
+				<< " is configured at "
+				<< (std::chrono::duration_cast<std::chrono::milliseconds>(driverInstance->getUpdateCyle())).count() << " ms.");
+	}
+	catch (std::exception const& e) {
+		std::ostringstream str;
+		str << "Reading updateCycle for driver \"" << driverIter->second.driverName << "\" failed: "
+				<< e.what();
+		LOG4CXX_ERROR(logger,str.str());
+
+		throw GliderVarioDriverLoadException (__FILE__,__LINE__,str.str().c_str());
 	}
 
 	driverInstance->readConfiguration(driverConfigStruct);
