@@ -13,7 +13,7 @@
 namespace openEV {
 namespace drivers {
 
-class IMUBase: public DriverBase {
+class OEV_UTILS_PUBLIC IMUBase: public DriverBase {
 public:
 	IMUBase(
 			char const *driverName,
