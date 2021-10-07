@@ -675,6 +675,7 @@ void MPU9150Driver::processingMainLoop () {
 	static constexpr double gyrFactor = double(0x8000) / 250.0;
 	struct BMX160Data bmxData;
 
+	auto nextStartConversion = std::chrono::system_clock::now();
 
 	while (!getStopDriverThread()) {
 		auto readLen = ioPort->recv((uint8_t *)(&bmxData),sizeof(bmxData));
@@ -924,6 +925,13 @@ void MPU9150Driver::processingMainLoop () {
 				calibrationDataWriteThread = std::thread(&MPU9150Driver::calibrationDataWriteFunc,this);
 			}
 		}
+
+		// In case that you miss a cycle advance to the next cycle
+		auto now = std::chrono::system_clock::now();
+		do {
+			nextStartConversion += updateCyle;
+		} while (nextStartConversion < now);
+		std::this_thread::sleep_until(nextStartConversion);
 	}
 }
 

@@ -63,6 +63,9 @@ AMS5915Driver::AMS5915Driver(
 
 	setSensorCapability(DYNAMIC_PRESSURE);
 
+	// Default cycle time as documented in the template parameter file
+	using namespace std::chrono_literals;
+	updateCyle = 100ms;
 }
 
 
@@ -340,18 +343,19 @@ void AMS5915Driver::driverThreadFunction() {
 }
 
 void AMS5915Driver::processingMainLoop() {
-    std::chrono::system_clock::time_point nextStartConversion;
-
-    using namespace std::chrono_literals;
-
-	nextStartConversion = std::chrono::system_clock::now();
+	auto nextStartConversion = std::chrono::system_clock::now();
 
 	while (!getStopDriverThread()) {
 
 		//std::this_thread::sleep_until(nextStartConversion + 60ms);
 
 		readoutAMS5915();
-		nextStartConversion += 20ms;
+
+		// In case that you miss a cycle advance to the next cycle
+		auto now = std::chrono::system_clock::now();
+		do {
+			nextStartConversion += updateCyle;
+		} while (nextStartConversion < now);
 		std::this_thread::sleep_until(nextStartConversion);
 	}
 

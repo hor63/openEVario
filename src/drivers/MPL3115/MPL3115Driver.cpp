@@ -63,6 +63,10 @@ MPL3115Driver::MPL3115Driver(
 
 	setSensorCapability(STATIC_PRESSURE	);
 
+	// Default cycle time as documented in the template parameter file
+	using namespace std::chrono_literals;
+	updateCyle = 100ms;
+
 }
 
 
@@ -236,13 +240,11 @@ void MPL3115Driver::driverThreadFunction() {
 }
 
 void MPL3115Driver::processingMainLoop() {
-    std::chrono::system_clock::time_point nextStartConversion;
-
     using namespace std::chrono_literals;
 
 	setupMPL3115();
 
-	nextStartConversion = std::chrono::system_clock::now();
+	auto nextStartConversion = std::chrono::system_clock::now();
 
 	while (!getStopDriverThread()) {
 
@@ -251,7 +253,12 @@ void MPL3115Driver::processingMainLoop() {
 		std::this_thread::sleep_until(nextStartConversion + 60ms);
 
 		readoutMPL3155();
-		nextStartConversion += 100ms;
+
+		// In case that you miss a cycle advance to the next cycle
+		auto now = std::chrono::system_clock::now();
+		do {
+			nextStartConversion += updateCyle;
+		} while (nextStartConversion < now);
 		std::this_thread::sleep_until(nextStartConversion);
 	}
 
