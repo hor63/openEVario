@@ -321,6 +321,7 @@ AC_CONFIG_FILES(Makefile
                 src/drivers/MS4515/Makefile
                 src/drivers/AMS5915/Makefile
                 src/drivers/TE-MEAS-AbsPressure/Makefile
+                src/drivers/MPU-9150/Makefile
                 test/src/Makefile)
 
 AC_OUTPUT

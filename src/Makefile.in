@@ -109,7 +109,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-@BUILD_I2C_PORT_DRIVER_TRUE@am__append_1 = drivers/MPL3115 drivers/MS4515 drivers/AMS5915 drivers/TE-MEAS-AbsPressure
+@BUILD_I2C_PORT_DRIVER_TRUE@am__append_1 = drivers/MPL3115 drivers/MS4515 drivers/AMS5915 drivers/TE-MEAS-AbsPressure drivers/MPU-9150
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps =  \
@@ -215,7 +215,8 @@ ETAGS = etags
 CTAGS = ctags
 DIST_SUBDIRS = util kalman main drivers/simul drivers/IGCReader \
 	drivers/BoschBMXSensorBoard drivers/NmeaGPS drivers/MPL3115 \
-	drivers/MS4515 drivers/AMS5915 drivers/TE-MEAS-AbsPressure
+	drivers/MS4515 drivers/AMS5915 drivers/TE-MEAS-AbsPressure \
+	drivers/MPU-9150
 am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/depcomp
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 am__relativize = \

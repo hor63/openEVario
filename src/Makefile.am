@@ -21,7 +21,7 @@
 SUBDIRS=util kalman main drivers/simul drivers/IGCReader drivers/BoschBMXSensorBoard drivers/NmeaGPS
 
 if BUILD_I2C_PORT_DRIVER
-SUBDIRS+=drivers/MPL3115 drivers/MS4515 drivers/AMS5915 drivers/TE-MEAS-AbsPressure
+SUBDIRS+=drivers/MPL3115 drivers/MS4515 drivers/AMS5915 drivers/TE-MEAS-AbsPressure drivers/MPU-9150
 endif
 
 bin_PROGRAMS=openEVario$(EXEEXT)
