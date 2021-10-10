@@ -37,17 +37,6 @@
 #include "kalman/GliderVarioMeasurementUpdater.h"
 #include "util/RotationMatrix.h"
 
-#if defined HAVE_LOG4CXX_H
-static log4cxx::LoggerPtr logger = 0;
-
-static inline void initLogger() {
-	if (!logger) {
-		logger = log4cxx::Logger::getLogger("openEV.Drivers.MPU9150");
-	}
-}
-
-#endif
-
 namespace openEV::drivers::TDK_MPU9150 {
 
 MPU9150Driver::MPU9150Driver(
@@ -55,12 +44,13 @@ MPU9150Driver::MPU9150Driver(
 		char const *description,
 		char const *instanceName
 		)
-: DriverBase {driverName,description,instanceName,MPU9150Lib::theOneAndOnly},
-  calibrationDataUpdateCycle{0}
+: IMUBase {driverName,description,instanceName,MPU9150Lib::theOneAndOnly}
 {
 
 #if defined HAVE_LOG4CXX_H
-	initLogger();
+	if (!logger) {
+		logger = log4cxx::Logger::getLogger("openEV.Drivers.MPU9150");
+	}
 #endif /* HAVE_LOG4CXX_H */
 
 	setSensorCapability(ACCEL_X);
@@ -73,86 +63,13 @@ MPU9150Driver::MPU9150Driver(
 	setSensorCapability(COMPASS_Y);
 	setSensorCapability(COMPASS_Z);
 
-	memset (&magTrimData,0,sizeof(magTrimData));
-
-	for (int i = 0; i < SIZE_SENSOR_DATA_ARRAY; i++) {
-		sensorDataArr[i].accelDataValid = false;
-		sensorDataArr[i].accelX = 0.0f;
-		sensorDataArr[i].accelY = 0.0f;
-		sensorDataArr[i].accelZ = 0.0f;
-
-		sensorDataArr[i].gyroDataValid = false;
-		sensorDataArr[i].gyroX = 0.0f;
-		sensorDataArr[i].gyroY = 0.0f;
-		sensorDataArr[i].gyroZ = 0.0f;
-
-		sensorDataArr[i].magDataValid = false;
-		sensorDataArr[i].magX = 0.0f;
-		sensorDataArr[i].magY = 0.0f;
-		sensorDataArr[i].magZ = 0.0f;
-	}
 }
 
 
 MPU9150Driver::~MPU9150Driver() {
-
-	if (calibrationDataParameters) {
-		delete calibrationDataParameters;
-	}
 }
 
-void MPU9150Driver::driverInit(GliderVarioMainPriv &varioMain) {
 
-	// Read the calibration data file, and extract the initial parameters
-	if (calibrationDataParameters) {
-		try {
-			calibrationDataParameters->readConfiguration();
-		} catch (std::exception const &e) {
-			LOG4CXX_ERROR(logger,"Driver " << driverName
-					<< ": Error reading calibration data from file " << calibrationDataFileName
-					<< ": " << e.what());
-			// The file does not exist, or it has unexpected/undefined content.
-			// Therefore I am initializing the calibration parameters fresh.
-			delete calibrationDataParameters;
-			calibrationDataParameters = new Properties4CXX::Properties(calibrationDataFileName);
-
-		}
-
-		readOrCreateConfigValue(calibrationDataParameters,"magXFactor",calibrationData.magXFactor);
-		readOrCreateConfigValue(calibrationDataParameters,"magYFactor",calibrationData.magYFactor);
-		readOrCreateConfigValue(calibrationDataParameters,"magZFactor",calibrationData.magZFactor);
-		readOrCreateConfigValue(calibrationDataParameters,"magXBias",calibrationData.magXBias);
-		readOrCreateConfigValue(calibrationDataParameters,"magYBias",calibrationData.magYBias);
-		readOrCreateConfigValue(calibrationDataParameters,"magZBias",calibrationData.magZBias);
-		readOrCreateConfigValue(calibrationDataParameters,"magXVariance",calibrationData.magXVariance);
-		readOrCreateConfigValue(calibrationDataParameters,"magYVariance",calibrationData.magYVariance);
-		readOrCreateConfigValue(calibrationDataParameters,"magZVariance",calibrationData.magZVariance);
-
-		readOrCreateConfigValue(calibrationDataParameters,"gyrXFactor",calibrationData.gyrXFactor);
-		readOrCreateConfigValue(calibrationDataParameters,"gyrYFactor",calibrationData.gyrYFactor);
-		readOrCreateConfigValue(calibrationDataParameters,"gyrZFactor",calibrationData.gyrZFactor);
-		readOrCreateConfigValue(calibrationDataParameters,"gyrXBias",calibrationData.gyrXBias);
-		readOrCreateConfigValue(calibrationDataParameters,"gyrYBias",calibrationData.gyrYBias);
-		readOrCreateConfigValue(calibrationDataParameters,"gyrZBias",calibrationData.gyrZBias);
-		readOrCreateConfigValue(calibrationDataParameters,"gyrXVariance",calibrationData.gyrXVariance);
-		readOrCreateConfigValue(calibrationDataParameters,"gyrYVariance",calibrationData.gyrYVariance);
-		readOrCreateConfigValue(calibrationDataParameters,"gyrZVariance",calibrationData.gyrZVariance);
-
-		readOrCreateConfigValue(calibrationDataParameters,"accelXBias",calibrationData.accelXBias);
-		readOrCreateConfigValue(calibrationDataParameters,"accelYBias",calibrationData.accelYBias);
-		readOrCreateConfigValue(calibrationDataParameters,"accelZBias",calibrationData.accelZBias);
-		readOrCreateConfigValue(calibrationDataParameters,"accelXFactor",calibrationData.accelXFactor);
-		readOrCreateConfigValue(calibrationDataParameters,"accelYFactor",calibrationData.accelYFactor);
-		readOrCreateConfigValue(calibrationDataParameters,"accelZFactor",calibrationData.accelZFactor);
-		readOrCreateConfigValue(calibrationDataParameters,"accelXVariance",calibrationData.accelXVariance);
-		readOrCreateConfigValue(calibrationDataParameters,"accelYVariance",calibrationData.accelYVariance);
-		readOrCreateConfigValue(calibrationDataParameters,"accelZVariance",calibrationData.accelZVariance);
-
-		readOrCreateConfigValue(calibrationDataParameters,"gravityValue",calibrationData.gravity);
-		readOrCreateConfigValue(calibrationDataParameters,"gravityVariance",calibrationData.gravityVariance);
-	}
-
-}
 
 void MPU9150Driver::readConfiguration (Properties4CXX::Properties const &configuration) {
 
@@ -170,7 +87,7 @@ void MPU9150Driver::readConfiguration (Properties4CXX::Properties const &configu
 
 		ioPort = dynamic_cast<io::I2CPort*> (io::PortBase::getPortByName(portName));
 		if (ioPort == nullptr) {
-			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"I/O Port is not an I2C port.");
+			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"I/O Port is not a stream port.");
 		}
 	} catch (std::exception const& e) {
 		LOG4CXX_ERROR(logger, "Read configuration of driver \"" << driverName
@@ -199,436 +116,283 @@ void MPU9150Driver::readConfiguration (Properties4CXX::Properties const &configu
 
 }
 
-#define SQUARE(x) ((x)*(x))
+uint8_t MPU9150Driver::readByteAux (uint8_t slaveDevAddr, uint8_t regAddr) {
+	log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("readByteAux");
+	uint8_t buf[5];
 
-void MPU9150Driver::initializeStatusAccel(
-		GliderVarioStatus &varioStatus,
-		GliderVarioMainPriv &varioMain,
-		struct SensorData const &sumSensorData,
-		int numAccelData
-		) {
+	// Slave 4 register set start
+	buf[0] = REG_9150_I2C_SLV4_ADDR;
 
-	// Assume that you are on the ground, but maybe tilted to the side
-	// (remember this instrument is primarily for gliders)
-	// and slightly pitched up in launch position compared to level flight
-	auto avgAccelX = sumSensorData.accelX / float(numAccelData);
-	auto avgAccelY = sumSensorData.accelY / float(numAccelData);
-	auto avgAccelZ = sumSensorData.accelZ / float(numAccelData);
-	auto absoluteAccel = sqrtf(avgAccelX*avgAccelX + avgAccelY*avgAccelY + avgAccelZ*avgAccelZ);
+	buf[1] = slaveDevAddr |
+			I2C_SLV4_RW // Read from the AK8975 on the Aux bus
+			;
+	// I2C_SLV4_REG: The register address on the slave device
+	buf[2] = regAddr;
+	// I2C_SLV4_DO: Data out (unused)
+	buf[3] = 0;
+	// I2C_SLV4_CTRL: Activate the slave interface transaction
+	buf[4] = 0
+			| I2C_SLV4_EN
+			// | I2C_SLV4_INT_EN No interrupts used
+			// | I2C_SLV4_REG_DIS Use the register addressing mode
+			;
 
-	double baseIntervalSec = varioMain.getProgramOptions().idlePredictionCycleMilliSec / 1000.0;
+	ioPort->writeBlock(i2cAddress, buf, 5);
 
-	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << " baseIntervalSec = " << baseIntervalSec);
+	// wait for the transaction to complete
+	for (int i = 0; i < 100; ++i) {
+		// Read I2C_SLV4_CTRL and I2C_SLV4_DI at once
+		ioPort->readBlockAtRegAddrByte(i2cAddress, REG_9150_I2C_SLV4_CTRL,buf,2);
+		LOG4CXX_TRACE(logger,"Cycle #" << i << ": REG_9150_I2C_SLV4_CTRL = 0x" << std::hex << uint32_t(buf[0]) << std::dec);
 
-	LOG4CXX_DEBUG(logger,"avgAccelX = " << avgAccelX);
-	LOG4CXX_DEBUG(logger,"avgAccelY = " << avgAccelY);
-	LOG4CXX_DEBUG(logger,"avgAccelZ = " << avgAccelZ);
-	LOG4CXX_DEBUG(logger,"absoluteAccel = " << absoluteAccel);
-
-	// Try to assess pitch and roll angle from the accelerometer.
-	varioStatus.pitchAngle = FastMath::fastASin(avgAccelX/absoluteAccel);
-	LOG4CXX_DEBUG(logger,"Initial pitchAngle = " << varioStatus.pitchAngle);
-
-	varioStatus.rollAngle = -FastMath::fastASin(avgAccelY/absoluteAccel);
-	LOG4CXX_DEBUG(logger,"Initial rollAngle = " << varioStatus.rollAngle);
-
-	// Gravity and accelerometers are siamese twins. So I handle gravity here too.
-
-	varioStatus.gravity = calibrationData.gravity;
-	LOG4CXX_DEBUG(logger,"Initial gravity = " << varioStatus.gravity);
-	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_GRAVITY,varioStatus.STATUS_IND_GRAVITY) =
-			calibrationData.gravityVariance * 2.0f;
-	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_GRAVITY,varioStatus.STATUS_IND_GRAVITY) =
-			SQUARE(0.1) * baseIntervalSec;
-
-
-	// With the fast-cycle accelerometer the accuracy of position and speed increase
-	// but I can allow for a much higher variance of the acceleration itself
-	// But the accuracy of the position should vastly improve by the dead-reckoning
-
-	// If position system noise was defined before adjust it here when it was defined higher before.
-	// With the accelerometer I am pretty precise in the short term.
-	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_LATITUDE_OFFS,varioStatus.STATUS_IND_LATITUDE_OFFS)) ||
-			(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_LATITUDE_OFFS,varioStatus.STATUS_IND_LATITUDE_OFFS)
-			> SQUARE(3.0) * baseIntervalSec)) {
-		varioStatus.getSystemNoiseCovariance_Q().
-				coeffRef(varioStatus.STATUS_IND_LATITUDE_OFFS,varioStatus.STATUS_IND_LATITUDE_OFFS) =
-						SQUARE(3.0) * baseIntervalSec;
+		// check if the enable flag was cleared, i.e the transaction finished.
+		if ((buf[0] & I2C_SLV4_EN) == 0) {
+			break;
+		}
 	}
 
-	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_LONGITUDE_OFFS,varioStatus.STATUS_IND_LONGITUDE_OFFS)) ||
-			(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_LONGITUDE_OFFS,varioStatus.STATUS_IND_LONGITUDE_OFFS)
-			> SQUARE(3.0) * baseIntervalSec)) {
-		varioStatus.getSystemNoiseCovariance_Q().
-				coeffRef(varioStatus.STATUS_IND_LONGITUDE_OFFS,varioStatus.STATUS_IND_LONGITUDE_OFFS) =
-						SQUARE(3.0) * baseIntervalSec;
+	// buf[1] already contains Data-IN from the reading in the loop.
+	LOG4CXX_TRACE(logger,"REG_9150_I2C_SLV4_DI = 0x" << std::hex << uint32_t(buf[1]) << std::dec);
+
+	return buf[1];
+}
+
+// Use slave 4 for single transactions
+void MPU9150Driver::writeByteAux (uint8_t slaveDevAddr, uint8_t regAddr, uint8_t data) {
+	log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("writeByteAux");
+	uint8_t buf[5];
+
+	// Slave 4 register set start
+	buf[0] = REG_9150_I2C_SLV4_ADDR;
+	// write to the AK8975 on the Aux bus (read bit not set, i.e. write)
+	buf[1] = slaveDevAddr |
+			I2C_SLV4_RW // Write to the AK8975 on the Aux bus
+			;
+	// I2C_SLV4_REG: The register address on the slave device
+	buf[2] = regAddr;
+	// I2C_SLV4_DO: Data out, byte to be written
+	buf[3] = data;
+	// I2C_SLV4_CTRL: Activate the slave interface transaction
+	buf[4] = 0
+			| I2C_SLV4_EN
+			// | I2C_SLV4_INT_EN No interrupts used
+			// | I2C_SLV4_REG_DIS Use the register addressing mode
+			;
+
+	ioPort->writeBlock(i2cAddress, buf, 5);
+
+	// wait for the transaction to complete
+	for (int i = 0; i < 1000; ++i) {
+		// Read I2C_SLV4_CTRL
+		ioPort->readBlockAtRegAddrByte(i2cAddress, REG_9150_I2C_SLV4_CTRL,buf,1);
+		LOG4CXX_TRACE(logger,"Cycle #" << i << ": REG_9150_I2C_SLV4_CTRL = 0x" << std::hex << uint32_t(buf[0]) << std::dec);
+
+		// check if the enable flag was cleared, i.e the transaction finished.
+		if ((buf[0] & I2C_SLV4_EN) == 0) {
+			break;
+		}
 	}
-
-	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL)) ||
-			(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL)
-			> SQUARE(4.0) * baseIntervalSec)) {
-		varioStatus.getSystemNoiseCovariance_Q().
-				coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) =
-				SQUARE(4.0) * baseIntervalSec;
-	}
-
-	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_N,varioStatus.STATUS_IND_SPEED_GROUND_N)) ||
-			(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_N,varioStatus.STATUS_IND_SPEED_GROUND_N)
-			> SQUARE(2.0) * baseIntervalSec)){
-		varioStatus.getSystemNoiseCovariance_Q().
-				coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_N,varioStatus.STATUS_IND_SPEED_GROUND_N) =
-				SQUARE(2.0) * baseIntervalSec;
-	}
-
-	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_E,varioStatus.STATUS_IND_SPEED_GROUND_E)) ||
-			(varioStatus.getSystemNoiseCovariance_Q().
-					coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_E,varioStatus.STATUS_IND_SPEED_GROUND_E)
-					> SQUARE(2.0) * baseIntervalSec)) {
-		varioStatus.getSystemNoiseCovariance_Q().
-				coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_E,varioStatus.STATUS_IND_SPEED_GROUND_E) =
-				SQUARE(2.0) * baseIntervalSec;
-	}
-
-	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS)) ||
-			(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) > SQUARE(2.0) * baseIntervalSec) ) {
-		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) =
-				SQUARE(2.0) * baseIntervalSec;
-	}
-
-	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_VERTICAL_SPEED,varioStatus.STATUS_IND_VERTICAL_SPEED)) ||
-			(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_VERTICAL_SPEED,varioStatus.STATUS_IND_VERTICAL_SPEED)
-			> SQUARE(2.0) * baseIntervalSec)) {
-		varioStatus.getSystemNoiseCovariance_Q().
-				coeffRef(varioStatus.STATUS_IND_VERTICAL_SPEED,varioStatus.STATUS_IND_VERTICAL_SPEED) =
-				SQUARE(2.0) * baseIntervalSec;
-	}
-
-	// Set acceleration values unconditionally. These are my turf.
-	varioStatus.accelHeading = 0.0f;
-	varioStatus.getErrorCovariance_P().
-			coeffRef(varioStatus.STATUS_IND_ACC_HEADING,varioStatus.STATUS_IND_ACC_HEADING) = 4.0f;
-	varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_ACC_HEADING,varioStatus.STATUS_IND_ACC_HEADING) =
-				SQUARE(2.0) * baseIntervalSec;
-
-	varioStatus.accelCross = 0.0f;
-	varioStatus.getErrorCovariance_P().
-			coeffRef(varioStatus.STATUS_IND_ACC_CROSS,varioStatus.STATUS_IND_ACC_CROSS) = 1.0f;
-			varioStatus.getSystemNoiseCovariance_Q().
-					coeffRef(varioStatus.STATUS_IND_ACC_CROSS,varioStatus.STATUS_IND_ACC_CROSS) =
-					SQUARE(2.0) * baseIntervalSec;
-
-	varioStatus.accelVertical = 0.0f;
-	varioStatus.getErrorCovariance_P().
-			coeffRef(varioStatus.STATUS_IND_ACC_VERTICAL,varioStatus.STATUS_IND_ACC_VERTICAL) = 4.0f;
-	varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_ACC_VERTICAL,varioStatus.STATUS_IND_ACC_VERTICAL) =
-			SQUARE(3.0) * baseIntervalSec;
 
 }
 
-void MPU9150Driver::initializeStatusGyro(
-		GliderVarioStatus &varioStatus,
-		GliderVarioMainPriv &varioMain,
-		struct SensorData const &sumSensorData,
-		int numGyroData
-		) {
-	// Assume that you are on the ground, but maybe tilted to the side
-	// (remember this instrument is primarily for gliders)
-	// and slightly pitched up
-	auto avgGyroX = sumSensorData.gyroX / float(numGyroData);
-	auto avgGyroY = sumSensorData.gyroY / float(numGyroData);
-	auto avgGyroZ = sumSensorData.gyroZ / float(numGyroData);
+void MPU9150Driver::setupMPU9150() {
+	using namespace std::literals::chrono_literals;
+	log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("setupMPU9150");
+	uint8_t buf[8] = {0};
 
-	double baseIntervalSec = varioMain.getProgramOptions().idlePredictionCycleMilliSec / 1000.0;
+	// Reset the entire device
+	buf[0] = REG_9150_PWR_MGMT_1;
+	buf[1] = PWR_MGMT_DEVICE_RESET;
+	LOG4CXX_DEBUG(logger,"Write REG_9150_PWR_MGMT_1 reset");
+	ioPort->writeBlock(i2cAddress, buf, 2);
 
-	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << " baseIntervalSec = " << baseIntervalSec);
+	// Wait a bit letting the sensor run through the reset routine.
+	std::this_thread::sleep_for(100ms);
 
-	LOG4CXX_DEBUG(logger,"avgGyroX = " << avgGyroX);
-	LOG4CXX_DEBUG(logger,"avgGyroY = " << avgGyroY);
-	LOG4CXX_DEBUG(logger,"avgGyroZ = " << avgGyroZ);
+	// Clear the sleep flag and all other flags.
+	buf[0] = REG_9150_PWR_MGMT_1;
+	buf[1] = 0;
+	LOG4CXX_DEBUG(logger,"Write REG_9150_PWR_MGMT_1 Clear sleep flag");
+	ioPort->writeBlock(i2cAddress, buf, 2);
 
-	// Assume the plane is static, and the measurement is the current gyro bias.
+	// Wait a bit letting the gyros starting up.
+	std::this_thread::sleep_for(100ms);
 
-	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING))||
-			(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) > SQUARE(1.0) * baseIntervalSec)) {
-		varioStatus.getSystemNoiseCovariance_Q().
-				coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) =
-				SQUARE(1.0) * baseIntervalSec;
+	buf[0] = ioPort->readByteAtRegAddrByte(i2cAddress, REG_9150_WHO_AM_I);
+
+	// Who am I is the I2C adress (ignoring bit 0 which can be set with pin AD0 (Pin 9))
+	if ((i2cAddress & ~1) == buf[0]) {
+		LOG4CXX_INFO(logger,"WHO AM I contains expected 0x" << std::hex << uint32_t(buf[0]) << std::dec);
+	} else {
+		LOG4CXX_WARN(logger,"WHO AM I contains unexpected 0x" << std::hex << uint32_t(buf[0])
+				<< ". Expected was 0x" << (i2cAddress & ~1)
+				<< std::dec);
 	}
 
-	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_PITCH,varioStatus.STATUS_IND_PITCH)) ||
-			(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_PITCH,varioStatus.STATUS_IND_PITCH) > SQUARE(1.0) * baseIntervalSec)) {
-		varioStatus.getSystemNoiseCovariance_Q().
-				coeffRef(varioStatus.STATUS_IND_PITCH,varioStatus.STATUS_IND_PITCH) =
-				SQUARE(1.0) * baseIntervalSec;
-	}
+	// Disable Gyro self-test, and set the full-scale range to +-250deg/sec
+	buf[0] = REG_9150_GYRO_CONFIG;
+	buf[1] = GYRO_RANGE_250;
+	LOG4CXX_DEBUG(logger,"Write REG_9150_GYRO_CONFIG");
+	ioPort->writeBlock(i2cAddress, buf, 2);
 
-	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL)) ||
-			(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL) > SQUARE(1.0) * baseIntervalSec)) {
-		varioStatus.getSystemNoiseCovariance_Q().
-				coeffRef(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL) =
-				SQUARE(1.0) * baseIntervalSec;
-	}
+	// Disable Accel self-test, and set the full-scale range to +-4g
+	buf[0] = REG_9150_ACCEL_CONFIG;
+	buf[1] = ACCEL_RANGE_4G;
+	LOG4CXX_DEBUG(logger,"Write REG_9150_ACCEL_CONFIG");
+	ioPort->writeBlock(i2cAddress, buf, 2);
 
-	// Set the initial status and variances of turn rates and gyro bias unconditionally.
-	// These settings are solely my turf.
-	varioStatus.gyroBiasX = avgGyroX;
-	LOG4CXX_DEBUG(logger,"Initial gyroBiasX = " << varioStatus.gyroBiasX);
-	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_X,varioStatus.STATUS_IND_GYRO_BIAS_X) =
-			1.0f;
-	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_X,varioStatus.STATUS_IND_GYRO_BIAS_X) =
-			SQUARE(0.1) * baseIntervalSec;
+	// Disable external frame synchronization,
+	// and set the DLPF filter to 8.5ms delay and 20Hz bandwidth
+	buf[0] = REG_9150_CONFIG;
+	buf[1] = DLPF_20HZ;
+	LOG4CXX_DEBUG(logger,"Write REG_9150_CONFIG DLPF filter");
+	ioPort->writeBlock(i2cAddress, buf, 2);
 
-	varioStatus.rollRateX = 0;
-	LOG4CXX_DEBUG(logger,"Initial rollRateX = " << varioStatus.rollRateX);
-	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ROTATION_X,varioStatus.STATUS_IND_ROTATION_X) =
-			1.0f;
-	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ROTATION_X,varioStatus.STATUS_IND_ROTATION_X) =
-			SQUARE(4.0) * baseIntervalSec;
+	// Setup the sample rate to 20ms. The Gyro rate will be 1kHz because I just activated the DLPF.
+	buf[0] = REG_9150_SMPLRT_DIV;
+	buf[1] = 19; // + 1 = 20ms = 50Hz.
+	LOG4CXX_DEBUG(logger,"Write REG_9150_SMPLRT_DIV");
+	ioPort->writeBlock(i2cAddress, buf, 2);
 
-	varioStatus.gyroBiasY = avgGyroY;
-	LOG4CXX_DEBUG(logger,"Initial gyroBiasY = " << varioStatus.gyroBiasY);
-	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_Y,varioStatus.STATUS_IND_GYRO_BIAS_Y) =
-			1.0f;
-	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_Y,varioStatus.STATUS_IND_GYRO_BIAS_Y) =
-			SQUARE(0.1) * baseIntervalSec;
+	// Set the clock source to the X-Gyro via PLL.
+	buf[0] = REG_9150_PWR_MGMT_1;
+	buf[1] = 0
+			// | PWR_MGMT_DEVICE_RESET
+			// | PWR_MGMT_SLEEP
+			// | PWR_MGMT_CYCLE
+			// | PWR_MGMT_DISABLE_TEMP
+			| CLKSEL_PLL_X_GYR
+			;
+	LOG4CXX_DEBUG(logger,"Write REG_9150_PWR_MGMT_1 clock source X-Gyro");
+	ioPort->writeBlock(i2cAddress, buf, 2);
 
-	varioStatus.pitchRateY = 0;
-	LOG4CXX_DEBUG(logger,"Initial pitchRateY = " << varioStatus.pitchRateY);
-	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ROTATION_Y,varioStatus.STATUS_IND_ROTATION_Y) =
-			4.0f;
-	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ROTATION_Y,varioStatus.STATUS_IND_ROTATION_Y) =
-			SQUARE(4.0) * baseIntervalSec;
+	ioPort->readBlockAtRegAddrByte(i2cAddress, REG_9150_TEMP_OUT_H , buf, 2);
+	UnionInt16 tempRaw;
 
-	varioStatus.gyroBiasZ = avgGyroZ;
-	LOG4CXX_DEBUG(logger,"Initial gyroBiasZ = " << varioStatus.gyroBiasZ);
-	/* Multiply the variance by 2.0 for two reasons:
-	 * 1. The stored values may have shifted in the meantime
-	 * 2. Before updating the calibration data file the variance must have improved sufficiently to be updated.
-	 */
-	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_Z,varioStatus.STATUS_IND_GYRO_BIAS_Z) =
-			0.5f;
-	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_Z,varioStatus.STATUS_IND_GYRO_BIAS_Z) =
-			SQUARE(0.1) * baseIntervalSec;
-
-	varioStatus.yawRateZ = 0;
-	LOG4CXX_DEBUG(logger,"Initial yawRateZ = " << varioStatus.yawRateZ);
-	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ROTATION_Z,varioStatus.STATUS_IND_ROTATION_Z) =
-			4.0f;
-	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ROTATION_Z,varioStatus.STATUS_IND_ROTATION_Z) =
-			SQUARE(4.0) * baseIntervalSec;
-
-}
-
-void MPU9150Driver::initializeStatusMag(
-		GliderVarioStatus &varioStatus,
-		GliderVarioMainPriv &varioMain,
-		struct SensorData const &sumSensorData,
-		int numMagData
-		) {
+	tempRaw.uintVal = (uint16_t(buf[0]) << 8) | uint16_t(buf[1]);
+	LOG4CXX_DEBUG(logger,"Temperature raw " << tempRaw.intVal << " = " << (FloatType(tempRaw.intVal)/340.0f + 35.0f));
 
 	/*
 	 *
-	 * Assume that you are on the ground, but maybe tilted to the side
-	 * (remember this instrument is primarily for gliders)
-	 * and slightly pitched up
-	 *
-	 * Another precondition is that initializeStatusAccel() has been called before so that roll and pitch angle are
-	 * already determined, and I can calculate the yaw (i.e. the direction)
 	 */
-	auto avgMagX = sumSensorData.magX / float(numMagData) - calibrationData.magXBias;
-	auto avgMagY = sumSensorData.magY / float(numMagData) - calibrationData.magYBias;
-	auto avgMagZ = sumSensorData.magZ / float(numMagData) - calibrationData.magZBias ;
 
-	double baseIntervalSec = varioMain.getProgramOptions().idlePredictionCycleMilliSec / 1000.0;
+/* This section serves as demo how to directly access the
+ * AK8975 magnetometer directly from the host/main I2C bus.
+ *
+ *	// Enable the aux I2C pass-through
+ *	buf[0] = REG_9150_INT_PIN_CFG;
+ *	buf[1] = I2C_BYPASS_EN;
+ *	LOG4CXX_DEBUG(logger,"Write REG_9150_INT_PIN_CFG; enable I2C aux pass-through");
+ *	ioPort->writeBlock(i2cAddress, buf, 2);
+ *
+ *	std::this_thread::sleep_for(10ms);
+ *
+ *	// Read WhoAmI and Info from the AK8975 via pass-through.
+ *	ioPort->readBlockAtRegAddrByte(AK8975_I2CAddr, REG_AK8975_WIA, buf, 2);
+ *	LOG4CXX_INFO(logger,"AK8975 via pass-through: WhoAmI = 0x" << std::hex << uint16_t(buf[0])
+ *			<< ", Info = 0x" << uint16_t(buf[1])
+ *			<< std::dec);
+ *
+ */
 
-	LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << "baseIntervalSec = " << baseIntervalSec);
+	// Disable the aux I2C pass-through
+	buf[0] = REG_9150_INT_PIN_CFG;
+	buf[1] = 0
+			// | I2C_BYPASS_EN
+			;
+	LOG4CXX_DEBUG(logger,"Write REG_9150_INT_PIN_CFG; disable I2C aux pass-through");
+	ioPort->writeBlock(i2cAddress, buf, 2);
+	std::this_thread::sleep_for(10ms);
 
-	LOG4CXX_DEBUG(logger,"avgMagX = " << avgMagX);
-	LOG4CXX_DEBUG(logger,"avgMagY = " << avgMagY);
-	LOG4CXX_DEBUG(logger,"avgMagZ = " << avgMagZ);
+	// enable the aux master controller
+	buf[0] = REG_9150_USER_CTRL;
+	buf[1] = I2C_MST_EN;
+	LOG4CXX_DEBUG(logger,"Write REG_9150_USER_CTRL; enable I2C aux master controller");
+	ioPort->writeBlock(i2cAddress, buf, 2);
 
-	// If the pitch angle is nearly perpendicular to the flat plane the roll angle cannot be determined with any accuracy
-	// Albeit a more than unlikely scenario :D
-	if (fabsf(varioStatus.pitchAngle) < 80) {
-		RotationMatrix rotMatrix (0.0f,varioStatus.pitchAngle,varioStatus.rollAngle);
-		Vector3DType planeMagVector (avgMagX,avgMagY,avgMagZ);
-		Vector3DType worldMagVector;
-
-		// I already determined pitch and roll angle. With these now I can move the plane coordinate system into
-		// the wold coordinate system, and can determine the heading (yaw angle).
-		rotMatrix.calcPlaneVectorToWorldVector(planeMagVector,worldMagVector);
-
-		LOG4CXX_DEBUG(logger,"worldMagX = " << worldMagVector[0]);
-		LOG4CXX_DEBUG(logger,"worldMagY = " << worldMagVector[1]);
-		LOG4CXX_DEBUG(logger,"worldMagZ = " << worldMagVector[2]);
-
-		if (isnan(varioStatus.heading)) {
-			varioStatus.heading = FastMath::fastATan2(-worldMagVector[1],worldMagVector[0]);
-			LOG4CXX_DEBUG(logger,"Initial heading = " << varioStatus.heading);
-			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) = 5.0f * 5.0f;
-		}
-
-		if (isnan(varioStatus.magneticInclination)) {
-			varioStatus.magneticInclination = FastMath::fastATan2(
-					-avgMagZ,sqrtf(avgMagX*avgMagX + avgMagY*avgMagY));
-			if (varioStatus.magneticInclination > 90.0f) {
-				varioStatus.magneticInclination -= 360.0f;
-			}
-			LOG4CXX_DEBUG(logger,"Initial magnetic inclination = " << varioStatus.magneticInclination);
-			varioStatus.getErrorCovariance_P().
-					coeffRef(varioStatus.STATUS_IND_MAGNETIC_INCLINATION,varioStatus.STATUS_IND_MAGNETIC_INCLINATION)
-					= 5.0f * 5.0f;
-		}
-	}
-
-	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_MAGNETIC_INCLINATION,varioStatus.STATUS_IND_MAGNETIC_INCLINATION))) {
-		varioStatus.getSystemNoiseCovariance_Q().
-				coeffRef(varioStatus.STATUS_IND_MAGNETIC_INCLINATION,varioStatus.STATUS_IND_MAGNETIC_INCLINATION) =
-				SQUARE(0.1) * baseIntervalSec;
-	}
-
-	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING))||
-			(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) > SQUARE(2.0) * baseIntervalSec)) {
-		varioStatus.getSystemNoiseCovariance_Q().
-				coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) =
-				SQUARE(2.0) * baseIntervalSec;
-	}
-
-	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_PITCH,varioStatus.STATUS_IND_PITCH)) ||
-			(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_PITCH,varioStatus.STATUS_IND_PITCH) > SQUARE(2.0) * baseIntervalSec)) {
-		varioStatus.getSystemNoiseCovariance_Q().
-				coeffRef(varioStatus.STATUS_IND_PITCH,varioStatus.STATUS_IND_PITCH) =
-				SQUARE(2.0) * baseIntervalSec;
-	}
-
-	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL)) ||
-			(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL) > SQUARE(1.0) * baseIntervalSec)) {
-		varioStatus.getSystemNoiseCovariance_Q().
-				coeffRef(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL) =
-				SQUARE(1.0) * baseIntervalSec;
-	}
+	std::this_thread::sleep_for(10ms);
 
 
+	buf[0] = readByteAux (AK8975_I2CAddr,REG_AK8975_WIA);
+	buf[1] = readByteAux (AK8975_I2CAddr,REG_AK8975_INFO);
+	LOG4CXX_INFO(logger,"AK8975 via Aux: WhoAmI = 0x" << std::hex << uint16_t(buf[0])
+			<< ", Info = 0x" << uint16_t(buf[1])
+			<< std::dec);
 
-	// Set the magnetometer bias unconditionally
-	varioStatus.compassDeviationX = calibrationData.magXBias;
-	LOG4CXX_DEBUG(logger,"Initial compassDeviationX = " << varioStatus.compassDeviationX);
-	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_X,varioStatus.STATUS_IND_COMPASS_DEVIATION_X) = calibrationData.magXVariance * 4.0f;
-	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_X,varioStatus.STATUS_IND_COMPASS_DEVIATION_X) =
-			SQUARE(0.1) * baseIntervalSec;
+	// Enable prom read mode
+	writeByteAux(AK8975_I2CAddr,REG_AK8975_CNTL,AK8975_PROM_READ);
+	std::this_thread::sleep_for(10ms);
 
-	varioStatus.compassDeviationY = calibrationData.magYBias;
-	LOG4CXX_DEBUG(logger,"Initial compassDeviationY = " << varioStatus.compassDeviationY);
-	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_Y,varioStatus.STATUS_IND_COMPASS_DEVIATION_Y) = calibrationData.magYVariance * 4.0f;
-	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_Y,varioStatus.STATUS_IND_COMPASS_DEVIATION_Y) =
-			SQUARE(0.1) * baseIntervalSec;
+	trimRegisters.asa_x = readByteAux (AK8975_I2CAddr,REG_AK8975_ASAX);
+	LOG4CXX_DEBUG(logger,"AK8975 via Aux: ASAX = 0x" << std::hex << uint16_t(trimRegisters.asa_x)
+			<< std::dec);
+	trimRegisters.asa_y = readByteAux (AK8975_I2CAddr,REG_AK8975_ASAY);
+	LOG4CXX_DEBUG(logger,"AK8975 via Aux: ASAY = 0x" << std::hex << uint16_t(trimRegisters.asa_y)
+			<< std::dec);
+	trimRegisters.asa_z = readByteAux (AK8975_I2CAddr,REG_AK8975_ASAZ);
+	LOG4CXX_DEBUG(logger,"AK8975 via Aux: ASAZ = 0x" << std::hex << uint16_t(trimRegisters.asa_z)
+			<< std::dec);
 
-	varioStatus.compassDeviationZ = calibrationData.magZBias;
-	LOG4CXX_DEBUG(logger,"Initial compassDeviationZ = " << varioStatus.compassDeviationZ);
-	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_Z,varioStatus.STATUS_IND_COMPASS_DEVIATION_Z) = calibrationData.magZVariance * 4.0f;
-	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_Z,varioStatus.STATUS_IND_COMPASS_DEVIATION_Z) =
-			SQUARE(0.1) * baseIntervalSec;
+	// Calculate the magnetometer factors adjusted by the factory trim factors
+	LOG4CXX_DEBUG(logger,"Unadjusted Mag conversion  = " << magFactorX);
+	magFactorX *= FloatType(int(trimRegisters.asa_x) - 128) / 256.0f + 1.0f;
+	magFactorY *= FloatType(int(trimRegisters.asa_y) - 128) / 256.0f + 1.0f;
+	magFactorZ *= FloatType(int(trimRegisters.asa_z) - 128) / 256.0f + 1.0f;
 
-}
+	LOG4CXX_DEBUG(logger,"Adjusted Mag conversion  = " << magFactorX << ", " << magFactorY << ", " << magFactorZ);
 
-#undef SQUARE
+	// Set back to power-down mode
+	writeByteAux(AK8975_I2CAddr,REG_AK8975_CNTL,AK8975_PWR_DOWN);
+	std::this_thread::sleep_for(10ms);
 
-void MPU9150Driver::initializeStatus(
-		GliderVarioStatus &varioStatus,
-		GliderVarioMeasurementVector &measurements,
-		GliderVarioMainPriv &varioMain) {
+	// Start single measurement mode
+	writeByteAux(AK8975_I2CAddr,REG_AK8975_CNTL,AK8975_SINGLE_MEAS);
 
-	// Try 20 times, and wait for a second if no data yet available
-	for (int i = 0; i < 20;i++) {
-		using namespace std::chrono_literals;
+	// Enable the data ready interrupt
+	buf[0] = REG_9150_INT_ENABLE;
+	buf[1] = 1;
+	ioPort->writeBlock(i2cAddress, buf, 2);
 
-		struct SensorData avgSensorData {
-			false,0.0f,0.0f,0.0f,
-			false,0.0f,0.0f,0.0f,
-			false,0.0f,0.0f,0.0f
-		};
-		int numAccel = 0;
-		int numGyro  = 0;
-		int numMag   = 0;
+	// Delay the data ready interrupt until the external data (i.e. magnetometer) are also received.
+	buf[0] = REG_9150_I2C_MST_CTRL;
+	buf[1] = WAIT_FOR_ES // WAIT_FOR_ES: DATA_RDY is not raised before external data arrived
+			| I2C_MST_P_NSR // Always send a STOP between aux master transactions
+			; // I2C master clock divider remains 0 = 348 kHz.
+	ioPort->writeBlock(i2cAddress, buf, 2);
 
-		// Add up the data in the ring buffer
-		for (int k = 0; k < SIZE_SENSOR_DATA_ARRAY; k++) {
-			struct SensorData &sensorData = sensorDataArr[k];
+	// Now set up Slave 0 and 1:
+	// Slave 0 reads out the magnetometer readings
+	// Slave 1 starts a new measurement cycle for reading by slave 0 in the next cycle
 
-			if (sensorData.accelDataValid) {
-				avgSensorData.accelX += sensorData.accelX;
-				avgSensorData.accelY += sensorData.accelY;
-				avgSensorData.accelZ += sensorData.accelZ;
-				numAccel ++;
-			}
+	// First set the byte being sent to the magnetometer, which is to set
+	// the single measurement mode.
+	buf[0] = REG_9150_I2C_SLV1_DO;
+	buf[1] = AK8975_SINGLE_MEAS; // Single Measurement mode
+	ioPort->writeBlock(i2cAddress, buf, 2);
 
-			if (sensorData.gyroDataValid) {
-				avgSensorData.gyroX += sensorData.gyroX;
-				avgSensorData.gyroY += sensorData.gyroY;
-				avgSensorData.gyroZ += sensorData.gyroZ;
-				numGyro ++;
-			}
+	// Start writing at the start of slave 0 control registers,
+	// but continue writing the slave 1 registers in one transaction.
+	buf[0] = REG_9150_I2C_SLV0_ADDR;
+	// Slave 0
+	buf[1] = I2C_SLVx_RW // read
+			| AK8975_I2CAddr; // The I2C address of the magnetometer
+	// The start register to read
+	buf[2] = REG_AK8975_ST1;
+	buf[3] = 8 // Number of bytes (status 1, 3 axis - 2-byte measurements, status2)
+			| I2C_SLVx_EN // Enable slave interface
+			;
 
-			if (sensorData.magDataValid) {
-				avgSensorData.magX += sensorData.magX;
-				avgSensorData.magY += sensorData.magY;
-				avgSensorData.magZ += sensorData.magZ;
-				numMag ++;
-			}
-		}
-
-		if (numAccel >= 10 && numGyro >= 10 && numMag >= 10) {
-			initializeStatusAccel(varioStatus,varioMain,avgSensorData,numAccel);
-			initializeStatusGyro(varioStatus,varioMain,avgSensorData,numGyro);
-			initializeStatusMag(varioStatus,varioMain,avgSensorData,numMag);
-
-			statusInitDone = true;
-
-			break;
-		}
-
-		std::this_thread::sleep_for(1s);
-
-	} // for (int i = 0; i < 20;i++)
-
-	lastUpdateTime = std::chrono::system_clock::now();
+	// Slave 1
+	buf[4] = // I2C_SLVx_RW | // write (do not set read bit)
+			 AK8975_I2CAddr; // The I2C address of the magnetometer
+	// The Control register where the value in REG_9150_I2C_SLV1_DO (see above) is being written.
+	buf[5] = REG_AK8975_CNTL;
+	buf[6] = 1 // Number of bytes (Send one command byte)
+			| I2C_SLVx_EN // Enable slave interface
+			;
+	ioPort->writeBlock(i2cAddress, buf, 7);
 
 }
-
-void MPU9150Driver::updateKalmanStatus (GliderVarioStatus &varioStatus) {
-
-
-
-}
-
 
 void MPU9150Driver::driverThreadFunction() {
 
@@ -656,275 +420,21 @@ void MPU9150Driver::driverThreadFunction() {
 	}
 }
 
-static constexpr float BMM150_OVERFLOW_OUTPUT_FLOAT = 1.0e10f;
-
 void MPU9150Driver::processingMainLoop () {
-
-	/** \brief Factor to divide the raw accelerometer values by to get the actual g value.
-	 *
-	 *  Range on the BMX 160 is set from -4g - +4g. This range is 0x8000 in raw values
-	 *
-	 */
-	static constexpr double accFactor = 4.0 / double(0x8000);
-
-	/** \brief Factor to divide the raw gyroscope values by to get the actual deg/s value.
-	 *
-	 *  Range on the BMX 160 is set from -250deg&s - +250deg/s. This range is 0x8000 in raw values, but as signed int.
-	 *
-	 */
-	static constexpr double gyrFactor = double(0x8000) / 250.0;
-	struct BMX160Data bmxData;
 
 	auto nextStartConversion = std::chrono::system_clock::now();
 
 	while (!getStopDriverThread()) {
-		auto readLen = ioPort->recv((uint8_t *)(&bmxData),sizeof(bmxData));
-		LOG4CXX_DEBUG(logger,"Read " << readLen << "Bytes from the port. Expected " << sizeof(bmxData) << " bytes.");
+		SensorData &currSensorData = sensorDataArr[currSensorDataIndex];
 
-		struct SensorData &currSensorData = sensorDataArr[currSensorDataIndex];
+		// advance the index, and wrap it around if necessary
+		currSensorDataIndex++;
+		currSensorDataIndex &= SIZE_SENSOR_DATA_ARRAY - 1;
 		currSensorData.accelDataValid = false;
 		currSensorData.gyroDataValid = false;
 		currSensorData.magDataValid = false;
 
-		LOG4CXX_DEBUG(logger,"bmxData.header.unionCode    = " << int(bmxData.header.unionCode));
-		LOG4CXX_DEBUG(logger,"bmxData.header.length       = " << bmxData.header.length);
-		LOG4CXX_DEBUG(logger,"bmxData.header.versionMajor = " << int(bmxData.header.versionMajor));
-		LOG4CXX_DEBUG(logger,"bmxData.header.versionMinor = " << int(bmxData.header.versionMinor));
-		LOG4CXX_DEBUG(logger,"bmxData.header.crc          = " << std::hex << uint16_t(bmxData.header.crc) << std::dec);
-
-		if (bmxData.header.versionMajor == BMX160_SENSORBOX_MSG_VERSION_MAJOR &&
-				bmxData.header.versionMinor == BMX160_SENSORBOX_MSG_VERSION_MINOR)
-		{
-			switch (bmxData.header.unionCode) {
-			case BMX160DATA_TRIM:
-				if (bmxData.header.length == (sizeof(bmxData.header)+sizeof(bmxData.trimData))) {
-					uint16_t msgCrc;
-					msgCrc = bmxData.header.crc;
-					bmxData.header.crc = 0U;
-
-					if (msgCrc == 0xffff || msgCrc == crc16CCIT(PPP_INITFCS,&bmxData,bmxData.header.length)) {
-						magTrimData = bmxData.trimData;
-						LOG4CXX_DEBUG(logger, "TrimData = \n"
-								<< "\tdig_x1   = " << int16_t(magTrimData.dig_x1) << "\n"
-								<< "\tdig_y1   = " << int16_t(magTrimData.dig_y1) << "\n"
-								<< "\tdig_z1   = " << magTrimData.dig_z1 << "\n"
-								<< "\tdig_x2   = " << int16_t(magTrimData.dig_x2) << "\n"
-								<< "\tdig_y2   = " << int16_t(magTrimData.dig_y2) << "\n"
-								<< "\tdig_z2   = " << magTrimData.dig_z2 << "\n"
-								<< "\tdig_z3   = " << magTrimData.dig_z3 << "\n"
-								<< "\tdig_z4   = " << magTrimData.dig_z4 << "\n"
-								<< "\tdig_xy1  = " << uint16_t(magTrimData.dig_xy1) << "\n"
-								<< "\tdig_xy2  = " << int16_t(magTrimData.dig_xy2) << "\n"
-								<< "\tdig_xyz1 = " << magTrimData.dig_xyz1);
-
-						// Essential trim data is missing.
-						// compensate function would return BMM150_OVERFLOW_OUTPUT_FLOAT = 0.0.
-						// Therefore request a reset of the IMU, re-read the magnetometer trim data,
-						// and re-send them to me.
-						if ((magTrimData.dig_z2 == 0) || (magTrimData.dig_z1 == 0)
-								|| (magTrimData.dig_xyz1 == 0) ) {
-							struct BMX160RecvData sendMsg;
-
-							sendMsg.header.unionCode = BMX160RECV_DATA_RESET_IMU;
-							sendMsg.header.filler = 0;
-							sendMsg.header.length = sizeof sendMsg;
-							sendMsg.header.versionMajor = BMX160_SENSORBOX_MSG_VERSION_MAJOR;
-							sendMsg.header.versionMinor = BMX160_SENSORBOX_MSG_VERSION_MINOR;
-							sendMsg.dummy = 0;
-
-							sendMsg.header.crc = 0U;
-							sendMsg.header.crc = 0xffff; // crc16CCIT(PPP_INITFCS,&sendMsg,sendMsg.header.length);
-
-							ioPort->send((uint8_t*)(&sendMsg),sizeof(sendMsg));
-
-						}
-					} else {
-						LOG4CXX_ERROR(logger,
-								"CRC error of received magnetometer trim data message");
-						// Send a request to send the trim data again
-						struct BMX160RecvData sendMsg;
-
-						sendMsg.header.unionCode = BMX160RECV_DATA_RESET_IMU;
-						sendMsg.header.filler = 0;
-						sendMsg.header.length = sizeof sendMsg;
-						sendMsg.header.versionMajor = BMX160_SENSORBOX_MSG_VERSION_MAJOR;
-						sendMsg.header.versionMinor = BMX160_SENSORBOX_MSG_VERSION_MINOR;
-						sendMsg.dummy = 0;
-
-						sendMsg.header.crc = 0U;
-						sendMsg.header.crc = crc16CCIT(PPP_INITFCS,&sendMsg,sendMsg.header.length);
-
-						ioPort->send((uint8_t*)(&sendMsg),sizeof(sendMsg));
-					}
-				} else {
-					LOG4CXX_ERROR(logger,
-							"Alignment error. bmxData.header.length = " << bmxData.header.length
-							<< " but sizeof(bmxData.header)+sizeof(bmxData.trimData) = " << (sizeof(bmxData.header)+sizeof(bmxData.trimData)));
-				}
-				break;
-			case BMX160DATA_ACC_GYR_MAG:
-				if (bmxData.header.length == (sizeof(bmxData.header)+sizeof(bmxData.accGyrMagData))) {
-					uint16_t msgCrc;
-					msgCrc = bmxData.header.crc;
-					bmxData.header.crc = 0U;
-
-					if (msgCrc == 0xffff || msgCrc == crc16CCIT(PPP_INITFCS,&bmxData,bmxData.header.length)) {
-
-						// advance the index, and wrap it around if necessary
-						currSensorDataIndex++;
-						currSensorDataIndex &= SIZE_SENSOR_DATA_ARRAY - 1;
-
-						// Essential trim data is missing.
-						// compensate function would return BMM150_OVERFLOW_OUTPUT_FLOAT = 0.0.
-						// Therefore request a reset of the IMU, re-read the magnetometer trim data,
-						// and re-send them to me.
-						if ((magTrimData.dig_z2 == 0) || (magTrimData.dig_z1 == 0)
-								|| (magTrimData.dig_xyz1 == 0) ) {
-							struct BMX160RecvData sendMsg;
-
-							sendMsg.header.unionCode = BMX160RECV_DATA_RESET_IMU;
-							sendMsg.header.filler = 0;
-							sendMsg.header.length = sizeof sendMsg;
-							sendMsg.header.versionMajor = BMX160_SENSORBOX_MSG_VERSION_MAJOR;
-							sendMsg.header.versionMinor = BMX160_SENSORBOX_MSG_VERSION_MINOR;
-							sendMsg.dummy = 0;
-
-							sendMsg.header.crc = 0U;
-							sendMsg.header.crc = 0xffff;
-
-							ioPort->send((uint8_t*)(&sendMsg),sizeof(sendMsg));
-
-						} else {
-
-							currSensorData.magX = compensate_x(bmxData.accGyrMagData.magX,bmxData.accGyrMagData.magRHall) * calibrationData.magXFactor;
-							currSensorData.magY = compensate_y(bmxData.accGyrMagData.magY,bmxData.accGyrMagData.magRHall) * calibrationData.magYFactor;
-							currSensorData.magZ = compensate_z(bmxData.accGyrMagData.magZ,bmxData.accGyrMagData.magRHall) * calibrationData.magZFactor;
-
-							LOG4CXX_DEBUG(logger,"magX (uT) = " << currSensorData.magX);
-							LOG4CXX_DEBUG(logger,"magY (uT) = " << currSensorData.magY);
-							LOG4CXX_DEBUG(logger,"magZ (uT) = " << currSensorData.magZ);
-							if (currSensorData.magX != BMM150_OVERFLOW_OUTPUT_FLOAT &&
-									currSensorData.magY != -BMM150_OVERFLOW_OUTPUT_FLOAT &&
-									currSensorData.magZ != -BMM150_OVERFLOW_OUTPUT_FLOAT
-									) {
-								currSensorData.magDataValid = true;
-							}
-						}
-
-						currSensorData.gyroX = double(bmxData.accGyrMagData.gyrX)/ gyrFactor * calibrationData.gyrXFactor;
-						currSensorData.gyroY = double(bmxData.accGyrMagData.gyrY)/ gyrFactor * calibrationData.gyrYFactor;
-						currSensorData.gyroZ = double(bmxData.accGyrMagData.gyrZ)/ gyrFactor * calibrationData.gyrZFactor;
-						currSensorData.gyroDataValid = true;
-
-						LOG4CXX_DEBUG(logger,"gyrX (deg/s) = " << currSensorData.gyroX);
-						LOG4CXX_DEBUG(logger,"gyrY (deg/s) = " << currSensorData.gyroY);
-						LOG4CXX_DEBUG(logger,"gyrZ (deg/s) = " << currSensorData.gyroZ);
-
-
-						currSensorData.accelX = (double)(bmxData.accGyrMagData.accX) * accFactor *
-								calibrationData.accelXFactor - calibrationData.accelXBias;
-						currSensorData.accelY = (double)(bmxData.accGyrMagData.accY) * accFactor *
-								calibrationData.accelYFactor - calibrationData.accelYBias;
-						currSensorData.accelZ = (double)(bmxData.accGyrMagData.accZ) * accFactor *
-								calibrationData.accelZFactor - calibrationData.accelZBias;
-						currSensorData.accelDataValid = true;
-
-						LOG4CXX_DEBUG(logger,"accX (g) = " << currSensorData.accelX);
-						LOG4CXX_DEBUG(logger,"accY (g) = " << currSensorData.accelY);
-						LOG4CXX_DEBUG(logger,"accZ (g) = " << currSensorData.accelZ);
-					} else { // if (crc == msgCrc)
-						LOG4CXX_ERROR(logger,
-								"CRC error of received acc/gyr/mag sensor data message");
-					} // if (crc == msgCrc)
-				} else { // if (bmxData.header.length == ...
-					LOG4CXX_ERROR(logger,
-							"Alignment error. bmxData.header.length = " << bmxData.header.length
-							<< " but (sizeof(bmxData.header)+sizeof(bmxData.accGyrMagData)) = " << (sizeof(bmxData.header)+sizeof(bmxData.accGyrMagData)));
-				} // if (bmxData.header.length == ...
-				break;
-			case BMX160DATA_ACC_GYR:
-				if (bmxData.header.length == (sizeof(bmxData.header)+sizeof(bmxData.accGyrData))) {
-					uint16_t msgCrc;
-					msgCrc = bmxData.header.crc;
-					bmxData.header.crc = 0U;
-
-					if (msgCrc == 0xffff || msgCrc == crc16CCIT(PPP_INITFCS,&bmxData,bmxData.header.length)) {
-						// advance the index, and wrap it around if necessary
-						currSensorDataIndex++;
-						currSensorDataIndex &= SIZE_SENSOR_DATA_ARRAY - 1;
-
-						currSensorData.gyroX = double(bmxData.accGyrData.gyrX)/ gyrFactor;
-						currSensorData.gyroY = double(bmxData.accGyrData.gyrY)/ gyrFactor;
-						currSensorData.gyroZ = double(bmxData.accGyrData.gyrZ)/ gyrFactor;
-						currSensorData.gyroDataValid = true;
-
-						LOG4CXX_DEBUG(logger,"gyrX (deg/s) = " << currSensorData.gyroX);
-						LOG4CXX_DEBUG(logger,"gyrY (deg/s) = " << currSensorData.gyroY);
-						LOG4CXX_DEBUG(logger,"gyrZ (deg/s) = " << currSensorData.gyroZ);
-
-						currSensorData.accelX = (double)(bmxData.accGyrMagData.accX) * accFactor *
-								calibrationData.accelXFactor - calibrationData.accelXBias;
-						currSensorData.accelY = (double)(bmxData.accGyrMagData.accY) * accFactor *
-								calibrationData.accelYFactor - calibrationData.accelYBias;
-						currSensorData.accelZ = (double)(bmxData.accGyrMagData.accZ) * accFactor *
-								calibrationData.accelZFactor - calibrationData.accelZBias;
-						currSensorData.accelDataValid = true;
-
-						LOG4CXX_DEBUG(logger,"accX (g) = " << currSensorData.accelX);
-						LOG4CXX_DEBUG(logger,"accY (g) = " << currSensorData.accelY);
-						LOG4CXX_DEBUG(logger,"accZ (g) = " << currSensorData.accelZ);
-					} else { // if (crc == msgCrc)
-						LOG4CXX_ERROR(logger,
-								"CRC error of received acc/gyr sensor data message");
-					} // if (crc == msgCrc) {
-				} else { // if (bmxData.header.length == ...
-					LOG4CXX_ERROR(logger,
-							"Alignment error. bmxData.header.length = " << bmxData.header.length
-							<< " but (sizeof(bmxData.header)+sizeof(bmxData.accGyrData)) = " << (sizeof(bmxData.header)+sizeof(bmxData.accGyrData)));
-				} // if (bmxData.header.length == ...
-				break;
-			default:
-				LOG4CXX_ERROR (logger,"Unknown union code " << (int)bmxData.header.unionCode);
-
-				break;
-			} // switch (bmxData.header.unionCode)
-		} // if (bmxData.header.versionMajor == ...
-
-		if (getIsKalmanUpdateRunning()) {
-			GliderVarioMainPriv::LockedCurrentStatus currStatus(*varioMain);
-
-			if (currSensorData.accelDataValid) {
-				GliderVarioMeasurementUpdater::accelUpd(
-						currSensorData.accelX,0.1f,
-						currSensorData.accelY,0.1f,
-						currSensorData.accelZ,0.1f,
-						*currStatus.getMeasurementVector(),*currStatus.getCurrentStatus());
-			}
-			if (currSensorData.gyroDataValid) {
-				GliderVarioMeasurementUpdater::gyroUpd(
-						currSensorData.gyroX,0.1f,
-						currSensorData.gyroY,0.1f,
-						currSensorData.gyroZ,0.1f,
-						*currStatus.getMeasurementVector(),*currStatus.getCurrentStatus());
-			}
-			if (currSensorData.magDataValid) {
-				GliderVarioMeasurementUpdater::compassUpd(
-						currSensorData.magX,currSensorData.magY,currSensorData.magZ,
-						2.0f,2.0f,2.0f,
-						*currStatus.getMeasurementVector(),*currStatus.getCurrentStatus());
-			}
-
-			auto lastPredictionUpdate = varioMain->getLastPredictionUpdate();
-			auto timeSinceLastCalibrationWrite = lastPredictionUpdate - lastUpdateTime;
-			if (!calibrationWriterRunning && (timeSinceLastCalibrationWrite >= calibrationDataUpdateCycle)) {
-				calibrationWriterRunning = true;
-				if (calibrationDataWriteThread.joinable()) {
-					calibrationDataWriteThread.join();
-				}
-				lastUpdateTime = std::chrono::system_clock::now();
-				calibrationDataWriteThread = std::thread(&MPU9150Driver::calibrationDataWriteFunc,this);
-			}
-		}
+		updateKalman(currSensorData);
 
 		// In case that you miss a cycle advance to the next cycle
 		auto now = std::chrono::system_clock::now();
@@ -932,196 +442,8 @@ void MPU9150Driver::processingMainLoop () {
 			nextStartConversion += updateCyle;
 		} while (nextStartConversion < now);
 		std::this_thread::sleep_until(nextStartConversion);
+
 	}
-}
-
-/*!
- * @brief This internal API is used to obtain the compensated
- * magnetometer x axis data(micro-tesla) in float.
- */
-float MPU9150Driver::compensate_x(int16_t mag_data_x, uint16_t data_rhall)
-{
-	float retval = 0;
-	float process_comp_x0;
-	float process_comp_x1;
-	float process_comp_x2;
-	float process_comp_x3;
-	float process_comp_x4;
-
-	/* Overflow condition check */
-	if ((mag_data_x != BMM150_XYAXES_FLIP_OVERFLOW_ADCVAL) &&
-		(data_rhall != 0) && (magTrimData.dig_xyz1 != 0)) {
-			/*Processing compensation equations*/
-			process_comp_x0 = (((float)magTrimData.dig_xyz1) * 16384.0f / data_rhall);
-			retval = (process_comp_x0 - 16384.0f);
-			process_comp_x1 = ((float)magTrimData.dig_xy2) * (retval * retval / 268435456.0f);
-			process_comp_x2 = process_comp_x1 + retval * ((float)magTrimData.dig_xy1) / 16384.0f;
-			process_comp_x3 = ((float)magTrimData.dig_x2) + 160.0f;
-			process_comp_x4 = mag_data_x * ((process_comp_x2 + 256.0f) * process_comp_x3);
-			retval = ((process_comp_x4 / 8192.0f) + (((float)magTrimData.dig_x1) * 8.0f)) / 16.0f;
-	} else {
-		/* overflow, set output to 0.0f */
-		retval = BMM150_OVERFLOW_OUTPUT_FLOAT;
-	}
-
-	return retval;
-}
-
-/*!
- * @brief This internal API is used to obtain the compensated
- * magnetometer y axis data(micro-tesla) in float.
- */
-float MPU9150Driver::compensate_y(int16_t mag_data_y, uint16_t data_rhall)
-{
-	float retval = 0;
-	float process_comp_y0;
-	float process_comp_y1;
-	float process_comp_y2;
-	float process_comp_y3;
-	float process_comp_y4;
-
-	/* Overflow condition check */
-	if ((mag_data_y != BMM150_XYAXES_FLIP_OVERFLOW_ADCVAL)
-		&& (data_rhall != 0) && (magTrimData.dig_xyz1 != 0)) {
-			/*Processing compensation equations*/
-			process_comp_y0 = ((float)magTrimData.dig_xyz1) * 16384.0f / data_rhall;
-			retval = process_comp_y0 - 16384.0f;
-			process_comp_y1 = ((float)magTrimData.dig_xy2) * (retval * retval / 268435456.0f);
-			process_comp_y2 = process_comp_y1 + retval * ((float)magTrimData.dig_xy1) / 16384.0f;
-			process_comp_y3 = ((float)magTrimData.dig_y2) + 160.0f;
-			process_comp_y4 = mag_data_y * (((process_comp_y2) + 256.0f) * process_comp_y3);
-			retval = ((process_comp_y4 / 8192.0f) + (((float)magTrimData.dig_y1) * 8.0f)) / 16.0f;
-	} else {
-		/* overflow, set output to 0.0f */
-		retval = BMM150_OVERFLOW_OUTPUT_FLOAT;
-	}
-
-	return retval;
-}
-
-/*!
- * @brief This internal API is used to obtain the compensated
- * magnetometer z axis data(micro-tesla) in float.
- */
-float MPU9150Driver::compensate_z(int16_t mag_data_z, uint16_t data_rhall)
-{
-	float retval = 0;
-	float process_comp_z0;
-	float process_comp_z1;
-	float process_comp_z2;
-	float process_comp_z3;
-	float process_comp_z4;
-	float process_comp_z5;
-
-	 /* Overflow condition check */
-	if ((mag_data_z != BMM150_ZAXIS_HALL_OVERFLOW_ADCVAL) &&
-		(magTrimData.dig_z2 != 0) && (magTrimData.dig_z1 != 0)
-		&& (magTrimData.dig_xyz1 != 0) && (data_rhall != 0)) {
-			/* Processing compensation equations */
-			process_comp_z0 = ((float)mag_data_z) - ((float)magTrimData.dig_z4);
-			process_comp_z1 = ((float)data_rhall) - ((float)magTrimData.dig_xyz1);
-			process_comp_z2 = (((float)magTrimData.dig_z3) * process_comp_z1);
-			process_comp_z3 = ((float)magTrimData.dig_z1) * ((float)data_rhall) / 32768.0f;
-			process_comp_z4 = ((float)magTrimData.dig_z2) + process_comp_z3;
-			process_comp_z5 = (process_comp_z0 * 131072.0f) - process_comp_z2;
-			retval = (process_comp_z5 / ((process_comp_z4) * 4.0f)) / 16.0f;
-	} else {
-		/* overflow, set output to 0.0f */
-		retval = BMM150_OVERFLOW_OUTPUT_FLOAT;
-	}
-
-	return retval;
-}
-
-void MPU9150Driver::calibrationDataWriteFunc() {
-
-
-	if (!varioMain) {
-		calibrationWriterRunning = false;
-		return;
-	}
-
-	{
-		// Lock the current status as briefly as possible.
-		GliderVarioMainPriv::LockedCurrentStatus currentLockedStatus(*varioMain);
-		GliderVarioStatus* currentStatus = currentLockedStatus.getCurrentStatus();
-		GliderVarioStatus::StatusCoVarianceType &coVariance = currentStatus->getErrorCovariance_P();
-
-		// If the estimated error is in a similar range or better than the current Variance update the estimated bias.
-		// Allow for fluctuations of the variance otherwise necessary updates may never happen
-		auto currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_GYRO_BIAS_X,
-				GliderVarioStatus::STATUS_IND_GYRO_BIAS_X);
-		if (currVariance <= calibrationData.gyrXVariance * 1.5f) {
-			calibrationData.gyrXBias = currentStatus->gyroBiasX;
-			calibrationData.gyrXVariance = currVariance;
-			writeConfigValue(calibrationDataParameters,"gyrXBias",calibrationData.gyrXBias);
-			writeConfigValue(calibrationDataParameters,"gyrXVariance",currVariance);
-		}
-		currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Y,
-				GliderVarioStatus::STATUS_IND_GYRO_BIAS_Y);
-		if (currVariance <= calibrationData.gyrYVariance * 1.5f) {
-			calibrationData.gyrYBias = currentStatus->gyroBiasY;
-			calibrationData.gyrYVariance = currVariance;
-			writeConfigValue(calibrationDataParameters,"gyrYBias",calibrationData.gyrYBias);
-			writeConfigValue(calibrationDataParameters,"gyrYVariance",currVariance);
-		}
-		currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Z,
-				GliderVarioStatus::STATUS_IND_GYRO_BIAS_Z);
-		if (currVariance <= calibrationData.gyrZVariance * 1.5f) {
-			calibrationData.gyrZBias = currentStatus->gyroBiasZ;
-			calibrationData.gyrZVariance = currVariance;
-			writeConfigValue(calibrationDataParameters,"gyrZBias",calibrationData.gyrZBias);
-			writeConfigValue(calibrationDataParameters,"gyrZVariance",currVariance);
-		}
-
-		currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_X,
-				GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_X);
-		if (currVariance <= calibrationData.magXVariance * 1.5f) {
-			calibrationData.magXBias = currentStatus->compassDeviationX;
-			calibrationData.magXVariance = currVariance;
-			writeConfigValue(calibrationDataParameters,"magXBias",calibrationData.magXBias);
-			writeConfigValue(calibrationDataParameters,"magXVariance",currVariance);
-		}
-		currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Y,
-				GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Y);
-		if (currVariance <= calibrationData.magYVariance * 1.5f) {
-			calibrationData.magYBias = currentStatus->compassDeviationY;
-			calibrationData.magYVariance = currVariance;
-			writeConfigValue(calibrationDataParameters,"magYBias",calibrationData.magYBias);
-			writeConfigValue(calibrationDataParameters,"magYVariance",currVariance);
-		}
-		currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Z,
-				GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Z);
-		if (currVariance <= calibrationData.magZVariance * 1.5f) {
-			calibrationData.magZBias = currentStatus->compassDeviationZ;
-			calibrationData.magZVariance = currVariance;
-			writeConfigValue(calibrationDataParameters,"magZBias",calibrationData.magZBias);
-			writeConfigValue(calibrationDataParameters,"magZVariance",currVariance);
-		}
-
-		currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_GRAVITY,
-				GliderVarioStatus::STATUS_IND_GRAVITY);
-		if (currVariance <= calibrationData.gravityVariance * 1.5f) {
-			calibrationData.gravity = currentStatus->gravity;
-			calibrationData.gravityVariance = currVariance;
-			writeConfigValue(calibrationDataParameters,"gravityValue",calibrationData.gravity);
-			writeConfigValue(calibrationDataParameters,"gravityVariance",currVariance);
-		}
-	}
-
-	try {
-		std::ofstream of(calibrationDataFileName,of.out | of.trunc);
-		if (of.good()) {
-			calibrationDataParameters->writeOut(of);
-		}
-	} catch (std::exception const &e) {
-		LOG4CXX_ERROR(logger,"Error in " << __PRETTY_FUNCTION__
-				<< ". Cannot write calibration data. Error = " << e.what());
-	}
-	catch (...) {}
-
-	calibrationWriterRunning = false;
-
 }
 
 } // namespace openEV

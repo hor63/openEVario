@@ -53,11 +53,10 @@ static DriverBase* getNewMPU9150Instance (
 }
 
 MPU9150Lib::MPU9150Lib()
-	: GliderVarioDriverLibBase{
+	: DriverLibBase{
 		MPU9150DriverLibName.c_str(),
 		"Driver library for TDK/Invensense MPU-9150 IMU"}
 {
-
 
 }
 

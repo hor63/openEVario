@@ -35,7 +35,7 @@
 #include "OEVCommon.h"
 
 #include "util/io/I2CPort.h"
-#include "drivers/GliderVarioDriverBase.h"
+#include "util/drivers/IMUBase.h"
 #include "MPU-9150Defs.h"
 #include "MPU-9150Lib.h"
 
@@ -46,47 +46,55 @@ namespace openEV::drivers::TDK_MPU9150 {
  * This driver communicates with the sensor via I2C to obtain accelerometer, gyroscope, and magnetometer data.
  *
  */
-class MPU9150Driver  : public DriverBase {
+class MPU9150Driver : public IMUBase {
 public:
+
+	/** \brief Union of unsigned and signed 16-bit integers to map one to the other
+	 *
+	 * The C++ specification leaves some conversions from signed to unsigned integer
+	 * undefined or compiler dependent.
+	 * To allow a penalty-free conversion from unsigned (registers) to signed (interpretation of some measurements)
+	 * I am using this union.
+	 * Alternatively you can also pointer casting.
+	 */
+	union UnionInt16{
+			uint16_t uintVal;
+			int16_t intVal;
+		};
 
 	MPU9150Driver(
     	    char const *driverName,
 			char const *description,
 			char const *instanceName
 			);
+
 	virtual ~MPU9150Driver();
 
-    /** \brief Initialize the driver
-     *
-	 * @param varioMain mainVario object; provides all additional information like program parameters, and the parsed properties.
-     * \see GliderVarioDriverBase::driverInit()
-     */
-    virtual void driverInit(GliderVarioMainPriv &varioMain) override;
-
-
-    /** \brief Read the configuration
+	/** \brief Read the configuration
      *
      * \see GliderVarioDriverBase::readConfiguration()
      */
     virtual void readConfiguration (Properties4CXX::Properties const &configuration) override;
 
-    /** \brief Initialize the Kalman filter status from initial sensor measurements
-     *
-     * \see GliderVarioDriverBase::initializeStatus()
-     */
-    virtual void initializeStatus(
-    		GliderVarioStatus &varioStatus,
-			GliderVarioMeasurementVector &measurements,
-			GliderVarioMainPriv &varioMain) override;
-
-    /** \brief Callback to update the Kalman filter status based on received data.
-     *
-     * \see GliderVarioDriverBase::updateKalmanStatus()
-     */
-    virtual void updateKalmanStatus (GliderVarioStatus &varioStatus) override;
-
 protected:
 
+	/** \brief Read a single bye using Slave 4 on the auxiliary I2C bus
+	 *
+	 * @param slaveDevAddr I2C address of the connected device. Typically \ref AK8975_I2CAddr
+	 * @param regAddr Byte address of the register to read from
+	 * @return The byte value of the register
+	 */
+    uint8_t readByteAux (uint8_t slaveDevAddr, uint8_t regAddr);
+
+    /**
+     *
+	 * @param slaveDevAddr I2C address of the connected device. Typically \ref AK8975_I2CAddr
+	 * @param regAddr Byte address of the register to read from
+     * @param data The byte value to be written to the register
+     */
+    void writeByteAux (uint8_t slaveDevAddr, uint8_t regAddr, uint8_t data);
+
+    void setupMPU9150();
 
     /** \brief The main worker thread of this driver
      *
@@ -103,20 +111,7 @@ protected:
 
 private:
 
-    /** \brief Name of the communications port.
-     *
-     * I/O ports are defined in the IOPorts section of the configuration
-     */
-
     std::string portName;
-
-    uint8_t i2cAddress = MPU_9150_I2CAddr;
-
-    /** \brief Timeout in seconds between recovery attempts when an error in the main loop occurs.
-     *
-     * Configuration parameter is "errorTimeout" in the driver section.
-     */
-    int32_t errorTimeout = 10;
 
     /** \brief Maximum number of retries upon consecutive errors in the main loop.
      *
@@ -129,282 +124,22 @@ private:
      */
     int32_t errorMaxNumRetries = 0;
 
-    /// \brief The I/O port. Must be an I2C port.
+    /// \brief The I/O port. Typically this is a TCP port.
     io::I2CPort *ioPort = nullptr;
 
-    /// Name of the calibration data parameter file
-    std::string calibrationDataFileName;
+    uint8_t i2cAddress = MPU_9150_I2CAddr;
 
-    /// Loaded and parsed calibration data
-    Properties4CXX::Properties *calibrationDataParameters = nullptr;
+    AK8975_mag_trim_registers trimRegisters;
 
-    /// \brief BMX160 magnetometer trim data structure
-    AK8975_mag_trim_registers magTrimData;
+    FloatType magFactorX = 1229.0f * 2.0f / (4095.0f + 4096.0f);
+    FloatType magFactorY = 1229.0f * 2.0f / (4095.0f + 4096.0f);
+    FloatType magFactorZ = 1229.0f * 2.0f / (4095.0f + 4096.0f);
 
-    /// \brief Is the status initialization done
-    bool statusInitDone = false;
-
-    /// \brief Size of the array \ref sensorDataArr
-    static constexpr int SIZE_SENSOR_DATA_ARRAY = 16;
-
-    /** \brief Structure holding one set of sensor data
-     *
-     * This structure holds *raw* sensor data without considering bias or factor.
-     * Internal sensor compensation for the magnetometer is however applied,
-     * and raw A/D converted to physical units.
-     */
-    struct SensorData {
-		bool accelDataValid; ///< \brief Are \p accelX, \p accelY, and \p accelZ valid?
-		float accelX; ///< \brief Acceleration along the X axis in g. X is forward.
-		float accelY; ///< \brief Acceleration along the Y axis in g. Y is to the right.
-		float accelZ; ///< \brief Acceleration along the Z axis in g. Z is *downward*! Gravitation measures as -1g!
-
-		bool gyroDataValid; ///< \brief Are \p gyroX, \p gyroY, and \p gyroZ valid?
-		float gyroX; ///< \brief Roll rate around the X axis in deg/sec. Positive value is rolling right.
-		float gyroY; ///< \brief Pitch rate around the Y axis in deg/sec. Positive value is pitching up.
-		float gyroZ; ///< \brief Yaw rate around the Z axis in deg/sec. Positive value is yawing/turning right.
-
-		bool magDataValid; ///< \brief Are \p magX, \p magY, and \p magZ valid?
-		float magX; ///< \brief Magnetic field strength along the X axis in uT.
-		float magY; ///< \brief Magnetic field strength along the Y axis in uT.
-		float magZ; ///< \brief Magnetic field strength along the Z axis in uT.
-    };
-
-    /** \brief Array of sensor data
-     *
-     * Ring buffer of sensor data.
-     * For continuous operation only the recent record which is indicated by \ref currSensorDataIndex is being used.
-     * During initialization I use the whole array to get a recent average to prime the Kalman status.
-     *
-     */
-    SensorData sensorDataArr [SIZE_SENSOR_DATA_ARRAY];
-
-    /** \brief Index of current sensor data into sensorDataArr
-     *
-     * The array \ref sensorDataArr is filled in ring buffer fashion. For status initialization the average is calculated.
-     * For continuous updates only the current record is used.
-     */
-    int currSensorDataIndex = 0;
-
-    /** \brief
-     *
-     * Calibration data for the BMX160 sensor box
-     *
-     */
-    struct SensorCalibrationData {
-
-    	/**
-    	 * Magnetometer bias can be measured for the magnetometer
-    	 * measuring the magnetic field in an arbitrary direction as val1,
-    	 * then turn the box 180 degrees that the measured axis points opposite and measure again as val2.
-    	 * The raw bias is now:
-    	 * \f[\frac{(val1 + val2)}{2}\f]
-    	 *
-    	 * *Note*: The Bias here is the result of multiplying the raw bias value with \ref magXFactor.
-    	 */
-    	double magXBias = 0.0;
-    	/// \see \ref magXBias
-    	double magYBias = 0.0;
-    	/// \see \ref magXBias
-    	double magZBias = 0.0;
-
-    	/**
-    	 * The magnetometer factors are relative to the Z axis magnetometer which itself has the assumed factor -1.0. \n
-    	 * This makes sense because I am using it only for directions, i.e. I am interested in the ratios of the different
-    	 * axis only. (remember the Y and Z axis' of the BMX160 are 180deg opposite to my coordinate system). \n
-    	 * To obtain the values I am pointing the measured axis once upward, and once downward. Thus I am measuring the same
-    	 * value with each of the three magnetometers, and can directly compare the readings. \n
-    	 * For the other axis' the factor is:
-    	 * \f[\frac{-rawValueZ-rawBiasZ}{rawValue-rawBias}\f]
-    	 *
-    	 */
-    	double magXFactor =  1.0;
-    	/// \see \ref magXFactor
-    	double magYFactor = -1.0;
-    	/// \see \ref magXFactor
-    	double magZFactor = -1.0;
-
-    	/// Standard Variance of the magnetometer measurements
-    	double magXVariance = 2.0;
-    	/// Standard Variance of the magnetometer measurements
-    	double magYVariance = 2.0;
-    	/// Standard Variance of the magnetometer measurements
-    	double magZVariance = 2.0;
-
-    	/// Gyro bias is the easiest: Let the box rest and measure the gyro values. These are the raw bias.
-    	/// The bias used here is the result of multiplying the raw bias with the gyro factor.
-    	double gyrXBias = 0.0;
-    	/// \see \ref gyrXBias
-    	double gyrYBias = 0.0;
-    	/// \see \ref gyrXBias
-    	double gyrZBias = 0.0;
-
-    	/**
-    	 * Unless you have a very precise vinyl turn table, and can place the entire assembly onto it
-    	 * calibrating the gyro factor is not easily possible. Just rely on the factory trimming.
-    	 * However the factor also takes care of the flipped over coordinate systems between sensor and OpenEVario.
-    	 */
-    	double gyrXFactor =  1.0;
-    	/// \see \ref gyrXFactor
-    	double gyrYFactor = -1.0;
-    	/// \see \ref gyrXFactor
-    	double gyrZFactor = -1.0;
-
-    	/// Standard Variance of the gyro measurements. \n
-    	/// Just leave the sensor box sitting still and measure a series of values and calculate the standard devition, and square it.
-    	double gyrXVariance = 0.03;
-    	double gyrYVariance = 0.03;
-    	double gyrZVariance = 0.03;
-
-    	/**
-    	 * Accel bias is measured mostly the same way as magnetometer bias. \n
-    	 * However the measured axis should point straight up for val1,
-    	 * and straight down for val2. The formula for the raw bias is the same.
-    	 *
-    	 * *Note:* The Bias here the the product of the raw bias with the factor
-    	 */
-    	double accelXBias = 0.0;
-    	double accelYBias = 0.0;
-    	double accelZBias = 0.0;
-
-    	/**
-    	 *
-    	 * For the accelerometer factor you can get the same measurements val1 and val2 at the same time
-    	 * when measuring the bias. \n
-    	 * I actually have a calibrated value for the Accelerometer, i.e. the gravity.
-    	 * Val1 is the positive gravitation, and val 2 is negative gravity. \n
-    	 * The formula is:
-    	 * \f[\frac{GRAVITY}{val1 - val2}\f]
-    	 *
-    	 * *Note1:* The result must be \f$m/s^2\f$. Many sensors return *g* instead.
-    	 * The gravity is variable throughout the Earth. So \ref gravity is a calibration value here as well, and can affect the factor too.
-    	 *
-    	 * *Note2:* Note the different coordinate systems of sensord and OpenEVario! Y and Z Axsis are negative.
-    	 */
-    	double accelXFactor =  GRAVITY;
-    	double accelYFactor = -GRAVITY;
-    	double accelZFactor = -GRAVITY;
-
-    	/// Standard Variance of the accelerometer measurements
-    	double accelXVariance = 0.001;
-    	double accelYVariance = 0.001;
-    	double accelZVariance = 0.001;
+    FloatType gyrFactor = 1.0f / 131.0f;
+    FloatType accFactor = 1.0f / 8192.0f;
 
 
-    	/// Value of the local gravity
-    	/// \see \ref GRAVITY for more details of local gravity, and how to obtain your approximate local gravity value.
-    	double gravity = GRAVITY;
-    	double gravityVariance = 0.01;
 
-    } calibrationData;
-
-    /** \brief Thread object for the calibration data writer thread
-     *
-     * Writing out the calibration data is a fairly time consuming I/O operation.
-     * Therefore it is implemented as a one-shot thread which is re-started every
-     * \ref calibrationDataUpdateCycle seconds.
-     */
-    std::thread calibrationDataWriteThread;
-
-    /// \brief Cycle time of calibration data updates when the Kalman filter is running.
-    std::chrono::system_clock::duration calibrationDataUpdateCycle;
-    /// \brief Time of the last calibration data update, or the initial load
-    std::chrono::system_clock::time_point lastUpdateTime;
-    /** \brief Indicator if the previous calibration write run is still active or finished.
-     *
-     * Indicator if the thread code actually ran to the end.
-     * This prevents blocking the driver thread when it joins the last thread run.
-     */
-    volatile bool calibrationWriterRunning = false;
-
-    /**
-     * @brief This internal API is used to obtain the compensated
-     * magnetometer x axis data(micro-tesla) in float.
-     */
-    float compensate_x(int16_t mag_data_x, uint16_t data_rhall);
-
-    /**
-     * @brief This internal API is used to obtain the compensated
-     * magnetometer y axis data(micro-tesla) in float.
-     */
-    float compensate_y(int16_t mag_data_y, uint16_t data_rhall);
-
-    /*!
-     * @brief This internal API is used to obtain the compensated
-     * magnetometer z axis data(micro-tesla) in float.
-     */
-    float compensate_z(int16_t mag_data_z, uint16_t data_rhall);
-
-    /** \brief Initialize the Kalman status from the accelerometer measurements
-     *
-     * Actually I am *not* initializing the acceleration values of the Kalman status.
-     * Reason is that the acceleration of the model is not exacly the accelerometer measurements of the IMU when the body
-     * is not perfectly flat, i.e. neither pitch nor roll applies. Particularly the roll angle is anything but 0 in a glider on the ground.
-     *
-     * Instead I am initializing the roll and pitch angle assuming that the plane is stationary during the initialization which usually happens
-     * when the plane is sitting on the ground. But even in level flight that should work to a certain degree.
-     *
-     * @param varioStatus The Kalman status to be initialized
-     * @param varioMain Vario main object
-     * @param sumSensorData Sensor data summed up over \p numAccelData times.
-     * @param numAccelData Number of accelerometer measurements summed up in \p numSensorData
-     */
-    void initializeStatusAccel(
-    		GliderVarioStatus &varioStatus,
-    		GliderVarioMainPriv &varioMain,
-    		struct SensorData const &sumSensorData,
-    		int numAccelData
-    		);
-
-    /** \brief Initialize the Kalman status with the gyroscope measurements
-     *
-     * Initialize the gyroscope bias which is in body coordinates anyway. So no issues with non-flat attitudes whatsoever.
-     *
-     * @param varioStatus The Kalman status to be initialized
-     * @param varioMain Vario main object
-     * @param avgSensorData Sensor data summed up over \p numGyroData times.
-     * @param numGyroData Number of gyroscope measurements summed up in \p avgSensorData
-     */
-    void initializeStatusGyro(
-    		GliderVarioStatus &varioStatus,
-    		GliderVarioMainPriv &varioMain,
-    		struct SensorData const &avgSensorData,
-    		int numGyroData
-    		);
-
-    /** \brief Initialize the Kalman status with the magnetometer measurements
-     *
-     * Rotate the measured vector into the world plane, and calculate the yaw angle (direction) from the horizontal component
-     *
-     * This function requires that \ref initializeStatusAccel was called before to determine the roll and pitch angle.
-     *
-     * @param varioStatus The Kalman status to be initialized
-     * @param varioMain Vario main object
-     * @param sumSensorData Sensor data summed up over \p numMagData times.
-     * @param numMagData Number of magnetometer measurements summed up in \p numSensorData
-     */
-    void initializeStatusMag(
-    		GliderVarioStatus &varioStatus,
-    		GliderVarioMainPriv &varioMain,
-    		struct SensorData const &sumSensorData,
-    		int numMagData
-    		);
-
-    /** \brief Thread function of \ref calibrationDataWriteThread
-     *
-     * Analyze the current status.
-     *   - When the variance of the gyro bias is smaller than the one of the calibration data update the gyro calibration data.
-     *   - When the variance of the magnetic bias (incl. Variance) is smaller than the calibration data update the mag bias data.
-     *   - Accelerometer calibration data are not being touched. I presume they are stable.
-     *   There is also no accelerometer bias and factor in the model. The Gravity parameter in the model actually applies only to the
-     *   Z axis.
-     *
-     * If any calibration data was updated write out the updated configuration back into the configuration parameter file.
-     *
-     * *Note*: This function runs in an own thread!
-     *
-     */
-    void calibrationDataWriteFunc();
 };
 
 } /* namespace openEV */

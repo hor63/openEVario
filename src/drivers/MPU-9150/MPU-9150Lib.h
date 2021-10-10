@@ -26,7 +26,7 @@
 #ifndef DRIVERS_MPU9150_MPU9150LIB_H_
 #define DRIVERS_MPU9150_MPU9150LIB_H_
 
-#include "drivers/GliderVarioDriverLibBase.h"
+#include "drivers/DriverLibBase.h"
 
 namespace openEV::drivers::TDK_MPU9150 {
 
