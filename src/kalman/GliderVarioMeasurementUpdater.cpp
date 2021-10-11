@@ -839,8 +839,13 @@ GliderVarioMeasurementUpdater::staticPressureUpd (
     );
 
     measRowT2.insert(GliderVarioStatus::STATUS_IND_QFF,0) = pFactor;
-
     LOG4CXX_DEBUG(logger,"		QFF derivate = " << pFactor );
+
+    if (unitTestMode) {
+        // Save internal statuses for unit tests
+        calculatedValueTst2 = p;
+        measRowTTst2 = measRowT2;
+    }
 
     calcSingleMeasureUpdate (
             measuredStaticPressure,
