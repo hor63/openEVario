@@ -143,7 +143,8 @@ testOpenEVario_OBJECTS = $(am_testOpenEVario_OBJECTS)
 am__DEPENDENCIES_1 =
 testOpenEVario_DEPENDENCIES = ./libgoogletest.la \
 	../../src/kalman/libopenEVKalman.la \
-	../../src/util/libopenEVUtil.la $(am__DEPENDENCIES_1) \
+	../../src/util/libopenEVUtil.la \
+	../../src/main/libopenEVMain.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
 testOpenEVario_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
@@ -626,6 +627,7 @@ testOpenEVario_LDFLAGS = $(AM_LDFLAGS)
 testOpenEVario_LDADD = ./libgoogletest.la \
 	../../src/kalman/libopenEVKalman.la \
 	../../src/util/libopenEVUtil.la \
+	../../src/main/libopenEVMain.la \
 	$(LOG4CXX_LIBS) \
 	$(PTHREAD_LIBS)
 
@@ -1282,8 +1284,8 @@ uninstall-am:
 gtest-all.cc: $(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc
 	ln -s $(top_srcdir)/3rdParty/googletest/googletest/src/gtest-all.cc gtest-all.cc
 
-../../src/libopenEVKalman.la:
-	cd ../../src ; make libopenEVKalman.la
+../../src/kalman/libopenEVKalman.la ../../src/util/libopenEVUtil.la ../../src/main/libopenEVMain.la:
+	cd ../../src ; make
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -32,11 +32,12 @@ testOpenEVario_LDFLAGS = $(AM_LDFLAGS)
 testOpenEVario_LDADD = ./libgoogletest.la \
 	../../src/kalman/libopenEVKalman.la \
 	../../src/util/libopenEVUtil.la \
+	../../src/main/libopenEVMain.la \
 	$(LOG4CXX_LIBS) \
 	$(PTHREAD_LIBS)
 
-../../src/libopenEVKalman.la:
-	cd ../../src ; make libopenEVKalman.la
+../../src/kalman/libopenEVKalman.la ../../src/util/libopenEVUtil.la ../../src/main/libopenEVMain.la:
+	cd ../../src ; make
 
 # Build compiler sources are not well supported by autotools. Back to manual
 genSineTables_sources=../../src/genSineTables.cpp
