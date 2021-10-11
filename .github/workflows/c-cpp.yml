@@ -15,9 +15,9 @@ jobs:
     - uses: actions/checkout@v2
     - name: Ubuntu packages
       run: sudo apt-get install autoconf-archive
-    -name: Pull submodules
+    - name: Pull submodules
       run: git submodule init
-      run: git submodule update
+           git submodule update
     - name: autoreconf
       run: autoreconf -iv
     - name: configure
