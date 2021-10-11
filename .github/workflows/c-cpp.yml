@@ -13,8 +13,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Ubuntu packages
+      run: sudo apt-get install autoconf-archive
+    - name: autoreconf
+      run: autoreconf -iv
     - name: configure
-      run: ./configure
+      run: mkdir build; cd build; ../configure
     - name: make
       run: make
     - name: make check
