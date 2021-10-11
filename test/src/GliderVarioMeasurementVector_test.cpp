@@ -47,10 +47,10 @@ TEST_F(GliderVarioMeasurementVectorTest, InitTest) {
     // verify that all elements of the status vector are initialized to 0 except selected components
     for (int i = 0; i < measVector.MEASURE_NUM_ROWS; i++){
     	switch (i) {
-    	case measVector.MEASURE_IND_TEMP_LOCAL_K:
-			EXPECT_EQ (measVector.getMeasureVector()(i),15.0f+CtoK) << "Measurement vector ("
+    	case measVector.MEASURE_IND_TEMP_LOCAL_C:
+			EXPECT_EQ (measVector.getMeasureVector()(i),15.0f) << "Measurement vector ("
 				<< GliderVarioMeasurementVector::MeasureComponentIndex(i)
-				<<") is not " << 15.0f+CtoK;
+				<<") is not " << 15.0f;
     		break;
 
     	case measVector.MEASURE_IND_STATIC_PRESSURE:
@@ -110,7 +110,7 @@ TEST_F(GliderVarioMeasurementVectorTest, AccessorTest) {
     i++;
     EXPECT_EQ (measVector.getMeasureVector()( measVector.MEASURE_IND_DYNAMIC_PRESSURE), measVector.dynamicPressure);
     i++;
-    EXPECT_EQ (measVector.getMeasureVector()( measVector.MEASURE_IND_TEMP_LOCAL_K), measVector.tempLocalC);
+    EXPECT_EQ (measVector.getMeasureVector()( measVector.MEASURE_IND_TEMP_LOCAL_C), measVector.tempLocalC);
     i++;
 
     EXPECT_EQ (measVector.MEASURE_NUM_ROWS, i) << "Not all accessors have been tested.";
