@@ -51,7 +51,8 @@ TEST_F(GliderVarioStatusTest, InitTest) {
         EXPECT_EQ (statusVector.getStatusVector_x()(i),::GRAVITY) << "Status vector (STATUS_IND_GRAVITY) is not ::GRAVITY = " << ::GRAVITY;
         break;
         case GliderVarioStatus::STATUS_IND_LAST_PRESSURE:
-        EXPECT_EQ (statusVector.getStatusVector_x()(i),::PressureStdMSL) << "Status vector (STATUS_IND_LAST_PRESSURE) is not ::pressureStdMSL = " << ::PressureStdMSL;
+        case GliderVarioStatus::STATUS_IND_QFF:
+        EXPECT_EQ (statusVector.getStatusVector_x()(i),PressureStdMSL) << "Status vector (STATUS_IND_LAST_PRESSURE) is not ::pressureStdMSL = " << PressureStdMSL;
         break;
         default:
             EXPECT_EQ (statusVector.getStatusVector_x()(i),0.0f) << "Status vector ("<<i<<") is not 0.0";

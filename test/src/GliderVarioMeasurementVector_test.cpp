@@ -53,12 +53,6 @@ TEST_F(GliderVarioMeasurementVectorTest, InitTest) {
 				<<") is not " << 15.0f;
     		break;
 
-    	case measVector.MEASURE_IND_STATIC_PRESSURE:
-			EXPECT_EQ (measVector.getMeasureVector()(i),1000.0f) << "Measurement vector ("
-				<< GliderVarioMeasurementVector::MeasureComponentIndex(i)
-				<<") is not 1000.0";
-    		break;
-
     	default:
     		EXPECT_EQ (isnan(measVector.getMeasureVector()(i)),1) << "Measurement vector ("
 				<< GliderVarioMeasurementVector::MeasureComponentIndex(i)

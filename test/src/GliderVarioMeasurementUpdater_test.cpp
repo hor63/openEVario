@@ -970,7 +970,7 @@ TEST_F(MeasurementUpdaterTest, StaticPressure) {
         switch (i) {
 
         case GliderVarioStatus::STATUS_IND_QFF:
-            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),factor,0.0001);
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),factor,0.0001);
             break;
 
         case GliderVarioStatus::STATUS_IND_ALT_MSL:
@@ -1006,11 +1006,13 @@ TEST_F(MeasurementUpdaterTest, DynamicPressure) {
 	const FloatType density = calculatedPressure * (100.0f / Rspec) / (measuredTemp + CtoK);
 
 	const FloatType dynPressure = density * st1.trueAirSpeed * st1.trueAirSpeed / 2.0f;
+	const FloatType dynPressure1 = density * (st1.trueAirSpeed+1.0f) * (st1.trueAirSpeed+1.0f) / 2.0f;
 
-	const FloatType diffDynPressure = density * st1.trueAirSpeed;
+	// const FloatType diffDynPressure = density * st1.trueAirSpeed;
+	const FloatType diffDynPressure = dynPressure1 - dynPressure;
 
 
-	GliderVarioMeasurementUpdater::dynamicPressureUpd(dynPressure + 5.0f,measuredTemp,3*3,measVect,st1);
+	GliderVarioMeasurementUpdater::dynamicPressureUpd(dynPressure /*+ 5.0f*/,measuredTemp,3*3,measVect,st1);
 
 	EXPECT_NEAR (GliderVarioMeasurementUpdater::calculatedValueTst1,dynPressure,0.00001);
 
