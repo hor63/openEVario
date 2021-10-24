@@ -35,13 +35,23 @@ AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen $(LOG4CXX_CXXFL
 
 AM_LDFLAGS=$(LOG4CXX_LDFLAGS)
 
-all: $(abs_builddir)/openEVario.properties $(abs_builddir)/openEVario.logger.properties $(abs_builddir)/BMX160SensorBoardCalib.properties
+all: $(abs_builddir)/openEVario.properties
 
 $(abs_builddir)/openEVario.properties: $(srcdir)/openEVario.properties
 	cp $(srcdir)/openEVario.properties $(abs_builddir)/openEVario.properties
 
+all: $(abs_builddir)/openEVario.logger.properties
+
 $(abs_builddir)/openEVario.logger.properties: $(srcdir)/openEVario.logger.properties
 	cp $(srcdir)/openEVario.logger.properties $(abs_builddir)/openEVario.logger.properties
 
+all: $(abs_builddir)/BMX160SensorBoardCalib.properties
+
 $(abs_builddir)/BMX160SensorBoardCalib.properties: $(srcdir)/BMX160SensorBoardCalib.properties
 	cp $(srcdir)/BMX160SensorBoardCalib.properties $(abs_builddir)/BMX160SensorBoardCalib.properties
+
+all: $(abs_builddir)/MPU9150Calib.properties
+
+$(abs_builddir)/MPU9150Calib.properties: $(srcdir)/MPU9150Calib.properties
+	cp $(srcdir)/MPU9150Calib.properties $(abs_builddir)/MPU9150Calib.properties
+	
