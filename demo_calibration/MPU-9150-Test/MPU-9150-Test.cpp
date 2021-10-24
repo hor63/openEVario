@@ -129,8 +129,8 @@ static void writeByteAux (uint8_t devAddr, uint8_t slaveDevAddr, uint8_t regAddr
 	// Slave 4 register set start
 	buf[0] = REG_9150_I2C_SLV4_ADDR;
 	// write to the AK8975 on the Aux bus (read bit not set, i.e. write)
-	buf[1] = slaveDevAddr |
-			I2C_SLV4_RW // Write to the AK8975 on the Aux bus
+	buf[1] = slaveDevAddr
+			// | I2C_SLV4_RW // Write to the AK8975 on the Aux bus
 			;
 	// I2C_SLV4_REG: The register address on the slave device
 	buf[2] = regAddr;
@@ -529,6 +529,10 @@ int main (int argc, char** argv) {
 
 		measurementData.magStatus2 = buf[21];
 
+		// NOTE! The Y and X axes of the magnetometer are rotated by 90 deg
+		// compared to accelerometer and gyroscope!
+		// Therefore I am printing out magnetometer X as Y and vice versa.
+
 		LOG4CXX_TRACE(logger,"Accel  data " << measurementData.accelX.intVal
 				<< ", " << measurementData.accelY.intVal
 				<< ", " << measurementData.accelZ.intVal
@@ -547,13 +551,13 @@ int main (int argc, char** argv) {
 				<< (FloatType(measurementData.gyroY.intVal) * gyrFactor) << ", "
 				<< (FloatType(measurementData.gyroZ.intVal) * gyrFactor)
 				);
-		LOG4CXX_TRACE(logger,"Magnet data " << measurementData.magX.intVal
-				<< ", " << measurementData.magY.intVal
+		LOG4CXX_TRACE(logger,"Magnet data " << measurementData.magY.intVal
+				<< ", " << measurementData.magX.intVal
 				<< ", " << measurementData.magZ.intVal
 				);
 		LOG4CXX_TRACE(logger,"Magnet data in uT = "
-				<< (FloatType(measurementData.magX.intVal) * magFactorX) << ", "
 				<< (FloatType(measurementData.magY.intVal) * magFactorY) << ", "
+				<< (FloatType(measurementData.magX.intVal) * magFactorX) << ", "
 				<< (FloatType(measurementData.magZ.intVal) * magFactorZ)
 				);
 		LOG4CXX_DEBUG(logger,"Magnet status1 = 0x" << std::hex << uint16_t(measurementData.magStatus1)
@@ -566,10 +570,13 @@ int main (int argc, char** argv) {
 		// Print the elapsed time in uSec.
 		printf("%6ld\t",dur.count());
 
+		// NOTE! The Y and X axes of the magnetometer are rotated by 90 deg
+		// compared to accelerometer and gyroscope!
+		// Therefore I am printing out magnetometer X as Y and vice versa here too.
 		printf (
 				"% 10.6f % 10.6f % 10.6f",
-				(FloatType(measurementData.magX.intVal) * magFactorX),
 				(FloatType(measurementData.magY.intVal) * magFactorY),
+				(FloatType(measurementData.magX.intVal) * magFactorX),
 				(FloatType(measurementData.magZ.intVal) * magFactorZ)
 				);
 		printf (
