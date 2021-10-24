@@ -453,7 +453,7 @@ namespace openEV::drivers::TDK_MPU9150 {
 	static constexpr uint8_t AK8975_HOFL = 1 << 3;
 	/// Invalid measurement data due to reading measurement registers
 	/// while a conversion cycle is still ongoing.
-	static constexpr uint8_t AK8975_DERR = 1 << 3;
+	static constexpr uint8_t AK8975_DERR = 1 << 2;
 
 
 } // namespace openEV::drivers::TDK_MPU9150
