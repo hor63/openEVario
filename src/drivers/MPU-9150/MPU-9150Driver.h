@@ -62,6 +62,21 @@ public:
 			int16_t intVal;
 		};
 
+	struct MeasurementData {
+		UnionInt16 accelX;
+		UnionInt16 accelY;
+		UnionInt16 accelZ;
+		UnionInt16 tempRaw;
+		UnionInt16 gyroX;
+		UnionInt16 gyroY;
+		UnionInt16 gyroZ;
+		uint8_t    magStatus1;
+		uint8_t    magStatus2;
+		UnionInt16 magX;
+		UnionInt16 magY;
+		UnionInt16 magZ;
+	};
+
 	MPU9150Driver(
     	    char const *driverName,
 			char const *description,
@@ -94,7 +109,31 @@ protected:
      */
     void writeByteAux (uint8_t slaveDevAddr, uint8_t regAddr, uint8_t data);
 
+    /** \brief Setup the entire MPU-9150
+     *
+     * Setup the accels to +-4g
+     * Setup the gyros to +-250deg/s
+     * Setup the low-pass filter to 20Hz, and 8.5ms delay.
+     * Setup the automatic cycle to 20ms/50Hz.
+     * Finally call \ref setupAK8975Mag() to setup the magnetometer.
+     * on the aux. I2C bus, and automatically initiate a measurement cycle,
+     * and collect the measurement data via the aux. bus from the AK8975Mag
+     * into the internal measurement registers of the MPU-9150.
+     */
     void setupMPU9150();
+
+    /** \brief Setup the AK8975 magnetometer.
+     *
+     * Setup the magnetometer on the aux. I2C bus.
+     * Automatically initiate a measurement cycle,
+     * and collect the measurement data via the aux. bus from the AK8975Mag
+     * into the internal measurement registers of the MPU-9150.
+     * Use Slave 0 to receiving measurement data,
+     * and use Slave 1 initiate the next measurement during the upcoming cycle.
+     * Slave 0 and 1 run sequentially with the main cycle time of 20 ms.
+     *
+     */
+    void setupAK8975Mag();
 
     /** \brief The main worker thread of this driver
      *
@@ -135,9 +174,19 @@ private:
     FloatType magFactorY = 1229.0f * 2.0f / (4095.0f + 4096.0f);
     FloatType magFactorZ = 1229.0f * 2.0f / (4095.0f + 4096.0f);
 
+    /** \brief Conversion factor of gyroscope raw register values
+     *
+     * Factor is valid for a gyroscope sensitivity of +-250 deg/s
+     */
     FloatType gyrFactor = 1.0f / 131.0f;
+
+    /** \brief Conversion factor of accelerometer raw register values
+     *
+     * Factor is valid for a accelerometer sensitivity of +-4 g
+     */
     FloatType accFactor = 1.0f / 8192.0f;
 
+	MeasurementData measurementData;
 
 
 };
