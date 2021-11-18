@@ -387,9 +387,9 @@ void MS4515Driver::initializeStatus(
 
 		// All data is collected. Initialize the status
 		varioStatus.trueAirSpeed = initialTAS;
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) = 100.0f;
+		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) = 10.0f;
 		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) =
-					SQUARE(2.0) * baseIntervalSec;
+					SQUARE(3.0) * baseIntervalSec;
 
 
 

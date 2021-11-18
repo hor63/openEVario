@@ -1357,10 +1357,9 @@ void NMEASet::initQFF(GliderVarioMainPriv::LockedCurrentStatus &currStat) {
 	currVarioStatus.qff = measurementVector.staticPressure / pressureFactor;
 
 	// Assume the same variance of qff pressure as the initial altitude variance
-	errorCov.coeffRef(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF)
-			= SQUARE(currGnssRecord.altDeviation / 8.0f) * 20.0; // Convert the altitude deviation into Pascal (8m/hPa)
+	errorCov.coeffRef(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF) = 1.0f;
 	systemNoiseCov.coeffRef(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF) =
-			SQUARE(0.05) * baseIntervalSec; // 0.1hPa/sec
+			SQUARE(0.0001) * baseIntervalSec;
 
 	LOG4CXX_DEBUG (logger,"	QFF = " << currVarioStatus.qff
 			<< ", initial variance = "

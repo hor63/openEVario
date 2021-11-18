@@ -202,7 +202,7 @@ void TE_MEAS_AbsPressureDriver::initializeStatus(
 		if (isnan(varioStatus.getSystemNoiseCovariance_Q().
 				coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL)) ||
 				(varioStatus.getSystemNoiseCovariance_Q().
-				coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) > SQUARE(4.0) * baseIntervalSec)) {
+				coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) > SQUARE(2.0) * baseIntervalSec)) {
 
 			varioStatus.getSystemNoiseCovariance_Q().
 							coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) = SQUARE(2.0) * baseIntervalSec;
@@ -473,10 +473,9 @@ void TE_MEAS_AbsPressureDriver::initQFF(
 	varioStatus.qff = avgPressure / pressureFactor;
 
 	// Assume quite a bit lower variance of qff pressure as the initial altitude variance (9)
-	errorCov.coeffRef(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF)
-			= SQUARE(1);
+	errorCov.coeffRef(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF) = 1.0f;
 	systemNoiseCov.coeffRef(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF) =
-			SQUARE(0.05) * baseIntervalSec; // 0.1hPa/sec
+			SQUARE(0.0001) * baseIntervalSec;
 
 	LOG4CXX_DEBUG (logger,"	QFF = " << varioStatus.qff
 			<< ", initial variance = "

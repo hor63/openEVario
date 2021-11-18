@@ -153,38 +153,38 @@ void IGCReaderDriver::initializeStatus(
 
 	if (firstRec != bRecords.cend()) {
 		varioStatus.altMSL = firstRec->second.altGPS;
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) = 1000.0f;
+		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) = 100.0f;
 		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) =
-				SQUARE(15.0) * baseIntervalSec;
+				SQUARE(3.0) * baseIntervalSec;
 
 
 		varioStatus.longitude(firstRec->second.longitude);
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_LONGITUDE_OFFS,varioStatus.STATUS_IND_LONGITUDE_OFFS) = 1000.0f;
+		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_LONGITUDE_OFFS,varioStatus.STATUS_IND_LONGITUDE_OFFS) = 100.0f;
 		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_LONGITUDE_OFFS,varioStatus.STATUS_IND_LONGITUDE_OFFS) =
-				SQUARE(10.0) * baseIntervalSec;
+				SQUARE(3.0) * baseIntervalSec;
 
 		varioStatus.latitude(firstRec->second.latitude);
 		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_LATITUDE_OFFS,varioStatus.STATUS_IND_LATITUDE_OFFS) = 1000.0f;
 		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_LATITUDE_OFFS,varioStatus.STATUS_IND_LATITUDE_OFFS) =
-				SQUARE(10.0) * baseIntervalSec;
+				SQUARE(3.0) * baseIntervalSec;
 
 
-		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) == 0.0f) {
+		if (isnan(varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING))) {
 			varioStatus.heading = calcInitialHeading();
 			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) = 10.0f;
 			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) =
-					SQUARE(5.0) * baseIntervalSec;
+					SQUARE(3.0) * baseIntervalSec;
 		}
 
-		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_QFF,varioStatus.STATUS_IND_QFF) == 0.0f) {
+		if (isnan(varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_QFF,varioStatus.STATUS_IND_QFF))) {
 			// calculated factor to calculate the pressure at altGPS with a temperature lapse of 1K/100m
 			double factAltGPS = altToPressureStdTemp(firstRec->second.altGPS,-0.01) / PressureStdMSL;
 			double factBaroHeight = altToPressureStdTemp(firstRec->second.altBaro) / PressureStdMSL;
 
 			varioStatus.qff = PressureStdMSL * factBaroHeight / factAltGPS;
-			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_QFF,varioStatus.STATUS_IND_QFF) = 100.0f;
+			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_QFF,varioStatus.STATUS_IND_QFF) = 10.0f;
 			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_QFF,varioStatus.STATUS_IND_QFF) =
-					SQUARE(0.1) * baseIntervalSec; // Veryyyy slow (10mbar / 100sec)
+					SQUARE(0.0001) * baseIntervalSec; // Veryyyy slow
 		}
 
 #undef SQUARE

@@ -140,9 +140,9 @@ void IMUBase::initializeStatusAccel(
 	varioStatus.gravity = calibrationData.gravity;
 	LOG4CXX_DEBUG(logger,"Initial gravity = " << varioStatus.gravity);
 	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_GRAVITY,varioStatus.STATUS_IND_GRAVITY) =
-			calibrationData.gravityVariance * 2.0f;
+			0.0f; //calibrationData.gravityVariance * 2.0f;
 	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_GRAVITY,varioStatus.STATUS_IND_GRAVITY) =
-			SQUARE(0.1) * baseIntervalSec;
+			0.0f; //SQUARE(0.0001) * baseIntervalSec;
 
 
 	// With the fast-cycle accelerometer the accuracy of position and speed increase
@@ -155,88 +155,80 @@ void IMUBase::initializeStatusAccel(
 			coeffRef(varioStatus.STATUS_IND_LATITUDE_OFFS,varioStatus.STATUS_IND_LATITUDE_OFFS)) ||
 			(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_LATITUDE_OFFS,varioStatus.STATUS_IND_LATITUDE_OFFS)
-			> SQUARE(3.0) * baseIntervalSec)) {
+			> SQUARE(2.0) * baseIntervalSec)) {
 		varioStatus.getSystemNoiseCovariance_Q().
 				coeffRef(varioStatus.STATUS_IND_LATITUDE_OFFS,varioStatus.STATUS_IND_LATITUDE_OFFS) =
-						SQUARE(3.0) * baseIntervalSec;
+						SQUARE(2.0) * baseIntervalSec;
 	}
 
 	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_LONGITUDE_OFFS,varioStatus.STATUS_IND_LONGITUDE_OFFS)) ||
 			(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_LONGITUDE_OFFS,varioStatus.STATUS_IND_LONGITUDE_OFFS)
-			> SQUARE(3.0) * baseIntervalSec)) {
+			> SQUARE(2.0) * baseIntervalSec)) {
 		varioStatus.getSystemNoiseCovariance_Q().
 				coeffRef(varioStatus.STATUS_IND_LONGITUDE_OFFS,varioStatus.STATUS_IND_LONGITUDE_OFFS) =
-						SQUARE(3.0) * baseIntervalSec;
+						SQUARE(2.0) * baseIntervalSec;
 	}
 
 	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL)) ||
 			(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL)
-			> SQUARE(4.0) * baseIntervalSec)) {
+			> SQUARE(2.0) * baseIntervalSec)) {
 		varioStatus.getSystemNoiseCovariance_Q().
 				coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) =
-				SQUARE(4.0) * baseIntervalSec;
+				SQUARE(2.0) * baseIntervalSec;
 	}
 
 	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_N,varioStatus.STATUS_IND_SPEED_GROUND_N)) ||
 			(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_N,varioStatus.STATUS_IND_SPEED_GROUND_N)
-			> SQUARE(2.0) * baseIntervalSec)){
+			> SQUARE(1.0) * baseIntervalSec)){
 		varioStatus.getSystemNoiseCovariance_Q().
 				coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_N,varioStatus.STATUS_IND_SPEED_GROUND_N) =
-				SQUARE(2.0) * baseIntervalSec;
+				SQUARE(1.0) * baseIntervalSec;
 	}
 
 	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_E,varioStatus.STATUS_IND_SPEED_GROUND_E)) ||
 			(varioStatus.getSystemNoiseCovariance_Q().
 					coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_E,varioStatus.STATUS_IND_SPEED_GROUND_E)
-					> SQUARE(2.0) * baseIntervalSec)) {
+					> SQUARE(1.0) * baseIntervalSec)) {
 		varioStatus.getSystemNoiseCovariance_Q().
 				coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_E,varioStatus.STATUS_IND_SPEED_GROUND_E) =
-				SQUARE(2.0) * baseIntervalSec;
-	}
-
-	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS)) ||
-			(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) > SQUARE(2.0) * baseIntervalSec) ) {
-		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) =
-				SQUARE(2.0) * baseIntervalSec;
+				SQUARE(1.0) * baseIntervalSec;
 	}
 
 	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_VERTICAL_SPEED,varioStatus.STATUS_IND_VERTICAL_SPEED)) ||
 			(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_VERTICAL_SPEED,varioStatus.STATUS_IND_VERTICAL_SPEED)
-			> SQUARE(2.0) * baseIntervalSec)) {
+			> SQUARE(1.0) * baseIntervalSec)) {
 		varioStatus.getSystemNoiseCovariance_Q().
 				coeffRef(varioStatus.STATUS_IND_VERTICAL_SPEED,varioStatus.STATUS_IND_VERTICAL_SPEED) =
-				SQUARE(2.0) * baseIntervalSec;
+				SQUARE(1.0) * baseIntervalSec;
 	}
 
 	// Set acceleration values unconditionally. These are my turf.
 	varioStatus.accelHeading = 0.0f;
 	varioStatus.getErrorCovariance_P().
-			coeffRef(varioStatus.STATUS_IND_ACC_HEADING,varioStatus.STATUS_IND_ACC_HEADING) = 4.0f;
+			coeffRef(varioStatus.STATUS_IND_ACC_HEADING,varioStatus.STATUS_IND_ACC_HEADING) = 1.0f;
 	varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_ACC_HEADING,varioStatus.STATUS_IND_ACC_HEADING) =
-				SQUARE(2.0) * baseIntervalSec;
+				SQUARE(3.0) * baseIntervalSec;
 
 	varioStatus.accelCross = 0.0f;
 	varioStatus.getErrorCovariance_P().
 			coeffRef(varioStatus.STATUS_IND_ACC_CROSS,varioStatus.STATUS_IND_ACC_CROSS) = 1.0f;
 			varioStatus.getSystemNoiseCovariance_Q().
 					coeffRef(varioStatus.STATUS_IND_ACC_CROSS,varioStatus.STATUS_IND_ACC_CROSS) =
-					SQUARE(2.0) * baseIntervalSec;
+					SQUARE(3.0) * baseIntervalSec;
 
 	varioStatus.accelVertical = 0.0f;
 	varioStatus.getErrorCovariance_P().
-			coeffRef(varioStatus.STATUS_IND_ACC_VERTICAL,varioStatus.STATUS_IND_ACC_VERTICAL) = 4.0f;
+			coeffRef(varioStatus.STATUS_IND_ACC_VERTICAL,varioStatus.STATUS_IND_ACC_VERTICAL) = 1.0f;
 	varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_ACC_VERTICAL,varioStatus.STATUS_IND_ACC_VERTICAL) =
 			SQUARE(3.0) * baseIntervalSec;
@@ -298,9 +290,9 @@ void IMUBase::initializeStatusGyro(
 	varioStatus.gyroBiasX = avgGyroX;
 	LOG4CXX_DEBUG(logger,"Initial gyroBiasX = " << varioStatus.gyroBiasX);
 	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_X,varioStatus.STATUS_IND_GYRO_BIAS_X) =
-			1.0f;
+			0.0001f;
 	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_X,varioStatus.STATUS_IND_GYRO_BIAS_X) =
-			SQUARE(0.1) * baseIntervalSec;
+			SQUARE(0.0001) * baseIntervalSec;
 
 	varioStatus.rollRateX = 0;
 	LOG4CXX_DEBUG(logger,"Initial rollRateX = " << varioStatus.rollRateX);
@@ -312,14 +304,14 @@ void IMUBase::initializeStatusGyro(
 	varioStatus.gyroBiasY = avgGyroY;
 	LOG4CXX_DEBUG(logger,"Initial gyroBiasY = " << varioStatus.gyroBiasY);
 	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_Y,varioStatus.STATUS_IND_GYRO_BIAS_Y) =
-			1.0f;
+			0.0001f;
 	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_Y,varioStatus.STATUS_IND_GYRO_BIAS_Y) =
-			SQUARE(0.1) * baseIntervalSec;
+			SQUARE(0.0001) * baseIntervalSec;
 
 	varioStatus.pitchRateY = 0;
 	LOG4CXX_DEBUG(logger,"Initial pitchRateY = " << varioStatus.pitchRateY);
 	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ROTATION_Y,varioStatus.STATUS_IND_ROTATION_Y) =
-			4.0f;
+			0.0001f;
 	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ROTATION_Y,varioStatus.STATUS_IND_ROTATION_Y) =
 			SQUARE(4.0) * baseIntervalSec;
 
@@ -330,14 +322,14 @@ void IMUBase::initializeStatusGyro(
 	 * 2. Before updating the calibration data file the variance must have improved sufficiently to be updated.
 	 */
 	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_Z,varioStatus.STATUS_IND_GYRO_BIAS_Z) =
-			0.5f;
+			0.0001f;
 	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_GYRO_BIAS_Z,varioStatus.STATUS_IND_GYRO_BIAS_Z) =
-			SQUARE(0.1) * baseIntervalSec;
+			SQUARE(0.0001) * baseIntervalSec;
 
 	varioStatus.yawRateZ = 0;
 	LOG4CXX_DEBUG(logger,"Initial yawRateZ = " << varioStatus.yawRateZ);
 	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ROTATION_Z,varioStatus.STATUS_IND_ROTATION_Z) =
-			4.0f;
+			1.0f;
 	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ROTATION_Z,varioStatus.STATUS_IND_ROTATION_Z) =
 			SQUARE(4.0) * baseIntervalSec;
 
@@ -401,7 +393,7 @@ void IMUBase::initializeStatusMag(
 			LOG4CXX_DEBUG(logger,"Initial magnetic inclination = " << varioStatus.magneticInclination);
 			varioStatus.getErrorCovariance_P().
 					coeffRef(varioStatus.STATUS_IND_MAGNETIC_INCLINATION,varioStatus.STATUS_IND_MAGNETIC_INCLINATION)
-					= 5.0f * 5.0f;
+					= 1.0f;
 		}
 	}
 
@@ -409,7 +401,7 @@ void IMUBase::initializeStatusMag(
 			coeffRef(varioStatus.STATUS_IND_MAGNETIC_INCLINATION,varioStatus.STATUS_IND_MAGNETIC_INCLINATION))) {
 		varioStatus.getSystemNoiseCovariance_Q().
 				coeffRef(varioStatus.STATUS_IND_MAGNETIC_INCLINATION,varioStatus.STATUS_IND_MAGNETIC_INCLINATION) =
-				SQUARE(0.1) * baseIntervalSec;
+				SQUARE(0.0001) * baseIntervalSec;
 	}
 
 	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
@@ -433,10 +425,10 @@ void IMUBase::initializeStatusMag(
 	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL)) ||
 			(varioStatus.getSystemNoiseCovariance_Q().
-			coeffRef(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL) > SQUARE(1.0) * baseIntervalSec)) {
+			coeffRef(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL) > SQUARE(2.0) * baseIntervalSec)) {
 		varioStatus.getSystemNoiseCovariance_Q().
 				coeffRef(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL) =
-				SQUARE(1.0) * baseIntervalSec;
+				SQUARE(2.0) * baseIntervalSec;
 	}
 
 
@@ -444,21 +436,21 @@ void IMUBase::initializeStatusMag(
 	// Set the magnetometer bias unconditionally
 	varioStatus.compassDeviationX = calibrationData.magXBias;
 	LOG4CXX_DEBUG(logger,"Initial compassDeviationX = " << varioStatus.compassDeviationX);
-	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_X,varioStatus.STATUS_IND_COMPASS_DEVIATION_X) = calibrationData.magXVariance * 4.0f;
+	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_X,varioStatus.STATUS_IND_COMPASS_DEVIATION_X) = calibrationData.magXVariance / 10.0f;
 	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_X,varioStatus.STATUS_IND_COMPASS_DEVIATION_X) =
-			SQUARE(0.1) * baseIntervalSec;
+			SQUARE(0.0001) * baseIntervalSec;
 
 	varioStatus.compassDeviationY = calibrationData.magYBias;
 	LOG4CXX_DEBUG(logger,"Initial compassDeviationY = " << varioStatus.compassDeviationY);
-	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_Y,varioStatus.STATUS_IND_COMPASS_DEVIATION_Y) = calibrationData.magYVariance * 4.0f;
+	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_Y,varioStatus.STATUS_IND_COMPASS_DEVIATION_Y) = calibrationData.magYVariance / 10.0f;
 	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_Y,varioStatus.STATUS_IND_COMPASS_DEVIATION_Y) =
-			SQUARE(0.1) * baseIntervalSec;
+			SQUARE(0.0001) * baseIntervalSec;
 
 	varioStatus.compassDeviationZ = calibrationData.magZBias;
 	LOG4CXX_DEBUG(logger,"Initial compassDeviationZ = " << varioStatus.compassDeviationZ);
-	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_Z,varioStatus.STATUS_IND_COMPASS_DEVIATION_Z) = calibrationData.magZVariance * 4.0f;
+	varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_Z,varioStatus.STATUS_IND_COMPASS_DEVIATION_Z) = calibrationData.magZVariance / 10.0f;
 	varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_COMPASS_DEVIATION_Z,varioStatus.STATUS_IND_COMPASS_DEVIATION_Z) =
-			SQUARE(0.1) * baseIntervalSec;
+			SQUARE(0.0001) * baseIntervalSec;
 
 }
 

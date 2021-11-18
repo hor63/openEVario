@@ -562,7 +562,7 @@ void GliderVarioMainPriv::intializeStatus() {
 
 	//
 	// First set all values to NAN.
-	// Then let the drivers intialize the status and variances
+	// Then let the drivers initialize the status and variances
 	// What is afterwards still NAN will be initialized with default values down below.
 	//
 
@@ -597,11 +597,11 @@ void GliderVarioMainPriv::intializeStatus() {
 		currentStatus->gravity = GRAVITY;
 	}
 	if (isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GRAVITY,currentStatus->STATUS_IND_GRAVITY))) {
-		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GRAVITY,currentStatus->STATUS_IND_GRAVITY) = 0.01f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GRAVITY,currentStatus->STATUS_IND_GRAVITY) = 0.0f;//0.0001f;
 	}
 	if (isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_GRAVITY,currentStatus->STATUS_IND_GRAVITY))) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_GRAVITY,currentStatus->STATUS_IND_GRAVITY) =
-				SQUARE(0.1) * baseIntervalSec;
+				0.0f; // SQUARE(0.0001) * baseIntervalSec;
 	}
 
 	// Initialized by accelerometer, e.g. BMXSensorBoardDriver::initializeStatusAccel(),
@@ -611,11 +611,11 @@ void GliderVarioMainPriv::intializeStatus() {
 		currentStatus->latitude(53.2483333333);
 	}
 	if (isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LATITUDE_OFFS,currentStatus->STATUS_IND_LATITUDE_OFFS))) {
-		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LATITUDE_OFFS,currentStatus->STATUS_IND_LATITUDE_OFFS) = 10000.0f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LATITUDE_OFFS,currentStatus->STATUS_IND_LATITUDE_OFFS) = 100.0f;
 	}
 	if (isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_LATITUDE_OFFS,currentStatus->STATUS_IND_LATITUDE_OFFS))) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_LATITUDE_OFFS,currentStatus->STATUS_IND_LATITUDE_OFFS) =
-				SQUARE(7.0) * baseIntervalSec;
+				SQUARE(3.0) * baseIntervalSec;
 	}
 
 	// Initialized by accelerometer, e.g. BMXSensorBoardDriver::initializeStatusAccel()
@@ -624,11 +624,11 @@ void GliderVarioMainPriv::intializeStatus() {
 		currentStatus->longitude(10.4586111111);
 	}
 	if (isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LONGITUDE_OFFS,currentStatus->STATUS_IND_LONGITUDE_OFFS))) {
-		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LONGITUDE_OFFS,currentStatus->STATUS_IND_LONGITUDE_OFFS) = 10000.0f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LONGITUDE_OFFS,currentStatus->STATUS_IND_LONGITUDE_OFFS) = 100.0f;
 	}
 	if (isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_LONGITUDE_OFFS,currentStatus->STATUS_IND_LONGITUDE_OFFS))) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_LONGITUDE_OFFS,currentStatus->STATUS_IND_LONGITUDE_OFFS) =
-				SQUARE(7.0) * baseIntervalSec;
+				SQUARE(3.0) * baseIntervalSec;
 	}
 
 	// Initialized by accelerometer, e.g. BMXSensorBoardDriver::initializeStatusAccel()
@@ -649,7 +649,7 @@ void GliderVarioMainPriv::intializeStatus() {
 		currentStatus->heading = 45.0f;
 	}
 	if (isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_HEADING,currentStatus->STATUS_IND_HEADING))) {
-		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_HEADING,currentStatus->STATUS_IND_HEADING) = 10.0f * 10.0f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_HEADING,currentStatus->STATUS_IND_HEADING) = 10.0f;
 	}
 	if (isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_HEADING,currentStatus->STATUS_IND_HEADING))) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_HEADING,currentStatus->STATUS_IND_HEADING) =
@@ -661,7 +661,7 @@ void GliderVarioMainPriv::intializeStatus() {
 		currentStatus->pitchAngle = 0.0f;
 	}
 	if (isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_PITCH,currentStatus->STATUS_IND_PITCH))) {
-		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_PITCH,currentStatus->STATUS_IND_PITCH) = 10.0f * 10.0f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_PITCH,currentStatus->STATUS_IND_PITCH) = 10.0f;
 	}
 	if (isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_PITCH,currentStatus->STATUS_IND_PITCH))) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_PITCH,currentStatus->STATUS_IND_PITCH) =
@@ -824,11 +824,11 @@ void GliderVarioMainPriv::intializeStatus() {
 		currentStatus->gyroBiasX = 0.0f;
 	}
 	if (isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_X,currentStatus->STATUS_IND_GYRO_BIAS_X))) {
-		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_X,currentStatus->STATUS_IND_GYRO_BIAS_X) = 2.0f * 2.0f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_X,currentStatus->STATUS_IND_GYRO_BIAS_X) = 1.0f;
 	}
 	if (isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_X,currentStatus->STATUS_IND_GYRO_BIAS_X))) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_X,currentStatus->STATUS_IND_GYRO_BIAS_X) =
-				SQUARE(0.1) * baseIntervalSec;
+				SQUARE(0.0001) * baseIntervalSec;
 	}
 
 	// Initialized by gyroscope, e.g. BMXSensorBoardDriver::initializeStatusGyro()
@@ -836,11 +836,11 @@ void GliderVarioMainPriv::intializeStatus() {
 		currentStatus->gyroBiasY = 0.0f;
 	}
 	if (isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Y,currentStatus->STATUS_IND_GYRO_BIAS_Y))) {
-		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Y,currentStatus->STATUS_IND_GYRO_BIAS_Y) = 2.0f * 2.0f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Y,currentStatus->STATUS_IND_GYRO_BIAS_Y) = 1.0f;
 	}
 	if (isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Y,currentStatus->STATUS_IND_GYRO_BIAS_Y))) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Y,currentStatus->STATUS_IND_GYRO_BIAS_Y) =
-				SQUARE(0.1) * baseIntervalSec;
+				SQUARE(0.0001) * baseIntervalSec;
 	}
 
 	// Initialized by gyroscope, e.g. BMXSensorBoardDriver::initializeStatusGyro()
@@ -848,22 +848,22 @@ void GliderVarioMainPriv::intializeStatus() {
 		currentStatus->gyroBiasZ = 0.0f;
 	}
 	if (isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Z,currentStatus->STATUS_IND_GYRO_BIAS_Z))) {
-		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Z,currentStatus->STATUS_IND_GYRO_BIAS_Z) = 2.0f * 2.0f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Z,currentStatus->STATUS_IND_GYRO_BIAS_Z) = 1.0f;
 	}
 	if (isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Z,currentStatus->STATUS_IND_GYRO_BIAS_Z))) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Z,currentStatus->STATUS_IND_GYRO_BIAS_Z) =
-				SQUARE(0.1) * baseIntervalSec;
+				SQUARE(0.0001) * baseIntervalSec;
 	}
 
 	if (isnan(currentStatus->magneticDeclination)) {
 		currentStatus->magneticDeclination = 2.0f;
 	}
 	if (isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_MAGNETIC_DECLINATION,currentStatus->STATUS_IND_MAGNETIC_DECLINATION))) {
-		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_MAGNETIC_DECLINATION,currentStatus->STATUS_IND_MAGNETIC_DECLINATION) = 10.0f * 10.0f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_MAGNETIC_DECLINATION,currentStatus->STATUS_IND_MAGNETIC_DECLINATION) = 0.1f;
 	}
 	if (isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_MAGNETIC_DECLINATION,currentStatus->STATUS_IND_MAGNETIC_DECLINATION))) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_MAGNETIC_DECLINATION,currentStatus->STATUS_IND_MAGNETIC_DECLINATION) =
-				SQUARE(0.1) * baseIntervalSec;
+				SQUARE(0.0001) * baseIntervalSec;
 	}
 
 	// Initialized by magnetometer, e.g. BMXSensorBoardDriver::initializeStatusMag()
@@ -871,11 +871,11 @@ void GliderVarioMainPriv::intializeStatus() {
 		currentStatus->magneticInclination = MAG_INCLINATION;
 	}
 	if (isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_MAGNETIC_INCLINATION,currentStatus->STATUS_IND_MAGNETIC_INCLINATION))) {
-		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_MAGNETIC_INCLINATION,currentStatus->STATUS_IND_MAGNETIC_INCLINATION) = 10.0f * 10.0f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_MAGNETIC_INCLINATION,currentStatus->STATUS_IND_MAGNETIC_INCLINATION) = 2.0f;
 	}
 	if (isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_MAGNETIC_INCLINATION,currentStatus->STATUS_IND_MAGNETIC_INCLINATION))) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_MAGNETIC_INCLINATION,currentStatus->STATUS_IND_MAGNETIC_INCLINATION) =
-				SQUARE(0.1) * baseIntervalSec;
+				SQUARE(0.0001) * baseIntervalSec;
 	}
 
 	// Initialized by magnetometer, e.g. BMXSensorBoardDriver::initializeStatusMag()
@@ -883,11 +883,11 @@ void GliderVarioMainPriv::intializeStatus() {
 		currentStatus->compassDeviationX = 0.0f;
 	}
 	if (isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_X,currentStatus->STATUS_IND_COMPASS_DEVIATION_X))) {
-		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_X,currentStatus->STATUS_IND_COMPASS_DEVIATION_X) = 50.0f * 50.0f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_X,currentStatus->STATUS_IND_COMPASS_DEVIATION_X) = 1.0f;
 	}
 	if (isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_X,currentStatus->STATUS_IND_COMPASS_DEVIATION_X))) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_X,currentStatus->STATUS_IND_COMPASS_DEVIATION_X) =
-				SQUARE(0.1) * baseIntervalSec;
+				SQUARE(0.0001) * baseIntervalSec;
 	}
 
 	// Initialized by magnetometer, e.g. BMXSensorBoardDriver::initializeStatusMag()
@@ -895,11 +895,11 @@ void GliderVarioMainPriv::intializeStatus() {
 		currentStatus->compassDeviationY = 0.0f;
 	}
 	if (isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Y,currentStatus->STATUS_IND_COMPASS_DEVIATION_Y))) {
-		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Y,currentStatus->STATUS_IND_COMPASS_DEVIATION_Y) = 50.0f * 50.0f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Y,currentStatus->STATUS_IND_COMPASS_DEVIATION_Y) = 1.0f;
 	}
 	if (isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Y,currentStatus->STATUS_IND_COMPASS_DEVIATION_Y))) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Y,currentStatus->STATUS_IND_COMPASS_DEVIATION_Y) =
-				SQUARE(0.1) * baseIntervalSec;
+				SQUARE(0.0001) * baseIntervalSec;
 	}
 
 	// Initialized by magnetometer, e.g. BMXSensorBoardDriver::initializeStatusMag()
@@ -907,11 +907,11 @@ void GliderVarioMainPriv::intializeStatus() {
 		currentStatus->compassDeviationZ = 0.0f;
 	}
 	if (isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Z,currentStatus->STATUS_IND_COMPASS_DEVIATION_Z))) {
-		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Z,currentStatus->STATUS_IND_COMPASS_DEVIATION_Z) = 50.0f * 50.0f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Z,currentStatus->STATUS_IND_COMPASS_DEVIATION_Z) = 1.0f;
 	}
 	if (isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Z,currentStatus->STATUS_IND_COMPASS_DEVIATION_Z))) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Z,currentStatus->STATUS_IND_COMPASS_DEVIATION_Z) =
-				SQUARE(0.1) * baseIntervalSec;
+				SQUARE(0.0001) * baseIntervalSec;
 
 	}
 	if (isnan(currentStatus->windSpeedNorth)) {
@@ -922,7 +922,7 @@ void GliderVarioMainPriv::intializeStatus() {
 	}
 	if (isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_N,currentStatus->STATUS_IND_WIND_SPEED_N))) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_N,currentStatus->STATUS_IND_WIND_SPEED_N) =
-				SQUARE(1.0) * baseIntervalSec;
+				SQUARE(3.0) * baseIntervalSec;
 	}
 
 	if (isnan(currentStatus->windSpeedEast)) {
@@ -933,7 +933,7 @@ void GliderVarioMainPriv::intializeStatus() {
 	}
 	if (isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_E,currentStatus->STATUS_IND_WIND_SPEED_E))) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_E,currentStatus->STATUS_IND_WIND_SPEED_E) =
-				SQUARE(1.0) * baseIntervalSec;
+				SQUARE(3.0) * baseIntervalSec;
 	}
 
 	if (isnan(currentStatus->qff)) {
@@ -944,7 +944,7 @@ void GliderVarioMainPriv::intializeStatus() {
 	}
 	if (isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_QFF,currentStatus->STATUS_IND_QFF))) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_QFF,currentStatus->STATUS_IND_QFF) =
-				SQUARE(0.05) * baseIntervalSec; // Slow (1mbar / 20sec)
+				SQUARE(0.0001) * baseIntervalSec; // Slow (1mbar / 20sec)
 	}
 
 	if (isnan(currentStatus->lastPressure)) {
@@ -954,8 +954,7 @@ void GliderVarioMainPriv::intializeStatus() {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LAST_PRESSURE,currentStatus->STATUS_IND_LAST_PRESSURE) = 100.0f;
 	}
 	if (isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_LAST_PRESSURE,currentStatus->STATUS_IND_LAST_PRESSURE))) {
-		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_LAST_PRESSURE,currentStatus->STATUS_IND_LAST_PRESSURE) =
-				SQUARE(0.1) * baseIntervalSec;
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_LAST_PRESSURE,currentStatus->STATUS_IND_LAST_PRESSURE) = 0.0f;
 	}
 	LOG4CXX_DEBUG(logger,"GliderVarioMainPriv::intializeStatus():" );
 	for (auto i = 0U; i < currentStatus->STATUS_NUM_ROWS;i++) {
