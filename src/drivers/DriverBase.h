@@ -282,7 +282,7 @@ public:
      *
      * \see isKalmanUpdateRunning
      */
-    volatile bool getIsKalmanUpdateRunning() {
+    bool getIsKalmanUpdateRunning() {
     	return isKalmanUpdateRunning;
     }
 
@@ -292,7 +292,7 @@ public:
      *
      * \see isDriverThreadRunning
      */
-    volatile bool getIsDriverThreadRunning(){
+    bool getIsDriverThreadRunning(){
     	return isDriverThreadRunning;
     }
 
@@ -302,7 +302,7 @@ public:
      *
      * \see stopDriverThread
      */
-    volatile bool getStopDriverThread() {
+    bool getStopDriverThread() {
     	return stopDriverThread;
     }
 

@@ -93,10 +93,10 @@ public:
 	 */
 	class DeviceHandleAccess {
 	public:
-		/// Writable reference to the device handle in the PortBase object
-		PortBase::DeviceHandleType &deviceHandle;
 		/// Reference to the port for which this object was created.
 		PortBase& port;
+		/// Writable reference to the device handle in the PortBase object
+		PortBase::DeviceHandleType &deviceHandle;
 		/// When the constructor returns the PortBase::devHandleMutex is locked for the current thread thus synchronizing the access to the handle,
 		/// and therefore all operations on the port itself.
 		DeviceHandleAccess (PortBase& port) :
