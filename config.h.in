@@ -6,17 +6,14 @@
 /* Define to 1 if the function argp_parse is available. */
 #undef HAVE_ARGP_PARSE
 
-/* define if the compiler supports basic C++11 syntax */
-#undef HAVE_BUILD_CXX11
-
 /* Define to 1 if the function tcsetattr is available. */
 #undef HAVE_CFMAKERAW
 
 /* Define to 1 if the function cfsetspeed is available. */
 #undef HAVE_CFSETSPEED
 
-/* define if the compiler supports basic C++14 syntax */
-#undef HAVE_CXX14
+/* define if the compiler supports basic C++17 syntax */
+#undef HAVE_CXX17
 
 /* Define to 1 if you have the declaration of `tzname', and to 0 if you don't.
    */
