@@ -98,7 +98,7 @@ ssize_t DatagramPort::recv(uint8_t *buffer, size_t bufLen) {
 
 	} while (err == EINTR);
 
-	if (ret > bufLen) {
+	if (ret > ssize_t(bufLen)) {
 		// The datagram was longer than the available buffer. This the message is truncated.
 		// This is not acceptable for the sake of data integrity.
 		LOG4CXX_ERROR(logger,"Port" << getPortName() << ':' << getPortType() << ": Buffer too small for the datagram."
@@ -116,7 +116,6 @@ ssize_t DatagramPort::send(uint8_t *buffer, size_t bufLen) {
 	ssize_t ret;
 	int err;
 	DeviceHandleAccess devHandleAccess (*this);
-	ssize_t bytesWritten = 0;
 	int flags = 0;
 
 	if (!isBlocking()) {

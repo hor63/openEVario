@@ -71,8 +71,8 @@ public:
     inline
     RotationMatrix () :
     yaw 	{ 0 },
-    roll	{ 0 },
     pitch	{ 0 },
+    roll	{ 0 },
     // lazy calculations
     matrixGloToPlaneIsValid { false },
     matrixPlaneToGloIsValid { false }
@@ -88,8 +88,8 @@ public:
             FloatType pitch,
             FloatType roll) :
             yaw 	{ yaw },
-            roll	{ roll },
             pitch	{ pitch },
+            roll	{ roll },
             // lazy calculations
             matrixGloToPlaneIsValid { false },
             matrixPlaneToGloIsValid { false }
@@ -174,9 +174,6 @@ protected:
             /// The rotation matrix from the global(world) coordinate system to the plane coordinate system.
             RotationMatrix3DType matrixPlaneToGlo;
 
-            bool matrixGloToPlaneIsValid;
-            bool matrixPlaneToGloIsValid;
-
             // The angles.
             /// Yaw angle in deg. &Psi; in the norm DIN 9300. Also called \b Heading. Turning right hand around the z axis, i.e. in navigation direction
             FloatType yaw;
@@ -185,6 +182,8 @@ protected:
             /// Roll angle in deg. &Phi; in the norm DIN 9300. Also called <b>Bank angle</b>.
             FloatType roll;
 
+            bool matrixGloToPlaneIsValid;
+            bool matrixPlaneToGloIsValid;
 
             /**
              * Calculates the rotation matrix. The matrix from world coordinates to plane coordinates is calculated only.

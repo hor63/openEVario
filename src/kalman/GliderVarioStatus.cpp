@@ -43,12 +43,10 @@ GliderVarioStatus::StatusComponentIndexHelperClass GliderVarioStatus::StatusComp
 
 GliderVarioStatus::GliderVarioStatus () :
 		statusVector_x{StatusVectorType::Zero()},
-		systemNoiseCovariance_Q{STATUS_NUM_ROWS,STATUS_NUM_ROWS},
-		errorCovariance_P{STATUS_NUM_ROWS,STATUS_NUM_ROWS},
-
 	    // All state vector elements as single references into the vector for easier access
 	    /// Constants
 	    gravity {statusVector_x ( STATUS_IND_GRAVITY )},
+
 
 	    /// Position and altitude
 	    longitudeOffsC {statusVector_x[ STATUS_IND_LONGITUDE_OFFS]},
@@ -91,6 +89,8 @@ GliderVarioStatus::GliderVarioStatus () :
 	    windSpeedEast  {statusVector_x[ STATUS_IND_WIND_SPEED_E]},
 	    qff {statusVector_x[ STATUS_IND_QFF]},
 	    lastPressure {statusVector_x[ STATUS_IND_LAST_PRESSURE]},
+		systemNoiseCovariance_Q{STATUS_NUM_ROWS,STATUS_NUM_ROWS},
+		errorCovariance_P{STATUS_NUM_ROWS,STATUS_NUM_ROWS},
 	    longitudeOffs {statusVector_x[ STATUS_IND_LONGITUDE_OFFS]},
 	    latitudeOffs {statusVector_x[ STATUS_IND_LATITUDE_OFFS]}
 {

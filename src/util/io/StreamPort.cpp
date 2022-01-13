@@ -111,7 +111,6 @@ ssize_t StreamPort::write(uint8_t *buffer, size_t bufLen) {
 	ssize_t ret;
 	int err;
 	DeviceHandleAccess devHandleAccess (*this);
-	ssize_t bytesWritten = 0;
 
 	do {
 		err = 0;
@@ -165,7 +164,7 @@ ssize_t StreamPort::readExactLen(uint8_t *buffer, size_t bufLen) {
 
 	while (rc > 0 ) {
 		bytesRead += rc;
-		if (bytesRead >= bufLen) {
+		if (bytesRead >= ssize_t(bufLen)) {
 			break;
 		}
 		buffer += rc;
@@ -182,7 +181,7 @@ ssize_t StreamPort::writeExactLen(uint8_t *buffer, size_t bufLen) {
 
 	while (rc > 0 ) {
 		bytesWritten += rc;
-		if (bytesWritten >= bufLen) {
+		if (bytesWritten >= ssize_t(bufLen)) {
 			break;
 		}
 		buffer += rc;

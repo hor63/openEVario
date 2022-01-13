@@ -50,7 +50,7 @@ namespace openEV::drivers::TE_MEAS_AbsPressure {
 		DRIVER_TYPE_MS5839,
 		DRIVER_TYPE_MS5840
 	};
-	static char const * (DriverNames []) =
+	static char const * DriverNames [] =
 			{
 					"TE-MEAS-MS5607",
 					"TE-MEAS-MS5611",

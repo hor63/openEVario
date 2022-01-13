@@ -425,7 +425,6 @@ void SerialPort::configurePort(
 	try {
 
 		propVal = portConfiguration.searchProperty(baudPropertyName);
-		auto configVal = propVal->getIntVal();
 		LOG4CXX_DEBUG (logger,"Configure serial port \"" << getPortName() << ": baud rate = " << propVal->getStringValue());
 		// Exceptions from this call will not be cought by the catch block below, what is exactly what I want.
 		baud = getSpeedFromStr(propVal->getStrValue());

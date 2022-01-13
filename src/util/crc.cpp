@@ -76,7 +76,7 @@ OEV_UTILS_PUBLIC uint16_t crc16CCIT(uint16_t crc, const void* const block,uint16
 	uint16_t i;
 
 	for (i=0; i < len; i++){
-		rc = PPP_FCS(rc,((const char* const)block)[i]);
+		rc = PPP_FCS(rc,((char*)block)[i]);
 	}
 
 	return rc;

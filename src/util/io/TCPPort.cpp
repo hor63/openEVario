@@ -127,7 +127,6 @@ void TCPPort::openInternal() {
 	int rc;
 	struct addrinfo addrHint;
 	struct addrinfo *addr = NULL;
-	struct protoent *prot = NULL;
 
 	::memset (&addrHint,0,sizeof(addrHint));
 

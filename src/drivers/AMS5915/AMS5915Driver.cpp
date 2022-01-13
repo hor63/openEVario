@@ -379,7 +379,6 @@ FloatType AMS5915Driver::convertRegisterPressureToMBar(
 
 void AMS5915Driver::readoutAMS5915() {
 
-	uint8_t statusVal = 0;
 	uint8_t sensorValues[4];
 	uint16_t pressureRawVal;
 	uint16_t temperatureRawVal;

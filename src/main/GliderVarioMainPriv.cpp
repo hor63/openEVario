@@ -88,12 +88,12 @@ static const char* argpDoc= PROGRAM_DESCRIPTION;
 } // extern "C"
 
 static struct argp_option options[] = {
-  {"configuration",        'c', "configFileName",   0, "Name of the configuration file [" defaultConfigFileName "]"},
-  {"logger-configuration", 'l', "loggerConfigFile", 0, "Name of logger configuration file [" defaultLoggerConfigFileName "]"},
-  {"debug",                'd', 0,                  0, "Increase default logger level (Silent-[Error]-Info-Debug)"},
-  {"quiet",                'q', 0,                  0, "Shhhh. Be quiet. Suppress any logger output, i.e. set logger level to Silent (see -d)"},
-  {"silent",               's', 0,                  OPTION_ALIAS, 0 },
-  {0}
+  {"configuration",        'c', "configFileName",   0, "Name of the configuration file [" defaultConfigFileName "]",0},
+  {"logger-configuration", 'l', "loggerConfigFile", 0, "Name of logger configuration file [" defaultLoggerConfigFileName "]",0},
+  {"debug",                'd', 0,                  0, "Increase default logger level (Silent-[Error]-Info-Debug)",0},
+  {"quiet",                'q', 0,                  0, "Shhhh. Be quiet. Suppress any logger output, i.e. set logger level to Silent (see -d)",0},
+  {"silent",               's', 0,                  OPTION_ALIAS, 0 ,0},
+  {0,0,0,0,0,0}
 };
 
 static error_t
@@ -229,7 +229,7 @@ static int readOptions (int& argc, char*argv[],openEV::ProgramOptions &programOp
 
 #if HAVE_ARGP_PARSE == 1
 
-    static struct argp arrgp = {options, parse_opt, 0, argpDoc};
+    static struct argp arrgp = {options, parse_opt, 0, argpDoc,0,0,0};
 
     rc = argp_parse (&arrgp, argc, argv, 0, 0, &programOptions);
 
@@ -353,9 +353,8 @@ GliderVarioMainPriv::~GliderVarioMainPriv() {
 }
 
 void GliderVarioMainPriv::startup () {
-    int rc = 0;
 
-    rc = readOptions (argc,argv,programOptions);
+	readOptions (argc,argv,programOptions);
 
 #if defined HAVE_LOG4CXX_H
 

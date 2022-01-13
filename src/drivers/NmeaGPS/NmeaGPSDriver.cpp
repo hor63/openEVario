@@ -192,7 +192,7 @@ void NmeaGPSDriver::processingMainLoop () {
 		LOG4CXX_TRACE (logger,"Driver " << driverName << ": Read max. " << sizeof (buf) << " bytes from the port");
 
 		auto rc = ioPort->read(buf,sizeof(buf)-1);
-		if (rc > 0 && rc < sizeof(buf)) {
+		if (rc > 0 && rc < long(sizeof(buf))) {
 			buf [rc] = 0;
 			LOG4CXX_TRACE (logger,"Driver " << driverName << ": ioPort->read returned '" << buf << '\'');
 			// Consume and process received data.

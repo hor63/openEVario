@@ -125,15 +125,15 @@ void I2CPort::openInternal() {
 #endif
 
 #if HAVE_SMBUS_H
-	if (funcs & I2C_FUNC_SMBUS_I2C_BLOCK == I2C_FUNC_SMBUS_I2C_BLOCK) {
+	if ((funcs & I2C_FUNC_SMBUS_I2C_BLOCK) == I2C_FUNC_SMBUS_I2C_BLOCK) {
 		useSmBusI2CBlockFunctions = true;
 	}
 
-	if (funcs & I2C_FUNC_SMBUS_BYTE == I2C_FUNC_SMBUS_BYTE) {
+	if ((funcs & I2C_FUNC_SMBUS_BYTE) == I2C_FUNC_SMBUS_BYTE) {
 		useSimpleByteSmBusFunctions = true;
 	}
 
-	if (funcs & I2C_FUNC_SMBUS_BYTE_DATA == I2C_FUNC_SMBUS_BYTE_DATA) {
+	if ((funcs & I2C_FUNC_SMBUS_BYTE_DATA) == I2C_FUNC_SMBUS_BYTE_DATA) {
 		useSimpleByteAddressSmBusFunctions = true;
 	}
 

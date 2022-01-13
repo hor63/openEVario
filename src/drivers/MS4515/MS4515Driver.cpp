@@ -478,7 +478,6 @@ FloatType MS4515Driver::convertRegisterPressureToMBar(
 
 void MS4515Driver::readoutMS4515() {
 
-	uint8_t statusVal = 0;
 	uint8_t sensorValues[4];
 	uint8_t status = MS4515_STATUS_STALE;
 	uint16_t pressureRawVal;

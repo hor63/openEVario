@@ -75,7 +75,7 @@ struct NMEASentence {
 	/// Type of the sentence as enumeration value
 	NMEASentenceType sentenceType;
 	/// \brief The data fields of the sentence. The strings themselves lie in \p buf.
-	uint8_t * (fields [maxNumFields]);
+	uint8_t * fields [maxNumFields];
 	/// Number of defined \ref fields
 	uint32_t numFields;
 };

@@ -275,7 +275,6 @@ ssize_t UDPPort::send(uint8_t *buffer, size_t bufLen) {
 	ssize_t ret;
 	int err;
 	DeviceHandleAccess devHandleAccess (*this);
-	ssize_t bytesWritten = 0;
 	int flags = 0;
 
 	if (!isBlocking()) {

@@ -62,8 +62,8 @@ PortBase::PortBase(
 		char const* portType
 		) :
 	portName{portName},
-	portType{portType},
-	deviceName{portName} // set deviceName by default to portName.
+	deviceName{portName}, // set deviceName by default to portName.
+	portType{portType}
 {
 #if defined HAVE_LOG4CXX_H
 	initLogger();
