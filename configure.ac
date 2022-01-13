@@ -291,7 +291,7 @@ AC_SUBST([LOG4CXX_LDFLAGS])
 AC_SUBST([LOG4CXX_CXXFLAGS])
 
 AC_CONFIG_SUBDIRS([3rdParty/Properties4CXX])
-CPPFLAGS="$CPPFLAGS -I\$(top_srcdir)/3rdParty/Properties4CXX/include"
+CPPFLAGS="$CPPFLAGS -isystem \$(top_srcdir)/3rdParty/Properties4CXX/include"
 
 # Link libraries only to the main shared library, but not the partial link jobs in util and kalman
 MAIN_LDFLAGS="-L\$(top_builddir)/3rdParty/Properties4CXX/src -lProperties4CXX"

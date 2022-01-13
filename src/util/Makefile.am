@@ -46,10 +46,10 @@ libopenEVUtil_la_LIBADD = $(LOG4CXX_LIBS) $(MAIN_LIBS) $(PTHREAD_LIBS)
 # Build compiler sources are not well supported by autotools. Back to manual
 genSineTables_sources=genSineTables.cpp
 
-AM_CXXFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen $(LOG4CXX_CXXFLAGS) \
+AM_CXXFLAGS = -I$(top_srcdir)/src -isystem $(top_srcdir)/3rdParty/eigen $(LOG4CXX_CXXFLAGS) \
 	$(PTHREAD_CFLAGS)
 
-AM_CXXFLAGS_FOR_BUILD=-I$(top_srcdir)/src -I$(top_srcdir)/3rdParty/eigen
+AM_CXXFLAGS_FOR_BUILD=-I$(top_srcdir)/src -isystem $(top_srcdir)/3rdParty/eigen
 
 LINK_FOR_BUILD.cpp=$(CXX_FOR_BUILD) $(CXXFLAGS_FOR_BUILD) $(CPPFLAGS_FOR_BUILD) $(AM_CXXFLAGS_FOR_BUILD) $(LDFLAGS_FOR_BUILD) $(TARGET_ARCH_FOR_BUILD)
 

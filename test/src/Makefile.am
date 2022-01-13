@@ -44,7 +44,7 @@ genSineTables_sources=../../src/genSineTables.cpp
 
 testOpenEVario_CXXFLAGS = -isystem $(top_srcdir)/3rdParty/googletest/googletest/include \
 	-I../.. \
-	-I$(top_srcdir)/3rdParty/eigen \
+	-isystem $(top_srcdir)/3rdParty/eigen \
 	-I$(top_srcdir)/src \
 	-DENABLE_UNIT_TESTS=1 \
 	$(LOG4CXX_CXXFLAGS) \
