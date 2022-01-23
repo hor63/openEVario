@@ -24,7 +24,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#  include "config.h"
 #endif
 
 #include <iostream>
@@ -65,7 +65,7 @@ static int printSineTable(const char* fileName){
  */\n\
 \n\
 #ifdef HAVE_CONFIG_H\n\
-#  include <config.h>\n\
+#  include \"config.h\"\n\
 #endif\n\
 \n\
 #include \"FastMath.h\" \n\

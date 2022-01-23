@@ -25,8 +25,6 @@
 #ifndef DRIVERS_AMS5915DEFS_H_
 #define DRIVERS_AMS5915DEFS_H_
 
-//#include <stdint.h>
-
 #include "CommonDefs.h"
 
 /// Definitions for the AMS5915 sensor
