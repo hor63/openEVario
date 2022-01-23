@@ -14,7 +14,7 @@
 #include <thread>
 #include <chrono>
 
-#include "OEVCommon.h"
+#include "CommonDefs.h"
 #include "drivers/DriverBase.h"
 
 namespace openEV {

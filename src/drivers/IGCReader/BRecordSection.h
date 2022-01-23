@@ -28,8 +28,7 @@
 
 #include <cmath>
 
-
-#include "OEVCommon.h"
+#include "CommonDefs.h"
 
 #include "drivers/DriverBase.h"
 #include "main/GliderVarioMainPriv.h"

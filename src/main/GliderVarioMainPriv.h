@@ -31,9 +31,9 @@
 #include <mutex>
 #include <thread>
 
+#include "CommonDefs.h"
 #include "Properties4CXX/Properties.h"
 
-#include "OEVCommon.h"
 #include "main/ProgramOptions.h"
 #include "util/GliderVarioExceptionBase.h"
 #include "main/GliderVarioDriverList.h"

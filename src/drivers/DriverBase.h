@@ -35,10 +35,10 @@
 #include <memory>
 #include <thread>
 
+#include "CommonDefs.h"
 #include "Properties4CXX/Properties.h"
 
 
-#include "OEVCommon.h"
 #include "kalman/GliderVarioStatus.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
 #include "drivers/DriverLibBase.h"

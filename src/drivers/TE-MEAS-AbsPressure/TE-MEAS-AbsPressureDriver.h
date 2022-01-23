@@ -30,7 +30,7 @@
 #include <string>
 #include <map>
 
-#include "OEVCommon.h"
+#include "CommonDefs.h"
 #include "util/GliderVarioExceptionBase.h"
 
 #include "TE-MEAS-AbsPressureDefs.h"

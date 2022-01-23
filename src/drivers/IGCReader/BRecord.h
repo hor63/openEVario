@@ -26,7 +26,7 @@
 #ifndef DRIVERS_IGCREADER_BRECORD_H_
 #define DRIVERS_IGCREADER_BRECORD_H_
 
-#include "OEVCommon.h"
+#include "CommonDefs.h"
 
 namespace openEV::drivers::IGCReader {
 

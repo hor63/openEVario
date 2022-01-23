@@ -27,7 +27,7 @@
 #  include <config.h>
 #endif
 
-#include "OEVCommon.h"
+#include "CommonDefs.h"
 
 #include "TE-MEAS-AbsPressureLib.h"
 #include "TE-MEAS-AbsPressureDriver.h"

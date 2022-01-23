@@ -28,7 +28,7 @@
 #ifndef SIMULDRIVER_H_
 #define SIMULDRIVER_H_
 
-#include "OEVCommon.h"
+#include "../../CommonLogger_ShLib.h"
 
 
 #if defined (BUILDING_SIMUL_DRIVER)

@@ -30,9 +30,9 @@
 #include <map>
 #include <string>
 
+#include "CommonDefs.h"
 #include "Properties4CXX/Properties.h"
 
-#include "OEVCommon.h"
 #include "util/GliderVarioExceptionBase.h"
 #include "main/ProgramOptions.h"
 #include "kalman/GliderVarioStatus.h"

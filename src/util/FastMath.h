@@ -32,7 +32,7 @@
 #include <assert.h>
 
 // #include "GliderVarioStatus.h"
-#include "OEVCommon.h"
+#include "CommonDefs.h"
 
 // directly from GLIBC math.h ... just in case
 #if !defined(M_PI)

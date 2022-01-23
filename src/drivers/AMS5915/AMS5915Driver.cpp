@@ -128,23 +128,26 @@ void AMS5915Driver::readConfiguration (Properties4CXX::Properties const &configu
 
 	{
 
-		pMin = configuration.getPropertyValue("pMin", NAN);
-		if (isnan(pMin)) {
+		try {
+			auto configPMin = configuration.searchProperty("pMin");
+			pMin = configPMin->getDoubleValue();
+		} catch (const Properties4CXX::ExceptionPropertyNotFound & e) {
 			std::ostringstream str;
-			str << "Read pMin configuration for driver \"" << driverName
-					<< "\" failed: Either configurations \"pMin\" is not defined, "
-					"or the value is not numeric.";
+			str << "Could not read configuration \"pMin\" for driver \"" << driverName
+					<< "\" because: "
+					<< e.what();
 			LOG4CXX_ERROR(logger, str.str());
 			throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
 		}
 
-
-		pMax = configuration.getPropertyValue("pMax", NAN);
-		if (isnan(pMax)) {
+		try {
+			auto configPMax = configuration.searchProperty("pMax");
+			pMax = configPMax->getDoubleValue();
+		} catch (const Properties4CXX::ExceptionPropertyNotFound & e) {
 			std::ostringstream str;
-			str << "Read pMax configuration for driver \"" << driverName
-					<< "\" failed: Either configurations \"pMax\" is not defined, "
-					"or the value is not numeric.";
+			str << "Could not read configuration \"pMax\" for driver \"" << driverName
+					<< "\" because: "
+					<< e.what();
 			LOG4CXX_ERROR(logger, str.str());
 			throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
 		}

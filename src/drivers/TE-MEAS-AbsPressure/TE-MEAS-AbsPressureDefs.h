@@ -27,7 +27,7 @@
 
 //#include <stdint.h>
 
-#include <OEVCommon.h>
+#include "CommonDefs.h"
 
 /// Definitions for the TE_MEAS_AbsPressure sensor
 /// \see [TE_MEAS_AbsPressure datasheet](https://www.nxp.com/docs/en/data-sheet/TE_MEAS_AbsPressure.pdf)

@@ -26,7 +26,7 @@
 #ifndef UTIL_CRC_H_
 #define UTIL_CRC_H_
 
-#include "OEVCommon.h"
+#include "CommonDefs.h"
 
 namespace openEV {
 

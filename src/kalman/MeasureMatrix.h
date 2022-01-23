@@ -26,7 +26,7 @@
 #ifndef MEASUREMATRIX_H_
 #define MEASUREMATRIX_H_
 
-#include "OEVCommon.h"
+#include "CommonDefs.h"
 
 namespace openEV
 {

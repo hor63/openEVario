@@ -23,7 +23,7 @@
  *
  */
 
-#include "OEVCommon.h"
+#include "../../CommonLogger_ShLib.h"
 
 #ifndef DRIVERS_NMEAGPS_NMEASENTENCE_H_
 #define DRIVERS_NMEAGPS_NMEASENTENCE_H_

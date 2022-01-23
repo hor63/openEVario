@@ -30,7 +30,7 @@
 #include <string>
 #include <list>
 
-#include "OEVCommon.h"
+#include "CommonDefs.h"
 #include "NmeaGPSDriver.h"
 #include "NMEASentence.h"
 #include "NMEA0813Protocol.h"

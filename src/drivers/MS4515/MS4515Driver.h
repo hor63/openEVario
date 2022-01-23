@@ -30,8 +30,7 @@
 #include <string>
 #include <map>
 
-#include "OEVCommon.h"
-
+#include "CommonDefs.h"
 #include "MS4515DO.h"
 #include "drivers/DriverBase.h"
 #include "MS4515Lib.h"

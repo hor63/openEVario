@@ -26,9 +26,8 @@
 #define ROTATIONMATRIX_H_
 
 // #include "GliderVarioStatus.h"
-#include "OEVCommon.h"
-
 #include <Eigen/Dense>
+#include "CommonDefs.h"
 
 
 namespace openEV

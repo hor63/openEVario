@@ -32,7 +32,7 @@
 #include <cerrno>
 #include <cstring>
 
-#include "OEVCommon.h"
+#include "CommonDefs.h"
 
 
 namespace openEV {

@@ -26,7 +26,7 @@
 #ifndef MAIN_GLIDERVARIOMAIN_H_
 #define MAIN_GLIDERVARIOMAIN_H_
 
-#include "OEVCommon.h"
+#include "CommonDefs.h"
 #include "util/GliderVarioExceptionBase.h"
 
 namespace openEV {

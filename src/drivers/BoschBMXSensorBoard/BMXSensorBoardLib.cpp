@@ -27,7 +27,7 @@
 #  include <config.h>
 #endif
 
-#include "OEVCommon.h"
+#include "CommonDefs.h"
 
 
 #include "BMXSensorBoardLib.h"

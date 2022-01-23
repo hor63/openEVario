@@ -38,9 +38,8 @@
 #include <memory>
 #include <mutex>
 
+#include "../../CommonLogger_ShLib.h"
 #include "Properties4CXX/Properties.h"
-
-#include "OEVCommon.h"
 
 #include "util/GliderVarioExceptionBase.h"
 

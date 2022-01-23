@@ -26,7 +26,7 @@
 #ifndef SENSORDRIVER_H_
 #define SENSORDRIVER_H_
 
-#include "OEVCommon.h"
+#include "CommonDefs.h"
 #include "drivers/DriverLibBase.h"
 
 

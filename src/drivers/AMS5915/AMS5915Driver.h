@@ -30,8 +30,7 @@
 #include <string>
 #include <map>
 
-#include "OEVCommon.h"
-
+#include "CommonDefs.h"
 #include "AMS5915Defs.h"
 #include "drivers/DriverBase.h"
 #include "AMS5915Lib.h"

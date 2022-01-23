@@ -28,7 +28,7 @@
 
 #include <string>
 
-#include "OEVCommon.h"
+#include "CommonDefs.h"
 #include "NMEASentence.h"
 #include "NmeaGPSDriver.h"
 

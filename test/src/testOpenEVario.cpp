@@ -30,7 +30,7 @@
 #  include <config.h>
 #endif
 
-#include "OEVCommon.h"
+#include "CommonDefs.h"
 
 #if defined HAVE_LOG4CXX_H
 static log4cxx::LoggerPtr logger = 0;

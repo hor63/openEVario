@@ -1,14 +1,14 @@
 /*
- * OEVCommon.h
+ * CommonLogger_ShLib.h
  *
  *  Created on: Sep 29, 2017
  *      Author: hor
  *
- *  Common definitions for building shared libraries
- *  and other helpers
+ *  Common definitions for building shared libraries,
+ *  Log4CXX, and some helpers
  *
  *   This file is part of openEVario, an electronic variometer for glider planes
- *   Copyright (C) 2016  Kai Horstmann
+ *   Copyright (C) 2016-2022  Kai Horstmann
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -26,30 +26,8 @@
  *
  */
 
-#ifndef OEVCOMMON_H_
-#define OEVCOMMON_H_
-
-#if defined HAVE_CONFIG_H
-#	include "config.h"
-#endif
-
-#include <ostream>
-#include <sstream>
-#include <string>
-#include <iomanip>
-#include <unordered_map>
-#include <stdlib.h>
-#include <cstdlib>
-#include <cstdint>
-#include <chrono>
-
-#if HAVE_TIME_H == 1
-#	include <time.h>
-#endif
-
-#if HAVE_SYS_TIME_H == 1
-#	include <sys/time.h>
-#endif
+#ifndef COMMONLOGGER_SHLIB_H_
+#define COMMONLOGGER_SHLIB_H_
 
 #if defined HAVE_LOG4CXX_H
 #	include <log4cxx/logger.h>
@@ -135,21 +113,6 @@
   #define OEV_MAIN_LOCAL  OV_DLL_LOCAL
 #endif /* BUILDING_OEV_UTILS */
 
-
-namespace openEV {
-
-/**
- * \brief The global float type. Change this one to double, and the entire system will run in double.
- * For optimal performance this should be *float*. Eigen can use the NEON unit for vectorized arithmetic on ARMV7 processors if available.
- */
-	typedef float FloatType;
-
-	/**
-	 * \brief Use the system clock duration definition throughout
-	 */
-	typedef std::chrono::system_clock::duration OEVDuration;
-
-}
 
 /** \brief Macro to define enums, with a facility to directly stream the Enum name, or to retrieve a string
  *
@@ -266,4 +229,4 @@ namespace openEV {
 	};  \
 	static enumName##HelperClass enumName##HelperObj;
 
-#endif /* OEVCOMMON_H_ */
+#endif /* COMMONLOGGER_SHLIB_H_ */

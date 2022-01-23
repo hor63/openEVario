@@ -29,7 +29,7 @@
 #include <map>
 #include <string>
 
-#include "OEVCommon.h"
+#include "CommonDefs.h"
 
 namespace openEV {
 // Forward declarations because the complex include hierarchy can have side effects on the order of includes

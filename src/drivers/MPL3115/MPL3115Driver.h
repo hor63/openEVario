@@ -30,8 +30,7 @@
 #include <string>
 #include <map>
 
-#include "OEVCommon.h"
-
+#include "CommonDefs.h"
 #include "MPL3115A2.h"
 #include "drivers/DriverBase.h"
 #include "MPL3115Lib.h"

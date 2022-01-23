@@ -30,8 +30,7 @@
 #include <string>
 #include <map>
 
-#include "OEVCommon.h"
-
+#include "CommonDefs.h"
 #include "drivers/DriverBase.h"
 #include "drivers/IGCReader/IGCReaderLib.h"
 #include "drivers/IGCReader/BRecord.h"

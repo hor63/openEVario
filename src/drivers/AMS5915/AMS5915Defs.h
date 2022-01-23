@@ -27,7 +27,7 @@
 
 //#include <stdint.h>
 
-#include <OEVCommon.h>
+#include "CommonDefs.h"
 
 /// Definitions for the AMS5915 sensor
 /// \see [AMS5915 Web site](https://www.amsys-sensor.com/products/pressure-sensor/ams5915-digital-pressure-sensor-5mbar-to-10-bar/) with links to the documents below and more.

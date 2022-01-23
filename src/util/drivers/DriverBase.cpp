@@ -1,3 +1,4 @@
+
 /*
  * GliderVarioDriverBase.cpp
  *
@@ -31,7 +32,7 @@
 #include <system_error>
 #include <sstream>
 
-#include "OEVCommon.h"
+#include "CommonDefs.h"
 #include "drivers/DriverBase.h"
 
 #if defined HAVE_LOG4CXX_H

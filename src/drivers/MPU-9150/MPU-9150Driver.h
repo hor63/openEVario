@@ -32,8 +32,7 @@
 #include <thread>
 #include <chrono>
 
-#include "OEVCommon.h"
-
+#include "CommonDefs.h"
 #include "util/io/I2CPort.h"
 #include "util/drivers/IMUBase.h"
 #include "MPU-9150Defs.h"

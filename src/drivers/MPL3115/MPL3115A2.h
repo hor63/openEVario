@@ -27,7 +27,7 @@
 
 //#include <stdint.h>
 
-#include <OEVCommon.h>
+#include "CommonDefs.h"
 
 /// Definitions for the MPL3115A2 sensor
 /// \see [MPL3115A2 datasheet](https://www.nxp.com/docs/en/data-sheet/MPL3115A2.pdf)
