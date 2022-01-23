@@ -28,7 +28,7 @@
 #ifndef UTIL_IO_I2CPORT_H_
 #define UTIL_IO_I2CPORT_H_
 
-#include <stdint.h>
+#include <cstdint>
 
 #include <mutex>
 

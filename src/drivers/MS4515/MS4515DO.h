@@ -25,8 +25,6 @@
 #ifndef DRIVERS_MS4515DO_H_
 #define DRIVERS_MS4515DO_H_
 
-//#include <stdint.h>
-
 #include "../../CommonLogger_ShLib.h"
 
 /// Definitions for the MS4515DO sensor

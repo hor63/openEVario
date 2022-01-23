@@ -26,7 +26,7 @@
 #  include "config.h"
 #endif
 
-#include <util/crc.h>
+#include "util/crc.h"
 
 /** CRC-16 CCIT taken from the PPP implementation of lwip
  *

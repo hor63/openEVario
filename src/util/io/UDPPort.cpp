@@ -26,7 +26,7 @@
 #  include "config.h"
 #endif
 
-#include <errno.h>
+#include <cerrno>
 #include <unistd.h>
 
 #if HAVE_SYS_TYPES_H

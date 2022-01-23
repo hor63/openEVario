@@ -27,7 +27,7 @@
 #  include "config.h"
 #endif
 
-#include <CommonDefs.h>
+#include "CommonDefs.h"
 
 
 #include "IGCReaderLib.h"

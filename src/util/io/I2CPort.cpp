@@ -49,7 +49,7 @@ extern "C" {
 #include <sstream>
 
 #include "util/io/I2CPort.h"
-#include <GliderVarioExceptionBase.h>
+#include "GliderVarioExceptionBase.h"
 
 #if defined HAVE_LOG4CXX_H
 static log4cxx::LoggerPtr logger = 0;

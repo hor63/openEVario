@@ -28,7 +28,7 @@
 #  include "config.h"
 #endif
 
-#include <math.h>
+#include <cmath>
 #include "gtest/gtest.h"
 #include "util/RotationMatrix.h"
 

@@ -27,8 +27,8 @@
 #ifndef GLIDERVARIOMEASUREMENTVECTOR_H_
 #define GLIDERVARIOMEASUREMENTVECTOR_H_
 
-#include <float.h>
-#include <math.h>
+#include <cfloat>
+#include <cmath>
 
 #include "GliderVarioStatus.h"
 

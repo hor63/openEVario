@@ -26,7 +26,7 @@
 #  include "config.h"
 #endif
 
-#include <string.h>
+#include <cstring>
 #include <ratio>
 
 #include "BRecordSection.h"

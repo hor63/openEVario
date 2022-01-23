@@ -25,8 +25,6 @@
 #ifndef DRIVERS_MPL3115_MPL3315A2_H_
 #define DRIVERS_MPL3115_MPL3315A2_H_
 
-//#include <stdint.h>
-
 #include "CommonDefs.h"
 
 /// Definitions for the MPL3115A2 sensor

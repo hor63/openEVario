@@ -169,14 +169,14 @@ void IGCReaderDriver::initializeStatus(
 				SQUARE(3.0) * baseIntervalSec;
 
 
-		if (isnan(varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING))) {
+		if (std::isnan(varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING))) {
 			varioStatus.heading = calcInitialHeading();
 			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) = 10.0f;
 			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) =
 					SQUARE(3.0) * baseIntervalSec;
 		}
 
-		if (isnan(varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_QFF,varioStatus.STATUS_IND_QFF))) {
+		if (std::isnan(varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_QFF,varioStatus.STATUS_IND_QFF))) {
 			// calculated factor to calculate the pressure at altGPS with a temperature lapse of 1K/100m
 			double factAltGPS = altToPressureStdTemp(firstRec->second.altGPS,-0.01) / PressureStdMSL;
 			double factBaroHeight = altToPressureStdTemp(firstRec->second.altBaro) / PressureStdMSL;

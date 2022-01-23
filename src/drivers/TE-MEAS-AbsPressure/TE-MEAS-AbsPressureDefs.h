@@ -25,8 +25,6 @@
 #ifndef DRIVERS_TE_MEAS_AbsPressureDefs_H_
 #define DRIVERS_TE_MEAS_AbsPressureDefs_H_
 
-//#include <stdint.h>
-
 #include "CommonDefs.h"
 
 /// Definitions for the TE_MEAS_AbsPressure sensor

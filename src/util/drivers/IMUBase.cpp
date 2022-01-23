@@ -151,7 +151,7 @@ void IMUBase::initializeStatusAccel(
 
 	// If position system noise was defined before adjust it here when it was defined higher before.
 	// With the accelerometer I am pretty precise in the short term.
-	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+	if (std::isnan(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_LATITUDE_OFFS,varioStatus.STATUS_IND_LATITUDE_OFFS)) ||
 			(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_LATITUDE_OFFS,varioStatus.STATUS_IND_LATITUDE_OFFS)
@@ -161,7 +161,7 @@ void IMUBase::initializeStatusAccel(
 						SQUARE(2.0) * baseIntervalSec;
 	}
 
-	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+	if (std::isnan(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_LONGITUDE_OFFS,varioStatus.STATUS_IND_LONGITUDE_OFFS)) ||
 			(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_LONGITUDE_OFFS,varioStatus.STATUS_IND_LONGITUDE_OFFS)
@@ -171,7 +171,7 @@ void IMUBase::initializeStatusAccel(
 						SQUARE(2.0) * baseIntervalSec;
 	}
 
-	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+	if (std::isnan(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL)) ||
 			(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL)
@@ -181,7 +181,7 @@ void IMUBase::initializeStatusAccel(
 				SQUARE(2.0) * baseIntervalSec;
 	}
 
-	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+	if (std::isnan(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_N,varioStatus.STATUS_IND_SPEED_GROUND_N)) ||
 			(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_N,varioStatus.STATUS_IND_SPEED_GROUND_N)
@@ -191,7 +191,7 @@ void IMUBase::initializeStatusAccel(
 				SQUARE(1.0) * baseIntervalSec;
 	}
 
-	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+	if (std::isnan(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_E,varioStatus.STATUS_IND_SPEED_GROUND_E)) ||
 			(varioStatus.getSystemNoiseCovariance_Q().
 					coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_E,varioStatus.STATUS_IND_SPEED_GROUND_E)
@@ -201,7 +201,7 @@ void IMUBase::initializeStatusAccel(
 				SQUARE(1.0) * baseIntervalSec;
 	}
 
-	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+	if (std::isnan(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_VERTICAL_SPEED,varioStatus.STATUS_IND_VERTICAL_SPEED)) ||
 			(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_VERTICAL_SPEED,varioStatus.STATUS_IND_VERTICAL_SPEED)
@@ -258,7 +258,7 @@ void IMUBase::initializeStatusGyro(
 
 	// Assume the plane is static, and the measurement is the current gyro bias.
 
-	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+	if (std::isnan(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING))||
 			(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) > SQUARE(1.0) * baseIntervalSec)) {
@@ -267,7 +267,7 @@ void IMUBase::initializeStatusGyro(
 				SQUARE(1.0) * baseIntervalSec;
 	}
 
-	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+	if (std::isnan(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_PITCH,varioStatus.STATUS_IND_PITCH)) ||
 			(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_PITCH,varioStatus.STATUS_IND_PITCH) > SQUARE(1.0) * baseIntervalSec)) {
@@ -276,7 +276,7 @@ void IMUBase::initializeStatusGyro(
 				SQUARE(1.0) * baseIntervalSec;
 	}
 
-	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+	if (std::isnan(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL)) ||
 			(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL) > SQUARE(1.0) * baseIntervalSec)) {
@@ -378,13 +378,13 @@ void IMUBase::initializeStatusMag(
 		LOG4CXX_DEBUG(logger,"worldMagY = " << worldMagVector[1]);
 		LOG4CXX_DEBUG(logger,"worldMagZ = " << worldMagVector[2]);
 
-		if (isnan(varioStatus.heading)) {
+		if (std::isnan(varioStatus.heading)) {
 			varioStatus.heading = FastMath::fastATan2(-worldMagVector[1],worldMagVector[0]);
 			LOG4CXX_DEBUG(logger,"Initial heading = " << varioStatus.heading);
 			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) = 5.0f * 5.0f;
 		}
 
-		if (isnan(varioStatus.magneticInclination)) {
+		if (std::isnan(varioStatus.magneticInclination)) {
 			varioStatus.magneticInclination = FastMath::fastATan2(
 					-avgMagZ,sqrtf(avgMagX*avgMagX + avgMagY*avgMagY));
 			if (varioStatus.magneticInclination > 90.0f) {
@@ -397,14 +397,14 @@ void IMUBase::initializeStatusMag(
 		}
 	}
 
-	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+	if (std::isnan(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_MAGNETIC_INCLINATION,varioStatus.STATUS_IND_MAGNETIC_INCLINATION))) {
 		varioStatus.getSystemNoiseCovariance_Q().
 				coeffRef(varioStatus.STATUS_IND_MAGNETIC_INCLINATION,varioStatus.STATUS_IND_MAGNETIC_INCLINATION) =
 				SQUARE(0.0001) * baseIntervalSec;
 	}
 
-	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+	if (std::isnan(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING))||
 			(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) > SQUARE(2.0) * baseIntervalSec)) {
@@ -413,7 +413,7 @@ void IMUBase::initializeStatusMag(
 				SQUARE(2.0) * baseIntervalSec;
 	}
 
-	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+	if (std::isnan(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_PITCH,varioStatus.STATUS_IND_PITCH)) ||
 			(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_PITCH,varioStatus.STATUS_IND_PITCH) > SQUARE(2.0) * baseIntervalSec)) {
@@ -422,7 +422,7 @@ void IMUBase::initializeStatusMag(
 				SQUARE(2.0) * baseIntervalSec;
 	}
 
-	if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+	if (std::isnan(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL)) ||
 			(varioStatus.getSystemNoiseCovariance_Q().
 			coeffRef(varioStatus.STATUS_IND_ROLL,varioStatus.STATUS_IND_ROLL) > SQUARE(2.0) * baseIntervalSec)) {

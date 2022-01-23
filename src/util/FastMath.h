@@ -28,8 +28,8 @@
 #ifndef FASTMATH_H_
 #define FASTMATH_H_
 
-#include <math.h>
-#include <assert.h>
+#include <cmath>
+#include <cassert>
 
 // #include "GliderVarioStatus.h"
 #include "CommonDefs.h"

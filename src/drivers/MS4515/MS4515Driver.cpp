@@ -167,13 +167,13 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
 
 		tmpVal = configuration.getPropertyValue("pMin_inH2O", NAN);
 
-		if (!isnan(tmpVal)) {
+		if (!std::isnan(tmpVal)) {
 			pMin = tmpVal * InchH20toMBar;
 		}
 
 		tmpVal = configuration.getPropertyValue("pMin_hPa", NAN);
-		if (!isnan(tmpVal)) {
-			if (!isnan(pMin)) {
+		if (!std::isnan(tmpVal)) {
+			if (!std::isnan(pMin)) {
 				std::ostringstream str;
 
 				str << "Read pMin configuration for driver \"" << driverName
@@ -186,7 +186,7 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
 			}
 		}
 
-		if (isnan(pMin)) {
+		if (std::isnan(pMin)) {
 			std::ostringstream str;
 			str << "Read pMin configuration for driver \"" << driverName
 					<< "\" failed: Either neither configurations \"pMin_inH2O\" and \"pMin_hPa\" are defined, "
@@ -198,13 +198,13 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
 
 		tmpVal = configuration.getPropertyValue("pMax_inH2O", NAN);
 
-		if (!isnan(tmpVal)) {
+		if (!std::isnan(tmpVal)) {
 			pMax = tmpVal * InchH20toMBar;
 		}
 
 		tmpVal = configuration.getPropertyValue("pMax_hPa", NAN);
-		if (!isnan(tmpVal)) {
-			if (!isnan(pMax)) {
+		if (!std::isnan(tmpVal)) {
+			if (!std::isnan(pMax)) {
 				std::ostringstream str;
 
 				str << "Read pMax configuration for driver \"" << driverName
@@ -217,7 +217,7 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
 			}
 		}
 
-		if (isnan(pMax)) {
+		if (std::isnan(pMax)) {
 			std::ostringstream str;
 			str << "Read pMax configuration for driver \"" << driverName
 					<< "\" failed: Either neither configurations \"pMax_inH2O\" and \"pMax_hPa\" are defined, "
@@ -303,7 +303,7 @@ void MS4515Driver::initializeStatus(
 
 	// Wait for 20 seconds for 16 samples to appear, and a defined temperature value
 	for (int i = 0; i < 20; i++) {
-		if (numValidInitValues < NumInitValues || isnan(temperatureVal)) {
+		if (numValidInitValues < NumInitValues || std::isnan(temperatureVal)) {
 			using namespace std::chrono_literals; // used for the term "1s" below. 's' being the second literal.
 
 			LOG4CXX_TRACE(logger,__FUNCTION__ << ": Only " << numValidInitValues <<
@@ -329,7 +329,7 @@ void MS4515Driver::initializeStatus(
 		// Store the avg pressure as offset only when the instrument is obviously not switched on during flight.
 		// or during high-wind conditions on the field (> 20 km/h)
 
-		if (isnan(pressureBias)) {
+		if (std::isnan(pressureBias)) {
 			// No pre-loaded bias value from calibration data.
 			// Assume initial startup in controlled environment.
 			pressureBias = avgPressure;
@@ -371,7 +371,7 @@ void MS4515Driver::initializeStatus(
 			// Convert it into into IAS. On the ground this is approximately TAS
 			// When there is already an actual pressure value available, even better.
 			FloatType currStaticPressure;
-			if (!isnan(varioStatus.lastPressure)) {
+			if (!std::isnan(varioStatus.lastPressure)) {
 				currStaticPressure = varioStatus.lastPressure;
 			} else {
 				currStaticPressure = PressureStdMSL;
@@ -399,7 +399,7 @@ void MS4515Driver::initializeStatus(
 
 	}
 
-	if (isnan(pressureBias)) {
+	if (std::isnan(pressureBias)) {
 		pressureBias = 0.0f;
 	}
 

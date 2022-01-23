@@ -148,7 +148,7 @@ void TE_MEAS_AbsPressureDriver::initializeStatus(
 
 	// Wait for 20 seconds for 16 samples to appear, and a defined temperature value
 	for (int i = 0; i < 20; i++) {
-		if (numValidInitValues < NumInitValues || isnan(temperatureVal)) {
+		if (numValidInitValues < NumInitValues || std::isnan(temperatureVal)) {
 			using namespace std::chrono_literals; // used for the term "1s" below. 's' being the second literal.
 
 			LOG4CXX_TRACE(logger,__FUNCTION__ << ": Only " << numValidInitValues <<
@@ -170,12 +170,12 @@ void TE_MEAS_AbsPressureDriver::initializeStatus(
 		avgPressure /= FloatType(NumInitValues);
 		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": avgPressure = " << avgPressure);
 
-		if (!isnan(measurements.gpsMSL)) {
+		if (!std::isnan(measurements.gpsMSL)) {
 			initQFF(varioStatus,measurements,varioMain,avgPressure);
 		}
 
-		if (isnan(varioStatus.altMSL)) {
-			if (!isnan(varioStatus.qff) && !isnan(temperatureVal) /*!isnan(measurements.tempLocalC)*/) {
+		if (std::isnan(varioStatus.altMSL)) {
+			if (!std::isnan(varioStatus.qff) && !std::isnan(temperatureVal) /*!std::isnan(measurements.tempLocalC)*/) {
 			auto const currTempK = temperatureVal /*measurements.tempLocalC*/ + CtoK;
 			varioStatus.altMSL  = (currTempK -(pow((avgPressure / varioStatus.qff),(1.0/BarometricFormulaExponent)) * currTempK)) / TempLapseIndiffBoundLayer;
 			varioStatus.lastPressure = avgPressure;
@@ -199,7 +199,7 @@ void TE_MEAS_AbsPressureDriver::initializeStatus(
 			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": altMSL is already defined = " << varioStatus.altMSL);
 		}
 
-		if (isnan(varioStatus.getSystemNoiseCovariance_Q().
+		if (std::isnan(varioStatus.getSystemNoiseCovariance_Q().
 				coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL)) ||
 				(varioStatus.getSystemNoiseCovariance_Q().
 				coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) > SQUARE(2.0) * baseIntervalSec)) {

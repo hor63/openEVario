@@ -27,6 +27,7 @@
 #	include "config.h"
 #endif
 
+// Used for opening shared libraries
 #include <dlfcn.h>
 
 #include "GliderVarioDriverList.h"
