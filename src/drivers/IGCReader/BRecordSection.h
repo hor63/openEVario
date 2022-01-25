@@ -37,6 +37,30 @@
 
 namespace openEV::drivers::IGCReader {
 
+	/** \brief Calculate the pressure from the altitude above MSL with the Barometric formula at standard temperature 15C.
+	 *
+	 * Constants and barometric formula from [Barometric formula:Pressure equations](https://en.wikipedia.org/wiki/Barometric_formula#Pressure_equations)
+	 * The simplified formula is taken from
+	 * [Barometrische Höhenformel:Internationale Höhenformel](https://de.wikipedia.org/wiki/Barometrische_H%C3%B6henformel#Internationale_H%C3%B6henformel)
+	 *
+	 * @param altitude Altitude above MSL in m
+	 * @param temperatureLapse Temperature lapse in K/m. Default is the standard atmosphere lapse of 0.65K/100m
+	 * @return Pressure in hPascal
+	 */
+	static inline double altToPressureStdTemp (double altitude,double temperatureLapse = -0.65/100.0) {
+
+		static double constexpr R  = 8.3144598	; // Universal gas constant: 8.3144598 J/mol/K
+		static double constexpr g0 = 9.80665	; // Gravitational acceleration: 9.80665 m/s2
+		static double constexpr M  = 0.0289644	; // Molar mass of Earth's air: 0.0289644 kg/mol
+		// Exponent term
+		double const exp = g0*M/(R*temperatureLapse); // Exponential term of the Barometric formula
+
+		static double constexpr T0 = 15.0f + CtoK		; // 15C at MSL according to the standard atmosphere
+
+		return  (PressureStdMSL * pow(1 - ((temperatureLapse * altitude ) / T0),exp));
+
+	}
+
 
 /** \brief IGC file B record section processor
  *

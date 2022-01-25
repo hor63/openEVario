@@ -29,6 +29,8 @@
 #ifndef GLIDERVARIOSTATUS_H_
 #define GLIDERVARIOSTATUS_H_
 
+#include <chrono>
+
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
@@ -55,6 +57,12 @@
  */
 namespace openEV
 {
+
+/**
+ * \brief Use the system clock duration definition throughout
+ */
+typedef std::chrono::system_clock::duration OEVDuration;
+
 
 /**
  *  \class GliderVarioStatus
