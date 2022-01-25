@@ -28,8 +28,8 @@
 #define MAIN_PROGRAMOPTIONS_H_
 
 #include <string> 
-#include <chrono>
- 
+
+#include "CommonDefs.h"
 
 #define defaultConfigFileName "./openEVario.properties"
 #define defaultLoggerConfigFileName "./openEVario.logger.properties"

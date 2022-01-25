@@ -26,9 +26,9 @@
 #ifndef GLIDERVARIOMEASUREMENTUPDATER_H_
 #define GLIDERVARIOMEASUREMENTUPDATER_H_
 
+#include "util/RotationMatrix.h"
 #include "GliderVarioStatus.h"
 #include "GliderVarioMeasurementVector.h"
-#include "util/RotationMatrix.h"
 
 namespace openEV {
 

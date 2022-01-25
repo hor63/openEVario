@@ -27,9 +27,6 @@
 #ifndef GLIDERVARIOMEASUREMENTVECTOR_H_
 #define GLIDERVARIOMEASUREMENTVECTOR_H_
 
-#include <cfloat>
-#include <cmath>
-
 #include "GliderVarioStatus.h"
 
 namespace openEV {

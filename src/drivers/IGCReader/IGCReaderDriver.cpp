@@ -339,8 +339,8 @@ void IGCReaderDriver::readIGCFile() {
 
 void IGCReaderDriver::runDebugSingleThread(GliderVarioMainPriv& varioMain) {
 
-	std::chrono::system_clock::time_point startTime = std::chrono::system_clock::now();
-	std::chrono::system_clock::time_point lastUpdateTime = startTime;
+	OEVClock::time_point startTime = OEVClock::now();
+	OEVClock::time_point lastUpdateTime = startTime;
 	GliderVarioTransitionMatrix transMatrix;
 
 	GliderVarioStatus **currentStatus = 0;
@@ -355,7 +355,7 @@ void IGCReaderDriver::runDebugSingleThread(GliderVarioMainPriv& varioMain) {
 			transitionMatrix,
 			measurementVector);
 
-	startTime = std::chrono::system_clock::now();
+	startTime = OEVClock::now();
 	lastUpdateTime = startTime;
 
 	for (auto it = bRecords.cbegin(); it != bRecords.cend();it++) {

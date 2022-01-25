@@ -442,7 +442,7 @@ void MS4515Driver::processingMainLoop() {
 
     using namespace std::chrono_literals;
 
-	auto nextStartConversion = std::chrono::system_clock::now();
+	auto nextStartConversion = OEVClock::now();
 
 	while (!getStopDriverThread()) {
 
@@ -451,7 +451,7 @@ void MS4515Driver::processingMainLoop() {
 		readoutMS4515();
 
 		// In case that you miss a cycle advance to the next cycle
-		auto now = std::chrono::system_clock::now();
+		auto now = OEVClock::now();
 		do {
 			nextStartConversion += updateCyle;
 		} while (nextStartConversion < now);

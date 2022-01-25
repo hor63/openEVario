@@ -309,7 +309,7 @@ GliderVarioMainPriv::GliderVarioMainPriv(int argc, const char *argv[])
 	}
 #endif /* HAVE_LOG4CXX_H */
 
-	lastPredictionUpdate = std::chrono::system_clock::now();
+	lastPredictionUpdate = OEVClock::now();
 
 	this->argc = argc;
 
@@ -500,14 +500,14 @@ void GliderVarioMainPriv::releaseCurrentStatus () {
 
 void GliderVarioMainPriv::predictAndSwapStatus() {
 
-	auto timeBeforePredict = std::chrono::system_clock::now();
+	auto timeBeforePredict = OEVClock::now();
 
 	auto timeDiff = timeBeforePredict - lastPredictionUpdate;
 
 	if (timeDiff >= programOptions.maxTimeBetweenPredictionAndMeasurementUpdate) {
 
 		// Calculate fractional seconds from the system clock ticks with double arithmetic
-		FloatType timeDiffSec = double(timeDiff.count()) * (double(std::chrono::system_clock::period::num)/double(std::chrono::system_clock::period::den));
+		FloatType timeDiffSec = double(timeDiff.count()) * (double(OEVClock::period::num)/double(OEVClock::period::den));
 
 		transitionMatrix.updateStatus(
 				*currentStatus,
@@ -1021,8 +1021,8 @@ void GliderVarioMainPriv::stopMainLoop() {
 
 void GliderVarioMainPriv::idleLoop() {
 
-	std::chrono::system_clock::time_point nextLoopTime =  std::chrono::system_clock::now();
-	std::chrono::system_clock::time_point now;
+	OEVClock::time_point nextLoopTime =  OEVClock::now();
+	OEVClock::time_point now;
 
 	while (idleLoopRunning) {
 		GliderVarioMeasurementVector* measVector = 0;
@@ -1032,7 +1032,7 @@ void GliderVarioMainPriv::idleLoop() {
 		getCurrentStatusAndLock(measVector);
 		releaseCurrentStatus();
 
-		now = std::chrono::system_clock::now();
+		now = OEVClock::now();
 		do {
 			nextLoopTime += programOptions.idlePredictionCycle;
 

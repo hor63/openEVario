@@ -414,7 +414,7 @@ void MPU9150Driver::driverThreadFunction() {
 
 void MPU9150Driver::processingMainLoop () {
 
-	auto nextStartConversion = std::chrono::system_clock::now();
+	auto nextStartConversion = OEVClock::now();
 
 	while (!getStopDriverThread()) {
 		SensorData &currSensorData = sensorDataArr[currSensorDataIndex];
@@ -438,7 +438,7 @@ void MPU9150Driver::processingMainLoop () {
 				break;
 			}
 			// Re-start the clock, and re-start the cycle.
-			nextStartConversion = std::chrono::system_clock::now();
+			nextStartConversion = OEVClock::now();
 		}
 
 		ioPort->readBlockAtRegAddrByte(i2cAddress, REG_9150_ACCEL_XOUT_H, buf, sizeof(buf));
@@ -532,7 +532,7 @@ void MPU9150Driver::processingMainLoop () {
 		updateKalman(currSensorData);
 
 		// In case that you miss a cycle advance to the next cycle
-		auto now = std::chrono::system_clock::now();
+		auto now = OEVClock::now();
 		do {
 			nextStartConversion += updateCyle;
 		} while (nextStartConversion < now);

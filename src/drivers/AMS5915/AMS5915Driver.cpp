@@ -346,7 +346,7 @@ void AMS5915Driver::driverThreadFunction() {
 }
 
 void AMS5915Driver::processingMainLoop() {
-	auto nextStartConversion = std::chrono::system_clock::now();
+	auto nextStartConversion = OEVClock::now();
 
 	while (!getStopDriverThread()) {
 
@@ -355,7 +355,7 @@ void AMS5915Driver::processingMainLoop() {
 		readoutAMS5915();
 
 		// In case that you miss a cycle advance to the next cycle
-		auto now = std::chrono::system_clock::now();
+		auto now = OEVClock::now();
 		do {
 			nextStartConversion += updateCyle;
 		} while (nextStartConversion < now);

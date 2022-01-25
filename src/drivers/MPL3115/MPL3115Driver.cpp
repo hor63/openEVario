@@ -244,7 +244,7 @@ void MPL3115Driver::processingMainLoop() {
 
 	setupMPL3115();
 
-	auto nextStartConversion = std::chrono::system_clock::now();
+	auto nextStartConversion = OEVClock::now();
 
 	while (!getStopDriverThread()) {
 
@@ -255,7 +255,7 @@ void MPL3115Driver::processingMainLoop() {
 		readoutMPL3155();
 
 		// In case that you miss a cycle advance to the next cycle
-		auto now = std::chrono::system_clock::now();
+		auto now = OEVClock::now();
 		do {
 			nextStartConversion += updateCyle;
 		} while (nextStartConversion < now);

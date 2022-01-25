@@ -514,7 +514,7 @@ void IMUBase::initializeStatus(
 
 	} // for (int i = 0; i < 20;i++)
 
-	lastUpdateTime = std::chrono::system_clock::now();
+	lastUpdateTime = OEVClock::now();
 
 }
 
@@ -559,7 +559,7 @@ void IMUBase::updateCalibrationData() {
 		if (calibrationDataWriteThread.joinable()) {
 			calibrationDataWriteThread.join();
 		}
-		lastUpdateTime = std::chrono::system_clock::now();
+		lastUpdateTime = OEVClock::now();
 		calibrationDataWriteThread = std::thread(&IMUBase::calibrationDataWriteFunc,this);
 	}
 }

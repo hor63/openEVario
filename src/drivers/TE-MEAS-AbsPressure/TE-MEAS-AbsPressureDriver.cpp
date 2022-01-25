@@ -281,7 +281,7 @@ void TE_MEAS_AbsPressureDriver::processingMainLoop() {
 	std::this_thread::sleep_for(5ms);
 	readoutTemperature();
 
-	auto nextStartConversion = std::chrono::system_clock::now();
+	auto nextStartConversion = OEVClock::now();
 
 	while (!getStopDriverThread()) {
 
@@ -298,7 +298,7 @@ void TE_MEAS_AbsPressureDriver::processingMainLoop() {
 		readoutTemperature();
 
 		// In case that you miss a cycle advance to the next cycle
-		auto now = std::chrono::system_clock::now();
+		auto now = OEVClock::now();
 		do {
 			nextStartConversion += updateCyle;
 		} while (nextStartConversion < now);

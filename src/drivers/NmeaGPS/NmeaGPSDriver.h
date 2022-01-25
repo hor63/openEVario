@@ -29,7 +29,7 @@
 #include <string>
 #include <map>
 
-#include "../../CommonLogger_ShLib.h"
+#include "CommonDefs.h"
 #include "drivers/DriverBase.h"
 #include "NmeaGPSLib.h"
 #include "NMEASet.h"

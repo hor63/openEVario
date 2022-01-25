@@ -28,10 +28,8 @@
 #ifndef FASTMATH_H_
 #define FASTMATH_H_
 
-#include <cmath>
 #include <cassert>
 
-// #include "GliderVarioStatus.h"
 #include "CommonDefs.h"
 
 // directly from GLIBC math.h ... just in case
@@ -141,31 +139,7 @@ public:
      * \sa [Unit Circle](https://en.wikipedia.org/wiki/Unit_circle)
      *
      */
-    static inline FloatType fastASin(FloatType y) {
-        assert (-1.0f <= y && y <= 1.0f);
-
-        if (y < 0.0f) {
-            return -fastASin(-y);
-        }
-        if (y == 0.0f) {
-            return 0.0f;
-        }
-        if (y == 1.0f) {
-            return 90.0f;
-        }
-
-        // Calculate the result interpolating the table.
-        {
-            double scaledASinVal = y * static_cast<double>(sizeASinTable);
-            double indexD = trunc(scaledASinVal);
-            unsigned index = static_cast<unsigned>(indexD);
-
-            assert (y >= 0.0 && y < 1.0);
-
-            // return the interpolated value.
-            return (asinTable[index] + (asinTable[index+1]-asinTable[index])*(scaledASinVal-indexD));
-        }
-    }
+    static FloatType fastASin(FloatType y);
 
     /**
      *
@@ -201,18 +175,7 @@ protected:
      * @param[in] angle in degrees. The angle *must* >= 0.0 and < 360.0
      * @return The sine value of the angle
      */
-    static inline FloatType fastSinRaw(FloatType angle) {
-        double scaledAngle = angle*static_cast<double>(sineSamplesPerDegree); // The angle scaled to the sinusTable scale
-        double indexD = trunc(scaledAngle);
-        unsigned index = static_cast<unsigned>(indexD);
-
-        assert (angle>=0.0 && angle <360.0);
-
-
-        // return the interpolated value
-        return (sinusTable[index] + (sinusTable[index+1]-sinusTable[index])*(scaledAngle-indexD));
-
-    }
+    static FloatType fastSinRaw(FloatType angle);
 
     /**
      * Calculates the arc tangent from the x and y component of Cartesian coordinates within the first quadrant, i.e. x and y must >= 0
@@ -248,40 +211,23 @@ protected:
 
     /**
      *
-     * Calculate the arc tangent value of a value between 0 and < 1. This function interpolates the pre-calculated values from the table atanTable.
-     * Due to the range of the input values only the first octant can be calculated. Everything must be mirrored from this partial range.
-     * @param[in] tanVal: tan value, i.e. the ratio of x and y. tan value *must* be >= 0 and < 1. This function is only defined in the 1st 45 degrees.
+     * Calculate the arc tangent value of a value between 0 and < 1.
+     * This function interpolates the pre-calculated values from the table atanTable.
+     * Due to the range of the input values only the first octant can be calculated.
+     * Everything must be mirrored from this partial range.
+     *
+     * @param[in] tanVal: tan value, i.e. the ratio of x and y.
+     * tan value *must* be >= 0 and < 1. This function is only defined in the 1st 45 degrees.
      * @return the arc tan value in degrees.
      */
-    static inline FloatType fastATanRaw (FloatType tanVal) {
-        double scaledTanVal = tanVal * static_cast<double>(sizeATanTable);
-        double indexD = trunc(scaledTanVal);
-        unsigned index = static_cast<unsigned>(indexD);
-
-        assert (tanVal >= 0.0 && tanVal < 1.0);
-
-        // return the interpolated value.
-        return (atanTable[index] + (atanTable[index+1]-atanTable[index])*(scaledTanVal-indexD));
-    }
-
+    static FloatType fastATanRaw (FloatType tanVal);
 
     /**
      *
      * @param[in] angle in degrees. The angle MUST be >= 0.
      * @return The sine value of the angle
      */
-    static inline FloatType fastSinPositive(FloatType angle) {
-
-        // normalize values if needed
-        if (angle >= 360.0) {
-            // this is expensive, so do not do it :)
-            return fastSinRaw (fmod(angle,360.0));
-        } else {
-            // normalization not required
-            return fastSinRaw (angle);
-        }
-
-    }
+    static FloatType fastSinPositive(FloatType angle);
 
 };
 

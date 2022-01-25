@@ -241,9 +241,9 @@ protected:
     std::thread calibrationDataWriteThread;
 
     /// \brief Cycle time of calibration data updates when the Kalman filter is running.
-    std::chrono::system_clock::duration calibrationDataUpdateCycle;
+    OEVClock::duration calibrationDataUpdateCycle;
     /// \brief Time of the last calibration data update, or the initial load
-    std::chrono::system_clock::time_point lastUpdateTime;
+    OEVClock::time_point lastUpdateTime;
     /** \brief Indicator if the previous calibration write run is still active or finished.
      *
      * Indicator if the thread code actually ran to the end.

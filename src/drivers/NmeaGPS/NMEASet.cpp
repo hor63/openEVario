@@ -269,7 +269,7 @@ uint32_t NMEASet::NMEATimeStampToMS(uint8_t const *timestampStr) {
 void NMEASet::processSentenceTeachIn(
 		const NMEASentence &newSentence) {
 
-	auto currTime = std::chrono::system_clock::now();
+	auto currTime = OEVClock::now();
 
 	// Some sentences do no carry a GPS timestmap. Therefore by default assume the same cycle.
 	auto thisGPSTimeStampMS = currSequenceTimestampMS;
@@ -702,7 +702,7 @@ void NMEASet::processSentenceOperation(
 			currExpectedSentenceType = usedNMEASentenceTypes.cbegin();
 			currGnssRecord.initialize();
 			currGnssRecord.gnssTimeStamp = thisGPSTimeStampMS;
-			currGnssRecord.recordStart = std::chrono::system_clock::now();
+			currGnssRecord.recordStart = OEVClock::now();
 		}
 
 		// Check if the current cycle was complete and use to update the Kalman filter already

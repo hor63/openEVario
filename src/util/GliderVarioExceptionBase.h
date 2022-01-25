@@ -29,9 +29,6 @@
 #include <exception>
 #include <string>
 
-#include <cerrno>
-#include <cstring>
-
 #include "CommonDefs.h"
 
 

@@ -30,7 +30,6 @@
 
 #include "CommonDefs.h"
 #include "NMEASentence.h"
-#include "NmeaGPSDriver.h"
 
 namespace openEV::drivers::NMEA0813 {
 

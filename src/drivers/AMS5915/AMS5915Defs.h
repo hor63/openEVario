@@ -26,6 +26,7 @@
 #define DRIVERS_AMS5915DEFS_H_
 
 #include "CommonDefs.h"
+#include "util/OEV_Enum.h"
 
 /// Definitions for the AMS5915 sensor
 /// \see [AMS5915 Web site](https://www.amsys-sensor.com/products/pressure-sensor/ams5915-digital-pressure-sensor-5mbar-to-10-bar/) with links to the documents below and more.

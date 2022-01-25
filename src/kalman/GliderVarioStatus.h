@@ -33,6 +33,8 @@
 #include <Eigen/Sparse>
 
 #include "CommonDefs.h"
+#include "util/OEV_Enum.h"
+#include "util/NaturalConstants.h"
 
 /**
  * This namespace includes a complex Extended Kalman Filter (EKF) for implementing a complete electronic compensated variometer, and artificial horizon.
@@ -55,6 +57,7 @@
  */
 namespace openEV
 {
+
 
 /**
  *  \class GliderVarioStatus
@@ -82,11 +85,7 @@ public:
      *
      * Enumeration of the components of the Kalman status vector #statusVector_x
      */
-#if defined DOXYGEN
-    enum StatusComponentIndex {
-#else
 	OEV_ENUM(StatusComponentIndex,
-#endif
 
 		// constants (but may varying slightly
         STATUS_IND_GRAVITY      ,  ///< The gravity, initialized to #::GRAVITY
@@ -139,11 +138,7 @@ public:
         								///< last altitude update :)
 
         STATUS_NUM_ROWS				///< The number of rows in the vector. This is not a component of the vector!
-#if defined DOXYGEN
-	    };
-#else
 	);
-#endif
 
     typedef Eigen::Matrix<FloatType,STATUS_NUM_ROWS,1> StatusVectorType; ///< Saves typing of the complex template type
     typedef Eigen::SparseMatrix<FloatType> StatusCoVarianceType; ///< Co-variance matrix type for P and Q

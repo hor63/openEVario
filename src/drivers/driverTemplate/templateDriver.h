@@ -30,9 +30,10 @@
 #include <string>
 #include <map>
 
-#include "OEVCommon.h"
+#include "CommonDefs.h"
+#include "util/OEV_Enum.h"
 
-#include "drivers/GliderVarioDriverBase.h"
+#include "drivers/DriverBase.h"
 #include "templateLib.h"
 
 namespace openEV::drivers::templ {

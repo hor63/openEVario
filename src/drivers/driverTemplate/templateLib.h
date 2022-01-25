@@ -26,7 +26,7 @@
 #ifndef DRIVERS_TEMPLATE_TEMPLATELIB_H_
 #define DRIVERS_TEMPLATE_TEMPLATELIB_H_
 
-#include "drivers/GliderVarioDriverLibBase.h"
+#include "drivers/DriverLibBase.h"
 
 namespace openEV::drivers::templ {
 

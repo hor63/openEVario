@@ -26,6 +26,8 @@
 #ifndef DRIVERS_MPU_9150_MPU_9150DEFS_H_
 #define DRIVERS_MPU_9150_MPU_9150DEFS_H_
 
+#include <cstdint>
+
 namespace openEV::drivers::TDK_MPU9150 {
 
 	// =======================================================================

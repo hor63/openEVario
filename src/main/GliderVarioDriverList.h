@@ -26,7 +26,6 @@
 #ifndef MAIN_GLIDERVARIODRIVERLIST_H_
 #define MAIN_GLIDERVARIODRIVERLIST_H_
 
-#include <memory>
 #include <map>
 #include <string>
 

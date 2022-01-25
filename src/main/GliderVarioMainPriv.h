@@ -201,7 +201,7 @@ public:
 			GliderVarioMeasurementVector *&measurementVector
 			) OEV_MAIN_PUBLIC ;
 
-	std::chrono::system_clock::time_point getLastPredictionUpdate() {
+	OEVClock::time_point getLastPredictionUpdate() {
 		return lastPredictionUpdate;
 	}
 
@@ -232,7 +232,7 @@ private:
 	/// \brief synchronizes access and updates to \ref stat1 and \ref stat2
 	std::mutex currentStatusLock;
 
-	std::chrono::system_clock::time_point lastPredictionUpdate;
+	OEVClock::time_point lastPredictionUpdate;
 
     /// \brief The idle loop thread
     std::thread idleLoopThread;

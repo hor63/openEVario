@@ -31,7 +31,8 @@
 #include <list>
 
 #include "CommonDefs.h"
-#include "NmeaGPSDriver.h"
+#include "util/GliderVarioExceptionBase.h"
+#include "main/GliderVarioMainPriv.h"
 #include "NMEASentence.h"
 #include "NMEA0813Protocol.h"
 
@@ -293,7 +294,7 @@ public:
 		/// The record type as enum
 		NMEASentence::NMEASentenceType recordType;
 		/// The delay of the sentence from the start of a cycle
-		std::chrono::system_clock::duration timeAfterCycleStart;
+		OEVClock::duration timeAfterCycleStart;
 		/// Defines longitude and latitude
 		bool definesPosition = false;
 		/// Defines altitude MSL. Altitude above geoid is pretty useless to me.
@@ -322,7 +323,7 @@ public:
 		/// \ref TeachInCollectionList
 		uint32_t recordNo = 0U;
 		/// Local timestamp of receipt of the first sentence of the current cycle
-		std::chrono::system_clock::time_point cycleStart;
+		OEVClock::time_point cycleStart;
 		/// The array of records. The number of actually defined records is stored in \p numInCollection.
 		TeachInRecordList records;
 	};
@@ -383,7 +384,7 @@ public:
 		bool recordProcessed;	///< true when this record was complete and used for the Kalman update.
 								///< In promiscuous mode I can ignore all messages from that point until the next GNSS fix cycle
 
-		std::chrono::system_clock::time_point recordStart;
+		OEVClock::time_point recordStart;
 		uint32_t gnssTimeStamp;
 
 		/** \brief Initialize the record for a new GNSS fix cycle
@@ -401,7 +402,7 @@ public:
 			lonDeviation = 0.0;
 			altDeviation = 0.0;
 			// Reset to epoch start
-			recordStart = std::chrono::system_clock::time_point();
+			recordStart = OEVClock::time_point();
 			// And set the GNSS timestamp to an implausible value
 			gnssTimeStamp = NMEATimeStampUndef;
 			recordProcessed = false;

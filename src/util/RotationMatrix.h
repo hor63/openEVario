@@ -25,7 +25,6 @@
 #ifndef ROTATIONMATRIX_H_
 #define ROTATIONMATRIX_H_
 
-// #include "GliderVarioStatus.h"
 #include <Eigen/Dense>
 #include "CommonDefs.h"
 
