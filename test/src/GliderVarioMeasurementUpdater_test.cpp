@@ -959,7 +959,6 @@ TEST_F(MeasurementUpdaterTest, StaticPressure) {
 	FloatType const diffAltMSL = (calculatedPressureDiff - calculatedPressure) / 10.0;
 
 	// this is for debugging only to check the altitude difference per hPa decrease (~8m/hPa or 20ft/hPa at MSL, double that at 5500 m altMSL)
-	FloatType const diffPressure = 1.0/diffAltMSL;
 
 
 	GliderVarioMeasurementUpdater::staticPressureUpd(calculatedPressure + 0.2,measuredTemp,3*3,measVect,st1);

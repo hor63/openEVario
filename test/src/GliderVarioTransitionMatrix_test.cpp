@@ -87,7 +87,6 @@ TEST_F(TransitionMatrixTest, Latitude) {
 
                         transMatrix.updateStatus(st1,st2,t);
 
-                        double arcSecPerM = 3600.0 / 111132.0;
                         double expectResult =
                                 lat
                                 + (t*speedGroundN

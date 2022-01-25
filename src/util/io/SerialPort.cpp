@@ -28,9 +28,10 @@
 #  include "config.h"
 #endif
 
-#include "util/io/SerialPort.h"
-
 #include <sstream>
+#include <cstring>
+
+#include "util/io/SerialPort.h"
 
 #if defined HAVE_LOG4CXX_H
 static log4cxx::LoggerPtr logger = 0;

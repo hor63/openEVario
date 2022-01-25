@@ -27,8 +27,10 @@
 #  include "config.h"
 #endif
 
-#include "GliderVarioExceptionBase.h"
 #include <sstream>
+#include <cstring>
+
+#include "GliderVarioExceptionBase.h"
 
 namespace openEV {
 

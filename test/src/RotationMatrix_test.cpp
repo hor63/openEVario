@@ -95,7 +95,6 @@ TEST_F(RotationMatrixTest, VectorTest) {
                 rotMatrix.setRoll(phi);
 
                 RotationMatrix3DType& glo2Plane = rotMatrix.getMatrixGloToPlane();
-                RotationMatrix3DType& plane2Glo = rotMatrix.getMatrixPlaneToGlo();
 
                 Vector3DType orgVect = {1.1f,2.2f,3.3f}, vect1, vect2;
                 FloatType x,y,z;

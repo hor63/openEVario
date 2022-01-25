@@ -27,6 +27,7 @@
 #endif
 
 #include <cerrno>
+#include <cstring>
 #include <unistd.h>
 
 #if HAVE_SYS_TYPES_H

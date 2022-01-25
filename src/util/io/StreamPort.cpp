@@ -27,6 +27,7 @@
 #endif
 
 #include <sstream>
+#include <cstring>
 
 #include "util/io/StreamPort.h"
 

@@ -26,9 +26,10 @@
 #  include "config.h"
 #endif
 
+#include <sstream>
+#include <cstring>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <sstream>
 
 #include "util/io/DatagramPort.h"
 
