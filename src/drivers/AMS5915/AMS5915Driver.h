@@ -204,40 +204,40 @@ private:
     int numValidInitValues = 0;
 
     /// Estimated bias of the sensor in mBar/hPa
-    FloatType pressureBias = NAN;
+    FloatType pressureBias = UnInitVal;
 
     /// Latest temperature value in C
-    FloatType temperatureVal = NAN;
+    FloatType temperatureVal = UnInitVal;
 
     /** \brief Minimum pressure of the defined range in mBar.
      *
      */
-    FloatType pMin = NAN;
+    FloatType pMin = UnInitVal;
 
     /** \brief Maximum pressure of the defined range in mBar
      *
      */
-    FloatType pMax = NAN;
+    FloatType pMax = UnInitVal;
 
     /** \brief Pressure range of the sensor in mBar.
      *
      * Range is \ref pMax - \ref pMin.
      */
-    FloatType pressureRange = NAN;
+    FloatType pressureRange = UnInitVal;
 
     /** \brief Resolution of the sensor in mBar/bit of register reading
      *
      * Calculated from (pMax - pMin)/(AMS5915PressureRangeMaxCount - AMS5915PressureRangeMinCount) .
      *
      */
-    FloatType pressureResolution = NAN;
+    FloatType pressureResolution = UnInitVal;
 
     /** \brief Static error component of measurements
      *
      * This value is calculated in readConfiguration() because it only depends on the range.
      * \see pressureErrorDynFactor
      */
-    FloatType pressureErrorStatic = NAN;
+    FloatType pressureErrorStatic = UnInitVal;
 
     /// Name of the calibration data parameter file
     std::string calibrationDataFileName;

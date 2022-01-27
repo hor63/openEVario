@@ -111,26 +111,46 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
 		auto portNameConfig = configuration.searchProperty("portName");
 
 		if (portNameConfig->isList() || portNameConfig->isStruct()) {
-			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"Configuration variable \"portName\" is a struct or a string list.");
+			std::ostringstream str;
+
+			str << "Invalid configuration of driver " << driverName
+					<< ": Variable \"portName\" is a struct or a string list but not a plain string.";
+
+			throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
 		}
 
 		portName = portNameConfig->getStringValue();
 
 		ioPort = dynamic_cast<io::I2CPort*> (io::PortBase::getPortByName(portName));
 		if (ioPort == nullptr) {
+			std::ostringstream str;
+
+			str << "Invalid configuration of driver " << driverName
+					<< ": I/O Port \""<< portName << "\" is not an I2C port.";
+
 			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"I/O Port is not an I2C port.");
 		}
 	} catch (std::exception const& e) {
-		LOG4CXX_ERROR(logger, "Read configuration \"portName\" of driver \"" << driverName
-				<< "\" failed:"
-				<< e.what());
-		throw;
+		std::ostringstream str;
+
+		str << "Read configuration \"portName\" of driver \"" << driverName
+						<< "\" failed:" << e.what();
+
+		LOG4CXX_ERROR(logger,str.str());
+		throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
 	}
 
 	try {
 		auto sensorTypeConfig =  configuration.searchProperty("sensorType");
 
 		if (sensorTypeConfig->isList() || sensorTypeConfig->isStruct()) {
+			std::ostringstream str;
+
+			str << "Invalid configuration of driver " << driverName
+					<< ": Variable \"sensorType\" is a struct or a string list but not a plain string.";
+
+			LOG4CXX_ERROR (logger, str.str());
+
 			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"Configuration variable \"sensorType\" is a struct or a string list.");
 		}
 
@@ -145,7 +165,7 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
 		}
 
 		if (sensorType == SENSOR_TYPE_UNDEFINED) {
-			std::stringstream str;
+			std::ostringstream str;
 			str << __FUNCTION__ << ": Configuration value of \"sensorType\" for driver \"" << driverName
 					<< "\" is :\"" << sensorTypeConfig->getStringValue() << "\". Valid values are 'A' or 'B'.";
 			LOG4CXX_ERROR (logger, str.str());
@@ -165,46 +185,69 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
 	{
 		double tmpVal;
 
-		tmpVal = configuration.getPropertyValue("pMin_inH2O", NAN);
+		try {
+			auto tmpConfig = configuration.searchProperty("pMin_inH2O");
 
-		if (!std::isnan(tmpVal)) {
-			pMin = tmpVal * InchH20toMBar;
-		}
-
-		tmpVal = configuration.getPropertyValue("pMin_hPa", NAN);
-		if (!std::isnan(tmpVal)) {
-			if (!std::isnan(pMin)) {
+			try {
+				pMin = tmpConfig->getDoubleValue() * InchH20toMBar;
+			} catch (std::exception const &e) {
 				std::ostringstream str;
 
-				str << "Read pMin configuration for driver \"" << driverName
-						<< "\" failed: Both configurations \"pMin_inH2O\" and \"pMin_hPa\" are defined. "
-						"Only one of these is allowed.";
+				str << "Read \"pMin_inH2O\" configuration for driver \"" << driverName
+						<< "\" failed: " << e.what();
 				LOG4CXX_ERROR(logger, str.str());
 				throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
-			} else {
-				pMin = tmpVal;
 			}
+
+		} catch (Properties4CXX::ExceptionPropertyNotFound const &e) {
+			; // Ignore the missing parameter. It can also come in the guise of "pMin_hPa".
 		}
 
-		if (std::isnan(pMin)) {
+		try {
+			auto tmpConfig = configuration.searchProperty("pMin_hPa");
+
+			if (UnInitVal != pMin) {
+				std::ostringstream str;
+
+				str << "Invalid configuration of pMin configuration for driver \"" << driverName
+						<< "\" failed: Both configurations \"pMin_inH2O\" and \"pMin_hPa\" are defined. "
+						"Only one of these two is allowed.";
+				LOG4CXX_ERROR(logger, str.str());
+				throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
+			}
+
+			try {
+				pMin = tmpConfig->getDoubleValue();
+			} catch (std::exception const &e) {
+				std::ostringstream str;
+
+				str << "Read \"pMin_hPa\" configuration for driver \"" << driverName
+						<< "\" failed: " << e.what();
+				LOG4CXX_ERROR(logger, str.str());
+				throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
+			}
+		} catch (Properties4CXX::ExceptionPropertyNotFound const &e) {
+			; // Ignore the missing parameter here. Check the absence of pMin below.
+		}
+
+		if (UnInitVal == pMin) {
 			std::ostringstream str;
 			str << "Read pMin configuration for driver \"" << driverName
-					<< "\" failed: Either neither configurations \"pMin_inH2O\" and \"pMin_hPa\" are defined, "
-					"or the value is not numeric.";
+					<< "\" failed: Neither configurations \"pMin_inH2O\" and \"pMin_hPa\" are defined.";
 			LOG4CXX_ERROR(logger, str.str());
 			throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
 		}
 
+#error Change reading config for pMax too.
+		tmpVal = configuration.getPropertyValue("pMax_inH2O", UnInitVal);
 
-		tmpVal = configuration.getPropertyValue("pMax_inH2O", NAN);
-
-		if (!std::isnan(tmpVal)) {
+		if (UnInitVal != tmpVal) {
 			pMax = tmpVal * InchH20toMBar;
 		}
 
-		tmpVal = configuration.getPropertyValue("pMax_hPa", NAN);
-		if (!std::isnan(tmpVal)) {
-			if (!std::isnan(pMax)) {
+		tmpVal = configuration.getPropertyValue("pMax_hPa", UnInitVal);
+		if (UnInitVal != tmpVal) {
+			if (UnInitVal != pMax) {
 				std::ostringstream str;
 
 				str << "Read pMax configuration for driver \"" << driverName
@@ -217,7 +260,7 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
 			}
 		}
 
-		if (std::isnan(pMax)) {
+		if (UnInitVal == pMax) {
 			std::ostringstream str;
 			str << "Read pMax configuration for driver \"" << driverName
 					<< "\" failed: Either neither configurations \"pMax_inH2O\" and \"pMax_hPa\" are defined, "

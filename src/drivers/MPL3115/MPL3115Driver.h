@@ -181,9 +181,9 @@ private:
     FloatType initValues[NumInitValues];
     int numValidInitValues = 0;
 
-    FloatType pressureVal = NAN;
+    FloatType pressureVal = UnInitVal;
 
-    FloatType temperatureVal = NAN;
+    FloatType temperatureVal = UnInitVal;
 
 };
 

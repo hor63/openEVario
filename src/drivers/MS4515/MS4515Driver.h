@@ -230,48 +230,48 @@ private:
     SensorType sensorType = SENSOR_TYPE_UNDEFINED;
 
     /// Estimated bias of the sensor in mBar/hPa
-    FloatType pressureBias = NAN;
+    FloatType pressureBias = UnInitVal;
 
     /// Latest temperature value in C
-    FloatType temperatureVal = NAN;
+    FloatType temperatureVal = UnInitVal;
 
     /** \brief Minimum pressure of the defined range in mBar.
      *
      * The configuration values can be defined in in inH20 (See my rant in \ref InchH20toMBar)
      * because the sensors are defined this way, and you can simply transcribe from the sensor type.
      */
-    FloatType pMin = NAN;
+    FloatType pMin = UnInitVal;
 
     /** \brief Maximum pressure of the defined range in mBar
      *
      * \see \ref pMin
      */
-    FloatType pMax = NAN;
+    FloatType pMax = UnInitVal;
 
     /** \brief Pressure range of the sensor in mBar.
      *
      * Range is \ref pMax - \ref pMin.
      */
-    FloatType pressureRange = NAN;
+    FloatType pressureRange = UnInitVal;
 
     /** \brief Static error component of measurements
      *
      * This value is calculated in readConfiguration() because it only depends on the range.
      * \see pressureErrorDynFactor
      */
-    FloatType pressureErrorStatic = NAN;
+    FloatType pressureErrorStatic = UnInitVal;
 
     /** \brief Helper for convertRegisterPressureToMBar()
      *
      * \see \ref convertRegisterPressureToMBar() what is it for and how it is calculated.
      */
-    FloatType f1 = NAN;
+    FloatType f1 = UnInitVal;
 
     /** \brief Helper for convertRegisterPressureToMBar()
      *
      * \see \ref convertRegisterPressureToMBar() what is it for and how it is calculated.
      */
-    FloatType f2 = NAN;
+    FloatType f2 = UnInitVal;
 
     /// Name of the calibration data parameter file
     std::string calibrationDataFileName;
