@@ -200,7 +200,7 @@ protected:
     FloatType initValues[NumInitValues];
     int numValidInitValues = 0;
 
-    FloatType pressureVal = NAN;
+    FloatType pressureVal = UnInitVal;
 
     /** \brief Temperature in 1/100C
      *
