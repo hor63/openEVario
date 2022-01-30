@@ -420,8 +420,8 @@ void GliderVarioMainPriv::startup () {
     // Start the internal threads of the drivers. These will open the ports, and start acquiring sensor data
     driverList.startupDrivers(*this);
 
-    // Initialize the status to NAN. Let the drivers initialize the Kalman status with initial measurements.
-    // Finally initialize all remaining items still NAN with default values.
+    // Initialize the status to UnInitVal. Let the drivers initialize the Kalman status with initial measurements.
+    // Finally initialize all remaining items still UnInitVal with default values.
 	intializeStatus();
 
 }
@@ -550,15 +550,15 @@ void GliderVarioMainPriv::intializeStatus() {
 #define SQUARE(x) ((x)*(x))
 
 	//
-	// First set all values to NAN.
+	// First set all values to UnInitVal.
 	// Then let the drivers initialize the status and variances
-	// What is afterwards still NAN will be initialized with default values down below.
+	// What is afterwards still UnInitVal will be initialized with default values down below.
 	//
 
 	for (int i=0;i < currentStatus->STATUS_NUM_ROWS; i++) {
-		currentStatus->getErrorCovariance_P().coeffRef(i,i) = NAN;
-		currentStatus->getStatusVector_x()(i) = NAN;
-		currentStatus->getSystemNoiseCovariance_Q().coeffRef(i,i) = NAN;
+		currentStatus->getErrorCovariance_P().coeffRef(i,i) = UnInitVal;
+		currentStatus->getStatusVector_x()(i) = UnInitVal;
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(i,i) = UnInitVal;
 	}
 
 	// Re-initialize some values like in the constructor.
@@ -582,367 +582,367 @@ void GliderVarioMainPriv::intializeStatus() {
 
 	// Initialized by accelerometer, e.g. BMXSensorBoardDriver::initializeStatusAccel()
 	// and by GNSS receivers
-	if (std::isnan(currentStatus->gravity)) {
+	if (UnInitVal == currentStatus->gravity) {
 		currentStatus->gravity = GRAVITY;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GRAVITY,currentStatus->STATUS_IND_GRAVITY))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GRAVITY,currentStatus->STATUS_IND_GRAVITY)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GRAVITY,currentStatus->STATUS_IND_GRAVITY) = 0.0f;//0.0001f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_GRAVITY,currentStatus->STATUS_IND_GRAVITY))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_GRAVITY,currentStatus->STATUS_IND_GRAVITY)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_GRAVITY,currentStatus->STATUS_IND_GRAVITY) =
 				0.0f; // SQUARE(0.0001) * baseIntervalSec;
 	}
 
 	// Initialized by accelerometer, e.g. BMXSensorBoardDriver::initializeStatusAccel(),
 	// and by GNSS receiver and IGC driver
-	if (std::isnan(currentStatus->latitudeOffsC)) {
+	if (UnInitVal == currentStatus->latitudeOffsC) {
 		// Lüneburg airport EDHG
 		currentStatus->latitude(53.2483333333);
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LATITUDE_OFFS,currentStatus->STATUS_IND_LATITUDE_OFFS))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LATITUDE_OFFS,currentStatus->STATUS_IND_LATITUDE_OFFS)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LATITUDE_OFFS,currentStatus->STATUS_IND_LATITUDE_OFFS) = 100.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_LATITUDE_OFFS,currentStatus->STATUS_IND_LATITUDE_OFFS))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_LATITUDE_OFFS,currentStatus->STATUS_IND_LATITUDE_OFFS)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_LATITUDE_OFFS,currentStatus->STATUS_IND_LATITUDE_OFFS) =
 				SQUARE(3.0) * baseIntervalSec;
 	}
 
 	// Initialized by accelerometer, e.g. BMXSensorBoardDriver::initializeStatusAccel()
-	if (std::isnan(currentStatus->longitudeOffsC)) {
+	if (UnInitVal == currentStatus->longitudeOffsC) {
 		// Lüneburg airport EDHG
 		currentStatus->longitude(10.4586111111);
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LONGITUDE_OFFS,currentStatus->STATUS_IND_LONGITUDE_OFFS))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LONGITUDE_OFFS,currentStatus->STATUS_IND_LONGITUDE_OFFS)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LONGITUDE_OFFS,currentStatus->STATUS_IND_LONGITUDE_OFFS) = 100.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_LONGITUDE_OFFS,currentStatus->STATUS_IND_LONGITUDE_OFFS))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_LONGITUDE_OFFS,currentStatus->STATUS_IND_LONGITUDE_OFFS)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_LONGITUDE_OFFS,currentStatus->STATUS_IND_LONGITUDE_OFFS) =
 				SQUARE(3.0) * baseIntervalSec;
 	}
 
 	// Initialized by accelerometer, e.g. BMXSensorBoardDriver::initializeStatusAccel()
-	if (std::isnan(currentStatus->altMSL)) {
+	if (UnInitVal == currentStatus->altMSL) {
 		// Lüneburg airport EDHG
 		currentStatus->altMSL = 49.0f;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ALT_MSL,currentStatus->STATUS_IND_ALT_MSL))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ALT_MSL,currentStatus->STATUS_IND_ALT_MSL)) {
 	currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ALT_MSL,currentStatus->STATUS_IND_ALT_MSL) = 1000.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ALT_MSL,currentStatus->STATUS_IND_ALT_MSL))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ALT_MSL,currentStatus->STATUS_IND_ALT_MSL)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ALT_MSL,currentStatus->STATUS_IND_ALT_MSL) =
 				SQUARE(10.0) * baseIntervalSec;
 	}
 
 	// Initialized by magnetometer, e.g. BMXSensorBoardDriver::initializeStatusMag()
-	if (std::isnan(currentStatus->heading)) {
+	if (UnInitVal == currentStatus->heading) {
 		currentStatus->heading = 45.0f;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_HEADING,currentStatus->STATUS_IND_HEADING))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_HEADING,currentStatus->STATUS_IND_HEADING)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_HEADING,currentStatus->STATUS_IND_HEADING) = 10.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_HEADING,currentStatus->STATUS_IND_HEADING))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_HEADING,currentStatus->STATUS_IND_HEADING)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_HEADING,currentStatus->STATUS_IND_HEADING) =
 				SQUARE(3.0) * baseIntervalSec;
 	}
 
 	// Initialized by accelerometer, e.g. BMXSensorBoardDriver::initializeStatusAccel()
-		if (std::isnan(currentStatus->pitchAngle)) {
+		if (UnInitVal == currentStatus->pitchAngle) {
 		currentStatus->pitchAngle = 0.0f;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_PITCH,currentStatus->STATUS_IND_PITCH))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_PITCH,currentStatus->STATUS_IND_PITCH)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_PITCH,currentStatus->STATUS_IND_PITCH) = 10.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_PITCH,currentStatus->STATUS_IND_PITCH))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_PITCH,currentStatus->STATUS_IND_PITCH)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_PITCH,currentStatus->STATUS_IND_PITCH) =
 				SQUARE(3.0) * baseIntervalSec;
 	}
 
 	// Initialized by accelerometer, e.g. BMXSensorBoardDriver::initializeStatusAccel()
-	if (std::isnan(currentStatus->rollAngle)) {
+	if (UnInitVal == currentStatus->rollAngle) {
 		currentStatus->rollAngle = 0.0f;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ROLL,currentStatus->STATUS_IND_ROLL))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ROLL,currentStatus->STATUS_IND_ROLL)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ROLL,currentStatus->STATUS_IND_ROLL) = 10.0f * 10.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ROLL,currentStatus->STATUS_IND_ROLL))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ROLL,currentStatus->STATUS_IND_ROLL)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ROLL,currentStatus->STATUS_IND_ROLL) =
 				SQUARE(3.0) * baseIntervalSec;
 	}
 
 	// Initialized by accelerometer, e.g. BMXSensorBoardDriver::initializeStatusAccel()
-	if (std::isnan(currentStatus->groundSpeedNorth)) {
+	if (UnInitVal == currentStatus->groundSpeedNorth) {
 		currentStatus->groundSpeedNorth = 0.0f;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_N,currentStatus->STATUS_IND_SPEED_GROUND_N))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_N,currentStatus->STATUS_IND_SPEED_GROUND_N)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_N,currentStatus->STATUS_IND_SPEED_GROUND_N) = 100.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_N,currentStatus->STATUS_IND_SPEED_GROUND_N))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_N,currentStatus->STATUS_IND_SPEED_GROUND_N)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_N,currentStatus->STATUS_IND_SPEED_GROUND_N) =
 				SQUARE(2.0) * baseIntervalSec;
 	}
 
 	// Initialized by accelerometer, e.g. BMXSensorBoardDriver::initializeStatusAccel()
-	if (std::isnan(currentStatus->groundSpeedEast)) {
+	if (UnInitVal == currentStatus->groundSpeedEast) {
 		currentStatus->groundSpeedEast = 0.0f;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_E,currentStatus->STATUS_IND_SPEED_GROUND_E))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_E,currentStatus->STATUS_IND_SPEED_GROUND_E)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_E,currentStatus->STATUS_IND_SPEED_GROUND_E) = 100.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_E,currentStatus->STATUS_IND_SPEED_GROUND_E))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_E,currentStatus->STATUS_IND_SPEED_GROUND_E)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_E,currentStatus->STATUS_IND_SPEED_GROUND_E) =
 				SQUARE(2.0) * baseIntervalSec;
 	}
 
-	if (std::isnan(currentStatus->trueAirSpeed)) {
+	if (UnInitVal == currentStatus->trueAirSpeed) {
 		currentStatus->trueAirSpeed = 0.0f;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_TAS,currentStatus->STATUS_IND_TAS))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_TAS,currentStatus->STATUS_IND_TAS)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_TAS,currentStatus->STATUS_IND_TAS) = 100.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_TAS,currentStatus->STATUS_IND_TAS))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_TAS,currentStatus->STATUS_IND_TAS)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_TAS,currentStatus->STATUS_IND_TAS) =
 				SQUARE(2.0) * baseIntervalSec;
 	}
 
-	if (std::isnan(currentStatus->rateOfSink)) {
+	if (UnInitVal == currentStatus->rateOfSink) {
 		currentStatus->rateOfSink = 0.0f;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_RATE_OF_SINK,currentStatus->STATUS_IND_RATE_OF_SINK))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_RATE_OF_SINK,currentStatus->STATUS_IND_RATE_OF_SINK)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_RATE_OF_SINK,currentStatus->STATUS_IND_RATE_OF_SINK) = 50.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_RATE_OF_SINK,currentStatus->STATUS_IND_RATE_OF_SINK))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_RATE_OF_SINK,currentStatus->STATUS_IND_RATE_OF_SINK)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_RATE_OF_SINK,currentStatus->STATUS_IND_RATE_OF_SINK) =
 				SQUARE(1.0) * baseIntervalSec;
 
 	}
-	if (std::isnan(currentStatus->verticalSpeed)) {
+	if (UnInitVal == currentStatus->verticalSpeed) {
 		currentStatus->verticalSpeed = 0.0f;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_VERTICAL_SPEED,currentStatus->STATUS_IND_VERTICAL_SPEED))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_VERTICAL_SPEED,currentStatus->STATUS_IND_VERTICAL_SPEED)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_VERTICAL_SPEED,currentStatus->STATUS_IND_VERTICAL_SPEED) = 100.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_VERTICAL_SPEED,currentStatus->STATUS_IND_VERTICAL_SPEED))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_VERTICAL_SPEED,currentStatus->STATUS_IND_VERTICAL_SPEED)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_VERTICAL_SPEED,currentStatus->STATUS_IND_VERTICAL_SPEED) =
 				SQUARE(2.0) * baseIntervalSec;
 
 	}
-	if (std::isnan(currentStatus->thermalSpeed)) {
+	if (UnInitVal == currentStatus->thermalSpeed) {
 		currentStatus->thermalSpeed = 0.0f;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_THERMAL_SPEED,currentStatus->STATUS_IND_THERMAL_SPEED))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_THERMAL_SPEED,currentStatus->STATUS_IND_THERMAL_SPEED)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_THERMAL_SPEED,currentStatus->STATUS_IND_THERMAL_SPEED) = 100.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_THERMAL_SPEED,currentStatus->STATUS_IND_THERMAL_SPEED))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_THERMAL_SPEED,currentStatus->STATUS_IND_THERMAL_SPEED)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_THERMAL_SPEED,currentStatus->STATUS_IND_THERMAL_SPEED) =
 				SQUARE(1.0) * baseIntervalSec;
 	}
 	// Initialized by accelerometer, e.g. BMXSensorBoardDriver::initializeStatusAccel()
-	if (std::isnan(currentStatus->accelHeading)) {
+	if (UnInitVal == currentStatus->accelHeading) {
 		currentStatus->accelHeading = 0.0f;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ACC_HEADING,currentStatus->STATUS_IND_ACC_HEADING))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ACC_HEADING,currentStatus->STATUS_IND_ACC_HEADING)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ACC_HEADING,currentStatus->STATUS_IND_ACC_HEADING) = 4.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ACC_HEADING,currentStatus->STATUS_IND_ACC_HEADING))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ACC_HEADING,currentStatus->STATUS_IND_ACC_HEADING)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ACC_HEADING,currentStatus->STATUS_IND_ACC_HEADING) =
 				SQUARE(1.0) * baseIntervalSec;
 	}
 
 	// Initialized by accelerometer, e.g. BMXSensorBoardDriver::initializeStatusAccel()
-	if (std::isnan(currentStatus->accelCross)) {
+	if (UnInitVal == currentStatus->accelCross) {
 		currentStatus->accelCross = 0.0f;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ACC_CROSS,currentStatus->STATUS_IND_ACC_CROSS))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ACC_CROSS,currentStatus->STATUS_IND_ACC_CROSS)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ACC_CROSS,currentStatus->STATUS_IND_ACC_CROSS) = 1.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ACC_CROSS,currentStatus->STATUS_IND_ACC_CROSS))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ACC_CROSS,currentStatus->STATUS_IND_ACC_CROSS)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ACC_CROSS,currentStatus->STATUS_IND_ACC_CROSS) =
 				SQUARE(1.0) * baseIntervalSec;
 	}
 
 	// Initialized by accelerometer, e.g. BMXSensorBoardDriver::initializeStatusAccel()
-	if (std::isnan(currentStatus->accelVertical)) {
+	if (UnInitVal == currentStatus->accelVertical) {
 		currentStatus->accelVertical = 0.0f;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ACC_VERTICAL,currentStatus->STATUS_IND_ACC_VERTICAL))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ACC_VERTICAL,currentStatus->STATUS_IND_ACC_VERTICAL)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ACC_VERTICAL,currentStatus->STATUS_IND_ACC_VERTICAL) = 4.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ACC_VERTICAL,currentStatus->STATUS_IND_ACC_VERTICAL))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ACC_VERTICAL,currentStatus->STATUS_IND_ACC_VERTICAL)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ACC_VERTICAL,currentStatus->STATUS_IND_ACC_VERTICAL) =
 				SQUARE(1.0) * baseIntervalSec;
 	}
 
 	// Initialized by gyroscope, e.g. BMXSensorBoardDriver::initializeStatusGyro()
-	if (std::isnan(currentStatus->rollRateX)) {
+	if (UnInitVal == currentStatus->rollRateX) {
 		currentStatus->rollRateX = 0.0f;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ROTATION_X,currentStatus->STATUS_IND_ROTATION_X))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ROTATION_X,currentStatus->STATUS_IND_ROTATION_X)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ROTATION_X,currentStatus->STATUS_IND_ROTATION_X) = 2.0f * 2.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ROTATION_X,currentStatus->STATUS_IND_ROTATION_X))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ROTATION_X,currentStatus->STATUS_IND_ROTATION_X)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ROTATION_X,currentStatus->STATUS_IND_ROTATION_X) =
 				SQUARE(3.0) * baseIntervalSec;
 	}
 
 	// Initialized by gyroscope, e.g. BMXSensorBoardDriver::initializeStatusGyro()
-	if (std::isnan(currentStatus->pitchRateY)) {
+	if (UnInitVal == currentStatus->pitchRateY) {
 		currentStatus->pitchRateY = 0.0f;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ROTATION_Y,currentStatus->STATUS_IND_ROTATION_Y))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ROTATION_Y,currentStatus->STATUS_IND_ROTATION_Y)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ROTATION_Y,currentStatus->STATUS_IND_ROTATION_Y) = 2.0f * 2.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ROTATION_Y,currentStatus->STATUS_IND_ROTATION_Y))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ROTATION_Y,currentStatus->STATUS_IND_ROTATION_Y)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ROTATION_Y,currentStatus->STATUS_IND_ROTATION_Y) =
 				SQUARE(3.0) * baseIntervalSec;
 	}
 
 	// Initialized by gyroscope, e.g. BMXSensorBoardDriver::initializeStatusGyro()
-	if (std::isnan(currentStatus->yawRateZ)) {
+	if (UnInitVal == currentStatus->yawRateZ) {
 		currentStatus->yawRateZ = 0.0f;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ROTATION_Z,currentStatus->STATUS_IND_ROTATION_Z))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ROTATION_Z,currentStatus->STATUS_IND_ROTATION_Z)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_ROTATION_Z,currentStatus->STATUS_IND_ROTATION_Z) = 2.0f * 2.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ROTATION_Z,currentStatus->STATUS_IND_ROTATION_Z))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ROTATION_Z,currentStatus->STATUS_IND_ROTATION_Z)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ROTATION_Z,currentStatus->STATUS_IND_ROTATION_Z) =
 				SQUARE(3.0) * baseIntervalSec;
 	}
 
 	// Initialized by gyroscope, e.g. BMXSensorBoardDriver::initializeStatusGyro()
-	if (std::isnan(currentStatus->gyroBiasX)) {
+	if (UnInitVal == currentStatus->gyroBiasX) {
 		currentStatus->gyroBiasX = 0.0f;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_X,currentStatus->STATUS_IND_GYRO_BIAS_X))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_X,currentStatus->STATUS_IND_GYRO_BIAS_X)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_X,currentStatus->STATUS_IND_GYRO_BIAS_X) = 1.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_X,currentStatus->STATUS_IND_GYRO_BIAS_X))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_X,currentStatus->STATUS_IND_GYRO_BIAS_X)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_X,currentStatus->STATUS_IND_GYRO_BIAS_X) =
 				SQUARE(0.0001) * baseIntervalSec;
 	}
 
 	// Initialized by gyroscope, e.g. BMXSensorBoardDriver::initializeStatusGyro()
-	if (std::isnan(currentStatus->gyroBiasY)) {
+	if (UnInitVal == currentStatus->gyroBiasY) {
 		currentStatus->gyroBiasY = 0.0f;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Y,currentStatus->STATUS_IND_GYRO_BIAS_Y))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Y,currentStatus->STATUS_IND_GYRO_BIAS_Y)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Y,currentStatus->STATUS_IND_GYRO_BIAS_Y) = 1.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Y,currentStatus->STATUS_IND_GYRO_BIAS_Y))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Y,currentStatus->STATUS_IND_GYRO_BIAS_Y)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Y,currentStatus->STATUS_IND_GYRO_BIAS_Y) =
 				SQUARE(0.0001) * baseIntervalSec;
 	}
 
 	// Initialized by gyroscope, e.g. BMXSensorBoardDriver::initializeStatusGyro()
-	if (std::isnan(currentStatus->gyroBiasZ)) {
+	if (UnInitVal == currentStatus->gyroBiasZ) {
 		currentStatus->gyroBiasZ = 0.0f;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Z,currentStatus->STATUS_IND_GYRO_BIAS_Z))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Z,currentStatus->STATUS_IND_GYRO_BIAS_Z)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Z,currentStatus->STATUS_IND_GYRO_BIAS_Z) = 1.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Z,currentStatus->STATUS_IND_GYRO_BIAS_Z))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Z,currentStatus->STATUS_IND_GYRO_BIAS_Z)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_GYRO_BIAS_Z,currentStatus->STATUS_IND_GYRO_BIAS_Z) =
 				SQUARE(0.0001) * baseIntervalSec;
 	}
 
-	if (std::isnan(currentStatus->magneticDeclination)) {
+	if (UnInitVal == currentStatus->magneticDeclination) {
 		currentStatus->magneticDeclination = 2.0f;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_MAGNETIC_DECLINATION,currentStatus->STATUS_IND_MAGNETIC_DECLINATION))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_MAGNETIC_DECLINATION,currentStatus->STATUS_IND_MAGNETIC_DECLINATION)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_MAGNETIC_DECLINATION,currentStatus->STATUS_IND_MAGNETIC_DECLINATION) = 0.1f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_MAGNETIC_DECLINATION,currentStatus->STATUS_IND_MAGNETIC_DECLINATION))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_MAGNETIC_DECLINATION,currentStatus->STATUS_IND_MAGNETIC_DECLINATION)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_MAGNETIC_DECLINATION,currentStatus->STATUS_IND_MAGNETIC_DECLINATION) =
 				SQUARE(0.0001) * baseIntervalSec;
 	}
 
 	// Initialized by magnetometer, e.g. BMXSensorBoardDriver::initializeStatusMag()
-	if (std::isnan(currentStatus->magneticInclination)) {
+	if (UnInitVal == currentStatus->magneticInclination) {
 		currentStatus->magneticInclination = MAG_INCLINATION;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_MAGNETIC_INCLINATION,currentStatus->STATUS_IND_MAGNETIC_INCLINATION))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_MAGNETIC_INCLINATION,currentStatus->STATUS_IND_MAGNETIC_INCLINATION)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_MAGNETIC_INCLINATION,currentStatus->STATUS_IND_MAGNETIC_INCLINATION) = 2.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_MAGNETIC_INCLINATION,currentStatus->STATUS_IND_MAGNETIC_INCLINATION))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_MAGNETIC_INCLINATION,currentStatus->STATUS_IND_MAGNETIC_INCLINATION)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_MAGNETIC_INCLINATION,currentStatus->STATUS_IND_MAGNETIC_INCLINATION) =
 				SQUARE(0.0001) * baseIntervalSec;
 	}
 
 	// Initialized by magnetometer, e.g. BMXSensorBoardDriver::initializeStatusMag()
-	if (std::isnan(currentStatus->compassDeviationX)) {
+	if (UnInitVal == currentStatus->compassDeviationX) {
 		currentStatus->compassDeviationX = 0.0f;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_X,currentStatus->STATUS_IND_COMPASS_DEVIATION_X))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_X,currentStatus->STATUS_IND_COMPASS_DEVIATION_X)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_X,currentStatus->STATUS_IND_COMPASS_DEVIATION_X) = 1.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_X,currentStatus->STATUS_IND_COMPASS_DEVIATION_X))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_X,currentStatus->STATUS_IND_COMPASS_DEVIATION_X)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_X,currentStatus->STATUS_IND_COMPASS_DEVIATION_X) =
 				SQUARE(0.0001) * baseIntervalSec;
 	}
 
 	// Initialized by magnetometer, e.g. BMXSensorBoardDriver::initializeStatusMag()
-	if (std::isnan(currentStatus->compassDeviationY)) {
+	if (UnInitVal == currentStatus->compassDeviationY) {
 		currentStatus->compassDeviationY = 0.0f;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Y,currentStatus->STATUS_IND_COMPASS_DEVIATION_Y))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Y,currentStatus->STATUS_IND_COMPASS_DEVIATION_Y)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Y,currentStatus->STATUS_IND_COMPASS_DEVIATION_Y) = 1.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Y,currentStatus->STATUS_IND_COMPASS_DEVIATION_Y))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Y,currentStatus->STATUS_IND_COMPASS_DEVIATION_Y)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Y,currentStatus->STATUS_IND_COMPASS_DEVIATION_Y) =
 				SQUARE(0.0001) * baseIntervalSec;
 	}
 
 	// Initialized by magnetometer, e.g. BMXSensorBoardDriver::initializeStatusMag()
-	if (std::isnan(currentStatus->compassDeviationZ)) {
+	if (UnInitVal == currentStatus->compassDeviationZ) {
 		currentStatus->compassDeviationZ = 0.0f;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Z,currentStatus->STATUS_IND_COMPASS_DEVIATION_Z))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Z,currentStatus->STATUS_IND_COMPASS_DEVIATION_Z)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Z,currentStatus->STATUS_IND_COMPASS_DEVIATION_Z) = 1.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Z,currentStatus->STATUS_IND_COMPASS_DEVIATION_Z))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Z,currentStatus->STATUS_IND_COMPASS_DEVIATION_Z)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_COMPASS_DEVIATION_Z,currentStatus->STATUS_IND_COMPASS_DEVIATION_Z) =
 				SQUARE(0.0001) * baseIntervalSec;
 
 	}
-	if (std::isnan(currentStatus->windSpeedNorth)) {
+	if (UnInitVal == currentStatus->windSpeedNorth) {
 		currentStatus->windSpeedNorth = 0.0f;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_N,currentStatus->STATUS_IND_WIND_SPEED_N))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_N,currentStatus->STATUS_IND_WIND_SPEED_N)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_N,currentStatus->STATUS_IND_WIND_SPEED_N) = 100.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_N,currentStatus->STATUS_IND_WIND_SPEED_N))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_N,currentStatus->STATUS_IND_WIND_SPEED_N)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_N,currentStatus->STATUS_IND_WIND_SPEED_N) =
 				SQUARE(3.0) * baseIntervalSec;
 	}
 
-	if (std::isnan(currentStatus->windSpeedEast)) {
+	if (UnInitVal == currentStatus->windSpeedEast) {
 		currentStatus->windSpeedEast = 0.0f;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_E,currentStatus->STATUS_IND_WIND_SPEED_E))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_E,currentStatus->STATUS_IND_WIND_SPEED_E)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_E,currentStatus->STATUS_IND_WIND_SPEED_E) = 100.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_E,currentStatus->STATUS_IND_WIND_SPEED_E))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_E,currentStatus->STATUS_IND_WIND_SPEED_E)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_E,currentStatus->STATUS_IND_WIND_SPEED_E) =
 				SQUARE(3.0) * baseIntervalSec;
 	}
 
-	if (std::isnan(currentStatus->qff)) {
+	if (UnInitVal == currentStatus->qff) {
 		currentStatus->qff = PressureStdMSL;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_QFF,currentStatus->STATUS_IND_QFF))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_QFF,currentStatus->STATUS_IND_QFF)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_QFF,currentStatus->STATUS_IND_QFF) = 100.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_QFF,currentStatus->STATUS_IND_QFF))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_QFF,currentStatus->STATUS_IND_QFF)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_QFF,currentStatus->STATUS_IND_QFF) =
 				SQUARE(0.0001) * baseIntervalSec; // Slow (1mbar / 20sec)
 	}
 
-	if (std::isnan(currentStatus->lastPressure)) {
+	if (UnInitVal == currentStatus->lastPressure) {
 		currentStatus->lastPressure = PressureStdMSL;
 	}
-	if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LAST_PRESSURE,currentStatus->STATUS_IND_LAST_PRESSURE))) {
+	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LAST_PRESSURE,currentStatus->STATUS_IND_LAST_PRESSURE)) {
 		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LAST_PRESSURE,currentStatus->STATUS_IND_LAST_PRESSURE) = 100.0f;
 	}
-	if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_LAST_PRESSURE,currentStatus->STATUS_IND_LAST_PRESSURE))) {
+	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_LAST_PRESSURE,currentStatus->STATUS_IND_LAST_PRESSURE)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_LAST_PRESSURE,currentStatus->STATUS_IND_LAST_PRESSURE) = 0.0f;
 	}
 	LOG4CXX_DEBUG(logger,"GliderVarioMainPriv::intializeStatus():" );
@@ -955,27 +955,27 @@ void GliderVarioMainPriv::intializeStatus() {
 				);
 
 
-		if (std::isnan(currentStatus->getStatusVector_x()(i))) {
+		if (UnInitVal == currentStatus->getStatusVector_x()(i)) {
 			std::ostringstream str;
 			str << __PRETTY_FUNCTION__ << ": currentStatus->getStatusVector_x().coeffRef("
 					<< GliderVarioStatus::StatusComponentIndex(i) << "," << GliderVarioStatus::StatusComponentIndex(i)
-					<< ") is NAN, and not initialized.";
+					<< ") is not initialized.";
 			LOG4CXX_FATAL(logger,str.str());
 			throw GliderVarioExceptionBase(__FILE__, __LINE__, str.str().c_str());
 		}
-		if (std::isnan(currentStatus->getErrorCovariance_P().coeffRef(i,i))) {
+		if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(i,i)) {
 			std::ostringstream str;
 			str << __PRETTY_FUNCTION__ << ": currentStatus->getErrorCovariance_P().coeffRef("
 					<< GliderVarioStatus::StatusComponentIndex(i) << "," << GliderVarioStatus::StatusComponentIndex(i)
-					<< ") is NAN, and not initialized.";
+					<< ") is not initialized.";
 			LOG4CXX_FATAL(logger,str.str());
 			throw GliderVarioExceptionBase(__FILE__, __LINE__, str.str().c_str());
 		}
-		if (std::isnan(currentStatus->getSystemNoiseCovariance_Q().coeffRef(i,i))) {
+		if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(i,i)) {
 			std::ostringstream str;
 			str << __PRETTY_FUNCTION__ << ": currentStatus->getSystemNoiseCovariance_Q().coeffRef("
 					<< GliderVarioStatus::StatusComponentIndex(i) << "," << GliderVarioStatus::StatusComponentIndex(i)
-					<< ") is NAN, and not initialized.";
+					<< ") is not initialized.";
 			LOG4CXX_FATAL(logger,str.str());
 			throw GliderVarioExceptionBase(__FILE__, __LINE__, str.str().c_str());
 		}
