@@ -54,7 +54,7 @@ TEST_F(GliderVarioMeasurementVectorTest, InitTest) {
     		break;
 
     	default:
-    		EXPECT_EQ (std::isnan(measVector.getMeasureVector()(i)),1) << "Measurement vector ("
+    		EXPECT_EQ (UnInitVal == measVector.getMeasureVector()(i),1) << "Measurement vector ("
 				<< GliderVarioMeasurementVector::MeasureComponentIndex(i)
 				<<") is not NaN";
     	}
