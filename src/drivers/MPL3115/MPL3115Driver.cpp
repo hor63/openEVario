@@ -98,25 +98,26 @@ void MPL3115Driver::readConfiguration (Properties4CXX::Properties const &configu
 		if (ioPort == nullptr) {
 			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"I/O Port is not an I2C port.");
 		}
-	} catch (std::exception const& e) {
-		LOG4CXX_ERROR(logger, "Read configuration of driver \"" << driverName
-				<< "\" failed:"
-				<< e.what());
-		throw;
-	}
 
-	i2cAddress = (long long)(configuration.getPropertyValue(
-	    		std::string("i2cAddress"),
-				(long long)(i2cAddress)));
-	useTemperatureSensor = configuration.getPropertyValue(
-    		std::string("useTemperatureSensor"),
-			useTemperatureSensor);
-    errorTimeout = configuration.getPropertyValue(
-    		std::string("errorTimeout"),
-			(long long)(errorTimeout));
-    errorMaxNumRetries = configuration.getPropertyValue(
-    		std::string("errorMaxNumRetries"),
-			(long long)(errorMaxNumRetries));
+		i2cAddress = (long long)(configuration.getPropertyValue(
+					std::string("i2cAddress"),
+					(long long)(i2cAddress)));
+		useTemperatureSensor = configuration.getPropertyValue(
+				std::string("useTemperatureSensor"),
+				useTemperatureSensor);
+		errorTimeout = configuration.getPropertyValue(
+				std::string("errorTimeout"),
+				(long long)(errorTimeout));
+		errorMaxNumRetries = configuration.getPropertyValue(
+				std::string("errorMaxNumRetries"),
+				(long long)(errorMaxNumRetries));
+	} catch (std::exception const& e) {
+		std::ostringstream str;
+		LOG4CXX_ERROR(logger, "Read configuration of driver \"" << driverName
+				<< "\" failed: "
+				<< e.what());
+		throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
+	}
 
 	LOG4CXX_INFO(logger,"	portName = " << portName);
 	LOG4CXX_INFO(logger,"	i2cAddress = 0x" << std::hex <<  uint32_t(i2cAddress) << std::dec);
