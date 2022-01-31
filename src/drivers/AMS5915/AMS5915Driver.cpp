@@ -110,7 +110,7 @@ void AMS5915Driver::readConfiguration (Properties4CXX::Properties const &configu
 		auto portNameConfig = configuration.searchProperty("portName");
 
 		if (portNameConfig->isList() || portNameConfig->isStruct()) {
-			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"Configuration variable \"portName\" is a struct or a string list.");
+			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"Variable is a struct or a string list.");
 		}
 
 		portName = portNameConfig->getStringValue();
@@ -131,7 +131,7 @@ void AMS5915Driver::readConfiguration (Properties4CXX::Properties const &configu
 		try {
 			auto configPMin = configuration.searchProperty("pMin");
 			pMin = configPMin->getDoubleValue();
-		} catch (const Properties4CXX::ExceptionPropertyNotFound & e) {
+		} catch (const std::exception & e) {
 			std::ostringstream str;
 			str << "Could not read configuration \"pMin\" for driver \"" << driverName
 					<< "\" because: "
@@ -143,7 +143,7 @@ void AMS5915Driver::readConfiguration (Properties4CXX::Properties const &configu
 		try {
 			auto configPMax = configuration.searchProperty("pMax");
 			pMax = configPMax->getDoubleValue();
-		} catch (const Properties4CXX::ExceptionPropertyNotFound & e) {
+		} catch (const std::exception & e) {
 			std::ostringstream str;
 			str << "Could not read configuration \"pMax\" for driver \"" << driverName
 					<< "\" because: "
@@ -157,12 +157,18 @@ void AMS5915Driver::readConfiguration (Properties4CXX::Properties const &configu
     try {
     	auto fileNameProp = configuration.searchProperty("calibrationDataFile");
 
-		if (!fileNameProp->isList() && !fileNameProp->isStruct()) {
-	    	calibrationDataFileName = fileNameProp->getStringValue();
-	    	calibrationDataParameters = new Properties4CXX::Properties(calibrationDataFileName);
+		if (fileNameProp->isList() || fileNameProp->isStruct()) {
+			std::ostringstream str;
+			str << "Invalid configuration for driver \"" << driverName
+					<< "\": \"calibrationDataFile\" is either a structure or a string list";
+			LOG4CXX_ERROR(logger, str.str());
+			throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
 		}
 
-    } catch (...) {
+    	calibrationDataFileName = fileNameProp->getStringValue();
+    	calibrationDataParameters = new Properties4CXX::Properties(calibrationDataFileName);
+
+    } catch (Properties4CXX::ExceptionPropertyNotFound const &e) {
     	LOG4CXX_INFO(logger,"Driver" << driverName << ": No calibration data file specified");
     }
 
@@ -171,18 +177,26 @@ void AMS5915Driver::readConfiguration (Properties4CXX::Properties const &configu
 	// Expected static error is assessed by the full measurement range.
 	pressureErrorStatic = pressureErrorStaticFactor * pressureRange;
 
-	i2cAddress = (long long)(configuration.getPropertyValue(
-	    		std::string("i2cAddress"),
-				(long long)(i2cAddress)));
-	useTemperatureSensor = configuration.getPropertyValue(
-    		std::string("useTemperatureSensor"),
-			useTemperatureSensor);
-    errorTimeout = configuration.getPropertyValue(
-    		std::string("errorTimeout"),
-			(long long)(errorTimeout));
-    errorMaxNumRetries = configuration.getPropertyValue(
-    		std::string("errorMaxNumRetries"),
-			(long long)(errorMaxNumRetries));
+	try {
+		i2cAddress = (long long)(configuration.getPropertyValue(
+					std::string("i2cAddress"),
+					(long long)(i2cAddress)));
+		useTemperatureSensor = configuration.getPropertyValue(
+				std::string("useTemperatureSensor"),
+				useTemperatureSensor);
+		errorTimeout = configuration.getPropertyValue(
+				std::string("errorTimeout"),
+				(long long)(errorTimeout));
+		errorMaxNumRetries = configuration.getPropertyValue(
+				std::string("errorMaxNumRetries"),
+				(long long)(errorMaxNumRetries));
+	} catch (std::exception const &e) {
+		std::ostringstream str;
+		str << "Error reading the configuration for driver \"" << driverName
+				<< "\": " << e.what();
+		LOG4CXX_ERROR(logger, str.str());
+		throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
+	}
 
     LOG4CXX_INFO(logger,"Driver" << driverName << " data>");
     LOG4CXX_INFO(logger,"	pMin (mBar) = " << pMin);
