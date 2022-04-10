@@ -20,8 +20,6 @@ pkglib_LTLIBRARIES=libopenEVUtil.la
 
 libopenEVUtil_la_SOURCES=RotationMatrix.cpp FastMath.cpp FastMathSineTable.cpp crc.cpp \
 	GliderVarioExceptionBase.cpp \
-	drivers/DriverBase.cpp drivers/DriverLibBase.cpp \
-	drivers/IMUBase.cpp \
 	io/PortBase.cpp io/StreamPort.cpp \
 	io/DatagramPort.cpp
 
