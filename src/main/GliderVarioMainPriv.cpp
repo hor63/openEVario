@@ -903,27 +903,36 @@ void GliderVarioMainPriv::intializeStatus() {
 				SQUARE(0.0001) * baseIntervalSec;
 
 	}
-	if (UnInitVal == currentStatus->windSpeedNorth) {
-		currentStatus->windSpeedNorth = 0.0f;
-	}
-	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_N,currentStatus->STATUS_IND_WIND_SPEED_N)) {
-		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_N,currentStatus->STATUS_IND_WIND_SPEED_N) = 100.0f;
-	}
-	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_N,currentStatus->STATUS_IND_WIND_SPEED_N)) {
-		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_N,currentStatus->STATUS_IND_WIND_SPEED_N) =
-				SQUARE(3.0) * baseIntervalSec;
-	}
 
-	if (UnInitVal == currentStatus->windSpeedEast) {
-		currentStatus->windSpeedEast = 0.0f;
-	}
-	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_E,currentStatus->STATUS_IND_WIND_SPEED_E)) {
-		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_E,currentStatus->STATUS_IND_WIND_SPEED_E) = 100.0f;
-	}
-	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_E,currentStatus->STATUS_IND_WIND_SPEED_E)) {
-		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_E,currentStatus->STATUS_IND_WIND_SPEED_E) =
-				SQUARE(3.0) * baseIntervalSec;
-	}
+
+/* Do not initialize wind estimates with defaults. They make only sense when
+ * an absolute position sensor (vulgo GPS receiver) is active.
+ * However GPS usually comes online after the default initialization cycle including this code
+ * has finished.
+ * If left un-initilized the miniscule un-init values are close enough to 0.
+ *
+ *	if (UnInitVal == currentStatus->windSpeedNorth) {
+ *		currentStatus->windSpeedNorth = 0.0f;
+ *	}
+ *	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_N,currentStatus->STATUS_IND_WIND_SPEED_N)) {
+ *		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_N,currentStatus->STATUS_IND_WIND_SPEED_N) = 100.0f;
+ *	}
+ *	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_N,currentStatus->STATUS_IND_WIND_SPEED_N)) {
+ *		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_N,currentStatus->STATUS_IND_WIND_SPEED_N) =
+ *				SQUARE(1.0) * baseIntervalSec;
+ *	}
+ *
+ *	if (UnInitVal == currentStatus->windSpeedEast) {
+ *		currentStatus->windSpeedEast = 0.0f;
+ *	}
+ *	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_E,currentStatus->STATUS_IND_WIND_SPEED_E)) {
+ *		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_E,currentStatus->STATUS_IND_WIND_SPEED_E) = 100.0f;
+ *	}
+ *	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_E,currentStatus->STATUS_IND_WIND_SPEED_E)) {
+ *		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_E,currentStatus->STATUS_IND_WIND_SPEED_E) =
+ *				SQUARE(1.0) * baseIntervalSec;
+ *	}
+ */
 
 	if (UnInitVal == currentStatus->qff) {
 		currentStatus->qff = PressureStdMSL;
