@@ -20,7 +20,7 @@
 namespace openEV {
 namespace drivers {
 
-class OEV_UTILS_PUBLIC IMUBase: public DriverBase {
+class OEV_MAIN_PUBLIC IMUBase: public DriverBase {
 public:
 
     /** \brief Structure holding one set of sensor data

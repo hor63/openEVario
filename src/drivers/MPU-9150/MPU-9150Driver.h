@@ -34,7 +34,7 @@
 
 #include "CommonDefs.h"
 #include "util/io/I2CPort.h"
-#include "util/drivers/IMUBase.h"
+#include "main/driverBase/IMUBase.h"
 #include "MPU-9150Defs.h"
 #include "MPU-9150Lib.h"
 

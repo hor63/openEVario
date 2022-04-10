@@ -58,7 +58,7 @@ namespace drivers {
  * The actual driver implementation is never exposed to the main program but hidden in the shared library which
  * implements the driver
  */
-class OEV_UTILS_PUBLIC DriverBase {
+class OEV_MAIN_PUBLIC DriverBase {
 
 public:
 

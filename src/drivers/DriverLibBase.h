@@ -47,7 +47,7 @@ class DriverBase;
  * Examples are the MPU-9x50 from TDK, formerly Invensense (MPU-9250, MPU-9150) which can are very similar.
  *
  */
-class OEV_UTILS_PUBLIC DriverLibBase {
+class OEV_MAIN_PUBLIC DriverLibBase {
 public:
 
 

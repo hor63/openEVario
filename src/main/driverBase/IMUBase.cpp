@@ -5,7 +5,7 @@
  *      Author: hor
  */
 
-#include "util/drivers/IMUBase.h"
+#include "main/driverBase/IMUBase.h"
 
 namespace openEV {
 namespace drivers {

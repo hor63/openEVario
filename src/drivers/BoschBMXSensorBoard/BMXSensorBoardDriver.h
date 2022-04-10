@@ -30,7 +30,7 @@
 #include "horOvIp-I2C-Bridge/BMX160net.h"
 
 #include "drivers/DriverBase.h"
-#include "util/drivers/IMUBase.h"
+#include "main/driverBase/IMUBase.h"
 #include "BMXSensorBoardLib.h"
 #include "util/io/DatagramPort.h"
 
