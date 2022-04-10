@@ -1190,23 +1190,104 @@ void NMEASet::initializePosition (
 
 	GliderVarioStatus& currVarioStatus = *currStat.getCurrentStatus();
 
+	// Use the position only when the precision is sufficient.
+	// Else wait until the position is sufficiently precisely determined.
 	if (currGnssRecord.latDeviation < gpsDriver.getMaxStdDeviationPositionInitialization() &&
 			currGnssRecord.lonDeviation < gpsDriver.getMaxStdDeviationPositionInitialization()) {
 		GliderVarioStatus::StatusCoVarianceType &systemNoiseCov = currVarioStatus.getSystemNoiseCovariance_Q();
 		GliderVarioStatus::StatusCoVarianceType &errorCov = currVarioStatus.getErrorCovariance_P();
 		double baseIntervalSec = varioMain->getProgramOptions().idlePredictionCycleMilliSec / 1000.0;
 
+		// Set latitude and initial error variance unconditionally
 		currVarioStatus.latitude(currGnssRecord.latitude);
 		errorCov.coeffRef(GliderVarioStatus::STATUS_IND_LATITUDE_OFFS,GliderVarioStatus::STATUS_IND_LATITUDE_OFFS)
 				= SQUARE(currGnssRecord.latDeviation) * 10.0;
-		systemNoiseCov.coeffRef(GliderVarioStatus::STATUS_IND_LATITUDE_OFFS,GliderVarioStatus::STATUS_IND_LATITUDE_OFFS) =
-				SQUARE(3.0) * baseIntervalSec;
 
+		// Set longitude and initial error variance unconditionally
 		currVarioStatus.longitude(currGnssRecord.longitude);
 		errorCov.coeffRef(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS)
 				= SQUARE(currGnssRecord.lonDeviation)  * 10.0;
-		systemNoiseCov.coeffRef(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS) =
-				SQUARE(3.0) * baseIntervalSec;
+
+		// Set the latitude and longitude variance increments only when they were not set before by other sensors like
+		// accelerometers and/or dynamic pressure (i.e. air speed)
+		{
+			FloatType & latitudeOffsNoise = systemNoiseCov.coeffRef(
+					GliderVarioStatus::STATUS_IND_LATITUDE_OFFS,
+					GliderVarioStatus::STATUS_IND_LATITUDE_OFFS);
+			if (UnInitVal != latitudeOffsNoise) {
+				latitudeOffsNoise = SQUARE(3.0) * baseIntervalSec;
+			}
+		}
+		{
+			FloatType & longitudeOffsNoise = systemNoiseCov.coeffRef(
+					GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,
+					GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS);
+			if (UnInitVal != longitudeOffsNoise) {
+			longitudeOffsNoise = SQUARE(3.0) * baseIntervalSec;
+			}
+		}
+
+		// Initialize the ground speed. Assume you are starting the thing on the ground
+		// For cases when starting in the air make the error large enough to quickly adjust.
+		if (UnInitVal == currStat->groundSpeedNorth) {
+			currStat->groundSpeedNorth = 0.0f;
+		}
+		if (UnInitVal == errorCov.coeffRef(currStat->STATUS_IND_SPEED_GROUND_N,currStat->STATUS_IND_SPEED_GROUND_N)) {
+			errorCov.coeffRef(currStat->STATUS_IND_SPEED_GROUND_N,currStat->STATUS_IND_SPEED_GROUND_N) = 1000.0f;
+		}
+		if (UnInitVal == systemNoiseCov.coeffRef(currStat->STATUS_IND_SPEED_GROUND_N,currStat->STATUS_IND_SPEED_GROUND_N)) {
+			systemNoiseCov.coeffRef(currStat->STATUS_IND_SPEED_GROUND_N,currStat->STATUS_IND_SPEED_GROUND_N) =
+					SQUARE(3.0) * baseIntervalSec;
+		}
+		if (UnInitVal == currStat->groundSpeedEast) {
+			currStat->groundSpeedEast = 0.0f;
+		}
+		if (UnInitVal == errorCov.coeffRef(currStat->STATUS_IND_SPEED_GROUND_E,currStat->STATUS_IND_SPEED_GROUND_E)) {
+			errorCov.coeffRef(currStat->STATUS_IND_SPEED_GROUND_E,currStat->STATUS_IND_SPEED_GROUND_E) = 1000.0f;
+		}
+		if (UnInitVal == systemNoiseCov.coeffRef(currStat->STATUS_IND_SPEED_GROUND_E,currStat->STATUS_IND_SPEED_GROUND_E)) {
+			systemNoiseCov.coeffRef(currStat->STATUS_IND_SPEED_GROUND_E,currStat->STATUS_IND_SPEED_GROUND_E) =
+					SQUARE(3.0) * baseIntervalSec;
+		}
+
+		// Initialize wind only with positional sensors.
+		if (UnInitVal == currStat->windSpeedNorth) {
+			currStat->windSpeedNorth = 0.0f;
+		}
+		if (UnInitVal == errorCov.coeffRef(currStat->STATUS_IND_WIND_SPEED_N,currStat->STATUS_IND_WIND_SPEED_N)) {
+			errorCov.coeffRef(currStat->STATUS_IND_WIND_SPEED_N,currStat->STATUS_IND_WIND_SPEED_N) = 100.0f;
+		}
+		if (UnInitVal == systemNoiseCov.coeffRef(currStat->STATUS_IND_WIND_SPEED_N,currStat->STATUS_IND_WIND_SPEED_N)) {
+			systemNoiseCov.coeffRef(currStat->STATUS_IND_WIND_SPEED_N,currStat->STATUS_IND_WIND_SPEED_N) =
+					SQUARE(1.0) * baseIntervalSec;
+		}
+
+		if (UnInitVal == currStat->windSpeedEast) {
+			currStat->windSpeedEast = 0.0f;
+		}
+		if (UnInitVal == errorCov.coeffRef(currStat->STATUS_IND_WIND_SPEED_E,currStat->STATUS_IND_WIND_SPEED_E)) {
+			errorCov.coeffRef(currStat->STATUS_IND_WIND_SPEED_E,currStat->STATUS_IND_WIND_SPEED_E) = 100.0f;
+		}
+		if (UnInitVal == systemNoiseCov.coeffRef(currStat->STATUS_IND_WIND_SPEED_E,currStat->STATUS_IND_WIND_SPEED_E)) {
+			systemNoiseCov.coeffRef(currStat->STATUS_IND_WIND_SPEED_E,currStat->STATUS_IND_WIND_SPEED_E) =
+					SQUARE(1.0) * baseIntervalSec;
+		}
+
+		// Initialize the heading. If possible extract it directly from the GPS if supported.
+		// When stationary direction accuracy is more or less random because it is driven by GPS noise, and
+		// not by real positional changes.
+		if (UnInitVal == currStat->heading) {
+			currStat->heading = 45.0f;
+		}
+		if (UnInitVal == errorCov.coeffRef(currStat->STATUS_IND_HEADING,currStat->STATUS_IND_HEADING)) {
+			errorCov.coeffRef(currStat->STATUS_IND_HEADING,currStat->STATUS_IND_HEADING) = 10.0f;
+		}
+		if (UnInitVal == errorCov.coeffRef(currStat->STATUS_IND_HEADING,currStat->STATUS_IND_HEADING)) {
+			errorCov.coeffRef(currStat->STATUS_IND_HEADING,currStat->STATUS_IND_HEADING) =
+					SQUARE(3.0) * baseIntervalSec;
+		}
+
+
 
 		LOG4CXX_DEBUG (logger,"Initialize latitude and longitude.");
 		LOG4CXX_DEBUG (logger,"	latitude = " << currVarioStatus.latitude()
