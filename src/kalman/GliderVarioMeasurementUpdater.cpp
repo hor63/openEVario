@@ -939,12 +939,14 @@ bool GliderVarioMeasurementUpdater::calcInverse3D (
 	org22 = org.coeff(2,2);
 
 
-	det = org00*(org11*org22-org12*org21) - org01*(org10*org22-org12*org20) + org02*(org10*org21-org11*org20);
-	if (det == 0.0) {
+	det = org00*(org11*org22-org12*org21) -
+			org01*(org10*org22-org12*org20) +
+			org02*(org10*org21-org11*org20);
+	if (det > -0.000005f && det < 0.000005f) {
 		return false;
 	}
 
-	detReci = 1/det;
+	detReci = 1.0f/det;
 
 	inverse.coeffRef(0,0) =  (org11 * org22 - org12 * org21) * detReci;
 	inverse.coeffRef(0,1) = -(org01 * org22 - org02 * org21) * detReci;

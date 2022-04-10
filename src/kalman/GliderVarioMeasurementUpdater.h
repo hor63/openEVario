@@ -312,8 +312,6 @@ public:
     /// Get the unit test mode, i.e. if the calculation results are copied into calculatedValueTst1 and measRowTTst1 and so forth.
     static bool getUnitTestMode();
 
-protected:
-
     /** \brief Calculate the inverse of a 3x3 matrix
      *
      * The algorithm has been taken from
@@ -324,8 +322,10 @@ protected:
      * @param[in] org The original 3x3 matrix
      * @return \p true when successful, \p false when the determinate of the matrix is 0, and the inverse cannot be calculated.
      * @see [Matrix Inverse](https://mathworld.wolfram.com/MatrixInverse.html) by Wolfram MathWorld
+     * @see [Determinant](https://mathworld.wolfram.com/Determinant.html) by Wolfram MathWorld;
+     *   see equation (6) for a 2x2 matrix; see equation (10) for a 3x3 matrix,
      */
-    OEV_LOCAL static bool calcInverse3D (
+    static bool calcInverse3D (
     		Eigen::SparseMatrix <FloatType> &inverse,
 			Eigen::SparseMatrix <FloatType> const &org);
 
@@ -350,7 +350,7 @@ protected:
      * @param[in,out] varioStatus The system status and covariance before and after the measurement update. The status and covariance are directly updated from the difference of the actually measured, and the
      * theoretical value.
      */
-    OEV_LOCAL static void calcSingleMeasureUpdate (
+    static void calcSingleMeasureUpdate (
             FloatType measuredValue,
             FloatType calculatedValue,
             FloatType measurementVariance_R,
@@ -364,7 +364,7 @@ protected:
      * This routine requires some preparation by the specific update routines which apply the (usually non-linear) measurement function
      * to the latest state estimate to calculate the expected measurement value as well as the Jacobian of the measurement matrix.
      *
-     * This function is used to correct the status simultaneouslz with threee measurements which are typical for 3-axis sensors.
+     * This function is used to correct the status simultaneously with three measurements which are typical for 3-axis sensors.
      *
      * @param[in] measuredValue The measured values as they were measured by a sensor. These values may be heavily pre-processed, e.g. the IAS or TAS from the
      *   dynamic pressure, and static pressure, or altitude from the absolute pressure sensor
@@ -380,13 +380,15 @@ protected:
      * @param[in,out] varioStatus The system status and covariance before and after the measurement update. The status and covariance are directly updated from the difference of the actually measured, and the
      * theoretical value.
      */
-    OEV_LOCAL static void calc3DMeasureUpdate (
+    static void calc3DMeasureUpdate (
             Vector3DType const &measuredValue,
 			Vector3DType const &calculatedValue,
 			RotationMatrix3DType const &measurementVariance_R,
             Eigen::SparseMatrix<FloatType> const &measRowT,
             GliderVarioStatus &varioStatus
     );
+
+protected:
 
     /// Indicator if calculation results are to be copied into global variables for comparison by unit tests.
     OEV_LOCAL static bool unitTestMode;
