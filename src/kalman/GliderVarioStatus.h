@@ -356,18 +356,53 @@ protected:
 
 };
 
+OEV_PUBLIC std::ostream& _printStatusVector (std::ostream &o, openEV::GliderVarioStatus::StatusVectorType const &v);
+OEV_PUBLIC std::ostream& _printCovMatrix (std::ostream &o, openEV::GliderVarioStatus::StatusCoVarianceType const &co);
+
 } // namespace openEV
 
 OEV_PUBLIC std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus& s);
-OEV_PUBLIC std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus::StatusVectorType &v);
-OEV_PUBLIC std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus::StatusCoVarianceType &co);
 OEV_PUBLIC std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus::StatusComponentIndex ind);
+
+// Build io manipulators for printStatusVector and printCovMatrix
+struct _PrintStatusVector {
+	openEV::GliderVarioStatus::StatusVectorType const &v;
+};
+struct _PrintCovMatrix{
+	openEV::GliderVarioStatus::StatusCoVarianceType const &co;
+};
+// The manipulator function
+inline _PrintStatusVector printStatusVector (openEV::GliderVarioStatus::StatusVectorType const &v) {
+	return {v};
+}
+inline _PrintCovMatrix printCovMatrix(openEV::GliderVarioStatus::StatusCoVarianceType const &co) {
+	return {co};
+}
+// The output operator of the helper class of the manipulator
+inline std::ostream& operator << (std::ostream &o, _PrintStatusVector v) {
+	openEV::_printStatusVector(o,v.v);
+	return o;
+}
+inline std::ostream& operator << (std::ostream &o, _PrintCovMatrix co) {
+	openEV::_printCovMatrix(o,co.co);
+	return o;
+}
 
 #if defined HAVE_LOG4CXX_H
 OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioStatus& s);
-OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioStatus::StatusVectorType &v);
-OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioStatus::StatusCoVarianceType &co);
 OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioStatus::StatusComponentIndex ind);
+
+// The output operator of the helper class of the manipulator
+inline std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, _PrintStatusVector v) {
+	std::ostream &o = b;
+	openEV::_printStatusVector(o,v.v);
+	return o;
+}
+inline std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, _PrintCovMatrix co) {
+	std::ostream &o = b;
+	openEV::_printCovMatrix(o,co.co);
+	return o;
+}
 
 #endif /* #if defined HAVE_LOG4CXX_H */
 

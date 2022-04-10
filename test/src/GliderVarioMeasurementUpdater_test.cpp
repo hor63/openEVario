@@ -238,6 +238,80 @@ public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
+
+TEST_F(MeasurementUpdaterTest, Inverse3x3Matrix) {
+
+	Eigen::SparseMatrix <FloatType> orgMatrix(3,3);
+	Eigen::SparseMatrix <FloatType> invMatrix(3,3);
+	Eigen::SparseMatrix <FloatType> orgTimesInvMatrix(3,3);
+
+	orgMatrix.reserve(9);
+	invMatrix.reserve(9);
+	orgTimesInvMatrix.reserve(9);
+
+	for (FloatType a00 = 0.0f; a00 > -1.0f; a00 -= 1.0f/7.0f) {
+		orgMatrix.coeffRef(0, 0) = a00;
+		for (FloatType a01 = 0.0f; a01 < 1.0f; a01 += 1.0f/9.3f) {
+			orgMatrix.coeffRef(0, 1) = a01;
+			for (FloatType a02 = 0.0f; a02 > -1.0f; a02 -= 1.0f/9.0f) {
+				orgMatrix.coeffRef(0, 2) = a02;
+				for (FloatType a10 = 0.0f; a10 < 2.0f; a10 += 1.0f/4.6f) {
+					orgMatrix.coeffRef(1, 0) = a10;
+					for (FloatType a11 = 0.0f; a11 > -3.0f; a11 -= 1.0f/3.7f) {
+						orgMatrix.coeffRef(1, 1) = a11;
+						for (FloatType a12 = 0.0f; a12 < 1.0f; a12 += 1.0f/2.5f) {
+							orgMatrix.coeffRef(1, 2) = a12;
+							for (FloatType a20 = 0.0f; a20 > -4.0f; a20 -= 1.0f/2.7f) {
+								orgMatrix.coeffRef(2, 0) = a20;
+								for (FloatType a21 = 0.0f; a21 < 5.0f; a21 += 1.0f/1.44f) {
+									orgMatrix.coeffRef(2, 1) = a21;
+									for (FloatType a22 = 0.0f; a22 > -5.0f; a22 -= 1.0f/1.3f) {
+										orgMatrix.coeffRef(2, 2) = a22;
+
+										if (!GliderVarioMeasurementUpdater::calcInverse3D(invMatrix, orgMatrix)){
+											//std::cout << "Matrix " << std::endl << std::setw(10)
+											//		<< orgMatrix << std::endl
+											//		<< "is not singular."
+											//		<< std::endl;
+										} else {
+
+											orgTimesInvMatrix = orgMatrix * invMatrix;
+
+											for (int x = 0; x < 3; x++) {
+												for (int y = 0; y < 3; y++) {
+													if (x==y){
+											            EXPECT_NEAR (orgTimesInvMatrix.coeff(x,y),1.0f,0.05f)
+											            		<< "OrgMatrix = " << std::endl
+																<< orgMatrix << std::endl
+																<< "InvMatrix = " << std::endl
+																<< invMatrix << std::endl
+																<< "orgTimesInvMatrix = " << std::endl
+																<< orgTimesInvMatrix << std::endl;
+													} else {
+											            EXPECT_NEAR (orgTimesInvMatrix.coeff(x,y),0.0f,0.05f)
+															<< "OrgMatrix = " << std::endl
+															<< orgMatrix << std::endl
+															<< "InvMatrix = " << std::endl
+															<< invMatrix << std::endl
+															<< "orgTimesInvMatrix = " << std::endl
+															<< orgTimesInvMatrix << std::endl;
+													}
+
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+}
+
 TEST_F(MeasurementUpdaterTest, Latitude) {
 
     // Test the result for a given combination of input values

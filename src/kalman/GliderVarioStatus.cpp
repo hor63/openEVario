@@ -274,11 +274,6 @@ void openEV::GliderVarioStatus::longitude(double lon) {
 
 }
 
-
-
-} // namespace openEV
-
-
 static char const * const statusFieldNames [openEV::GliderVarioStatus::STATUS_NUM_ROWS] = {
         "        gravity",
         "  longitudeOffs",
@@ -313,14 +308,7 @@ static char const * const statusFieldNames [openEV::GliderVarioStatus::STATUS_NU
         "   lastPressure",
 };
 
-std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
-
-    o << s.getStatusVector_x();
-
-    return o;
-}
-
-std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus::StatusVectorType &v) {
+std::ostream& _printStatusVector (std::ostream &o, openEV::GliderVarioStatus::StatusVectorType const &v) {
 
     o << "\n";
 
@@ -343,7 +331,7 @@ std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus::StatusVec
     return o;
 }
 
-std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus::StatusCoVarianceType &co) {
+std::ostream& _printCovMatrix (std::ostream &o, openEV::GliderVarioStatus::StatusCoVarianceType const &co) {
 
     o << "\n               ";
 
@@ -371,6 +359,18 @@ std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus::StatusCoV
     return o;
 }
 
+
+
+} // namespace openEV
+
+
+std::ostream& operator <<(std::ostream &o, openEV::GliderVarioStatus &s) {
+
+	openEV::_printStatusVector(o,s.getStatusVector_x());
+
+    return o;
+}
+
 std::ostream& operator << (std::ostream &o,openEV::GliderVarioStatus::StatusComponentIndex ind) {
     o << openEV::GliderVarioStatus::StatusComponentIndexHelperObj.getString(ind);
     return o;
@@ -381,13 +381,13 @@ OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, op
 	std::ostream &o = b;
 	return operator << (o,s);
 }
-OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioStatus::StatusVectorType &v) {
+OEV_PUBLIC std::ostream& printStatusVector (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioStatus::StatusVectorType &v) {
 	std::ostream &o = b;
-	return operator << (o,v);
+	return openEV::_printStatusVector (o,v);
 }
-OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioStatus::StatusCoVarianceType &co) {
+OEV_PUBLIC std::ostream& printCovMatrix (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioStatus::StatusCoVarianceType &co) {
 	std::ostream &o = b;
-	return operator << (o,co);
+	return openEV::_printCovMatrix (o,co);
 }
 OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioStatus::StatusComponentIndex ind) {
 	std::ostream &o = b;
