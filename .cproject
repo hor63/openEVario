@@ -45,14 +45,6 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<folderInfo id="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.660473769.515368317" name="/" resourcePath="demo_calibration">
-						<toolChain id="org.eclipse.linuxtools.cdt.autotools.core.toolChain.201877508" name="GNU Autotools Toolchain" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolChain" unusedChildren="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gcc;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp">
-							<tool id="org.eclipse.linuxtools.cdt.autotools.core.gnu.toolchain.tool.configure.2096622068" name="configure" superClass="org.eclipse.linuxtools.cdt.autotools.core.gnu.toolchain.tool.configure.1661717110"/>
-							<tool id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.autogen.787509133" name="autogen.sh" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.autogen.89559791"/>
-							<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.25271679" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base.455342747"/>
-							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.883964608" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base.1627309122"/>
-						</toolChain>
-					</folderInfo>
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="build"/>
 						<entry excluding="drivers/driverTemplate" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
