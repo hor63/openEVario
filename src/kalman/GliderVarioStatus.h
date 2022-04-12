@@ -404,6 +404,21 @@ inline std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, _Print
 	return o;
 }
 
+template <typename T> struct _SparseMatPrt{Eigen::SparseMatrix<T> const &v;};
+template <typename T> _SparseMatPrt<T> printSparseMatrixSimple(Eigen::SparseMatrix<T> const &v){return {v};}
+template <typename T> inline std::ostream& operator << (std::ostream &o, _SparseMatPrt<T> v) {
+	for (int row=0; row<v.v.rows(); ++row){
+		o << '\n';
+		for (int col=0; col<v.v.cols(); ++col){
+			o << '\t' << v.v.coeff(row, col);
+		}
+
+	}
+	o << '\n';
+	return o;
+}
+
+
 #endif /* #if defined HAVE_LOG4CXX_H */
 
 #endif /* GLIDERVARIOSTATUS_H_ */
