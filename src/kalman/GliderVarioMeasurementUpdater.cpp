@@ -925,8 +925,8 @@ bool GliderVarioMeasurementUpdater::calcInverse3D (
 		Eigen::SparseMatrix <FloatType> &inverse,
 		Eigen::SparseMatrix <FloatType> const &org) {
 	// The reciprocal of the determinant
-	FloatType det,detReci;
-	FloatType org00,org01,org02,org10,org11,org12,org20,org21,org22;
+	double det,detReci;
+	double org00,org01,org02,org10,org11,org12,org20,org21,org22;
 
 	org00 = org.coeff(0,0);
 	org01 = org.coeff(0,1);
@@ -942,7 +942,7 @@ bool GliderVarioMeasurementUpdater::calcInverse3D (
 	det = org00*(org11*org22-org12*org21) -
 			org01*(org10*org22-org12*org20) +
 			org02*(org10*org21-org11*org20);
-	if (det > -0.000005f && det < 0.000005f) {
+	if (det > -0.0001f && det < 0.0001f) {
 		return false;
 	}
 
