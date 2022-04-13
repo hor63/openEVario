@@ -312,6 +312,23 @@ public:
     /// Get the unit test mode, i.e. if the calculation results are copied into calculatedValueTst1 and measRowTTst1 and so forth.
     static bool getUnitTestMode();
 
+    /** \brief Calculate the inverse of a 2x2 matrix
+     *
+     * The algorithm has been taken from
+     * [How to Calculate the Inverse Matrix for 2×2 and 3×3 Matrices](https://aaronschlegel.me/calculate-matrix-inverse-2x2-3x3.html)
+     * by [Aaron Schlegel](https://aaronschlegel.me/author/aaron-schlegel.html)
+     *
+     * @param[out] inverse The inverted matrix
+     * @param[in] org The original 2x2 matrix
+     * @return \p true when successful, \p false when the determinate of the matrix is 0, and the inverse cannot be calculated.
+     * @see [Matrix Inverse](https://mathworld.wolfram.com/MatrixInverse.html) by Wolfram MathWorld
+     * @see [Determinant](https://mathworld.wolfram.com/Determinant.html) by Wolfram MathWorld;
+     *   see equation (6) for a 2x2 matrix; see equation (10) for a 3x3 matrix,
+     */
+    static bool calcInverse2D (
+    		Eigen::SparseMatrix <FloatType> &inverse,
+			Eigen::SparseMatrix <FloatType> const &org);
+
     /** \brief Calculate the inverse of a 3x3 matrix
      *
      * The algorithm has been taken from
