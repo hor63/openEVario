@@ -72,10 +72,6 @@
  *
  */
 
-#if defined DOXYGEN
-#define OEV_ENUM(enumName, ...) \
-	enum enumName {__VA_ARGS__ };
-#else
 #define OEV_ENUM(enumName, ...) \
 	enum enumName { __VA_ARGS__ }; \
 	/* helper class in the same scope */ \
@@ -149,7 +145,5 @@
 		} \
 	};  \
 	static enumName##HelperClass enumName##HelperObj;
-
-#endif // #if defined DOXYGEN
 
 #endif /* UTIL_OEV_ENUM_H_ */

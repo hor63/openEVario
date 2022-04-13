@@ -57,24 +57,40 @@ namespace openEV::drivers::MS4515 {
 	 */
 	static constexpr FloatType InchH20toMBar = 2.49082;
 
-	OEV_ENUM(MS4515Register,
-		MS4515_BRIDGE_HIGH			= 0x00,	///< Pressure data from the sensing bridge High-Bits, *and* status bits
+#if defined DOXYGEN
+    enum MS4515Register {
+#else
+		OEV_ENUM(MS4515Register,
+#endif
+	 	MS4515_BRIDGE_HIGH			= 0x00,	///< Pressure data from the sensing bridge High-Bits, *and* status bits
 		MS4515_BRIDGE_LOW			= 0x01,	///< Pressure data from the sensing bridge Low-byte
 		MS4515_TEMP_HIGH			= 0x02,	///< High-byte of temperature data.
 		MS4515_TEMP_LOW				= 0x03,	///< Low-bits of temperature data
-	);
+#if defined DOXYGEN
+    };
+#else
+    );
+#endif
 
 	static uint32_t constexpr MS4515_STATUS_BIT		= 6; ///< Number of bits to shift \ref MS4515_BRIDGE_HIGH byte data right
 	static uint32_t constexpr MS4515_STATUS_MASK	= 0b11000000; ///< Bitmask for status
 
 	static uint32_t constexpr MS4515_TEMPERATURE_HIGH_MASK	= ~MS4515_STATUS_MASK; ///< Bitmask for status
 
+#if defined DOXYGEN
+    enum MS4515Status {
+#else
 	OEV_ENUM(MS4515Status,
+#endif
 			MS4515_STATUS_OK			= 0,	///< Status OK, fresh data are in the data bytes.
 			MS4515_STATUS_RESERVED		= 1,	///< Undefined status.
 			MS4515_STATUS_STALE			= 2,	///< Valid data, but data were retrieved before. No new conversion occurred since the last read.
 			MS4515_STATUS_FAULT			= 3,	///< Fault detection. Invalid data. Perform a power-on reset to get out of the funk.
-	);
+#if defined DOXYGEN
+    };
+#else
+    );
+#endif
 
 
 	/// Mask for high-byte of pressure data (Bridge data high). The upper bits are occupied by the status bits.

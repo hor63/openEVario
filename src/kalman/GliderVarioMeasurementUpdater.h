@@ -276,7 +276,7 @@ public:
      * [Barometric formula](https://en.wikipedia.org/wiki/Barometric_formula).
      * Use formula 1 which includes a temperature gradient. \n
      * Reverse it and resolve it by the altitude.
-     * Use the fixed temperature gradient \ref altToPressureStdTemp for the indifferent boundary layer.
+     * Use the fixed temperature gradient \ref TempLapseIndiffBoundLayer for the indifferent boundary layer.
      *
      * I am assuming a dry atmosphere, and I am ignoring the effects of water vapor.
      *

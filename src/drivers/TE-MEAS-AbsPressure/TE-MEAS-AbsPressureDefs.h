@@ -36,7 +36,11 @@ namespace openEV::drivers::TE_MEAS_AbsPressure {
 	static constexpr uint8_t TE_MEAS_AbsPressureI2CAddr = 0x76;
 
 
+#if defined DOXYGEN
+	enum TE_MEAS_AbsPressureCommands {
+#else
 	OEV_ENUM(TE_MEAS_AbsPressureCommands,
+#endif
 			CMD_Reset					= 0x1E,
 
 			// Conversion of pressure
@@ -56,13 +60,21 @@ namespace openEV::drivers::TE_MEAS_AbsPressure {
 			CMD_ADC_Read				= 0x00,
 
 			CMD_PROM_Read_Base			= 0xA0
+#if defined DOXYGEN
+	};
+#else
 	);
+#endif
 
 	uint8_t static inline CMD_PROM_READ_REG (uint8_t reg) {
 		return CMD_PROM_Read_Base | (reg & 0b00000111)<<1;
 	}
 
+#if defined DOXYGEN
+	enum TE_MEAS_AbsPressurePROMRegs {
+#else
 	OEV_ENUM(TE_MEAS_AbsPressurePROMRegs,
+#endif
 			/// Manufacturer reserved, only relevant for CRC calculation
 			PROM_REG_RESERVED	= 0,
 			PROM_REG_COEFF_1	= 1,
@@ -77,7 +89,11 @@ namespace openEV::drivers::TE_MEAS_AbsPressure {
 			PROM_REG_CRC		= 7,
 			/// Not a register, but the length of the register file
 			PROM_REG_COUNT		= 8,
+#if defined DOXYGEN
+	};
+#else
 	);
+#endif
 
 	static constexpr uint8_t PROM_CRC_MASK = 0b00001111;
 

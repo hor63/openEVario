@@ -115,7 +115,11 @@ public:
 
 
 	/// \brief Possible statuses of the port
-    OEV_ENUM(StatusEnum,
+#if defined DOXYGEN
+	enum StatusEnum {
+#else
+	OEV_ENUM(StatusEnum,
+#endif
 			CLOSED,			///< Device is in the initial or properly closed status
 			OPEN,			///< Device is open and ready for communications
 			ERR_IO_TEMP,	///< IO error occurred, but temporary and (hopefully) recoverable when re-trying read or write
@@ -125,7 +129,11 @@ public:
 							///< This status is also assumed when a network address cannot be reached.
 			ERR_WRONG_TYPE	///< The device is not of the expected type, e.g. a file where a TTY device node is expected.
 							///< This error is non-recoverable.
+#if defined DOXYGEN
+	};
+#else
 	);
+#endif
 
 protected:
 

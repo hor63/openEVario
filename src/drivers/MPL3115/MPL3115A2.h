@@ -37,7 +37,11 @@ namespace openEV::drivers::MPL3115 {
 
 	static constexpr uint8_t MPL3115WhoAmIValue = 0xC4;
 
+#if defined DOXYGEN
+    enum MPL3115Register {
+#else
 	OEV_ENUM(MPL3115Register,
+#endif
 		MPL3115_STATUS				= 0x00,	///< Sensor status register
 		MPL3115_OUT_P_MSB			= 0x01,	///< Pressure data out MSB; Bits 12 to 19 of 20-bit real-time pressure sample. \n
 											///< Root pointer to pressure and temperature FIFO data.
@@ -63,7 +67,11 @@ namespace openEV::drivers::MPL3115 {
 		MPL3115_OFF_P				= 0x2B, ///< Pressure data user offset register; Pressure data offset
 		MPL3115_OFF_T				= 0x2C, ///< Temperature data user offset register; Temperature data offset
 		MPL3115_OFF_H				= 0x2D, ///< Altitude data user offset register; Altitude data offset
+#if defined DOXYGEN
+	};
+#else
 	);
+#endif
 
 	enum MPL3115StatusBits {
 		MPL3115Status_PTOW	= 7, ///< Pressure/altitude or temperature data overwrite.

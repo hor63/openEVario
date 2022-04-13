@@ -100,7 +100,7 @@ public:
 
     /** \brief Read the configuration
      *
-     * \see \ref GliderVarioDriverBase::readConfiguration()
+     * \see \ref DriverBase::readConfiguration()
      */
     virtual void readConfiguration (Properties4CXX::Properties const &configuration) override;
 

@@ -39,7 +39,11 @@ struct NMEASentence {
 	 * Any NMEA sentence type which is not listed here is marked as \p NMEA_DONT_CARE, and is thrown out at an early stage of processing.
 	 *
 	 */
+#if defined DOXYGEN
+	enum NMEASentenceType {
+#else
 	OEV_ENUM(NMEASentenceType,
+#endif
 			NMEA_RMC,
 			NMEA_GGA,
 			NMEA_GLL,
@@ -47,7 +51,12 @@ struct NMEASentence {
 			NMEA_GST,
 			NMEA_GSA,
 			NMEA_GBS,
-			NMEA_DONT_CARE);
+			NMEA_DONT_CARE
+#if defined DOXYGEN
+	};
+#else
+	);
+#endif
 
 	/** \brief Max. length of internal buffers for NMEA sentences.
 	 *

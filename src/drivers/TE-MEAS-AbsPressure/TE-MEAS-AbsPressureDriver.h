@@ -384,7 +384,7 @@ public:
 
 protected:
 
-	/** \ref Perform temperature conversion with second order temperature compensation
+	/** \brief Perform temperature conversion with second order temperature compensation
 	 *
 	 * @param rawValue
 	 *
@@ -416,7 +416,7 @@ public:
 
 protected:
 
-	/** \ref Perform temperature conversion with second order temperature compensation
+	/** \brief Perform temperature conversion with second order temperature compensation
 	 *
 	 * @param rawValue
 	 *
@@ -448,7 +448,7 @@ public:
 
 protected:
 
-	/** \ref Perform temperature conversion with second order temperature compensation
+	/** \brief Perform temperature conversion with second order temperature compensation
 	 *
 	 * @param rawValue
 	 *
@@ -480,7 +480,7 @@ public:
 
 protected:
 
-	/** \ref Perform temperature conversion with second order temperature compensation
+	/** \brief Perform temperature conversion with second order temperature compensation
 	 *
 	 * @param rawValue
 	 *
@@ -512,7 +512,7 @@ public:
 
 protected:
 
-	/** \ref Perform temperature conversion with second order temperature compensation
+	/** \brief Perform temperature conversion with second order temperature compensation
 	 *
 	 * @param rawValue
 	 *
@@ -544,7 +544,7 @@ public:
 
 protected:
 
-	/** \ref Perform temperature conversion with second order temperature compensation
+	/** \brief Perform temperature conversion with second order temperature compensation
 	 *
 	 * @param rawValue
 	 *
@@ -576,7 +576,7 @@ public:
 
 protected:
 
-	/** \ref Perform temperature conversion with second order temperature compensation
+	/** \brief Perform temperature conversion with second order temperature compensation
 	 *
 	 * @param rawValue
 	 *
