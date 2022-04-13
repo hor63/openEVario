@@ -99,4 +99,11 @@ namespace openEV::drivers::TE_MEAS_AbsPressure {
 
 } // namespace openEV::drivers::TE_MEAS_AbsPressure
 
+std::ostream& operator << (std::ostream &o, openEV::drivers::TE_MEAS_AbsPressure::TE_MEAS_AbsPressureCommands v);
+std::ostream& operator << (std::ostream &o, openEV::drivers::TE_MEAS_AbsPressure::TE_MEAS_AbsPressurePROMRegs v);
+#if defined HAVE_LOG4CXX_H
+std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::drivers::TE_MEAS_AbsPressure::TE_MEAS_AbsPressureCommands v);
+std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::drivers::TE_MEAS_AbsPressure::TE_MEAS_AbsPressurePROMRegs v);
+#endif
+
 #endif /* DRIVERS_TE_MEAS_AbsPressureDefs_H_ */

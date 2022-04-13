@@ -427,6 +427,9 @@ typedef std::shared_ptr<openEV::drivers::DriverBase> GliderVarioDriverBasePtr;
 #include "main/GliderVarioDriverList.h"
 
 OEV_UTILS_PUBLIC std::ostream& operator << (std::ostream &o,openEV::drivers::DriverBase::SensorCapability ind);
+#if defined HAVE_LOG4CXX_H
+OEV_UTILS_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::drivers::DriverBase::SensorCapability v);
+#endif
 
 #endif /* GLIDERVARIODRIVERBASE_H_ */
 

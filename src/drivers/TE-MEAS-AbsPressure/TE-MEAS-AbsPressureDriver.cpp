@@ -1277,3 +1277,24 @@ void MS5839_MS5840Driver::testGetPressureVal(uint8_t data[]) {
 #endif // #if TE_MEAS_ABS_PRESSURE_TEST_MODE
 
 } /* namespace openEV */
+
+std::ostream& operator << (std::ostream &o, openEV::drivers::TE_MEAS_AbsPressure::TE_MEAS_AbsPressureCommands v) {
+    o << openEV::drivers::TE_MEAS_AbsPressure::TE_MEAS_AbsPressureCommandsHelperObj.getString(v);
+    return o;
+}
+std::ostream& operator << (std::ostream &o, openEV::drivers::TE_MEAS_AbsPressure::TE_MEAS_AbsPressurePROMRegs v) {
+    o << openEV::drivers::TE_MEAS_AbsPressure::TE_MEAS_AbsPressurePROMRegsHelperObj.getString(v);
+    return o;
+}
+#if defined HAVE_LOG4CXX_H
+std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::drivers::TE_MEAS_AbsPressure::TE_MEAS_AbsPressureCommands v) {
+	std::ostream& o = b;
+    o << openEV::drivers::TE_MEAS_AbsPressure::TE_MEAS_AbsPressureCommandsHelperObj.getString(v);
+    return o;
+}
+std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::drivers::TE_MEAS_AbsPressure::TE_MEAS_AbsPressurePROMRegs v) {
+	std::ostream& o = b;
+    o << openEV::drivers::TE_MEAS_AbsPressure::TE_MEAS_AbsPressurePROMRegsHelperObj.getString(v);
+    return o;
+}
+#endif

@@ -39,7 +39,7 @@ namespace openEV::drivers::AMS5915 {
 
 
 #if defined DOXYGEN
-    enum AMS5915Register {
+	enum AMS5915Register {
 #else
 	OEV_ENUM(AMS5915Register,
 #endif
@@ -68,5 +68,12 @@ namespace openEV::drivers::AMS5915 {
 	static constexpr uint32_t AMS5915PressureRangeMaxCount = 14745;
 
 } // namespace openEV::drivers::AMS5915
+
+std::ostream& operator << (std::ostream &o, openEV::drivers::AMS5915::AMS5915Register v);
+
+std::ostream& operator << (std::ostream &o, openEV::drivers::AMS5915::AMS5915Register v);
+#if defined HAVE_LOG4CXX_H
+std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::drivers::AMS5915::AMS5915Register v);
+#endif
 
 #endif /* DRIVERS_AMS5915DEFS_H_ */

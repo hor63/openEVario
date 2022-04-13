@@ -592,3 +592,25 @@ void MS4515Driver::readoutMS4515() {
 }
 
 } /* namespace openEV::drivers::MS4515 */
+
+std::ostream& operator << (std::ostream &o, openEV::drivers::MS4515::MS4515Register v) {
+    o << openEV::drivers::MS4515::MS4515RegisterHelperObj.getString(v);
+    return o;
+}
+std::ostream& operator << (std::ostream &o, openEV::drivers::MS4515::MS4515Status v) {
+    o << openEV::drivers::MS4515::MS4515StatusHelperObj.getString(v);
+    return o;
+}
+#if defined HAVE_LOG4CXX_H
+std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::drivers::MS4515::MS4515Register v) {
+	std::ostream& o = b;
+    o << openEV::drivers::MS4515::MS4515RegisterHelperObj.getString(v);
+    return o;
+}
+std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::drivers::MS4515::MS4515Status v) {
+	std::ostream& o = b;
+    o << openEV::drivers::MS4515::MS4515StatusHelperObj.getString(v);
+    return o;
+}
+#endif
+

@@ -371,6 +371,9 @@ OEV_PUBLIC std::ostream& _printCovMatrix (std::ostream &o, openEV::GliderVarioSt
 
 OEV_PUBLIC std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus& s);
 OEV_PUBLIC std::ostream& operator << (std::ostream &o, openEV::GliderVarioStatus::StatusComponentIndex ind);
+#if defined HAVE_LOG4CXX_H
+OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioStatus::StatusComponentIndex ind);
+#endif
 
 // Build io manipulators for printStatusVector and printCovMatrix
 struct _PrintStatusVector {

@@ -401,4 +401,9 @@ protected:
 } /* namespace io */
 } /* namespace openEV */
 
+OEV_UTILS_PUBLIC std::ostream& operator << (std::ostream &o, openEV::io::PortBase::StatusEnum v);
+#if defined HAVE_LOG4CXX_H
+OEV_UTILS_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::io::PortBase::StatusEnum v);
+#endif
+
 #endif /* UTIL_PORTBASE_H_ */

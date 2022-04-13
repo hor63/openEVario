@@ -58,7 +58,7 @@ namespace openEV::drivers::MS4515 {
 	static constexpr FloatType InchH20toMBar = 2.49082;
 
 #if defined DOXYGEN
-    enum MS4515Register {
+	enum MS4515Register {
 #else
 		OEV_ENUM(MS4515Register,
 #endif
@@ -78,7 +78,7 @@ namespace openEV::drivers::MS4515 {
 	static uint32_t constexpr MS4515_TEMPERATURE_HIGH_MASK	= ~MS4515_STATUS_MASK; ///< Bitmask for status
 
 #if defined DOXYGEN
-    enum MS4515Status {
+	enum MS4515Status {
 #else
 	OEV_ENUM(MS4515Status,
 #endif
@@ -105,5 +105,12 @@ namespace openEV::drivers::MS4515 {
 	static uint32_t constexpr MS4515_TEMPERATURE_HIGH_SHIFT = 8 - MS4515_TEMPERATURE_LOW_BIT;
 
 } // namespace openEV::drivers::MS4515
+
+std::ostream& operator << (std::ostream &o, openEV::drivers::MS4515::MS4515Register v);
+std::ostream& operator << (std::ostream &o, openEV::drivers::MS4515::MS4515Status v);
+#if defined HAVE_LOG4CXX_H
+std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::drivers::MS4515::MS4515Register v);
+std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::drivers::MS4515::MS4515Status v);
+#endif
 
 #endif /* DRIVERS_MS4515DO_H_ */

@@ -38,7 +38,7 @@ namespace openEV::drivers::MPL3115 {
 	static constexpr uint8_t MPL3115WhoAmIValue = 0xC4;
 
 #if defined DOXYGEN
-    enum MPL3115Register {
+	enum MPL3115Register {
 #else
 	OEV_ENUM(MPL3115Register,
 #endif
@@ -114,5 +114,10 @@ namespace openEV::drivers::MPL3115 {
 	};
 
 } // namespace openEV::drivers::MPL3115
+
+std::ostream& operator << (std::ostream &o, openEV::drivers::MPL3115::MPL3115Register v);
+#if defined HAVE_LOG4CXX_H
+std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::drivers::MPL3115::MPL3115Register v);
+#endif
 
 #endif /* DRIVERS_MPL3115_MPL3315A2_H_ */

@@ -92,9 +92,9 @@ struct NMEASentence {
 
 } // namespace openEV
 
-std::ostream& operator << (std::ostream &o, openEV::drivers::NMEA0813::NMEASentence::NMEASentenceType t);
-
+std::ostream& operator << (std::ostream &o, openEV::drivers::NMEA0813::NMEASentence::NMEASentenceType v);
 #if defined HAVE_LOG4CXX_H
-std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::drivers::NMEA0813::NMEASentence::NMEASentenceType t);
+std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::drivers::NMEA0813::NMEASentence::NMEASentenceType v);
 #endif
+
 #endif /* DRIVERS_NMEAGPS_NMEASENTENCE_H_ */

@@ -46,7 +46,7 @@ public:
     virtual ~GliderVarioMeasurementVector();
 
 #if defined DOXYGEN
-    enum MeasureComponentIndex {
+	enum MeasureComponentIndex {
 #else
 	OEV_ENUM(MeasureComponentIndex,
 #endif
@@ -178,5 +178,8 @@ protected:
 } /* namespace openEV */
 
 OEV_PUBLIC std::ostream& operator << (std::ostream &o, openEV::GliderVarioMeasurementVector::MeasureComponentIndex ind);
+#if defined HAVE_LOG4CXX_H
+OEV_PUBLIC std::ostream& operator << (log4cxx::helpers::CharMessageBuffer &b, openEV::GliderVarioMeasurementVector::MeasureComponentIndex ind);
+#endif
 
 #endif /* GLIDERVARIOMEASUREMENTVECTOR_H_ */
