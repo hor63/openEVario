@@ -921,73 +921,7 @@ GliderVarioMeasurementUpdater::dynamicPressureUpd (
     );
 }
 
-bool GliderVarioMeasurementUpdater::calcInverse2D (
-		Eigen::SparseMatrix <FloatType> &inverse,
-		Eigen::SparseMatrix <FloatType> const &org) {
-	// The reciprocal of the determinant
-	float det,detReci;
-	float a,b,c,d;
 
-	a = org.coeff(0,0);
-	b = org.coeff(0,1);
-	c = org.coeff(1,0);
-	d = org.coeff(1,1);
-
-
-	det = a*d - b*c;
-	if (det > -0.0001f && det < 0.0001f) {
-		return false;
-	}
-
-	detReci = 1.0f/det;
-
-	inverse.coeffRef(0,0) =  d * detReci;
-	inverse.coeffRef(0,1) = -b * detReci;
-	inverse.coeffRef(1,0) = -c * detReci;
-	inverse.coeffRef(1,1) =  a * detReci;
-
-	return true;
-}
-
-bool GliderVarioMeasurementUpdater::calcInverse3D (
-		Eigen::SparseMatrix <FloatType> &inverse,
-		Eigen::SparseMatrix <FloatType> const &org) {
-	// The reciprocal of the determinant
-	double det,detReci;
-	double org00,org01,org02,org10,org11,org12,org20,org21,org22;
-
-	org00 = org.coeff(0,0);
-	org01 = org.coeff(0,1);
-	org02 = org.coeff(0,2);
-	org10 = org.coeff(1,0);
-	org11 = org.coeff(1,1);
-	org12 = org.coeff(1,2);
-	org20 = org.coeff(2,0);
-	org21 = org.coeff(2,1);
-	org22 = org.coeff(2,2);
-
-
-	det = org00*(org11*org22-org12*org21) -
-			org01*(org10*org22-org12*org20) +
-			org02*(org10*org21-org11*org20);
-	if (det > -0.0001 && det < 0.0001) {
-		return false;
-	}
-
-	detReci = 1.0/det;
-
-	inverse.coeffRef(0,0) =  (org11 * org22 - org12 * org21) * detReci;
-	inverse.coeffRef(0,1) = -(org01 * org22 - org02 * org21) * detReci;
-	inverse.coeffRef(0,2) =  (org01 * org12 - org02 * org11) * detReci;
-	inverse.coeffRef(1,0) = -(org10 * org22 - org12 * org20) * detReci;
-	inverse.coeffRef(1,1) =  (org00 * org22 - org02 * org20) * detReci;
-	inverse.coeffRef(1,2) = -(org00 * org12 - org02 * org10) * detReci;
-	inverse.coeffRef(2,0) =  (org10 * org21 - org11 * org20) * detReci;
-	inverse.coeffRef(2,1) = -(org00 * org21 - org01 * org20) * detReci;
-	inverse.coeffRef(2,2) =  (org00 * org11 - org01 * org10) * detReci;
-
-	return true;
-}
 
 
 void GliderVarioMeasurementUpdater::calc3DMeasureUpdate (

@@ -325,9 +325,34 @@ public:
      * @see [Determinant](https://mathworld.wolfram.com/Determinant.html) by Wolfram MathWorld;
      *   see equation (6) for a 2x2 matrix; see equation (10) for a 3x3 matrix,
      */
+    template <typename T>
     static bool calcInverse2D (
-    		Eigen::SparseMatrix <FloatType> &inverse,
-			Eigen::SparseMatrix <FloatType> const &org);
+    		Eigen::SparseMatrix <T> &inverse,
+    		Eigen::SparseMatrix <T> const &org) {
+    	// The reciprocal of the determinant
+    	T det,detReci;
+    	T a,b,c,d;
+
+    	a = org.coeff(0,0);
+    	b = org.coeff(0,1);
+    	c = org.coeff(1,0);
+    	d = org.coeff(1,1);
+
+
+    	det = a*d - b*c;
+    	if (det > T(-0.0001) && det < T(0.0001)) {
+    		return false;
+    	}
+
+    	detReci = T(1.0)/det;
+
+    	inverse.coeffRef(0,0) =  d * detReci;
+    	inverse.coeffRef(0,1) = -b * detReci;
+    	inverse.coeffRef(1,0) = -c * detReci;
+    	inverse.coeffRef(1,1) =  a * detReci;
+
+    	return true;
+    }
 
     /** \brief Calculate the inverse of a 3x3 matrix
      *
@@ -342,9 +367,46 @@ public:
      * @see [Determinant](https://mathworld.wolfram.com/Determinant.html) by Wolfram MathWorld;
      *   see equation (6) for a 2x2 matrix; see equation (10) for a 3x3 matrix,
      */
-    static bool calcInverse3D (
-    		Eigen::SparseMatrix <FloatType> &inverse,
-			Eigen::SparseMatrix <FloatType> const &org);
+template <typename T>
+static bool calcInverse3D (
+		Eigen::SparseMatrix <T> &inverse,
+		Eigen::SparseMatrix <T> const &org) {
+	// The reciprocal of the determinant
+	T det,detReci;
+	T org00,org01,org02,org10,org11,org12,org20,org21,org22;
+
+	org00 = org.coeff(0,0);
+	org01 = org.coeff(0,1);
+	org02 = org.coeff(0,2);
+	org10 = org.coeff(1,0);
+	org11 = org.coeff(1,1);
+	org12 = org.coeff(1,2);
+	org20 = org.coeff(2,0);
+	org21 = org.coeff(2,1);
+	org22 = org.coeff(2,2);
+
+
+	det = org00*(org11*org22-org12*org21) -
+			org01*(org10*org22-org12*org20) +
+			org02*(org10*org21-org11*org20);
+	if (det > T(-0.0001) && det < T(0.0001)) {
+		return false;
+	}
+
+	detReci = T(1.0)/det;
+
+	inverse.coeffRef(0,0) =  (org11 * org22 - org12 * org21) * detReci;
+	inverse.coeffRef(0,1) = -(org01 * org22 - org02 * org21) * detReci;
+	inverse.coeffRef(0,2) =  (org01 * org12 - org02 * org11) * detReci;
+	inverse.coeffRef(1,0) = -(org10 * org22 - org12 * org20) * detReci;
+	inverse.coeffRef(1,1) =  (org00 * org22 - org02 * org20) * detReci;
+	inverse.coeffRef(1,2) = -(org00 * org12 - org02 * org10) * detReci;
+	inverse.coeffRef(2,0) =  (org10 * org21 - org11 * org20) * detReci;
+	inverse.coeffRef(2,1) = -(org00 * org21 - org01 * org20) * detReci;
+	inverse.coeffRef(2,2) =  (org00 * org11 - org01 * org10) * detReci;
+
+	return true;
+}
 
 
     /** \brief Calculate the status update for one measurement value

@@ -238,178 +238,196 @@ public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
+template <typename T>
+class Inverse2x2MatrixTest :public ::testing::Test {
+public:
+	void executeTest(){
+		Eigen::SparseMatrix <T> orgMatrix(2,2);
+		Eigen::SparseMatrix <T> invMatrix(2,2);
+		Eigen::SparseMatrix <T> orgTimesInvMatrix(2,2);
 
-TEST_F(MeasurementUpdaterTest, Inverse2x2Matrix) {
+		orgMatrix.reserve(4);
+		invMatrix.reserve(4);
+		orgTimesInvMatrix.reserve(4);
+		uint32_t numTests=0, numInvalidInverse=0, num0sChecked=0, num1sChecked=0, num0TestFailed=0, num1TestFailed=0;
+		double sum0Deviation=0.0, sum1Deviation=0.0;
+		T max0Deviation=0.0, max1Deviation=0.0;
 
-	Eigen::SparseMatrix <FloatType> orgMatrix(2,2);
-	Eigen::SparseMatrix <FloatType> invMatrix(2,2);
-	Eigen::SparseMatrix <FloatType> orgTimesInvMatrix(2,2);
+		for (T a00 = -1.0; a00 < 0.0; a00 += 1.0/7.0) {
+			orgMatrix.coeffRef(0, 0) = a00;
+			for (T a01 = 2.0; a01 < 3.0; a01 += 1.0/9.3) {
+				orgMatrix.coeffRef(0, 1) = a01;
+					for (T a10 = 50.0; a10 < 70.0; a10 += 10.0/4.6) {
+						orgMatrix.coeffRef(1, 0) = a10;
+						for (T a11 = -90.0; a11 < -70.0; a11 += 10.0/3.7) {
+							orgMatrix.coeffRef(1, 1) = a11;
 
-	orgMatrix.reserve(4);
-	invMatrix.reserve(4);
-	orgTimesInvMatrix.reserve(4);
-	uint32_t numTests=0, numInvalidInverse=0, num0sChecked=0, num1sChecked=0, num0TestFailed=0, num1TestFailed=0;
-	double sum0Deviation=0.0, sum1Deviation=0.0;
-	FloatType max0Deviation=0.0, max1Deviation=0.0;
+							++numTests;
+							if (!GliderVarioMeasurementUpdater::calcInverse2D(invMatrix, orgMatrix)){
+								//std::cout << "Matrix " << std::endl << std::setw(10)
+								//		<< orgMatrix << std::endl
+								//		<< "is not singular."
+								//		<< std::endl;
+								++numInvalidInverse;
+							} else {
 
-	for (FloatType a00 = -1.0f; a00 < 0.0f; a00 += 1.0f/7.0f) {
-		orgMatrix.coeffRef(0, 0) = a00;
-		for (FloatType a01 = 2.0f; a01 < 3.0f; a01 += 1.0f/9.3f) {
-			orgMatrix.coeffRef(0, 1) = a01;
-				for (FloatType a10 = 50.0f; a10 < 70.0f; a10 += 10.0f/4.6f) {
-					orgMatrix.coeffRef(1, 0) = a10;
-					for (FloatType a11 = -90.0f; a11 < -70.0f; a11 += 10.0f/3.7f) {
-						orgMatrix.coeffRef(1, 1) = a11;
+								orgTimesInvMatrix = orgMatrix * invMatrix;
 
-						++numTests;
-						if (!GliderVarioMeasurementUpdater::calcInverse2D(invMatrix, orgMatrix)){
-							//std::cout << "Matrix " << std::endl << std::setw(10)
-							//		<< orgMatrix << std::endl
-							//		<< "is not singular."
-							//		<< std::endl;
-							++numInvalidInverse;
-						} else {
+								for (int x = 0; x < 2; x++) {
+									for (int y = 0; y < 2; y++) {
+										if (x==y){
+											++num1sChecked;
+											sum1Deviation+=(std::abs(orgTimesInvMatrix.coeff(x,y) - 1.0));
+											max1Deviation=std::max(max1Deviation,std::abs(orgTimesInvMatrix.coeff(x,y) - T(1.0)));
 
-							orgTimesInvMatrix = orgMatrix * invMatrix;
+											EXPECT_NEAR (orgTimesInvMatrix.coeff(x,y),T(1.0),T(0.01))
+													<< "Test #" << numTests
+													<< "\nNumber 1-tests failed = " << ++num1TestFailed
+													<< "\norgMatrix ="
+													<< printSparseMatrixSimple(orgMatrix)
+													<< "\ninvMatrix = " << std::endl
+													<< printSparseMatrixSimple(invMatrix)
+													<< "\norgTimesInvMatrix = "
+													<< printSparseMatrixSimple(orgTimesInvMatrix)
+													<< "-----------------------------------------------"
+													<< std::endl;
+										} else {
+											++num0sChecked;
+											sum0Deviation+=std::abs(orgTimesInvMatrix.coeff(x,y));
+											max0Deviation=std::max(max0Deviation,std::abs(orgTimesInvMatrix.coeff(x,y)));
 
-							for (int x = 0; x < 2; x++) {
-								for (int y = 0; y < 2; y++) {
-									if (x==y){
-										++num1sChecked;
-										sum1Deviation+=(std::abs(orgTimesInvMatrix.coeff(x,y) - 1.0));
-										max1Deviation=std::max(max1Deviation,std::abs(orgTimesInvMatrix.coeff(x,y) - 1.0f));
+											EXPECT_NEAR (orgTimesInvMatrix.coeff(x,y),T(0.0),T(0.01))
+													<< "Test #" << numTests
+													<< "\nNumber 0-tests failed = " << ++num0TestFailed
+													<< "\norgMatrix ="
+													<< printSparseMatrixSimple(orgMatrix)
+													<< "\ninvMatrix = " << std::endl
+													<< printSparseMatrixSimple(invMatrix)
+													<< "\norgTimesInvMatrix = "
+													<< printSparseMatrixSimple(orgTimesInvMatrix)
+													<< "-----------------------------------------------"
+													<< std::endl;
+										}
 
-										EXPECT_NEAR (orgTimesInvMatrix.coeff(x,y),1.0f,0.01f)
-												<< "Test #" << numTests
-												<< "\nNumber 1-tests failed = " << ++num1TestFailed
-												<< "\norgMatrix ="
-												<< printSparseMatrixSimple(orgMatrix)
-												<< "\ninvMatrix = " << std::endl
-												<< printSparseMatrixSimple(invMatrix)
-												<< "\norgTimesInvMatrix = "
-												<< printSparseMatrixSimple(orgTimesInvMatrix)
-												<< "-----------------------------------------------"
-												<< std::endl;
-									} else {
-										++num0sChecked;
-										sum0Deviation+=std::abs(orgTimesInvMatrix.coeff(x,y));
-										max0Deviation=std::max(max0Deviation,std::abs(orgTimesInvMatrix.coeff(x,y)));
-
-										EXPECT_NEAR (orgTimesInvMatrix.coeff(x,y),0.0f,0.01f)
-												<< "Test #" << numTests
-												<< "\nNumber 0-tests failed = " << ++num0TestFailed
-												<< "\norgMatrix ="
-												<< printSparseMatrixSimple(orgMatrix)
-												<< "\ninvMatrix = " << std::endl
-												<< printSparseMatrixSimple(invMatrix)
-												<< "\norgTimesInvMatrix = "
-												<< printSparseMatrixSimple(orgTimesInvMatrix)
-												<< "-----------------------------------------------"
-												<< std::endl;
 									}
-
 								}
 							}
-						}
+					}
 				}
 			}
 		}
-	}
 
-	std::cout
-			<< "\n===============================================\n"
-			<< "Number of tests = " << numTests
-			<< "\nNumber of invalid inverses = " << numInvalidInverse
-			<< "\nNumber of failed 0-tests = " << num0TestFailed
-			<< "\nNumber of failed 1-tests = " << num1TestFailed
-			<< "\nMaximum 0-deviation = " << max0Deviation
-			<< "\nAverage 0-deviation = " << (sum0Deviation/double(num0sChecked))
-			<< "\nMaximum 1-deviation = " << max1Deviation
-			<< "\nAverage 1-deviation = " << (sum1Deviation/double(num1sChecked))
-			<< "\n==============================================="
-			<< std::endl;
+		std::cout
+				<< "\n===============================================\n"
+				<< "Number of tests = " << numTests
+				<< "\nNumber of invalid inverses = " << numInvalidInverse
+				<< "\nNumber of failed 0-tests = " << num0TestFailed
+				<< "\nNumber of failed 1-tests = " << num1TestFailed
+				<< "\nMaximum 0-deviation = " << max0Deviation
+				<< "\nAverage 0-deviation = " << (sum0Deviation/double(num0sChecked))
+				<< "\nMaximum 1-deviation = " << max1Deviation
+				<< "\nAverage 1-deviation = " << (sum1Deviation/double(num1sChecked))
+				<< "\n==============================================="
+				<< std::endl;
+
+	}
+};
+
+typedef Inverse2x2MatrixTest<FloatType> Inverse2x2MatrixTestFloatType;
+TEST_F(Inverse2x2MatrixTestFloatType, FloatTest) {
+
+	executeTest();
+
+}
+typedef Inverse2x2MatrixTest<double> Inverse2x2MatrixTestdouble;
+TEST_F(Inverse2x2MatrixTestdouble, double) {
+
+	executeTest();
 
 }
 
-TEST_F(MeasurementUpdaterTest, Inverse3x3Matrix) {
+template <typename T>
+class Inverse3x3MatrixTest :public ::testing::Test {
+public:
+	void executeTest(){
+		Eigen::SparseMatrix <T> orgMatrix(3,3);
+		Eigen::SparseMatrix <T> invMatrix(3,3);
+		Eigen::SparseMatrix <T> orgTimesInvMatrix(3,3);
 
-	Eigen::SparseMatrix <FloatType> orgMatrix(3,3);
-	Eigen::SparseMatrix <FloatType> invMatrix(3,3);
-	Eigen::SparseMatrix <FloatType> orgTimesInvMatrix(3,3);
+		orgMatrix.reserve(9);
+		invMatrix.reserve(9);
+		orgTimesInvMatrix.reserve(9);
+		uint32_t numTests=0, numInvalidInverse=0, num0sChecked=0, num1sChecked=0, num0TestFailed=0, num1TestFailed=0;
+		double sum0Deviation=0.0, sum1Deviation=0.0;
+		T max0Deviation=0.0, max1Deviation=0.0;
 
-	orgMatrix.reserve(9);
-	invMatrix.reserve(9);
-	orgTimesInvMatrix.reserve(9);
-	uint32_t numTests=0, numInvalidInverse=0, num0sChecked=0, num1sChecked=0, num0TestFailed=0, num1TestFailed=0;
-	double sum0Deviation=0.0, sum1Deviation=0.0;
-	FloatType max0Deviation=0.0, max1Deviation=0.0;
+		for (T a00 = -10.0f; a00 < 0.0f; a00 += 10.0f/7.0f) {
+			orgMatrix.coeffRef(0, 0) = a00;
+			for (T a01 = 20.0f; a01 < 30.0f; a01 += 10.0f/9.3f) {
+				orgMatrix.coeffRef(0, 1) = a01;
+				for (T a02 = -40.0f; a02 < -30.0f; a02 += 10.0f/9.0f) {
+					orgMatrix.coeffRef(0, 2) = a02;
+					for (T a10 = 50.0f; a10 < 70.0f; a10 += 10.0f/4.6f) {
+						orgMatrix.coeffRef(1, 0) = a10;
+						for (T a11 = -90.0f; a11 < -70.0f; a11 += 10.0f/3.7f) {
+							orgMatrix.coeffRef(1, 1) = a11;
+							for (T a12 = 80.0f; a12 < 100.0f; a12 += 10.0f/2.5f) {
+								orgMatrix.coeffRef(1, 2) = a12;
+								for (T a20 = -120.0f; a20 < -100.0f; a20 += 10.0f/2.7f) {
+									orgMatrix.coeffRef(2, 0) = a20;
+									for (T a21 = 130.0f; a21 < 150.0f; a21 += 10.0f/1.44f) {
+										orgMatrix.coeffRef(2, 1) = a21;
+										for (T a22 = -170.0f; a22 < -150.0f; a22 += 10.0f/1.3f) {
+											orgMatrix.coeffRef(2, 2) = a22;
 
-	for (FloatType a00 = -10.0f; a00 < 0.0f; a00 += 10.0f/7.0f) {
-		orgMatrix.coeffRef(0, 0) = a00;
-		for (FloatType a01 = 20.0f; a01 < 30.0f; a01 += 10.0f/9.3f) {
-			orgMatrix.coeffRef(0, 1) = a01;
-			for (FloatType a02 = -40.0f; a02 < -30.0f; a02 += 10.0f/9.0f) {
-				orgMatrix.coeffRef(0, 2) = a02;
-				for (FloatType a10 = 50.0f; a10 < 70.0f; a10 += 10.0f/4.6f) {
-					orgMatrix.coeffRef(1, 0) = a10;
-					for (FloatType a11 = -90.0f; a11 < -70.0f; a11 += 10.0f/3.7f) {
-						orgMatrix.coeffRef(1, 1) = a11;
-						for (FloatType a12 = 80.0f; a12 < 100.0f; a12 += 10.0f/2.5f) {
-							orgMatrix.coeffRef(1, 2) = a12;
-							for (FloatType a20 = -120.0f; a20 < -100.0f; a20 += 10.0f/2.7f) {
-								orgMatrix.coeffRef(2, 0) = a20;
-								for (FloatType a21 = 130.0f; a21 < 150.0f; a21 += 10.0f/1.44f) {
-									orgMatrix.coeffRef(2, 1) = a21;
-									for (FloatType a22 = -170.0f; a22 < -150.0f; a22 += 10.0f/1.3f) {
-										orgMatrix.coeffRef(2, 2) = a22;
+											++numTests;
+											if (!GliderVarioMeasurementUpdater::calcInverse3D(invMatrix, orgMatrix)){
+												//std::cout << "Matrix " << std::endl << std::setw(10)
+												//		<< orgMatrix << std::endl
+												//		<< "is not singular."
+												//		<< std::endl;
+												++numInvalidInverse;
+											} else {
 
-										++numTests;
-										if (!GliderVarioMeasurementUpdater::calcInverse3D(invMatrix, orgMatrix)){
-											//std::cout << "Matrix " << std::endl << std::setw(10)
-											//		<< orgMatrix << std::endl
-											//		<< "is not singular."
-											//		<< std::endl;
-											++numInvalidInverse;
-										} else {
+												orgTimesInvMatrix = orgMatrix * invMatrix;
 
-											orgTimesInvMatrix = orgMatrix * invMatrix;
+												for (int x = 0; x < 3; x++) {
+													for (int y = 0; y < 3; y++) {
+														if (x==y){
+															++num1sChecked;
+															sum1Deviation+=(std::abs(orgTimesInvMatrix.coeff(x,y) - 1.0));
+															max1Deviation=std::max(max1Deviation,std::abs(orgTimesInvMatrix.coeff(x,y) - T(1.0)));
 
-											for (int x = 0; x < 3; x++) {
-												for (int y = 0; y < 3; y++) {
-													if (x==y){
-														++num1sChecked;
-														sum1Deviation+=(std::abs(orgTimesInvMatrix.coeff(x,y) - 1.0));
-														max1Deviation=std::max(max1Deviation,std::abs(orgTimesInvMatrix.coeff(x,y) - 1.0f));
+															EXPECT_NEAR (orgTimesInvMatrix.coeff(x,y),T(1.0),T(0.1))
+																	<< "Test #" << numTests
+																	<< "\nNumber 1-tests failed = " << ++num1TestFailed
+																	<< "\norgMatrix ="
+																	<< printSparseMatrixSimple(orgMatrix)
+																	<< "\ninvMatrix = " << std::endl
+																	<< printSparseMatrixSimple(invMatrix)
+																	<< "\norgTimesInvMatrix = "
+																	<< printSparseMatrixSimple(orgTimesInvMatrix)
+																	<< "-----------------------------------------------"
+																	<< std::endl;
+														} else {
+															++num0sChecked;
+															sum0Deviation+=std::abs(orgTimesInvMatrix.coeff(x,y));
+															max0Deviation=std::max(max0Deviation,std::abs(orgTimesInvMatrix.coeff(x,y)));
 
-														EXPECT_NEAR (orgTimesInvMatrix.coeff(x,y),1.0f,0.01f)
-																<< "Test #" << numTests
-																<< "\nNumber 1-tests failed = " << ++num1TestFailed
-																<< "\norgMatrix ="
-																<< printSparseMatrixSimple(orgMatrix)
-																<< "\ninvMatrix = " << std::endl
-																<< printSparseMatrixSimple(invMatrix)
-																<< "\norgTimesInvMatrix = "
-																<< printSparseMatrixSimple(orgTimesInvMatrix)
-																<< "-----------------------------------------------"
-																<< std::endl;
-													} else {
-														++num0sChecked;
-														sum0Deviation+=std::abs(orgTimesInvMatrix.coeff(x,y));
-														max0Deviation=std::max(max0Deviation,std::abs(orgTimesInvMatrix.coeff(x,y)));
+															EXPECT_NEAR (orgTimesInvMatrix.coeff(x,y),T(0.0),T(0.1))
+																	<< "Test #" << numTests
+																	<< "\nNumber 0-tests failed = " << ++num0TestFailed
+																	<< "\norgMatrix ="
+																	<< printSparseMatrixSimple(orgMatrix)
+																	<< "\ninvMatrix = " << std::endl
+																	<< printSparseMatrixSimple(invMatrix)
+																	<< "\norgTimesInvMatrix = "
+																	<< printSparseMatrixSimple(orgTimesInvMatrix)
+																	<< "-----------------------------------------------"
+																	<< std::endl;
+														}
 
-														EXPECT_NEAR (orgTimesInvMatrix.coeff(x,y),0.0f,0.01f)
-																<< "Test #" << numTests
-																<< "\nNumber 0-tests failed = " << ++num0TestFailed
-																<< "\norgMatrix ="
-																<< printSparseMatrixSimple(orgMatrix)
-																<< "\ninvMatrix = " << std::endl
-																<< printSparseMatrixSimple(invMatrix)
-																<< "\norgTimesInvMatrix = "
-																<< printSparseMatrixSimple(orgTimesInvMatrix)
-																<< "-----------------------------------------------"
-																<< std::endl;
 													}
-
 												}
 											}
 										}
@@ -421,20 +439,33 @@ TEST_F(MeasurementUpdaterTest, Inverse3x3Matrix) {
 				}
 			}
 		}
-	}
 
-	std::cout
-			<< "\n===============================================\n"
-			<< "Number of tests = " << numTests
-			<< "\nNumber of invalid inverses = " << numInvalidInverse
-			<< "\nNumber of failed 0-tests = " << num0TestFailed
-			<< "\nNumber of failed 1-tests = " << num1TestFailed
-			<< "\nMaximum 0-deviation = " << max0Deviation
-			<< "\nAverage 0-deviation = " << (sum0Deviation/double(num0sChecked))
-			<< "\nMaximum 1-deviation = " << max1Deviation
-			<< "\nAverage 1-deviation = " << (sum1Deviation/double(num1sChecked))
-			<< "\n==============================================="
-			<< std::endl;
+		std::cout
+				<< "\n===============================================\n"
+				<< "Number of tests = " << numTests
+				<< "\nNumber of invalid inverses = " << numInvalidInverse
+				<< "\nNumber of failed 0-tests = " << num0TestFailed
+				<< "\nNumber of failed 1-tests = " << num1TestFailed
+				<< "\nMaximum 0-deviation = " << max0Deviation
+				<< "\nAverage 0-deviation = " << (sum0Deviation/T(num0sChecked))
+				<< "\nMaximum 1-deviation = " << max1Deviation
+				<< "\nAverage 1-deviation = " << (sum1Deviation/T(num1sChecked))
+				<< "\n==============================================="
+				<< std::endl;
+	}
+};
+
+
+typedef Inverse3x3MatrixTest<FloatType> Inverse3x3MatrixTestFloatType;
+TEST_F(Inverse3x3MatrixTestFloatType, FloatTest) {
+
+	executeTest();
+
+}
+typedef Inverse3x3MatrixTest<double> Inverse3x3MatrixTestdouble;
+TEST_F(Inverse3x3MatrixTestdouble, double) {
+
+	executeTest();
 
 }
 
