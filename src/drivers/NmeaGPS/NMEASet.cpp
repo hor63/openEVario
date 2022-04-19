@@ -1347,15 +1347,15 @@ void NMEASet::updatePosition (
 		LOG4CXX_DEBUG(logger,"	Longitude = " << currGnssRecord.longitude
 				<< ", variance = " << SQUARE(currGnssRecord.latDeviation + addDeviation));
 
-		GliderVarioMeasurementUpdater::GPSLatitudeUpd(currGnssRecord.latitude,
+		GliderVarioMeasurementUpdater::GPSPositionUpd(
+				currGnssRecord.latitude,
+				currGnssRecord.longitude,
 				SQUARE(currGnssRecord.latDeviation + addDeviation),
-				*currStat.getMeasurementVector(),
-				*currStat.getCurrentStatus());
-
-		GliderVarioMeasurementUpdater::GPSLongitudeUpd(currGnssRecord.longitude,
 				SQUARE(currGnssRecord.lonDeviation + addDeviation),
 				*currStat.getMeasurementVector(),
 				*currStat.getCurrentStatus());
+
+		currStat.getCurrentStatus()->normalizeStatus();
 	}
 
 }

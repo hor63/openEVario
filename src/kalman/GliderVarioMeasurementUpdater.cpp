@@ -69,14 +69,22 @@ Eigen::SparseMatrix<FloatType> GliderVarioMeasurementUpdater::measRowTTst3;
 bool GliderVarioMeasurementUpdater::unitTestMode = false;
 
 void
-GliderVarioMeasurementUpdater::GPSLatitudeUpd (
+GliderVarioMeasurementUpdater::GPSPositionUpd (
         double measuredLatitude,
+        double measuredLongitude,
         FloatType latitudeVariance,
+        FloatType longitudeVariance,
         GliderVarioMeasurementVector &measurementVector,
         GliderVarioStatus &varioStatus
 ) {
-    FloatType calculatedValue;
-    Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,1);
+	enum ColIndex {
+		latIndex = 0,
+		lonIndex = 1,
+	};
+	Vector2DType calculatedValue;
+	Vector2DType measuredValue (measuredLatitude,measuredLongitude);
+	Matrix2DType varianceMatrix  {{latitudeVariance,0.0f},{0.0f,longitudeVariance}};
+    Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,2);
 
     measRowT.reserve(GliderVarioStatus::STATUS_NUM_ROWS);
 
@@ -84,59 +92,34 @@ GliderVarioMeasurementUpdater::GPSLatitudeUpd (
     measuredLatitude *= 3600.0; // to arc seconds
     measurementVector.gpsLatitude = measuredLatitude;
     measuredLatitude = (measuredLatitude - double(varioStatus.getLatitudeBaseArcSec())) * LEN_LAT_ARC_SEC;
-    measRowT.insert(GliderVarioStatus::STATUS_IND_LATITUDE_OFFS,0) = 1.0f;
-    calculatedValue = varioStatus.latitudeOffsC;
+    measRowT.insert(GliderVarioStatus::STATUS_IND_LATITUDE_OFFS,latIndex) = 1.0f;
+    calculatedValue(latIndex) = varioStatus.latitudeOffsC;
 
     if (unitTestMode) {
         // Save internal statuses for unit tests
-        calculatedValueTst1 = calculatedValue;
+        calculatedValueTst1 = calculatedValue(latIndex);
+    }
+
+    measuredLongitude *= 3600.0; // to arc seconds
+    measurementVector.gpsLongitude = measuredLongitude;
+    measuredLongitude = (measuredLongitude - varioStatus.getLongitudeBaseArcSec()) * varioStatus.getLenLongitudeArcSec();
+    measRowT.insert(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,lonIndex) = 1.0f;
+    calculatedValue(lonIndex) = varioStatus.longitudeOffsC;
+
+
+    if (unitTestMode) {
+        // Save internal statuses for unit tests
+        calculatedValueTst2 = calculatedValue(lonIndex);
         measRowTTst1 = measRowT;
     }
 
     LOG4CXX_DEBUG(logger,"GPSLatitudeUpd: measured latitudeOffset(m) = " <<  measuredLatitude
     		<< ", calculated latitudeOffset = " << calculatedValue << ", variance = " << latitudeVariance);
 
-    calcSingleMeasureUpdate (
-            measuredLatitude,
+    calc2DMeasureUpdate (
+            measuredValue,
             calculatedValue,
-            latitudeVariance,
-            measRowT,
-            varioStatus
-    );
-}
-
-void
-GliderVarioMeasurementUpdater::GPSLongitudeUpd (
-        double measuredLongitude,
-        FloatType longitudeVariance,
-        GliderVarioMeasurementVector &measurementVector,
-        GliderVarioStatus &varioStatus
-) {
-    FloatType calculatedValue;
-    Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,1);
-
-    measRowT.reserve(GliderVarioStatus::STATUS_NUM_ROWS);
-
-    // calculate and fill in local variables here.
-    measuredLongitude *= 3600.0; // to arc seconds
-    measurementVector.gpsLongitude = measuredLongitude;
-    measuredLongitude = (measuredLongitude - varioStatus.getLongitudeBaseArcSec()) * varioStatus.getLenLongitudeArcSec();
-    measRowT.insert(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,0) = 1.0f;
-    calculatedValue = varioStatus.longitudeOffsC;
-
-    if (unitTestMode) {
-        // Save internal statuses for unit tests
-        calculatedValueTst1 = calculatedValue;
-        measRowTTst1 = measRowT;
-    }
-
-    LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measured longitudeOffset(m) = " <<  measuredLongitude
-    		<< ", calculated latitudeOffset = " << calculatedValue << ", variance = " << longitudeVariance);
-
-    calcSingleMeasureUpdate (
-            measuredLongitude,
-            calculatedValue,
-            longitudeVariance,
+			varianceMatrix,
             measRowT,
             varioStatus
     );
@@ -921,8 +904,74 @@ GliderVarioMeasurementUpdater::dynamicPressureUpd (
     );
 }
 
+void GliderVarioMeasurementUpdater::calc2DMeasureUpdate (
+        Vector2DType const &measuredValue,
+		Vector2DType const &calculatedValue,
+		Matrix2DType const &measurementVariance_R,
+        Eigen::SparseMatrix<FloatType> const &measRowT,
+        GliderVarioStatus &varioStatus
+) {
+    GliderVarioStatus::StatusCoVarianceType &coVariance_P = varioStatus.getErrorCovariance_P();
+    GliderVarioStatus::StatusVectorType &statusVector_x = varioStatus.getStatusVector_x();
+
+    Eigen::SparseMatrix <FloatType> kalmanGain_K(GliderVarioStatus::STATUS_NUM_ROWS,2);
+    Eigen::SparseMatrix <FloatType> denominatorMatrix(2,2);
+    Eigen::SparseMatrix <FloatType> denominator(2,2);
+
+    kalmanGain_K.reserve(GliderVarioStatus::STATUS_NUM_ROWS * 2);
+    denominatorMatrix.reserve(4);
+    denominator.reserve(4);
+
+    // Intermediate because a term is used twice
+    Eigen::SparseMatrix <FloatType> hTimesP(2,GliderVarioStatus::STATUS_NUM_ROWS);
+    hTimesP.reserve(GliderVarioStatus::STATUS_NUM_ROWS * 2);
+
+    Vector2DType valueDiff = measuredValue - calculatedValue;
+
+    hTimesP = measRowT.transpose() * coVariance_P;
+    denominatorMatrix = hTimesP * measRowT + measurementVariance_R;
+
+    calcInverse2D (denominator, denominatorMatrix);
+
+    kalmanGain_K = coVariance_P * measRowT * denominator;
+
+    LOG4CXX_DEBUG(logger ,"calcSingleMeasureUpdate: valueDiff = " << valueDiff
+    		<< ", denominator = " << denominator);
+#if HAVE_LOG4CXX_H
+
+    if (logger->isDebugEnabled()) {
+    	for (Eigen::SparseMatrix <FloatType>::InnerIterator it(kalmanGain_K,0); it; ++it) {
+    		LOG4CXX_DEBUG(logger ,"    kalmanGain_K[" << GliderVarioStatus::StatusComponentIndex(it.row()) << "] = " << it.value());
+    	}
+    }
+
+#endif // HAVE_LOG4CXX_H
+
+    // Put the co-variance calculation here. Then the results are available for debug prints below.
+    coVariance_P -=  (kalmanGain_K * hTimesP);
+
+    // substitute direct assignment by iterating over the sparse kalman gain vector, and perform the correct element wise.
+    // Eigen does not take mixing dense and sparse matrixes lightly.
+    GliderVarioStatus::StatusComponentIndex index;
+    FloatType kalmanGain;
+    FloatType val;
+
+    for (int i = 0; i<2; ++i) {
+        for (Eigen::SparseMatrix<FloatType>::InnerIterator iter(kalmanGain_K,i); iter ; ++iter){
+            index = GliderVarioStatus::StatusComponentIndex(iter.row());
+            kalmanGain = iter.value();
+            kalmanGain *= valueDiff(i);
+            val = statusVector_x(index);
+            statusVector_x(index) = val + kalmanGain;
+            LOG4CXX_DEBUG(logger ,"Update " << index << "," << i
+            		<< ": New value = " << statusVector_x(index)
+					<< ", Correction value = " << kalmanGain
+					<< ", Variance = " << coVariance_P.coeff(index,index));
+        }
+    }
 
 
+}
 
 void GliderVarioMeasurementUpdater::calc3DMeasureUpdate (
         Vector3DType const &measuredValue,
@@ -992,8 +1041,6 @@ void GliderVarioMeasurementUpdater::calc3DMeasureUpdate (
 
 
 }
-
-
 
 void
 GliderVarioMeasurementUpdater::calcSingleMeasureUpdate (

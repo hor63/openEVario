@@ -375,9 +375,11 @@ void IGCReaderDriver::runDebugSingleThread(GliderVarioMainPriv& varioMain) {
 
 		if (bRecord.gpsIsValid) {
 			double posVariance = bRecord.posAccuracy * bRecord.posAccuracy;
-			GliderVarioMeasurementUpdater::GPSLatitudeUpd(bRecord.latitude,posVariance,*measurementVector,**currentStatus);
-			(*currentStatus)->normalizeStatus();
-			GliderVarioMeasurementUpdater::GPSLongitudeUpd(bRecord.longitude,posVariance,*measurementVector,**currentStatus);
+			GliderVarioMeasurementUpdater::GPSPositionUpd(
+					bRecord.latitude,
+					bRecord.longitude,
+					posVariance,posVariance,
+					*measurementVector,**currentStatus);
 			(*currentStatus)->normalizeStatus();
 			GliderVarioMeasurementUpdater::GPSAltitudeUpd(bRecord.altGPS,bRecord.altGPSAccuracy*bRecord.altGPSAccuracy,*measurementVector,**currentStatus);
 			(*currentStatus)->normalizeStatus();
