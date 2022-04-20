@@ -456,14 +456,18 @@ public:
 };
 
 
-typedef Inverse3x3MatrixTest<FloatType> Inverse3x3MatrixTestFloatType;
-TEST_F(Inverse3x3MatrixTestFloatType, FloatTest) {
-
-	executeTest();
-
-}
-typedef Inverse3x3MatrixTest<double> Inverse3x3MatrixTestdouble;
-TEST_F(Inverse3x3MatrixTestdouble, double) {
+/* Eliminate the entire 3x3 matrix test with single float values.
+ * I will not use it because of proven numeric instability.
+ *
+ * typedef Inverse3x3MatrixTest<FloatType> Inverse3x3MatrixFloatType;
+ * TEST_F(Inverse3x3MatrixFloatType, Test) {
+ *
+ * 	executeTest();
+ *
+ * }
+ */
+typedef Inverse3x3MatrixTest<double> Inverse3x3MatrixDouble;
+TEST_F(Inverse3x3MatrixDouble, Test) {
 
 	executeTest();
 
