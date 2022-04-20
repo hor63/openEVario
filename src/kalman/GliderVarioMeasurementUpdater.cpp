@@ -976,40 +976,41 @@ void GliderVarioMeasurementUpdater::calc2DMeasureUpdate (
 void GliderVarioMeasurementUpdater::calc3DMeasureUpdate (
         Vector3DType const &measuredValue,
 		Vector3DType const &calculatedValue,
-		RotationMatrix3DType const &measurementVariance_R,
-        Eigen::SparseMatrix<FloatType> const &measRowT,
+		Eigen::Matrix<double,3,3> const &measurementVariance_R,
+        Eigen::SparseMatrix<double> const &measRowT,
         GliderVarioStatus &varioStatus
 ) {
     GliderVarioStatus::StatusCoVarianceType &coVariance_P = varioStatus.getErrorCovariance_P();
     GliderVarioStatus::StatusVectorType &statusVector_x = varioStatus.getStatusVector_x();
 
-    Eigen::SparseMatrix <FloatType> kalmanGain_K(GliderVarioStatus::STATUS_NUM_ROWS,3);
-    Eigen::SparseMatrix <FloatType> denominatorMatrix(3,3);
-    Eigen::SparseMatrix <FloatType> denominator(3,3);
+    Eigen::SparseMatrix <double> kalmanGain_K(GliderVarioStatus::STATUS_NUM_ROWS,3);
+    Eigen::SparseMatrix <double> denominator(3,3);
+    Eigen::SparseMatrix <double> denominatorInvers(3,3);
 
     kalmanGain_K.reserve(GliderVarioStatus::STATUS_NUM_ROWS * 3);
-    denominatorMatrix.reserve(9);
     denominator.reserve(9);
+    denominatorInvers.reserve(9);
 
     // Intermediate because a term is used twice
-    Eigen::SparseMatrix <FloatType> hTimesP(3,GliderVarioStatus::STATUS_NUM_ROWS);
+    Eigen::SparseMatrix <double> hTimesP(3,GliderVarioStatus::STATUS_NUM_ROWS);
     hTimesP.reserve(GliderVarioStatus::STATUS_NUM_ROWS * 3);
 
     Vector3DType valueDiff = measuredValue - calculatedValue;
+    Eigen::SparseMatrix<double> coVariance_PD {coVariance_P.cast <double>()};
 
-    hTimesP = measRowT.transpose() * coVariance_P;
-    denominatorMatrix = hTimesP * measRowT + measurementVariance_R;
+    hTimesP = measRowT.transpose() * coVariance_PD;
+    denominator = hTimesP * measRowT + measurementVariance_R;
 
-    calcInverse3D (denominator, denominatorMatrix);
+    calcInverse3D (denominatorInvers, denominator);
 
-    kalmanGain_K = coVariance_P * measRowT * denominator;
+    kalmanGain_K = coVariance_PD * measRowT * denominatorInvers;
 
     LOG4CXX_DEBUG(logger ,"calcSingleMeasureUpdate: valueDiff = " << valueDiff
-    		<< ", denominator = " << denominator);
+    		<< ", denominatorInvers = " << denominatorInvers);
 #if HAVE_LOG4CXX_H
 
     if (logger->isDebugEnabled()) {
-    	for (Eigen::SparseMatrix <FloatType>::InnerIterator it(kalmanGain_K,0); it; ++it) {
+    	for (Eigen::SparseMatrix <double>::InnerIterator it(kalmanGain_K,0); it; ++it) {
     		LOG4CXX_DEBUG(logger ,"    kalmanGain_K[" << GliderVarioStatus::StatusComponentIndex(it.row()) << "] = " << it.value());
     	}
     }
@@ -1017,7 +1018,8 @@ void GliderVarioMeasurementUpdater::calc3DMeasureUpdate (
 #endif // HAVE_LOG4CXX_H
 
     // Put the co-variance calculation here. Then the results are available for debug prints below.
-    coVariance_P -=  (kalmanGain_K * hTimesP);
+    coVariance_PD -= kalmanGain_K * hTimesP;
+    coVariance_P = coVariance_PD.cast<FloatType>();
 
     // substitute direct assignment by iterating over the sparse kalman gain vector, and perform the correct element wise.
     // Eigen does not take mixing dense and sparse matrixes lightly.
@@ -1026,7 +1028,7 @@ void GliderVarioMeasurementUpdater::calc3DMeasureUpdate (
     FloatType val;
 
     for (int i = 0; i<3; ++i) {
-        for (Eigen::SparseMatrix<FloatType>::InnerIterator iter(kalmanGain_K,i); iter ; ++iter){
+        for (Eigen::SparseMatrix<double>::InnerIterator iter(kalmanGain_K,i); iter ; ++iter){
             index = GliderVarioStatus::StatusComponentIndex(iter.row());
             kalmanGain = iter.value();
             kalmanGain *= valueDiff(i);
