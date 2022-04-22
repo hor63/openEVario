@@ -478,9 +478,9 @@ static bool calcInverse3D (
      */
     static void calc3DMeasureUpdate (
             Vector3DType const &measuredValue,
-			Vector3DType const &calculatedValue,
-			Eigen::Matrix<double,3,3> const &measurementVariance_R,
-            Eigen::SparseMatrix<double> const &measRowT,
+    		Vector3DType const &calculatedValue,
+    		RotationMatrix3DType const &measurementVariance_R,
+            Eigen::SparseMatrix<FloatType> const &measRowT,
             GliderVarioStatus &varioStatus
     );
 
