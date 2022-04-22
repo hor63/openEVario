@@ -904,6 +904,77 @@ GliderVarioMeasurementUpdater::dynamicPressureUpd (
     );
 }
 
+void
+GliderVarioMeasurementUpdater::calcSingleMeasureUpdate (
+        FloatType measuredValue,
+        FloatType calculatedValue,
+        FloatType measurementVariance_R,
+        Eigen::SparseMatrix<FloatType> const &measRowT,
+        GliderVarioStatus &varioStatus
+) {
+    GliderVarioStatus::StatusCoVarianceType &coVariance_P = varioStatus.getErrorCovariance_P();
+    GliderVarioStatus::StatusVectorType &statusVector_x = varioStatus.getStatusVector_x();
+
+    Eigen::SparseMatrix <FloatType> kalmanGain_K(GliderVarioStatus::STATUS_NUM_ROWS,1);
+    FloatType denominator;
+    Eigen::SparseMatrix<FloatType> denominatorMatrix;
+
+    kalmanGain_K.reserve(GliderVarioStatus::STATUS_NUM_ROWS);
+    denominatorMatrix.reserve(4);
+
+    // Intermediate because a term is used twice
+    Eigen::SparseMatrix <FloatType> hTimesP(1,GliderVarioStatus::STATUS_NUM_ROWS);
+    hTimesP.reserve(GliderVarioStatus::STATUS_NUM_ROWS);
+
+    FloatType valueDiff = measuredValue - calculatedValue;
+
+    hTimesP = measRowT.transpose() * coVariance_P;
+    denominatorMatrix = hTimesP * measRowT;
+
+    denominator = denominatorMatrix.coeff(0,0) + measurementVariance_R;
+
+    kalmanGain_K = coVariance_P * measRowT;
+    kalmanGain_K /= denominator;
+
+    LOG4CXX_DEBUG(logger ,"calcSingleMeasureUpdate: valueDiff = " << valueDiff
+    		<< ", denominator = " << denominator);
+#if HAVE_LOG4CXX_H
+
+    if (logger->isDebugEnabled()) {
+    	for (Eigen::SparseMatrix <FloatType>::InnerIterator it(kalmanGain_K,0); it; ++it) {
+    		LOG4CXX_DEBUG(logger ,"    kalmanGain_K[" << GliderVarioStatus::StatusComponentIndex(it.row()) << "] = " << it.value());
+    	}
+    }
+
+#endif // HAVE_LOG4CXX_H
+
+    // substitute direct assignment by iterating over the sparse kalman gain vector, and perform the correct element wise.
+    // Eigen does not take mixing dense and sparse matrixes lightly.
+    GliderVarioStatus::StatusComponentIndex index;
+    FloatType kalmanGain;
+    FloatType val;
+    for (Eigen::SparseMatrix<FloatType>::InnerIterator iter(kalmanGain_K,0); iter ; ++iter){
+        index = GliderVarioStatus::StatusComponentIndex(iter.row());
+        kalmanGain = iter.value();
+        kalmanGain *= valueDiff;
+        val = statusVector_x(index);
+        statusVector_x(index) = val + kalmanGain;
+        LOG4CXX_DEBUG(logger ,"Update " << index
+        		<< ": New value = " << statusVector_x(index)
+				<< ", Correction value = " << kalmanGain
+				<< ", variance before = " << coVariance_P.coeff(index,index));
+    }
+
+    coVariance_P -=  (kalmanGain_K * hTimesP);
+
+    for (Eigen::SparseMatrix<FloatType>::InnerIterator iter(kalmanGain_K,0); iter ; ++iter){
+        index = GliderVarioStatus::StatusComponentIndex(iter.row());
+        LOG4CXX_DEBUG(logger ,"Update " << index
+				<< ", variance after = " << coVariance_P.coeff(index,index));
+
+    }
+}
+
 void GliderVarioMeasurementUpdater::calc2DMeasureUpdate (
         Vector2DType const &measuredValue,
 		Vector2DType const &calculatedValue,
@@ -1040,77 +1111,6 @@ void GliderVarioMeasurementUpdater::calc3DMeasureUpdate (
     }
 
 
-}
-
-void
-GliderVarioMeasurementUpdater::calcSingleMeasureUpdate (
-        FloatType measuredValue,
-        FloatType calculatedValue,
-        FloatType measurementVariance_R,
-        Eigen::SparseMatrix<FloatType> const &measRowT,
-        GliderVarioStatus &varioStatus
-) {
-    GliderVarioStatus::StatusCoVarianceType &coVariance_P = varioStatus.getErrorCovariance_P();
-    GliderVarioStatus::StatusVectorType &statusVector_x = varioStatus.getStatusVector_x();
-
-    Eigen::SparseMatrix <FloatType> kalmanGain_K(GliderVarioStatus::STATUS_NUM_ROWS,1);
-    FloatType denominator;
-    Eigen::SparseMatrix<FloatType> denominatorMatrix;
-
-    kalmanGain_K.reserve(GliderVarioStatus::STATUS_NUM_ROWS);
-    denominatorMatrix.reserve(4);
-
-    // Intermediate because a term is used twice
-    Eigen::SparseMatrix <FloatType> hTimesP(1,GliderVarioStatus::STATUS_NUM_ROWS);
-    hTimesP.reserve(GliderVarioStatus::STATUS_NUM_ROWS);
-
-    FloatType valueDiff = measuredValue - calculatedValue;
-
-    hTimesP = measRowT.transpose() * coVariance_P;
-    denominatorMatrix = hTimesP * measRowT;
-
-    denominator = denominatorMatrix.coeff(0,0) + measurementVariance_R;
-
-    kalmanGain_K = coVariance_P * measRowT;
-    kalmanGain_K /= denominator;
-
-    LOG4CXX_DEBUG(logger ,"calcSingleMeasureUpdate: valueDiff = " << valueDiff
-    		<< ", denominator = " << denominator);
-#if HAVE_LOG4CXX_H
-
-    if (logger->isDebugEnabled()) {
-    	for (Eigen::SparseMatrix <FloatType>::InnerIterator it(kalmanGain_K,0); it; ++it) {
-    		LOG4CXX_DEBUG(logger ,"    kalmanGain_K[" << GliderVarioStatus::StatusComponentIndex(it.row()) << "] = " << it.value());
-    	}
-    }
-
-#endif // HAVE_LOG4CXX_H
-
-    // substitute direct assignment by iterating over the sparse kalman gain vector, and perform the correct element wise.
-    // Eigen does not take mixing dense and sparse matrixes lightly.
-    GliderVarioStatus::StatusComponentIndex index;
-    FloatType kalmanGain;
-    FloatType val;
-    for (Eigen::SparseMatrix<FloatType>::InnerIterator iter(kalmanGain_K,0); iter ; ++iter){
-        index = GliderVarioStatus::StatusComponentIndex(iter.row());
-        kalmanGain = iter.value();
-        kalmanGain *= valueDiff;
-        val = statusVector_x(index);
-        statusVector_x(index) = val + kalmanGain;
-        LOG4CXX_DEBUG(logger ,"Update " << index
-        		<< ": New value = " << statusVector_x(index)
-				<< ", Correction value = " << kalmanGain
-				<< ", variance before = " << coVariance_P.coeff(index,index));
-    }
-
-    coVariance_P -=  (kalmanGain_K * hTimesP);
-
-    for (Eigen::SparseMatrix<FloatType>::InnerIterator iter(kalmanGain_K,0); iter ; ++iter){
-        index = GliderVarioStatus::StatusComponentIndex(iter.row());
-        LOG4CXX_DEBUG(logger ,"Update " << index
-				<< ", variance after = " << coVariance_P.coeff(index,index));
-
-    }
 }
 
 void GliderVarioMeasurementUpdater::setUnitTestMode(bool unitTestMode ) {
