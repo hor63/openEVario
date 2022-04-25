@@ -82,7 +82,6 @@ GliderVarioMeasurementUpdater::GPSPositionUpd (
 		lonIndex = 1,
 	};
 	Vector2DType calculatedValue;
-	Vector2DType measuredValue (measuredLatitude,measuredLongitude);
 	Matrix2DType varianceMatrix  {{latitudeVariance,0.0f},{0.0f,longitudeVariance}};
     Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,2);
 
@@ -115,6 +114,8 @@ GliderVarioMeasurementUpdater::GPSPositionUpd (
 
     LOG4CXX_DEBUG(logger,"GPSLatitudeUpd: measured latitudeOffset(m) = " <<  measuredLatitude
     		<< ", calculated latitudeOffset = " << calculatedValue << ", variance = " << latitudeVariance);
+
+	Vector2DType measuredValue (measuredLatitude,measuredLongitude);
 
     calc2DMeasureUpdate (
             measuredValue,
