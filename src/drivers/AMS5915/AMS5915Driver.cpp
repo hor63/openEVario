@@ -289,30 +289,20 @@ void AMS5915Driver::initializeStatus(
 			catch (...) {}
 		} else {
 			// There is a significant pressure on the sensor.
-			// Convert it into into IAS. On the ground this is approximately TAS
+			// Convert it into IAS. On the ground this is approximately TAS
+			// \p varioStatus.lastPressure is initialized to standard sea level pressure
 			// When there is already an actual pressure value available, even better.
-			FloatType currStaticPressure;
-			if (!std::isnan(varioStatus.lastPressure)) {
-				currStaticPressure = varioStatus.lastPressure;
-			} else {
-				currStaticPressure = PressureStdMSL;
-			}
-
-			FloatType airDensity = currStaticPressure*100.0f / Rspec / (temperatureVal + CtoK);
+			FloatType airDensity = varioStatus.lastPressure*100.0f / Rspec / (temperatureVal + CtoK);
 			initialTAS = sqrtf(200.0f * avgPressure / airDensity);
 
 			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": TAS @ "
-					<< temperatureVal << "C, " << currStaticPressure << "mBar = "
+					<< temperatureVal << "C, " << varioStatus.lastPressure << "mBar = "
 					<< initialTAS << "m/s.");
 		}
 
 		// All data is collected. Initialize the status
 		varioStatus.trueAirSpeed = initialTAS;
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) = 10.0f;
-		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) =
-					SQUARE(3.0) * baseIntervalSec;
-
-
+		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) = 100.0f;
 
 	} else {
 		LOG4CXX_WARN(logger,__FUNCTION__ << "Could not obtain " << NumInitValues

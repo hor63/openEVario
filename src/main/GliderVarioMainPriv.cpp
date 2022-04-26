@@ -630,7 +630,7 @@ void GliderVarioMainPriv::intializeStatus() {
 	}
 	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ALT_MSL,currentStatus->STATUS_IND_ALT_MSL)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ALT_MSL,currentStatus->STATUS_IND_ALT_MSL) =
-				SQUARE(10.0) * baseIntervalSec;
+				SQUARE(3.0) * baseIntervalSec;
 	}
 
 	// Initialized by magnetometer, e.g. BMXSensorBoardDriver::initializeStatusMag()
@@ -701,7 +701,7 @@ void GliderVarioMainPriv::intializeStatus() {
 	}
 	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_TAS,currentStatus->STATUS_IND_TAS)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_TAS,currentStatus->STATUS_IND_TAS) =
-				SQUARE(2.0) * baseIntervalSec;
+				SQUARE(3.0) * baseIntervalSec;
 	}
 
 	if (UnInitVal == currentStatus->rateOfSink) {
