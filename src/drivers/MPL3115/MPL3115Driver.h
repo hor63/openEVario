@@ -181,8 +181,10 @@ private:
     FloatType initValues[NumInitValues];
     int numValidInitValues = 0;
 
+    /// \brief Absolute pressure in hP.
     FloatType pressureVal = UnInitVal;
 
+    /// \brief Temperature in degrees C.
     FloatType temperatureVal = UnInitVal;
 
 };
