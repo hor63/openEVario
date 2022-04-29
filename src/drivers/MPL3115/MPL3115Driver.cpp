@@ -345,7 +345,16 @@ void MPL3115Driver::readoutMPL3155() {
 	ioPort->readBlockAtRegAddrByte(i2cAddress, MPL3115_OUT_P_MSB, sensorValues, sizeof(sensorValues));
 
 	if ((statusVal & _BV(MPL3115Status_TDR)) != 0) {
-		temperatureVal = (FloatType(sensorValues[3])) + (FloatType(sensorValues[4])) / 256.0f;
+		// Temperature comes as 12 bit *signed* fixed point decimal. Oh my.
+		// I cannot use simple bit manipulation because I need to take care of expanding the sign bit to
+		// a signed 16 bit integer.
+		int16_t tempValInt = *reinterpret_cast<int8_t*> (&sensorValues[3]);
+
+		tempValInt *= 16; // Shift 4 bits left in a signed integer fashion. The compiler will work out that it is a shift.
+		// Now merge the upper 4 bits of the next byte binary into the signed integer.
+		* reinterpret_cast <uint16_t*> (&tempValInt) = (* reinterpret_cast <uint16_t*> (&tempValInt)) | (sensorValues[4] >> 4);
+
+		temperatureVal = static_cast<FloatType>(tempValInt) / 16.0f;
 
 		LOG4CXX_TRACE(logger,__FUNCTION__ << ": Temperature is "
 				<< std::hex << uint32_t(sensorValues[3]) << ':' << uint32_t(sensorValues[4])
@@ -356,7 +365,7 @@ void MPL3115Driver::readoutMPL3155() {
 	if ((statusVal & _BV(MPL3115Status_PDR)) != 0) {
 		uint32_t pressureValInt;
 		pressureValInt = (((uint32_t(sensorValues[0]) << 8) | uint32_t(sensorValues[1])) << 4) | (uint32_t(sensorValues[2]) >> 4);
-		pressureVal = FloatType(pressureValInt) / 400.0f; // Integer value is Pa*4. Value in mBar.
+		pressureVal = static_cast<FloatType>(pressureValInt) / 400.0f; // Integer value is Pa*4. Value in mBar.
 
 		// Only accept values within the operational range
 		if (pressureVal >= 500.0f && pressureVal <= 1500.0f) {
@@ -372,7 +381,7 @@ void MPL3115Driver::readoutMPL3155() {
 				GliderVarioMainPriv::LockedCurrentStatus lockedStatus(*varioMain);
 				FloatType &tempLocalC = lockedStatus.getMeasurementVector()->tempLocalC;
 
-				if (useTemperatureSensor) {
+				if (useTemperatureSensor && temperatureVal != UnInitVal) {
 					tempLocalC = temperatureVal;
 				}
 
