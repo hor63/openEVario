@@ -76,11 +76,20 @@ namespace openEV {
 	static FloatType constexpr Rspec     = R/M;
 
 	/**
-	 * Standard sea level pressure according to ICAO standard atmosphere in hPascal
+	 * \brief Standard sea level pressure of the ICAO standard atmosphere in hPascal
 	 * \sa [ICAO Standard atmosphere](https://en.wikipedia.org/wiki/International_Standard_Atmosphere#ICAO_Standard_Atmosphere)
 	 */
 	static FloatType constexpr PressureStdMSL = 1013.25f;
-	static FloatType constexpr TempLapseStd = -0.65f / 100.0f; ///< Temperature lapse of the standard ICAO atmosphere in K/m
+	/**
+	 * \brief Standard sea level temperature of the ICAO standard atmosphere in deg. C
+	 * \sa [ICAO Standard atmosphere](https://en.wikipedia.org/wiki/International_Standard_Atmosphere#ICAO_Standard_Atmosphere)
+	 */
+	static FloatType constexpr TempStdC = 15.0f;
+	/**
+	 * \brief Temperature lapse of the standard ICAO atmosphere in K/m
+	 * \sa [ICAO Standard atmosphere](https://en.wikipedia.org/wiki/International_Standard_Atmosphere#ICAO_Standard_Atmosphere)
+	 */
+	static FloatType constexpr TempLapseStd = -0.65f / 100.0f;
 	static FloatType constexpr TempLapseIndiffBoundLayer = -1.0f / 100.0f; ///< Temperature lapse of the the indifferent mixed boundary layer in K/m
 
 	/**

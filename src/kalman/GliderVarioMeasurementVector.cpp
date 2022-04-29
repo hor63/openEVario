@@ -69,7 +69,7 @@ GliderVarioMeasurementVector::GliderVarioMeasurementVector() :
 	measureError.setZero();
 
 	// Initialize the temperature to 15°C
-	measureVector [MEASURE_IND_TEMP_LOCAL_C] = 15.0f;
+	measureVector [MEASURE_IND_TEMP_LOCAL_C] = TempStdC;
 
 }
 

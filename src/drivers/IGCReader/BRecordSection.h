@@ -55,7 +55,7 @@ namespace openEV::drivers::IGCReader {
 		// Exponent term
 		double const exp = g0*M/(R*temperatureLapse); // Exponential term of the Barometric formula
 
-		static double constexpr T0 = 15.0f + CtoK		; // 15C at MSL according to the standard atmosphere
+		static double constexpr T0 = TempStdC + CtoK		; // 15C at MSL according to the standard atmosphere
 
 		return  (PressureStdMSL * pow(1 - ((temperatureLapse * altitude ) / T0),exp));
 
