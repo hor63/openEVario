@@ -145,46 +145,47 @@ void IGCReaderDriver::initializeStatus(
 
 	readIGCFile ();
 
-	double baseIntervalSec = varioMain.getProgramOptions().idlePredictionCycleMilliSec / 1000.0;
+	// Fill firstRecInfo here.
+	findFirstValidRecord();
 
-	auto firstRec = bRecords.cbegin();
+	auto firstRec = firstRecInfo.firstValidRecord;
 
 #define SQUARE(x) ((x)*(x))
 
 	if (firstRec != bRecords.cend()) {
 		varioStatus.altMSL = firstRec->second.altGPS;
 		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) = 100.0f;
-		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) =
-				SQUARE(3.0) * baseIntervalSec;
-
 
 		varioStatus.longitude(firstRec->second.longitude);
 		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_LONGITUDE_OFFS,varioStatus.STATUS_IND_LONGITUDE_OFFS) = 100.0f;
-		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_LONGITUDE_OFFS,varioStatus.STATUS_IND_LONGITUDE_OFFS) =
-				SQUARE(3.0) * baseIntervalSec;
 
 		varioStatus.latitude(firstRec->second.latitude);
 		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_LATITUDE_OFFS,varioStatus.STATUS_IND_LATITUDE_OFFS) = 1000.0f;
-		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_LATITUDE_OFFS,varioStatus.STATUS_IND_LATITUDE_OFFS) =
-				SQUARE(3.0) * baseIntervalSec;
 
 
-		if (std::isnan(varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING))) {
-			varioStatus.heading = calcInitialHeading();
-			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) = 10.0f;
-			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) =
-					SQUARE(3.0) * baseIntervalSec;
-		}
+		varioStatus.heading = firstRecInfo.heading;
+		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_HEADING,varioStatus.STATUS_IND_HEADING) = 25.0f;
 
-		if (std::isnan(varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_QFF,varioStatus.STATUS_IND_QFF))) {
+		varioStatus.trueAirSpeed = firstRecInfo.speed;
+		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_TAS, varioStatus.STATUS_IND_TAS) = 10.0f;
+
+		varioStatus.groundSpeedEast = firstRecInfo.speed * FastMath::fastSin(firstRecInfo.heading);
+		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_E, varioStatus.STATUS_IND_SPEED_GROUND_E) =
+				varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_TAS, varioStatus.STATUS_IND_TAS) *
+				FastMath::fastSin(firstRecInfo.heading);
+
+		varioStatus.groundSpeedNorth = firstRecInfo.speed * FastMath::fastCos(firstRecInfo.heading);
+		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_SPEED_GROUND_N, varioStatus.STATUS_IND_SPEED_GROUND_N) =
+				varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_TAS, varioStatus.STATUS_IND_TAS) *
+				FastMath::fastCos(firstRecInfo.heading);
+
+		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_QFF,varioStatus.STATUS_IND_QFF) == UnInitVal) {
 			// calculated factor to calculate the pressure at altGPS with a temperature lapse of 1K/100m
 			double factAltGPS = altToPressureStdTemp(firstRec->second.altGPS,-0.01) / PressureStdMSL;
 			double factBaroHeight = altToPressureStdTemp(firstRec->second.altBaro) / PressureStdMSL;
 
 			varioStatus.qff = PressureStdMSL * factBaroHeight / factAltGPS;
-			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_QFF,varioStatus.STATUS_IND_QFF) = 10.0f;
-			varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_QFF,varioStatus.STATUS_IND_QFF) =
-					SQUARE(0.0001) * baseIntervalSec; // Veryyyy slow
+			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_QFF,varioStatus.STATUS_IND_QFF) = 1.0f;
 		}
 
 #undef SQUARE
@@ -358,7 +359,7 @@ void IGCReaderDriver::runDebugSingleThread(GliderVarioMainPriv& varioMain) {
 	startTime = OEVClock::now();
 	lastUpdateTime = startTime;
 
-	for (auto it = bRecords.cbegin(); it != bRecords.cend();it++) {
+	for (auto it = firstRecInfo.firstValidRecord; it != bRecords.cend(); ++it) {
 
 		BRecord const &bRecord = it->second;
 
@@ -401,32 +402,29 @@ void IGCReaderDriver::runDebugSingleThread(GliderVarioMainPriv& varioMain) {
 
 }
 
-FloatType IGCReaderDriver::calcInitialHeading() {
+void IGCReaderDriver::findFirstValidRecord() {
 
-	FloatType rc = 0.0f;
+	if (firstRecInfo.firstValidRecord != bRecords.cend()) {
 
-	auto it = bRecords.cbegin();
+		auto prevLatM = firstRecInfo.firstValidRecord->second.latitude * 3600 * LEN_LAT_ARC_SEC;
+		auto prevLonM = firstRecInfo.firstValidRecord->second.longitude * 3600 * LEN_LAT_ARC_SEC * FastMath::fastCos(firstRecInfo.firstValidRecord->second.latitude) ;
+		auto prevDurSec = (std::chrono::duration_cast<std::chrono::duration<double>>(firstRecInfo.firstValidRecord->second.timeSinceStart)).count();
 
-	if (it != bRecords.cend()) {
-
-		auto prevLatM = it->second.latitude * 3600 * LEN_LAT_ARC_SEC;
-		auto prevLonM = it->second.longitude * 3600 * LEN_LAT_ARC_SEC * FastMath::fastCos(it->second.latitude) ;
-		auto prevDurSec = (std::chrono::duration_cast<std::chrono::duration<double>>(it->second.timeSinceStart)).count();
-
-		for (++it;it != bRecords.cend();++it) {
-			auto latM = it->second.latitude * 3600 * LEN_LAT_ARC_SEC;
-			auto lonM = it->second.longitude * 3600 * LEN_LAT_ARC_SEC * FastMath::fastCos(it->second.latitude);
+		for (++firstRecInfo.firstValidRecord;firstRecInfo.firstValidRecord != bRecords.cend();++firstRecInfo.firstValidRecord) {
+			auto latM = firstRecInfo.firstValidRecord->second.latitude * 3600 * LEN_LAT_ARC_SEC;
+			auto lonM = firstRecInfo.firstValidRecord->second.longitude * 3600 * LEN_LAT_ARC_SEC * FastMath::fastCos(firstRecInfo.firstValidRecord->second.latitude);
 			auto diffLonM = lonM - prevLonM;
 			auto diffLatM = latM - prevLatM;
 
-			auto durSec = (std::chrono::duration_cast<std::chrono::duration<double>>(it->second.timeSinceStart)).count();
+			auto durSec = (std::chrono::duration_cast<std::chrono::duration<double>>(firstRecInfo.firstValidRecord->second.timeSinceStart)).count();
 
 			auto diffDurSec = durSec - prevDurSec;
 
 			auto speedMperSec = sqrt(diffLatM*diffLatM + diffLonM*diffLonM) / diffDurSec;
 
 			if (speedMperSec > 10.0) {
-				rc = FastMath::fastATan2(diffLonM,diffLatM);
+				firstRecInfo.heading = FastMath::fastATan2(diffLonM,diffLatM);
+				firstRecInfo.speed = speedMperSec;
 				break;
 			}
 
@@ -436,7 +434,6 @@ FloatType IGCReaderDriver::calcInitialHeading() {
 
 		}
 	}
-	return rc;
 
 }
 
