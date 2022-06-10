@@ -179,14 +179,13 @@ void IGCReaderDriver::initializeStatus(
 				varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_TAS, varioStatus.STATUS_IND_TAS) *
 				FastMath::fastCos(firstRecInfo.heading);
 
-		if (varioStatus.getErrorCovariance_P().coeff(varioStatus.STATUS_IND_QFF,varioStatus.STATUS_IND_QFF) == UnInitVal) {
-			// calculated factor to calculate the pressure at altGPS with a temperature lapse of 1K/100m
-			double factAltGPS = altToPressureStdTemp(firstRec->second.altGPS,-0.01) / PressureStdMSL;
-			double factBaroHeight = altToPressureStdTemp(firstRec->second.altBaro) / PressureStdMSL;
+		// Calculate the QFF from the ratio of the GPS altitude to the barometric altitude.
+		// calculated factor to calculate the pressure at altGPS with a temperature lapse of 1K/100m
+		double factAltGPS = altToPressureStdTemp(firstRec->second.altGPS,-0.01) / PressureStdMSL;
+		double factBaroHeight = altToPressureStdTemp(firstRec->second.altBaro) / PressureStdMSL;
 
-			varioStatus.qff = PressureStdMSL * factBaroHeight / factAltGPS;
-			varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_QFF,varioStatus.STATUS_IND_QFF) = 1.0f;
-		}
+		varioStatus.qff = PressureStdMSL * factBaroHeight / factAltGPS;
+		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_QFF,varioStatus.STATUS_IND_QFF) = 16.0f;
 
 #undef SQUARE
 
