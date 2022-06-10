@@ -398,7 +398,7 @@ void MS4515Driver::initializeStatus(
 
 		}
 
-		if (pressureBias == avgPressure && calibrationDataParameters) {
+		if (pressureBias == avgPressure && calibrationDataParameters != nullptr) {
 			// The bias has been updated or freshly set.
 			try {
 
@@ -435,7 +435,6 @@ void MS4515Driver::initializeStatus(
 
 		// All data is collected. Initialize the status
 		varioStatus.trueAirSpeed = initialTAS;
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) = 10.0f;
 		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) =
 					SQUARE(3.0) * baseIntervalSec;
 
