@@ -302,7 +302,7 @@ void AMS5915Driver::initializeStatus(
 
 		// All data is collected. Initialize the status
 		varioStatus.trueAirSpeed = initialTAS;
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) = 100.0f;
+		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) = 9.0f;
 
 	} else {
 		LOG4CXX_WARN(logger,__FUNCTION__ << "Could not obtain " << NumInitValues

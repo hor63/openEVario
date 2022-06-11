@@ -394,7 +394,6 @@ void MPL3115Driver::initQFF(
 		GliderVarioMainPriv &varioMain,
 		FloatType avgPressure) {
 
-	GliderVarioStatus::StatusCoVarianceType &systemNoiseCov = varioStatus.getSystemNoiseCovariance_Q();
 	GliderVarioStatus::StatusCoVarianceType &errorCov = varioStatus.getErrorCovariance_P();
 	double baseIntervalSec = varioMain.getProgramOptions().idlePredictionCycleMilliSec / 1000.0;
 

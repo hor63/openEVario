@@ -175,12 +175,12 @@ void TE_MEAS_AbsPressureDriver::initializeStatus(
 		avgPressure /= FloatType(NumInitValues);
 		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": avgPressure = " << avgPressure);
 
-		if (!std::isnan(measurements.gpsMSL)) {
+		if (UnInitVal != measurements.gpsMSL) {
 			initQFF(varioStatus,measurements,varioMain,avgPressure);
 		}
 
-		if (std::isnan(varioStatus.altMSL)) {
-			if (!std::isnan(varioStatus.qff) && !std::isnan(temperatureVal) /*!std::isnan(measurements.tempLocalC)*/) {
+		if (UnInitVal == varioStatus.altMSL) {
+			if (UnInitVal != varioStatus.qff && !std::isnan(temperatureVal) /*!std::isnan(measurements.tempLocalC)*/) {
 			auto const currTempK = temperatureVal /*measurements.tempLocalC*/ + CtoK;
 			varioStatus.altMSL  = (currTempK -(pow((avgPressure / varioStatus.qff),(1.0/BarometricFormulaExponent)) * currTempK)) / TempLapseIndiffBoundLayer;
 			varioStatus.lastPressure = avgPressure;

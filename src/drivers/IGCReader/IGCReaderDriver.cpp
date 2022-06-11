@@ -160,7 +160,7 @@ void IGCReaderDriver::initializeStatus(
 		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_LONGITUDE_OFFS,varioStatus.STATUS_IND_LONGITUDE_OFFS) = 100.0f;
 
 		varioStatus.latitude(firstRec->second.latitude);
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_LATITUDE_OFFS,varioStatus.STATUS_IND_LATITUDE_OFFS) = 1000.0f;
+		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_LATITUDE_OFFS,varioStatus.STATUS_IND_LATITUDE_OFFS) = 100.0f;
 
 
 		varioStatus.heading = firstRecInfo.heading;
