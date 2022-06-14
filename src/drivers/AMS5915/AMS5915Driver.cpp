@@ -224,7 +224,7 @@ void AMS5915Driver::initializeStatus(
 
 	// Wait for 20 seconds for 16 samples to appear, and a defined temperature value
 	for (int i = 0; i < 20; i++) {
-		if (numValidInitValues < NumInitValues || std::isnan(temperatureVal)) {
+		if (numValidInitValues < NumInitValues || UnInitVal == temperatureVal) {
 			using namespace std::chrono_literals; // used for the term "1s" below. 's' being the second literal.
 
 			LOG4CXX_TRACE(logger,__FUNCTION__ << ": Only " << numValidInitValues <<
@@ -238,7 +238,6 @@ void AMS5915Driver::initializeStatus(
 	if (numValidInitValues >= NumInitValues) {
 		FloatType avgPressure = 0.0f;
 		FloatType initialTAS = 0.0f;
-		double baseIntervalSec = varioMain.getProgramOptions().idlePredictionCycleMilliSec / 1000.0;
 
 		for (int i = 0 ; i < NumInitValues; i++) {
 			avgPressure += FloatType(initValues[i]);
@@ -250,7 +249,7 @@ void AMS5915Driver::initializeStatus(
 		// Store the avg pressure as offset only when the instrument is obviously not switched on during flight.
 		// or during high-wind conditions on the field (> 20 km/h)
 
-		if (std::isnan(pressureBias)) {
+		if (UnInitVal == pressureBias) {
 			// No pre-loaded bias value from calibration data.
 			// Assume initial startup in controlled environment.
 			pressureBias = avgPressure;
@@ -310,7 +309,7 @@ void AMS5915Driver::initializeStatus(
 
 	}
 
-	if (std::isnan(pressureBias)) {
+	if (UnInitVal == pressureBias) {
 		pressureBias = 0.0f;
 	}
 

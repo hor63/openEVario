@@ -36,8 +36,7 @@ namespace openEV {
  * Otherwise all units are converted to ISO base units.
  * Absolute Magnetometer readings are irrelevant but their ratios are used to estimate the attitude.
  *
- * All values are initialized to \p nan to indicate if a value has even been set by a measurement.
- * You can check for \p nan value with isnan()
+ * All values are initialized to \ref UnInitVal to indicate if a value has even been set by a measurement.
  *
  */
 class OEV_PUBLIC GliderVarioMeasurementVector {
@@ -92,8 +91,7 @@ public:
 protected:
     /** \brief Holder of the measurement vector
      *
-     * All values are initialized to \p nan to indicate if a value has even been set by a measurement.
-     * You can check for \p nan value with isnan()
+     * All values are initialized to \ref UnInitiVal to indicate if a value has even been set by a measurement.
      */
     MeasureVectorType measureVector;
 

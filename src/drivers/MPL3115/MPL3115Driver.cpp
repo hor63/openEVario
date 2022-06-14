@@ -136,7 +136,7 @@ void MPL3115Driver::initializeStatus(
 
 	// Wait for 20 seconds for 16 samples to appear, and a defined temperature value
 	for (int i = 0; i < 20; i++) {
-		if (numValidInitValues < NumInitValues || std::isnan(temperatureVal)) {
+		if (numValidInitValues < NumInitValues || UnInitVal == temperatureVal) {
 			using namespace std::chrono_literals; // used for the term "1s" below. 's' being the second literal.
 
 			LOG4CXX_TRACE(logger,__FUNCTION__ << ": Only " << numValidInitValues <<
@@ -149,7 +149,6 @@ void MPL3115Driver::initializeStatus(
 
 	if (numValidInitValues >= NumInitValues) {
 		FloatType avgPressure = 0.0f;
-		double baseIntervalSec = varioMain.getProgramOptions().idlePredictionCycleMilliSec / 1000.0;
 
 		for (int i = 0 ; i < NumInitValues; i++) {
 			avgPressure += initValues[i];
@@ -158,12 +157,12 @@ void MPL3115Driver::initializeStatus(
 		avgPressure /= FloatType(NumInitValues);
 		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": avgPressure = " << avgPressure);
 
-		if (measurements.gpsMSL != UnInitVal) {
+		if (UnInitVal != measurements.gpsMSL) {
 			initQFF(varioStatus,measurements,varioMain,avgPressure);
 		}
 
-		if (varioStatus.altMSL == UnInitVal) {
-			if (varioStatus.qff != UnInitVal && temperatureVal != UnInitVal) {
+		if (UnInitVal == varioStatus.altMSL) {
+			if (UnInitVal != varioStatus.qff && UnInitVal != temperatureVal) {
 			auto const currTempK = temperatureVal + CtoK;
 			varioStatus.altMSL  = (currTempK -(pow((avgPressure / varioStatus.qff),(1.0/BarometricFormulaExponent)) * currTempK)) / TempLapseIndiffBoundLayer;
 			varioStatus.lastPressure = avgPressure;
@@ -395,7 +394,6 @@ void MPL3115Driver::initQFF(
 		FloatType avgPressure) {
 
 	GliderVarioStatus::StatusCoVarianceType &errorCov = varioStatus.getErrorCovariance_P();
-	double baseIntervalSec = varioMain.getProgramOptions().idlePredictionCycleMilliSec / 1000.0;
 
 	FloatType pressureFactor = calcBarometricFactor(
     		measurements.gpsMSL,
@@ -407,17 +405,10 @@ void MPL3115Driver::initQFF(
 
 	// Assume quite a bit lower variance of qff pressure as the initial altitude variance (9)
 	errorCov.coeffRef(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF) = 1.0f;
-	systemNoiseCov.coeffRef(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF) =
-			SQUARE(0.0001) * baseIntervalSec; // 0.1hPa/sec
 
 	LOG4CXX_DEBUG (logger,"	QFF = " << varioStatus.qff
 			<< ", initial variance = "
-			<< errorCov.coeff(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF)
-			<< ", variance increment = "
-			<< systemNoiseCov.coeff(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF)
-			<< " / " << baseIntervalSec << "s");
-
-
+			<< errorCov.coeff(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF));
 
 }
 

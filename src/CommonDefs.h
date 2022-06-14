@@ -60,7 +60,7 @@ namespace openEV {
 	 *
 	 * I cannot use \p NAN and \p isnan() because compiler options
 	 * -funsafe-math-optimizations or -ffast-math or -Ofast
-	 * cause isnan() to return \p false even it was initialized with \p NAN.
+	 * because isnan() to return \p false even it was initialized with \p NAN.
 	 * This is because these options treat all binary patterns as finite float values.
 	 * I still need these options for ARM architectures to let GCC generate code
 	 * for the NEON vector unit to speed up the number crunching.

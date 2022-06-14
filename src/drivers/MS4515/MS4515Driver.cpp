@@ -374,7 +374,7 @@ void MS4515Driver::initializeStatus(
 		// Store the avg pressure as offset only when the instrument is obviously not switched on during flight.
 		// or during high-wind conditions on the field (> 20 km/h)
 
-		if (pressureBias == UnInitVal) {
+		if (UnInitVal == pressureBias) {
 			// No pre-loaded bias value from calibration data.
 			// Assume initial startup in controlled environment.
 			pressureBias = avgPressure;

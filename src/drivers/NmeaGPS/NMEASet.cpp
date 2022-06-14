@@ -1341,7 +1341,7 @@ void NMEASet::initializeAltitude (
 				<< ", variance increment = "
 				<< systemNoiseCov.coeff(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ALT_MSL)
 				<< " / " << baseIntervalSec << "s");
-		if (!std::isnan(currStat.getMeasurementVector()->staticPressure)) {
+		if (UnInitVal == currStat.getMeasurementVector()->staticPressure) {
 			initQFF(currStat);
 		}
 
