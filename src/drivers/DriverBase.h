@@ -84,17 +84,11 @@ public:
         GPS_ALTITUDE_MSL = 2,
         GPS_HEADING = 3,
         GPS_SPEED = 4,
-        ACCEL_X = 5,
-        ACCEL_Y = 6,
-        ACCEL_Z = 7,
-        GYRO_X = 8,
-        GYRO_Y = 9,
-        GYRO_Z = 10,
-        COMPASS_X = 11,
-        COMPASS_Y = 12,
-        COMPASS_Z = 13,
-        STATIC_PRESSURE = 14,
-        DYNAMIC_PRESSURE = 15,
+        ACCEL_3D = 5,
+        GYRO_3D = 6,
+        MAGNETOMETER_3D = 7,
+        STATIC_PRESSURE = 8,
+        DYNAMIC_PRESSURE = 9,
 
 		/** \brief This driver will run the idle loop too. The main program will not run the idle loop itself
 		 *
