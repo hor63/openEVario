@@ -571,6 +571,8 @@ void GliderVarioMainPriv::intializeStatus() {
 	// and variances based on sensor cycle and performance
 	driverList.initializeKalmanStatus(*currentStatus,measurementVector,*this);
 
+	setKalmanErrorIncrements ();
+
 	//
 	// Initialize the components which were not initialized by the drivers
 	// Note each value which is being initialized by which sensor driver by driverList.initializeKalmanStatus() above.
@@ -949,7 +951,7 @@ void GliderVarioMainPriv::intializeStatus() {
 		currentStatus->lastPressure = PressureStdMSL;
 	}
 	if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LAST_PRESSURE,currentStatus->STATUS_IND_LAST_PRESSURE)) {
-		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LAST_PRESSURE,currentStatus->STATUS_IND_LAST_PRESSURE) = 100.0f;
+		currentStatus->getErrorCovariance_P().coeffRef(currentStatus->STATUS_IND_LAST_PRESSURE,currentStatus->STATUS_IND_LAST_PRESSURE) = 0.0f;
 	}
 	if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_LAST_PRESSURE,currentStatus->STATUS_IND_LAST_PRESSURE)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_LAST_PRESSURE,currentStatus->STATUS_IND_LAST_PRESSURE) = 0.0f;
@@ -989,6 +991,101 @@ void GliderVarioMainPriv::intializeStatus() {
 			// throw GliderVarioExceptionBase(__FILE__, __LINE__, str.str().c_str());
 		}
 	}
+
+}
+
+void GliderVarioMainPriv::setKalmanErrorIncrements () {
+	double baseIntervalSec = programOptions.idlePredictionCycleMilliSec / 1000.0;
+
+	// Set the error increment rate based on the connected sensor capabilities.
+	// First sum up the capabilities of all instantiated drivers.
+	uint_fast32_t allCapabilities = 0;
+	for (auto & device : driverList.getDriverInstanceList()) {
+		allCapabilities |= device.second->getSensorCapabilities();
+	}
+
+	// GPS Position
+	if (allCapabilities & (1UL<<drivers::DriverBase::GPS_POSITION)) {
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_LATITUDE_OFFS,currentStatus->STATUS_IND_LATITUDE_OFFS) =
+				SQUARE(3.0) * baseIntervalSec;
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_LONGITUDE_OFFS,currentStatus->STATUS_IND_LONGITUDE_OFFS) =
+				SQUARE(3.0) * baseIntervalSec;
+
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_N,currentStatus->STATUS_IND_SPEED_GROUND_N) =
+				SQUARE(3.0) * baseIntervalSec;
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_E,currentStatus->STATUS_IND_SPEED_GROUND_E) =
+				SQUARE(3.0) * baseIntervalSec;
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_TAS,currentStatus->STATUS_IND_TAS) =
+				SQUARE(3.0) * baseIntervalSec;
+
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_HEADING,currentStatus->STATUS_IND_HEADING) =
+				SQUARE(3.0) * baseIntervalSec;
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ROTATION_Z,currentStatus->STATUS_IND_ROTATION_Z) =
+				SQUARE(3.0) * baseIntervalSec;
+
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_N,currentStatus->STATUS_IND_WIND_SPEED_N) =
+				SQUARE(0.1) * baseIntervalSec;
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_WIND_SPEED_E,currentStatus->STATUS_IND_WIND_SPEED_E) =
+				SQUARE(0.1) * baseIntervalSec;
+
+	}
+
+	// GPS Altitude
+	if (allCapabilities & (1UL<<drivers::DriverBase::GPS_ALTITUDE_MSL)) {
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ALT_MSL,currentStatus->STATUS_IND_ALT_MSL) =
+				SQUARE(3.0) * baseIntervalSec;
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_VERTICAL_SPEED,currentStatus->STATUS_IND_VERTICAL_SPEED) =
+				SQUARE(3.0) * baseIntervalSec;
+
+	}
+
+	// GPS heading (handle with care, that is derived from GPS positions in the GPS receiver internally too)
+	if (allCapabilities & (1UL<<drivers::DriverBase::GPS_HEADING)) {
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_HEADING,currentStatus->STATUS_IND_HEADING) =
+				SQUARE(3.0) * baseIntervalSec;
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ROTATION_Z,currentStatus->STATUS_IND_ROTATION_Z) =
+				SQUARE(3.0) * baseIntervalSec;
+
+	}
+
+    // Static pressure i.e. barometric altimeter
+	if (allCapabilities & (1UL<<drivers::DriverBase::STATIC_PRESSURE)) {
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ALT_MSL,currentStatus->STATUS_IND_ALT_MSL) =
+				SQUARE(3.0) * baseIntervalSec;
+		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_VERTICAL_SPEED,currentStatus->STATUS_IND_VERTICAL_SPEED) =
+				SQUARE(3.0) * baseIntervalSec;
+
+		if (allCapabilities & (1UL<<drivers::DriverBase::GPS_ALTITUDE_MSL)) {
+			currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_QFF,currentStatus->STATUS_IND_QFF) =
+					SQUARE(0.003) * baseIntervalSec; // about 10mB/h
+		}
+
+	}
+
+
+	/* Ignore GPS speed because that is derived from GPS positions within the GPS receiver too, but not a direct measurement
+	 * if (allCapabilities & (1UL<<drivers::DriverBase::GPS_SPEED)) {
+	 *
+	 * }
+	 */
+
+    // Dynamic pressure calculates indicated and true airspeed (the latter when I know my surrounding pressure, i.e. altitude)
+	if (allCapabilities & (1UL<<drivers::DriverBase::DYNAMIC_PRESSURE)) {
+		// If I have GPS positions I adjust the error increments
+		// Otherwise it will default to 0 later.
+		// Without absolute position corrections and determination intiailly
+		// any position calculation from the speed is moot. Because also without
+		// postions I cannot determine my course over ground which is eually important.
+		if (allCapabilities & (1UL<<drivers::DriverBase::GPS_POSITION)) {
+
+		}
+
+	}
+
+    //ACCEL_3D = 4,
+    //GYRO_3D = 5,
+    //MAGNETOMETER_3D = 6,
+
 
 }
 
