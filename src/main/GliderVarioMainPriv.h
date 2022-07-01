@@ -260,6 +260,19 @@ private:
 	 */
 	void intializeStatus ();
 
+	/** \brief Set the Kalman system error increments based on the sensor capabilities
+	 *
+	 * The system error increment determine the characteristics of the filter during runtime.
+	 * The error increments determine the equilibrium status of the system error together with
+	 * the decrease of system errors by measurement updates.
+	 *
+	 * Depending on available sensors the emphasis differs. For instance a derived values will get a higher
+	 * system error than the integrated value. For example when I only have the GPS position I will update
+	 * position and speed roughly equally. When I have the TAS by difference pressure available I will increment the
+	 * speed system error much faster than the position error.
+	 */
+	void setKalmanErrorIncrements ();
+
 	/*** \brief The idle loop will force an prediction cycle of the Kalman status when no measurement updates did it in the mean time.
 	 *
 	 *
