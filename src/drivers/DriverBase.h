@@ -79,16 +79,15 @@ public:
     OEV_ENUM (SensorCapability,
 #endif
 
-        GPS_LATITUDE = 0,
-        GPS_LONGITUDE = 1,
-        GPS_ALTITUDE_MSL = 2,
-        GPS_HEADING = 3,
-        GPS_SPEED = 4,
-        ACCEL_3D = 5,
-        GYRO_3D = 6,
-        MAGNETOMETER_3D = 7,
-        STATIC_PRESSURE = 8,
-        DYNAMIC_PRESSURE = 9,
+        GPS_POSITION = 0,
+        GPS_ALTITUDE_MSL = 1,
+        GPS_HEADING = 2,
+        GPS_SPEED = 3,
+        ACCEL_3D = 4,
+        GYRO_3D = 5,
+        MAGNETOMETER_3D = 6,
+        STATIC_PRESSURE = 7,
+        DYNAMIC_PRESSURE = 8,
 
 		/** \brief This driver will run the idle loop too. The main program will not run the idle loop itself
 		 *
