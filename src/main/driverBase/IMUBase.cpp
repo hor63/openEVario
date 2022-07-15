@@ -376,16 +376,16 @@ void IMUBase::updateKalman(SensorData &currSensorData) {
 
 		if (currSensorData.accelDataValid) {
 			GliderVarioMeasurementUpdater::accelUpd(
-					currSensorData.accelX,0.1f,
-					currSensorData.accelY,0.1f,
-					currSensorData.accelZ,0.1f,
+					currSensorData.accelX,1.0f,
+					currSensorData.accelY,1.0f,
+					currSensorData.accelZ,1.0f,
 					*currStatus.getMeasurementVector(),*currStatus.getCurrentStatus());
 		}
 		if (currSensorData.gyroDataValid) {
 			GliderVarioMeasurementUpdater::gyroUpd(
-					currSensorData.gyroX,0.1f,
-					currSensorData.gyroY,0.1f,
-					currSensorData.gyroZ,0.1f,
+					currSensorData.gyroX,1.0f,
+					currSensorData.gyroY,1.0f,
+					currSensorData.gyroZ,1.0f,
 					*currStatus.getMeasurementVector(),*currStatus.getCurrentStatus());
 		}
 		if (currSensorData.magDataValid) {
