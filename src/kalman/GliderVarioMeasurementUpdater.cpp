@@ -336,6 +336,9 @@ GliderVarioMeasurementUpdater::accelUpd (
     LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measuredAccelX = " <<  measuredAccelX
     		<< ", calcAccel = " << calcAccel << ", variance = " << accelXVariance);
 
+    LOG4CXX_TRACE(logger,__FUNCTION__ << ": ErrorCovariance_P before X Accel update = " <<
+        		printCovMatrix(varioStatus.getErrorCovariance_P()));
+
     calcSingleMeasureUpdate (
             measuredAccelX,
             calcAccel,
@@ -343,6 +346,10 @@ GliderVarioMeasurementUpdater::accelUpd (
             measRowT,
             varioStatus
     );
+
+
+        LOG4CXX_TRACE(logger,__FUNCTION__ << ": ErrorCovariance_P after X Accel update = " <<
+        		printCovMatrix(varioStatus.getErrorCovariance_P()));
 
     // Now the update for the Y-Axis measurement
     calcAccel = calcAccelVector(1);
@@ -776,40 +783,31 @@ GliderVarioMeasurementUpdater::staticPressureUpd (
     if (logger->isTraceEnabled()) {
     	std::ostringstream str;
     	GliderVarioStatus::StatusCoVarianceType &errCov = varioStatus.getErrorCovariance_P();
-    	for (int i=0;i<GliderVarioStatus::STATUS_NUM_ROWS;i++) {
-    		for (GliderVarioStatus::StatusCoVarianceType::InnerIterator it(errCov,i);it;++it) {
-    			if (it.row() == GliderVarioStatus::STATUS_IND_QFF || it.col() == GliderVarioStatus::STATUS_IND_QFF) {
-    				str << "\n	errCov[" << GliderVarioStatus::StatusComponentIndex(it.row())
-    						<< ',' << GliderVarioStatus::StatusComponentIndex(it.col())
-							<< "= " << it.value();
-    			}
-    		}
-    	}
+   		for (GliderVarioStatus::StatusCoVarianceType::InnerIterator it(errCov,GliderVarioStatus::STATUS_IND_QFF);it;++it) {
+			str << "\n	errCov[" << GliderVarioStatus::StatusComponentIndex(it.row())
+					<< ',' << GliderVarioStatus::StatusComponentIndex(it.col())
+					<< "= " << it.value();
+   		}
     	LOG4CXX_TRACE(logger,"  Error Covariance for QFF before update:" << str.str());
 
     	str = std::ostringstream();
-    	for (int i=0;i<GliderVarioStatus::STATUS_NUM_ROWS;i++) {
-    		for (GliderVarioStatus::StatusCoVarianceType::InnerIterator it(errCov,i);it;++it) {
-    			if (it.row() == GliderVarioStatus::STATUS_IND_LAST_PRESSURE || it.col() == GliderVarioStatus::STATUS_IND_LAST_PRESSURE) {
-    				str << "\n	errCov[" << GliderVarioStatus::StatusComponentIndex(it.row())
-    						<< ',' << GliderVarioStatus::StatusComponentIndex(it.col())
-							<< "= " << it.value();
-    			}
-    		}
-    	}
+		for (GliderVarioStatus::StatusCoVarianceType::InnerIterator it(errCov,GliderVarioStatus::STATUS_IND_LAST_PRESSURE);it;++it) {
+			str << "\n	errCov[" << GliderVarioStatus::StatusComponentIndex(it.row())
+				<< ',' << GliderVarioStatus::StatusComponentIndex(it.col())
+				<< "= " << it.value();
+		}
     	LOG4CXX_TRACE(logger,"  Error Covariance for LAST_PRESSURE before update:" << str.str());
+
     	str = std::ostringstream();
-    	for (int i=0;i<GliderVarioStatus::STATUS_NUM_ROWS;i++) {
-    		for (GliderVarioStatus::StatusCoVarianceType::InnerIterator it(errCov,i);it;++it) {
-    			if (it.row() == GliderVarioStatus::STATUS_IND_ALT_MSL || it.col() == GliderVarioStatus::STATUS_IND_ALT_MSL) {
-    				str << "\n	errCov[" << GliderVarioStatus::StatusComponentIndex(it.row())
-    						<< ',' << GliderVarioStatus::StatusComponentIndex(it.col())
-							<< "= " << it.value();
-    			}
-    		}
-    	}
+		for (GliderVarioStatus::StatusCoVarianceType::InnerIterator it(errCov,GliderVarioStatus::STATUS_IND_ALT_MSL);it;++it) {
+			str << "\n	errCov[" << GliderVarioStatus::StatusComponentIndex(it.row())
+				<< ',' << GliderVarioStatus::StatusComponentIndex(it.col())
+				<< "= " << it.value();
+		}
     	LOG4CXX_TRACE(logger,"  Error Covariance for ALT_MSL: before update" << str.str());
     }
+    LOG4CXX_TRACE(logger,__FUNCTION__ << ": ErrorCovariance_P before static pressure update = " <<
+    		printCovMatrix(varioStatus.getErrorCovariance_P()));
 #endif
 
     LOG4CXX_DEBUG(logger,"		Altitude derivate = " << measRowT1.coeff(GliderVarioStatus::STATUS_IND_ALT_MSL,0));
@@ -821,6 +819,9 @@ GliderVarioMeasurementUpdater::staticPressureUpd (
             measRowT1,
             varioStatus
     );
+
+    LOG4CXX_TRACE(logger,__FUNCTION__ << ": ErrorCovariance_P after static pressure update = " <<
+    		printCovMatrix(varioStatus.getErrorCovariance_P()));
 
     measRowT2.insert(GliderVarioStatus::STATUS_IND_QFF,0) = pFactor;
     LOG4CXX_DEBUG(logger,"		QFF derivate = " << pFactor );
@@ -860,6 +861,12 @@ GliderVarioMeasurementUpdater::dynamicPressureUpd (
     FloatType dynPressure;
     Eigen::SparseMatrix<FloatType> measRowT(GliderVarioStatus::STATUS_NUM_ROWS,1);
 
+    if (varioStatus.pitchAngle > 60.0f || varioStatus.pitchAngle < -60.0f) {
+    	// If the pitch angle becomes too large the vertical component of TAS becomes just too much
+    	// for a reliable calculation.
+    	return;
+    }
+
     // Convert the measured pressure to Pa
     measuredDynamicPressure *= 100.0f;
     dynamicPressureVariance *= 10000.0f;
@@ -871,19 +878,26 @@ GliderVarioMeasurementUpdater::dynamicPressureUpd (
     // dyn pressure = 0.5 * density * speed * speed
     // dyn pressure = 0.5 * (pressure / Rspec /temp) * speed * speed
 
-    // At negative speeds force the calculated pressure to go negative. Otherwise an increase in pressure will
-    // result in a further *decrease* of the calculated speed. Therefore use the absolute value of speed once.
-    // The results are horribly inaccurate at higher speeds, but this will occur only close to 0.
-    // In actual flight this is a non-issue because the speed is always positive except for some hard-core
-    // aerobatics, but that is way beyond the design envelope of this instrument.
-    dynPressure = pressRspecTemp * fabs(varioStatus.trueAirSpeed) * varioStatus.trueAirSpeed;
+    // // At negative speeds force the calculated pressure to go negative. Otherwise an increase in pressure will
+    // // result in a further *decrease* of the calculated speed. Therefore use the absolute value of speed once.
+    // // The results are horribly inaccurate at higher speeds, but this will occur only close to 0.
+    // // In actual flight this is a non-issue because the speed is always positive except for some hard-core
+    // // aerobatics, but that is way beyond the design envelope of this instrument.
+    // dynPressure = pressRspecTemp * fabs(varioStatus.trueAirSpeed) * varioStatus.trueAirSpeed;
+    auto cosPitch = FastMath::fastCos(varioStatus.pitchAngle);
+    auto trueAirSpeed = varioStatus.trueAirSpeed;
+    auto verticalSpeed = varioStatus.verticalSpeed;
+    // Assume I fly also vertical with a speed according to horizontal TAS, and my pitch angle.
+    auto totalSpeed = trueAirSpeed / cosPitch;
+    dynPressure = pressRspecTemp * fabs(totalSpeed) * totalSpeed;
 
-	tmp2 = varioStatus.trueAirSpeed + 1.0f;
+	tmp2 = totalSpeed + 1.0f;
     tmp2 = pressRspecTemp * fabs(tmp2) * tmp2;
-
+    tmp2 = (tmp2 - dynPressure);
     // At negative speeds force the derivate to negative. Otherwise an increase in pressure will
-    // result in a further *decrease* of the calculated speed. Therefore use the absolute value of speed once
-    measRowT.insert(GliderVarioStatus::STATUS_IND_TAS,0) = tmp2 - dynPressure;
+    // result in a further *decrease* of the calculated speed. Therefore use the sign of the value.
+    measRowT.insert(GliderVarioStatus::STATUS_IND_TAS,0) = tmp2 * cosPitch;
+    measRowT.insert(GliderVarioStatus::STATUS_IND_VERTICAL_SPEED,0) = tmp2 * FastMath::fastSin(varioStatus.pitchAngle);
 
 
     if (unitTestMode) {
@@ -894,7 +908,8 @@ GliderVarioMeasurementUpdater::dynamicPressureUpd (
 
     LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measuredDynamicPressure = " <<  measuredDynamicPressure
     		<< "Pa, calculated dynPressure = " << dynPressure << "Pa, variance = " << dynamicPressureVariance
-			<< ": derivative = " << measRowT.coeff(GliderVarioStatus::STATUS_IND_TAS,0));
+			<< ": derivative X = " << measRowT.coeff(GliderVarioStatus::STATUS_IND_TAS,0)
+			<< ", Z = " << measRowT.coeff(GliderVarioStatus::STATUS_IND_VERTICAL_SPEED,0));
 
     calcSingleMeasureUpdate (
             measuredDynamicPressure,
