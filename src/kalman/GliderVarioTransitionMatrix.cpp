@@ -87,9 +87,9 @@ GliderVarioTransitionMatrix::updateStatus (
     	LOG4CXX_DEBUG(logger,"latitude = " << newStatus.latitude());
     	LOG4CXX_DEBUG(logger,"longitude = " << newStatus.longitude());
     	LOG4CXX_DEBUG(logger,"StatusVector = \n" << printStatusVector(newStatus.getStatusVector_x()));
-    	LOG4CXX_DEBUG(logger,"ErrorCovariance = \n" << printCovMatrix(newStatus.getErrorCovariance_P()));
-    	LOG4CXX_DEBUG(logger,"transitionMatrix = \n" << printCovMatrix(transitionMatrix));
-    	LOG4CXX_DEBUG(logger,"SystemNoiseCovariance = \n" << printCovMatrix(newStatus.getSystemNoiseCovariance_Q()));
+    	LOG4CXX_TRACE(logger,"ErrorCovariance = \n" << printCovMatrix(newStatus.getErrorCovariance_P()));
+    	LOG4CXX_TRACE(logger,"transitionMatrix = \n" << printCovMatrix(transitionMatrix));
+    	LOG4CXX_TRACE(logger,"SystemNoiseCovariance = \n" << printCovMatrix(newStatus.getSystemNoiseCovariance_Q()));
 
 
 }
