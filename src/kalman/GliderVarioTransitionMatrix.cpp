@@ -135,7 +135,7 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
     // FloatType timeSquareHalf  = timeDiff*timeDiff / 2.0f;
 
     // I am using a number of temporary variables to store factors used for new status calculation, and to store in the transition matrix.
-    FloatType temp1, temp2;
+    FloatType temp1;
     FloatType sinHeading = FastMath::fastSin(lastStatus.heading);
     FloatType cosHeading = FastMath::fastCos(lastStatus.heading);
 
