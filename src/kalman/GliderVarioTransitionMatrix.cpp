@@ -375,9 +375,9 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
     newStatus.thermalSpeed = lastStatus.verticalSpeed - lastStatus.rateOfSink;
 
     // STATUS_IND_ACC_HEADING
-    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_ACC_HEADING,GliderVarioStatus::STATUS_IND_ACC_HEADING) = 1.0f;
+    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_ACC_HEADING,GliderVarioStatus::STATUS_IND_ACC_HEADING) = 0.9f;
 
-    newStatus.accelHeading = lastStatus.accelHeading;
+    newStatus.accelHeading = lastStatus.accelHeading * 0.9f;
 
     // STATUS_IND_ACC_CROSS
     /// \todo Re-activate when possible
@@ -389,9 +389,9 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
     newStatus.accelCross = 0.0f;
 
     // STATUS_IND_ACC_VERTICAL
-    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_ACC_VERTICAL,GliderVarioStatus::STATUS_IND_ACC_VERTICAL) = 1.0f;
+    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_ACC_VERTICAL,GliderVarioStatus::STATUS_IND_ACC_VERTICAL) = 0.9f;
 
-    newStatus.accelVertical = lastStatus.accelVertical;
+    newStatus.accelVertical = lastStatus.accelVertical * 0.9f;
 
     // STATUS_IND_ROTATION_X
     transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_ROTATION_X,GliderVarioStatus::STATUS_IND_ROTATION_X) = 1.0f;
