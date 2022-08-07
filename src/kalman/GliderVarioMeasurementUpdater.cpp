@@ -365,6 +365,16 @@ GliderVarioMeasurementUpdater::accelUpd (
         measRowTTst3 = measRowT;
     }
 
+#if defined HAVE_LOG4CXX_H
+    for (GliderVarioStatus::StatusComponentIndex i = 0; i < measRowT.rows() ; ++i){
+    	if (measRowT.coeff(i,0)!= 0.0f ||measRowT.coeff(i,1)!= 0.0f ||measRowT.coeff(i,2)!= 0.0f) {
+        	LOG4CXX_TRACE(logger, "measRowT["<<i<<"] = {"
+        			<< measRowT.coeff(i,0)<<',\t'<< measRowT.coeff(i,1)<<',\t'<< measRowT.coeff(i,2)<<'}'
+					);
+    	}
+    }
+#endif
+
     LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measuredAccelZ = " <<  measuredAccelZ
     		<< ", calcAccel = " << calcAccelVector(2) << ", variance = " << accelZVariance);
 
