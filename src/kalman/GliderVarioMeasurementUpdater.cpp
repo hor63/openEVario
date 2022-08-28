@@ -366,12 +366,29 @@ GliderVarioMeasurementUpdater::accelUpd (
     }
 
 #if defined HAVE_LOG4CXX_H
-    for (GliderVarioStatus::StatusComponentIndex i = 0; i < measRowT.rows() ; ++i){
+    for (decltype(measRowT.rows()) i = 0; i < measRowT.rows() ; ++i){
     	if (measRowT.coeff(i,0)!= 0.0f ||measRowT.coeff(i,1)!= 0.0f ||measRowT.coeff(i,2)!= 0.0f) {
-        	LOG4CXX_TRACE(logger, "measRowT["<<i<<"] = {"
-        			<< measRowT.coeff(i,0)<<',\t'<< measRowT.coeff(i,1)<<',\t'<< measRowT.coeff(i,2)<<'}'
+        	LOG4CXX_TRACE(logger, "measRowT["<< GliderVarioStatus::StatusComponentIndex(i) <<"] = {"
+        			<< measRowT.coeff(i,0)<<",\t"<< measRowT.coeff(i,1)<<",\t"<< measRowT.coeff(i,2)<<'}'
 					);
     	}
+    }
+
+    {
+		GliderVarioStatus::StatusCoVarianceType & covPMatrix = varioStatus.getErrorCovariance_P();
+		for (decltype(covPMatrix.rows()) i = 0; i < covPMatrix.rows() ; ++i){
+			if (
+					covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_ACC_HEADING) != 0.0f ||
+					covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_ACC_CROSS) != 0.0f ||
+					covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_ACC_VERTICAL) != 0.0f
+					) {
+				LOG4CXX_TRACE(logger, "covPMatrix["<<GliderVarioStatus::StatusComponentIndex(i)<<",{Head/Cross/Vert}] = "
+						<< covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_ACC_HEADING) << '\t'
+						<< covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_ACC_CROSS) << '\t'
+						<< covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_ACC_VERTICAL)
+						);
+			}
+		}
     }
 #endif
 
