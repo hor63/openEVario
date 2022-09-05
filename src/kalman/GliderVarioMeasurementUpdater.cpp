@@ -5,7 +5,7 @@
  *      Author: hor
  *
  *   This file is part of openEVario, an electronic variometer for glider planes
- *   Copyright (C) 2016  Kai Horstmann
+ *   Copyright (C) 2016-2022  Kai Horstmann
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -111,6 +111,33 @@ GliderVarioMeasurementUpdater::GPSPositionUpd (
         calculatedValueTst2 = calculatedValue(lonIndex);
         measRowTTst1 = measRowT;
     }
+
+#if defined HAVE_LOG4CXX_H
+    if (logger->isTraceEnabled()) {
+		for (decltype(measRowT.rows()) i = 0; i < measRowT.rows() ; ++i){
+			if (measRowT.coeff(i,0)!= 0.0f ||measRowT.coeff(i,1)!= 0.0f ) {
+				LOG4CXX_TRACE(logger, "measRowT["<< GliderVarioStatus::StatusComponentIndex(i) <<"] = {"
+						<< measRowT.coeff(i,0)<<",\t"<< measRowT.coeff(i,1) << '}'
+						);
+			}
+		}
+
+		{
+			GliderVarioStatus::StatusCoVarianceType & covPMatrix = varioStatus.getErrorCovariance_P();
+			for (decltype(covPMatrix.rows()) i = 0; i < covPMatrix.rows() ; ++i){
+				if (
+						covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS) != 0.0f ||
+						covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_LATITUDE_OFFS) != 0.0f
+						) {
+					LOG4CXX_TRACE(logger, "covPMatrix["<<GliderVarioStatus::StatusComponentIndex(i)<<",{Lat/Lon}] = "
+							<< covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS) << '\t'
+							<< covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_LATITUDE_OFFS)
+							);
+				}
+			}
+		}
+    }
+#endif
 
     LOG4CXX_DEBUG(logger,"GPSLatitudeUpd: measured latitudeOffset(m) = " <<  measuredLatitude
     		<< ", calculated latitudeOffset = " << calculatedValue << ", variance = " << latitudeVariance);
@@ -366,27 +393,29 @@ GliderVarioMeasurementUpdater::accelUpd (
     }
 
 #if defined HAVE_LOG4CXX_H
-    for (decltype(measRowT.rows()) i = 0; i < measRowT.rows() ; ++i){
-    	if (measRowT.coeff(i,0)!= 0.0f ||measRowT.coeff(i,1)!= 0.0f ||measRowT.coeff(i,2)!= 0.0f) {
-        	LOG4CXX_TRACE(logger, "measRowT["<< GliderVarioStatus::StatusComponentIndex(i) <<"] = {"
-        			<< measRowT.coeff(i,0)<<",\t"<< measRowT.coeff(i,1)<<",\t"<< measRowT.coeff(i,2)<<'}'
-					);
-    	}
-    }
-
-    {
-		GliderVarioStatus::StatusCoVarianceType & covPMatrix = varioStatus.getErrorCovariance_P();
-		for (decltype(covPMatrix.rows()) i = 0; i < covPMatrix.rows() ; ++i){
-			if (
-					covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_ACC_HEADING) != 0.0f ||
-					covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_ACC_CROSS) != 0.0f ||
-					covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_ACC_VERTICAL) != 0.0f
-					) {
-				LOG4CXX_TRACE(logger, "covPMatrix["<<GliderVarioStatus::StatusComponentIndex(i)<<",{Head/Cross/Vert}] = "
-						<< covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_ACC_HEADING) << '\t'
-						<< covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_ACC_CROSS) << '\t'
-						<< covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_ACC_VERTICAL)
+    if (logger->isTraceEnabled()) {
+		for (decltype(measRowT.rows()) i = 0; i < measRowT.rows() ; ++i){
+			if (measRowT.coeff(i,0)!= 0.0f ||measRowT.coeff(i,1)!= 0.0f ||measRowT.coeff(i,2)!= 0.0f) {
+				LOG4CXX_TRACE(logger, "measRowT["<< GliderVarioStatus::StatusComponentIndex(i) <<"] = {"
+						<< measRowT.coeff(i,0)<<",\t"<< measRowT.coeff(i,1)<<",\t"<< measRowT.coeff(i,2)<<'}'
 						);
+			}
+		}
+
+		{
+			GliderVarioStatus::StatusCoVarianceType & covPMatrix = varioStatus.getErrorCovariance_P();
+			for (decltype(covPMatrix.rows()) i = 0; i < covPMatrix.rows() ; ++i){
+				if (
+						covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_ACC_HEADING) != 0.0f ||
+						covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_ACC_CROSS) != 0.0f ||
+						covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_ACC_VERTICAL) != 0.0f
+						) {
+					LOG4CXX_TRACE(logger, "covPMatrix["<<GliderVarioStatus::StatusComponentIndex(i)<<",{Head/Cross/Vert}] = "
+							<< covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_ACC_HEADING) << '\t'
+							<< covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_ACC_CROSS) << '\t'
+							<< covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_ACC_VERTICAL)
+							);
+				}
 			}
 		}
     }
@@ -508,6 +537,35 @@ GliderVarioMeasurementUpdater::gyroUpd (
 
     LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measuredYawRateZ = " <<  measuredYawRateZ
     		<< ", calcRotationZ = " << calcRotVector(2) << ", variance = " << yawRateZVariance);
+
+#if defined HAVE_LOG4CXX_H
+    if (logger->isTraceEnabled()) {
+		for (decltype(measRowT.rows()) i = 0; i < measRowT.rows() ; ++i){
+			if (measRowT.coeff(i,0)!= 0.0f ||measRowT.coeff(i,1)!= 0.0f ||measRowT.coeff(i,2)!= 0.0f) {
+				LOG4CXX_TRACE(logger, "measRowT["<< GliderVarioStatus::StatusComponentIndex(i) <<"] = {"
+						<< measRowT.coeff(i,0)<<",\t"<< measRowT.coeff(i,1)<<",\t"<< measRowT.coeff(i,2)<<'}'
+						);
+			}
+		}
+
+		{
+			GliderVarioStatus::StatusCoVarianceType & covPMatrix = varioStatus.getErrorCovariance_P();
+			for (decltype(covPMatrix.rows()) i = 0; i < covPMatrix.rows() ; ++i){
+				if (
+						covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_ROTATION_X) != 0.0f ||
+						covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_ROTATION_Y) != 0.0f ||
+						covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_ROTATION_Z) != 0.0f
+						) {
+					LOG4CXX_TRACE(logger, "covPMatrix["<<GliderVarioStatus::StatusComponentIndex(i)<<",{rotX/rotY/rotZ}] = "
+							<< covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_ROTATION_X) << '\t'
+							<< covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_ROTATION_Y) << '\t'
+							<< covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_ROTATION_Z)
+							);
+				}
+			}
+		}
+    }
+#endif
 
     RotationMatrix3DType measureVariance;
     measureVariance.setZero();
@@ -652,6 +710,35 @@ GliderVarioMeasurementUpdater::compassUpd (
 
     LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measuredMagFlowZ = " <<  measuredMagFlowZ
     		<< ", calculatedValueZ = " << compassVector(2) << ", variance = " << magFlowZVariance);
+
+#if defined HAVE_LOG4CXX_H
+    if (logger->isTraceEnabled()) {
+		for (decltype(measRowT.rows()) i = 0; i < measRowT.rows() ; ++i){
+			if (measRowT.coeff(i,0)!= 0.0f ||measRowT.coeff(i,1)!= 0.0f ||measRowT.coeff(i,2)!= 0.0f) {
+				LOG4CXX_TRACE(logger, "measRowT["<< GliderVarioStatus::StatusComponentIndex(i) <<"] = {"
+						<< measRowT.coeff(i,0)<<",\t"<< measRowT.coeff(i,1)<<",\t"<< measRowT.coeff(i,2)<<'}'
+						);
+			}
+		}
+
+		{
+			GliderVarioStatus::StatusCoVarianceType & covPMatrix = varioStatus.getErrorCovariance_P();
+			for (decltype(covPMatrix.rows()) i = 0; i < covPMatrix.rows() ; ++i){
+				if (
+						covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_HEADING) != 0.0f ||
+						covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_PITCH) != 0.0f ||
+						covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_ROLL) != 0.0f
+						) {
+					LOG4CXX_TRACE(logger, "covPMatrix["<<GliderVarioStatus::StatusComponentIndex(i)<<",{Heading/Pitch/Roll}] = "
+							<< covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_HEADING) << '\t'
+							<< covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_PITCH) << '\t'
+							<< covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_ROLL)
+							);
+				}
+			}
+		}
+    }
+#endif
 
     Vector3DType measuredVector {measuredMagFlowX,measuredMagFlowY,measuredMagFlowZ};
     RotationMatrix3DType varianceMatrix;
@@ -833,6 +920,33 @@ GliderVarioMeasurementUpdater::dynamicPressureUpd (
         calculatedValueTst1 = dynPressure;
         measRowTTst1 = measRowT;
     }
+
+#if defined HAVE_LOG4CXX_H
+    if (logger->isTraceEnabled()) {
+		for (decltype(measRowT.rows()) i = 0; i < measRowT.rows() ; ++i){
+			if (measRowT.coeff(i,0)!= 0.0f) {
+				LOG4CXX_TRACE(logger, "measRowT["<< GliderVarioStatus::StatusComponentIndex(i) <<"] = "
+						<< measRowT.coeff(i,0)
+						);
+			}
+		}
+
+		{
+			GliderVarioStatus::StatusCoVarianceType & covPMatrix = varioStatus.getErrorCovariance_P();
+			for (decltype(covPMatrix.rows()) i = 0; i < covPMatrix.rows() ; ++i){
+				if (
+						covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_TAS) != 0.0f ||
+						covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_VERTICAL_SPEED) != 0.0f
+						) {
+					LOG4CXX_TRACE(logger, "covPMatrix["<<GliderVarioStatus::StatusComponentIndex(i)<<",{TAS/VertSpeed}] = {"
+							<< covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_TAS) << '\t'
+							<< covPMatrix.coeff(i,GliderVarioStatus::STATUS_IND_VERTICAL_SPEED)
+							);
+				}
+			}
+		}
+    }
+#endif
 
     LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measuredDynamicPressure = " <<  measuredDynamicPressure
     		<< "Pa, calculated dynPressure = " << dynPressure << "Pa, variance = " << dynamicPressureVariance
