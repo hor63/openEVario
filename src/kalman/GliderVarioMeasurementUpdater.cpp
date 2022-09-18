@@ -350,9 +350,6 @@ GliderVarioMeasurementUpdater::accelUpd (
         measRowTTst1 = measRowT;
     }
 
-    LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measuredAccelX = " <<  measuredAccelX
-    		<< ", calcAccel = " << calcAccelVector(0) << ", variance = " << accelXVariance);
-
     // The linear factors
     measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ACC_HEADING,1) = rotMatGloToPlane(1,0);
     // measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ACC_CROSS,1) = rotMatGloToPlane(1,1);
@@ -371,9 +368,6 @@ GliderVarioMeasurementUpdater::accelUpd (
         measRowTTst2 = measRowT;
     }
 
-    LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measuredAccelY = " <<  measuredAccelY
-    		<< ", calcAccel = " << calcAccelVector(1) << ", variance = " << accelYVariance);
-
     // The linear factors
     measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ACC_HEADING,2) = rotMatGloToPlane(2,0);
     // measRowT.coeffRef(GliderVarioStatus::STATUS_IND_ACC_CROSS,2) = rotMatGloToPlane(2,1);
@@ -391,6 +385,14 @@ GliderVarioMeasurementUpdater::accelUpd (
         calculatedValueTst3 = calcAccelVector(2);
         measRowTTst3 = measRowT;
     }
+
+
+    LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measuredAccelX = " <<  measuredAccelX
+    		<< ", calcAccel = " << calcAccelVector(0) << ", variance = " << accelXVariance);
+    LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measuredAccelY = " <<  measuredAccelY
+    		<< ", calcAccel = " << calcAccelVector(1) << ", variance = " << accelYVariance);
+    LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measuredAccelZ = " <<  measuredAccelZ
+    		<< ", calcAccel = " << calcAccelVector(2) << ", variance = " << accelZVariance);
 
 #if defined HAVE_LOG4CXX_H
     if (logger->isTraceEnabled()) {
@@ -418,14 +420,11 @@ GliderVarioMeasurementUpdater::accelUpd (
 				}
 			}
 		}
+	    LOG4CXX_TRACE(logger,__FUNCTION__ << ": ErrorCovariance_P before Accel update = " <<
+	        		printCovMatrix(varioStatus.getErrorCovariance_P()));
     }
 #endif
 
-    LOG4CXX_DEBUG(logger,__FUNCTION__ << ": measuredAccelZ = " <<  measuredAccelZ
-    		<< ", calcAccel = " << calcAccelVector(2) << ", variance = " << accelZVariance);
-
-    LOG4CXX_TRACE(logger,__FUNCTION__ << ": ErrorCovariance_P before Accel update = " <<
-        		printCovMatrix(varioStatus.getErrorCovariance_P()));
 
     RotationMatrix3DType measureVariance;
 
