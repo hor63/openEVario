@@ -1076,7 +1076,7 @@ void GliderVarioMainPriv::setKalmanErrorIncrements () {
     // Accelerometer
 	if (allCapabilities & (1UL<<drivers::DriverBase::ACCEL_3D)) {
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ACC_VERTICAL,currentStatus->STATUS_IND_ACC_VERTICAL) =
-				SQUARE(3.0) * baseIntervalSec;
+				SQUARE(1.0) * baseIntervalSec;
 
 	    // With accelerometer I can calculate my attitude
 		currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ROLL,currentStatus->STATUS_IND_ROLL) =
@@ -1108,7 +1108,7 @@ void GliderVarioMainPriv::setKalmanErrorIncrements () {
 		if (UnInitVal != currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_VERTICAL_SPEED,currentStatus->STATUS_IND_VERTICAL_SPEED)) {
 			// Only account for actual acceleration in contrast to attitude when I can correct by speed measurements.
 			currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ACC_VERTICAL,currentStatus->STATUS_IND_ACC_VERTICAL) =
-					SQUARE(3.0) * baseIntervalSec;
+					SQUARE(1.0) * baseIntervalSec;
 			currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_VERTICAL_SPEED,currentStatus->STATUS_IND_VERTICAL_SPEED) =
 					SQUARE(1.0) * baseIntervalSec;
 		}
