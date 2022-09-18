@@ -1088,11 +1088,14 @@ void GliderVarioMainPriv::setKalmanErrorIncrements () {
 		if (UnInitVal != currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_N,currentStatus->STATUS_IND_SPEED_GROUND_N)) {
 			currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_N,currentStatus->STATUS_IND_SPEED_GROUND_N) =
 					SQUARE(2.0) * baseIntervalSec;
-			// Cross acceleration usually does not happen, but cross acceleration measurement
-			// is more likely caused by gravity and a banked aircraft (not turning)
-			// But I need to push the value back by absolute position.
-			currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ACC_CROSS,currentStatus->STATUS_IND_ACC_CROSS) =
-					SQUARE(0.5) * baseIntervalSec;
+// Take ACC_CROSS completely out of the equation. I have no adjusting counterpart to the accelerometer, and the accelerometer measurement itself
+// is ambiguous between acceleration and gravitational pull due to roll angle.
+// Since cross acceleration does not play a great role anyway I am accepting small errors here.
+//			// Cross acceleration usually does not happen, but cross acceleration measurement
+//			// is more likely caused by gravity and a banked aircraft (not turning)
+//			// But I need to push the value back by absolute position.
+//			currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ACC_CROSS,currentStatus->STATUS_IND_ACC_CROSS) =
+//					SQUARE(0.5) * baseIntervalSec;
 		}
 		if (UnInitVal != currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_E,currentStatus->STATUS_IND_SPEED_GROUND_E)) {
 			currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_E,currentStatus->STATUS_IND_SPEED_GROUND_E) =
