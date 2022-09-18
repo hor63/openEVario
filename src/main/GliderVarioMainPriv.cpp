@@ -1095,13 +1095,13 @@ void GliderVarioMainPriv::setKalmanErrorIncrements () {
 					SQUARE(0.5) * baseIntervalSec;
 		}
 		if (UnInitVal != currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_E,currentStatus->STATUS_IND_SPEED_GROUND_E)) {
-			currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_N,currentStatus->STATUS_IND_SPEED_GROUND_N) =
+			currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_SPEED_GROUND_E,currentStatus->STATUS_IND_SPEED_GROUND_E) =
 					SQUARE(2.0) * baseIntervalSec;
 		}
 		if (UnInitVal != currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_TAS,currentStatus->STATUS_IND_TAS)) {
 			// Only account for actual acceleration in contrast to attitude (tilt) when I can correct by speed measurements.
 			currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_ACC_HEADING,currentStatus->STATUS_IND_ACC_HEADING) =
-					SQUARE(3.0) * baseIntervalSec;
+					SQUARE(2.0) * baseIntervalSec;
 			currentStatus->getSystemNoiseCovariance_Q().coeffRef(currentStatus->STATUS_IND_TAS,currentStatus->STATUS_IND_TAS) =
 					SQUARE(1.0) * baseIntervalSec;
 		}
