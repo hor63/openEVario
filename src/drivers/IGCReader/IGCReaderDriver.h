@@ -137,6 +137,20 @@ protected:
     typedef BRecordsMap::iterator BRecordsIter;
     BRecordsMap bRecords;
 
+    /// \brief Structure returned by \ref findFirstValidRecord()
+    struct FirstRecordInfo {
+    	BRecordsCIter	firstValidRecord;	///< Iterator of \ref bRecords pointing to the
+											///< first record where more than 10m/s are reached.
+    	FloatType		heading;			///< Heading in deg. for the first valid record
+    	FloatType		speed;				///< Speed in m/s for the first valid record
+    };
+
+    FirstRecordInfo firstRecInfo = {
+    	bRecords.cend(),
+    	0.0f,
+    	0.0f
+    };
+
     /// \brief Processes I abd B records of the IGC file
     BRecordSectionProcessor bRecordSectionProcessor;
 
@@ -183,14 +197,14 @@ protected:
      */
     void runDebugSingleThread(GliderVarioMainPriv &varioMain);
 
-    /** \brief Determines the initial heading from the first two records where the plane moves > 10m/s
+    /** \brief Determines the first record, heading and speed where the plane moves > 10m/s
      *
-     * Determining the initial heading is important to avoid instability of the filter in the inital phase, and locking itself at a 180deg reverse
+     * Determining the initial heading is important to avoid instability of the filter in the initial phase, and locking itself at a 180deg reverse
      * heading, and moving backwards instead :D
      *
-     * @return Heading at the first pair of records where the plane moves faster than 10m/s
+     * Information is being written into \ref firstRecInfo.
      */
-    FloatType calcInitialHeading();
+    void findFirstValidRecord();
 
 };
 

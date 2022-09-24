@@ -32,6 +32,12 @@
 
 namespace openEV {
 
+
+/// \brief This vector type is used to represent a tupel of 2 values for Kalman measurement updates
+typedef Eigen::Matrix<FloatType, 2, 1> Vector2DType;
+/// \brief The 2D matrix for storing variances of measured values.
+typedef Eigen::Matrix<FloatType, 2, 2> Matrix2DType;
+
 /***
  * \brief Functional class which performs sequential status updates. This class is stateless.
  *
@@ -53,44 +59,26 @@ public:
     /**
      * \brief Update the status vector with a new measurement of the latitude
      *
-     * In contrast to most functions here \p measuredLatitude is double not FloatType (i.e. float)
-     * because the latitude scale is from 90deg to 1mm, requiring about 10 decimals, much larger than float
-     * Internally the Kalman filter splits the latitude in long whole seconds base and
+     * In contrast to most functions here \p measuredLatitude and \p measuredLongitude
+     * is double not FloatType (i.e. float)
+     * because the latitude and longitude scale is from 20000km (+-180deg on the equator) to 1mm, requiring about 10 decimals, much larger than float.
+     * Internally the Kalman filter splits the latitude and longitude into whole seconds base and
      * an offset in m which is actually part of the Kalman filter.
      *
-     * Note that \p latitudeVariance is in meter&sup2;, not degrees because GPS receivers report the
+     * Note that \p latitudeVariance and \p longitudeVariance is in meter&sup2;, not degrees because GPS receivers report the
      * uncertainty in m, and internally the filter uses m for the latitude offset
      *
-     * @param[in] measuredLatitude Latitude in degrees North from the GPS receiver
-     * @param[in] latitudeVariance Variance of the latitude in meter&sup2;
+     * @param[in] measuredLatitude Latitude in decimal degrees North
+     * @param[in] measuredLongitude Longitude in decimal degrees East
+     * @param[in] latitudeVariance Variance of the latitude measurement in meter&sup2;
+     * @param[in] longitudeVariance Variance of the longitude measurement in meter&sup2;
      * @param[in,out] measurementVector The applicable column is updated for information purposes.
      * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
      */
-    static void GPSLatitudeUpd (
+    static void GPSPositionUpd (
             double measuredLatitude,
-            FloatType latitudeVariance,
-            GliderVarioMeasurementVector &measurementVector,
-            GliderVarioStatus &varioStatus
-    );
-
-    /**
-     * \brief Update the status vector with a new measurement of the longitude
-     *
-     * In contrast to most functions here \p measuredLongitude is double not FloatType (i.e. float)
-     * because the latitude scale is from 180deg to 1mm, requiring about 11 decimals, much larger than float
-     * Internally the Kalman filter splits the latitude in long whole seconds base and
-     * an offset in m which is actually part of the Kalman filter.
-     *
-     * Note that \p longitudeVariance is in meter&sup2;, not degrees because GPS receivers report the
-     * uncertainty in m, and internally the filter uses m for the longitude offset
-     *
-     * @param[in] measuredLongitude Longitude in degrees East
-     * @param[in] longitudeVariance variance of the longitude measurement in meter&sup2;
-     * @param[in,out] measurementVector The applicable column is updated for information purposes.
-     * @param[in,out] varioStatus In: status before the measurement update. Out: Status and covariance update with the specific measurement . The update is in-place
-     */
-    static void GPSLongitudeUpd (
             double measuredLongitude,
+            FloatType latitudeVariance,
             FloatType longitudeVariance,
             GliderVarioMeasurementVector &measurementVector,
             GliderVarioStatus &varioStatus
@@ -437,6 +425,35 @@ static bool calcInverse3D (
             GliderVarioStatus &varioStatus
     );
 
+    /** \brief Calculate the status update for two measurement values at once
+     *
+     * This is the generic part which deals with calculating the Kalman gain, and updates the state estimate and the status covariance.
+     * This routine requires some preparation by the specific update routines which apply the (usually non-linear) measurement function
+     * to the latest state estimate to calculate the expected measurement value as well as the Jacobian of the measurement matrix.
+     *
+     * This function is used to correct the status simultaneously with three measurements which are typical for 3-axis sensors.
+     *
+     * @param[in] measuredValue The measured values as they were measured by a sensor. These values may be heavily pre-processed, e.g. the IAS or TAS from the
+     *   dynamic pressure, and static pressure, or altitude from the absolute pressure sensor
+     * @param[in] calculatedValue The theoretical measurement values as they calculated from the current extrapolated system status.
+     * @param[in] measurementVariance_R The variance of the measure. I assume the measurement variances are independent, i.e. the measurement covariance matrix is diagonal.
+     *   This assumption is particularly important for the simplifications of the calculation of the inverse
+     * @param[in] measRowT The transposed measurement matrix. It is calculated or approximated as the Jacobian partial derivates each time.
+     *   The matrix row is not used to calculate the theoretical measured value. This is already done by the calling function by directly using the not-linear
+     *   measurement function and passing the result as \p calculatedValue.
+     *   The transposed Jacobian is used here to calculate the Kalman gain for this measurement, and applying it to the updated status and covariance.
+     *   The matrix is passed in the transposed form because in the calculation it is used transposed twice, and only once in the original form. So I have to
+     *   transpose only once (back to the original form).
+     * @param[in,out] varioStatus The system status and covariance before and after the measurement update. The status and covariance are directly updated from the difference of the actually measured, and the
+     * theoretical value.
+     */
+    static void calc2DMeasureUpdate (
+            Vector2DType const &measuredValue,
+			Vector2DType const &calculatedValue,
+			Matrix2DType const &measurementVariance_R,
+            Eigen::SparseMatrix<FloatType> const &measRowT,
+            GliderVarioStatus &varioStatus
+    );
     /** \brief Calculate the status update for three measurement values at once
      *
      * This is the generic part which deals with calculating the Kalman gain, and updates the state estimate and the status covariance.
@@ -461,8 +478,8 @@ static bool calcInverse3D (
      */
     static void calc3DMeasureUpdate (
             Vector3DType const &measuredValue,
-			Vector3DType const &calculatedValue,
-			RotationMatrix3DType const &measurementVariance_R,
+    		Vector3DType const &calculatedValue,
+    		RotationMatrix3DType const &measurementVariance_R,
             Eigen::SparseMatrix<FloatType> const &measRowT,
             GliderVarioStatus &varioStatus
     );

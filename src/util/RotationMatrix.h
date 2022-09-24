@@ -32,13 +32,12 @@
 namespace openEV
 {
 
-/**
- * This vector type is used for all 3-dimensional representations of values in Cartesian coordinates
- */
+/// \brief This vector type is used for all 3-dimensional representations of values in Cartesian coordinates
 typedef Eigen::Matrix<FloatType, 3, 1> Vector3DType;
+/// \brief The 3D rotation matrix to transfrom 3D vectors from one reference system to another.
+///
+/// Typical use is transform 3D values from word to plane coordinate systems and vice versa.
 typedef Eigen::Matrix<FloatType, 3, 3> RotationMatrix3DType;
-
-
 
 /**
  * \brief Rotation matrix to transform the global coordinate system into the plane's coordinate system.
@@ -72,12 +71,14 @@ public:
     pitch	{ 0 },
     roll	{ 0 },
     // lazy calculations
-    matrixGloToPlaneIsValid { false },
-    matrixPlaneToGloIsValid { false }
+    matrixGloToPlaneIsValid { true },
+    matrixPlaneToGloIsValid { true }
     {
+    	// Initially plane and word coordinates are identical.
         // this is so trivial that it virtually costs nothing,
         // compared to calculating cos and sin (0) later.
         matrixGloToPlane.setIdentity ();
+        matrixPlaneToGlo.setIdentity ();
     }
 
     /// Constructor with initial angles. The matrix is not yet defined.

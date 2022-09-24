@@ -153,7 +153,7 @@ void TE_MEAS_AbsPressureDriver::initializeStatus(
 
 	// Wait for 20 seconds for 16 samples to appear, and a defined temperature value
 	for (int i = 0; i < 20; i++) {
-		if (numValidInitValues < NumInitValues || std::isnan(temperatureVal)) {
+		if (numValidInitValues < NumInitValues) {
 			using namespace std::chrono_literals; // used for the term "1s" below. 's' being the second literal.
 
 			LOG4CXX_TRACE(logger,__FUNCTION__ << ": Only " << numValidInitValues <<
@@ -166,7 +166,6 @@ void TE_MEAS_AbsPressureDriver::initializeStatus(
 
 	if (numValidInitValues >= NumInitValues) {
 		FloatType avgPressure = 0.0f;
-		double baseIntervalSec = varioMain.getProgramOptions().idlePredictionCycleMilliSec / 1000.0;
 
 		for (int i = 0 ; i < NumInitValues; i++) {
 			avgPressure += initValues[i];
@@ -175,45 +174,33 @@ void TE_MEAS_AbsPressureDriver::initializeStatus(
 		avgPressure /= FloatType(NumInitValues);
 		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": avgPressure = " << avgPressure);
 
-		if (!std::isnan(measurements.gpsMSL)) {
+		if (UnInitVal != measurements.gpsMSL) {
 			initQFF(varioStatus,measurements,varioMain,avgPressure);
 		}
 
-		if (std::isnan(varioStatus.altMSL)) {
-			if (!std::isnan(varioStatus.qff) && !std::isnan(temperatureVal) /*!std::isnan(measurements.tempLocalC)*/) {
-			auto const currTempK = temperatureVal /*measurements.tempLocalC*/ + CtoK;
-			varioStatus.altMSL  = (currTempK -(pow((avgPressure / varioStatus.qff),(1.0/BarometricFormulaExponent)) * currTempK)) / TempLapseIndiffBoundLayer;
-			varioStatus.lastPressure = avgPressure;
-			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Initial altitude from QFF:" << varioStatus.qff
-					<< ", Temp (K): " << currTempK
-					<< " = " << varioStatus.altMSL);
+		if (UnInitVal == varioStatus.altMSL) {
+			if (UnInitVal != varioStatus.qff ) {
+				auto const currTempK = temperatureVal /*measurements.tempLocalC*/ + CtoK;
+				varioStatus.altMSL  = (currTempK -(pow((avgPressure / varioStatus.qff),(1.0/BarometricFormulaExponent)) * currTempK)) / TempLapseIndiffBoundLayer;
+				varioStatus.lastPressure = avgPressure;
+				LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Initial altitude from QFF:" << varioStatus.qff
+						<< ", Temp (K): " << currTempK
+						<< " = " << varioStatus.altMSL);
 
-			// 1 mbar initial uncertainty translated into 8m.
-			varioStatus.getErrorCovariance_P().
-							coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) = SQUARE(1.0*8.0);
+				// 2 mbar initial uncertainty translated into 2 * 8m.
+				varioStatus.getErrorCovariance_P().
+								coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) = SQUARE(2.0*8.0);
 
-			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Initial variance = "
-					<< varioStatus.getErrorCovariance_P().
-					coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL));
+				LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Initial variance = "
+						<< varioStatus.getErrorCovariance_P().
+						coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL));
 			} else {
-				LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Either QFF or local temperature or both are undefined. QFF = "
+				LOG4CXX_DEBUG(logger,__FUNCTION__ << ": QFF is undefined. QFF = "
 						<< varioStatus.qff << ", temperature = " << temperatureVal);
 			}
 
 		} else {
 			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": altMSL is already defined = " << varioStatus.altMSL);
-		}
-
-		if (std::isnan(varioStatus.getSystemNoiseCovariance_Q().
-				coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL)) ||
-				(varioStatus.getSystemNoiseCovariance_Q().
-				coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) > SQUARE(2.0) * baseIntervalSec)) {
-
-			varioStatus.getSystemNoiseCovariance_Q().
-							coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL) = SQUARE(2.0) * baseIntervalSec;
-			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": System noise increment = "
-					<< varioStatus.getSystemNoiseCovariance_Q().
-												coeffRef(varioStatus.STATUS_IND_ALT_MSL,varioStatus.STATUS_IND_ALT_MSL));
 		}
 
 	} else {

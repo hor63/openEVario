@@ -86,7 +86,8 @@ public:
      *
      * \see \ref pressureErrorDynFactor
      */
-    static constexpr FloatType pressureErrorStaticFactor = 0.001;
+    // static constexpr FloatType pressureErrorStaticFactor = 0.001;
+    static constexpr FloatType pressureErrorStaticFactor = 0.0002;
 
     static constexpr char const * const pressureBiasCalibrationName = "pressureBias";
 

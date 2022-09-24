@@ -342,8 +342,6 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
 
 }
 
-#define SQUARE(x) ((x)*(x))
-
 void MS4515Driver::initializeStatus(
 		GliderVarioStatus &varioStatus,
 		GliderVarioMeasurementVector &measurements,
@@ -365,7 +363,6 @@ void MS4515Driver::initializeStatus(
 	if (numValidInitValues >= NumInitValues) {
 		FloatType avgPressure = 0.0f;
 		FloatType initialTAS = 0.0f;
-		double baseIntervalSec = varioMain.getProgramOptions().idlePredictionCycleMilliSec / 1000.0;
 
 		for (int i = 0 ; i < NumInitValues; i++) {
 			avgPressure += FloatType(initValues[i]);
@@ -377,7 +374,7 @@ void MS4515Driver::initializeStatus(
 		// Store the avg pressure as offset only when the instrument is obviously not switched on during flight.
 		// or during high-wind conditions on the field (> 20 km/h)
 
-		if (pressureBias == UnInitVal) {
+		if (UnInitVal == pressureBias) {
 			// No pre-loaded bias value from calibration data.
 			// Assume initial startup in controlled environment.
 			pressureBias = avgPressure;
@@ -398,7 +395,7 @@ void MS4515Driver::initializeStatus(
 
 		}
 
-		if (pressureBias == avgPressure && calibrationDataParameters) {
+		if (pressureBias == avgPressure && calibrationDataParameters != nullptr) {
 			// The bias has been updated or freshly set.
 			try {
 
@@ -435,9 +432,8 @@ void MS4515Driver::initializeStatus(
 
 		// All data is collected. Initialize the status
 		varioStatus.trueAirSpeed = initialTAS;
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) = 10.0f;
-		varioStatus.getSystemNoiseCovariance_Q().coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) =
-					SQUARE(3.0) * baseIntervalSec;
+		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) =
+					9.0;
 
 
 

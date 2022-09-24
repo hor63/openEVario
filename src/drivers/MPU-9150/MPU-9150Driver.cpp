@@ -53,15 +53,9 @@ MPU9150Driver::MPU9150Driver(
 	}
 #endif /* HAVE_LOG4CXX_H */
 
-	setSensorCapability(ACCEL_X);
-	setSensorCapability(ACCEL_Y);
-	setSensorCapability(ACCEL_Z);
-	setSensorCapability(GYRO_X);
-	setSensorCapability(GYRO_Y);
-	setSensorCapability(GYRO_Z);
-	setSensorCapability(COMPASS_X);
-	setSensorCapability(COMPASS_Y);
-	setSensorCapability(COMPASS_Z);
+	setSensorCapability(ACCEL_3D);
+	setSensorCapability(GYRO_3D);
+	setSensorCapability(MAGNETOMETER_3D);
 
 	// Default cycle time as documented in the template parameter file
 	using namespace std::chrono_literals;

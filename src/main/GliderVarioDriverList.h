@@ -164,6 +164,10 @@ public:
 	 */
 	bool isDriverRunningIdleLoop();
 
+	DriverInstanceList const & getDriverInstanceList() const {
+		return driverInstanceList;
+	}
+
 protected:
 
 	DriverLibList driverLibList;

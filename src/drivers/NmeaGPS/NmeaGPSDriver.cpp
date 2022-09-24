@@ -61,8 +61,7 @@ NmeaGPSDriver::NmeaGPSDriver(
 	initLogger();
 #endif /* HAVE_LOG4CXX_H */
 
-	setSensorCapability(GPS_LATITUDE	);
-	setSensorCapability(GPS_LONGITUDE	);
+	setSensorCapability(GPS_POSITION	);
 	setSensorCapability(GPS_ALTITUDE_MSL);
 
 }

@@ -87,9 +87,9 @@ GliderVarioTransitionMatrix::updateStatus (
     	LOG4CXX_DEBUG(logger,"latitude = " << newStatus.latitude());
     	LOG4CXX_DEBUG(logger,"longitude = " << newStatus.longitude());
     	LOG4CXX_DEBUG(logger,"StatusVector = \n" << printStatusVector(newStatus.getStatusVector_x()));
-    	LOG4CXX_DEBUG(logger,"ErrorCovariance = \n" << printCovMatrix(newStatus.getErrorCovariance_P()));
-    	LOG4CXX_DEBUG(logger,"transitionMatrix = \n" << printCovMatrix(transitionMatrix));
-    	LOG4CXX_DEBUG(logger,"SystemNoiseCovariance = \n" << printCovMatrix(newStatus.getSystemNoiseCovariance_Q()));
+    	LOG4CXX_TRACE(logger,"ErrorCovariance = \n" << printCovMatrix(newStatus.getErrorCovariance_P()));
+    	LOG4CXX_TRACE(logger,"transitionMatrix = \n" << printCovMatrix(transitionMatrix));
+    	LOG4CXX_TRACE(logger,"SystemNoiseCovariance = \n" << printCovMatrix(newStatus.getSystemNoiseCovariance_Q()));
 
 
 }
@@ -132,10 +132,10 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
 
     // I need half of time square for distance calculations based on acceleration here and there :)
 
-    FloatType timeSquareHalf  = timeDiff*timeDiff / 2.0f;
+    // FloatType timeSquareHalf  = timeDiff*timeDiff / 2.0f;
 
     // I am using a number of temporary variables to store factors used for new status calculation, and to store in the transition matrix.
-    FloatType temp1, temp2;
+    FloatType temp1;
     FloatType sinHeading = FastMath::fastSin(lastStatus.heading);
     FloatType cosHeading = FastMath::fastCos(lastStatus.heading);
 
@@ -155,43 +155,55 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
     transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LATITUDE_OFFS,GliderVarioStatus::STATUS_IND_LATITUDE_OFFS) = 1.0f;
     transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LATITUDE_OFFS,GliderVarioStatus::STATUS_IND_SPEED_GROUND_N) = timeDiff;
 
-    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LATITUDE_OFFS,GliderVarioStatus::STATUS_IND_ACC_HEADING) = temp2 = timeSquareHalf * cosHeading;
+    /// \todo Re-activate when possible
+    // transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LATITUDE_OFFS,GliderVarioStatus::STATUS_IND_ACC_HEADING) = temp2 = timeSquareHalf * cosHeading;
 
     // The angles have an indirect effect on the new status by means of the rotation matrix with the accelerations
     // Do a direct derivation of cos.
-    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LATITUDE_OFFS,GliderVarioStatus::STATUS_IND_HEADING) =
-            timeSquareHalf * lastStatus.accelHeading * (-sinHeading * FastMath::degToRad);
+    /// \todo Re-activate when possible
+    //transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LATITUDE_OFFS,GliderVarioStatus::STATUS_IND_HEADING) =
+    //        timeSquareHalf * lastStatus.accelHeading * (-sinHeading * FastMath::degToRad);
 
-    newStatus.latitudeOffs = lastStatus.latitudeOffs +
-    		timeDiff * lastStatus.groundSpeedNorth +
-            temp2 * lastStatus.accelHeading ;
+    newStatus.latitudeOffs = lastStatus.latitudeOffs
+    		+ timeDiff * lastStatus.groundSpeedNorth
+		    /// \todo Re-activate when possible
+            // + temp2 * lastStatus.accelHeading
+			;
 
     // STATUS_IND_LONGITUDE
     transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS) = 1.0f;
 
     transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,GliderVarioStatus::STATUS_IND_SPEED_GROUND_E) = timeDiff;
 
-    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,GliderVarioStatus::STATUS_IND_ACC_HEADING) = temp2 = timeSquareHalf * sinHeading;
+    /// \todo Re-activate when possible
+    //transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,GliderVarioStatus::STATUS_IND_ACC_HEADING) = temp2 = timeSquareHalf * sinHeading;
 
     // The angles have an indirect effect on the new status by means of the rotation matrix with the accelerations
     // I calculate the derivate of sin as cos.
-    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,GliderVarioStatus::STATUS_IND_HEADING) =
-            timeSquareHalf * lastStatus.accelHeading * (cosHeading * FastMath::degToRad);
+    /// \todo Re-activate when possible
+    //transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,GliderVarioStatus::STATUS_IND_HEADING) =
+    //        timeSquareHalf * lastStatus.accelHeading * (cosHeading * FastMath::degToRad);
 
+    /// \todo Re-activate when possible
     newStatus.longitudeOffs =
-            lastStatus.longitudeOffs +
-            timeDiff * lastStatus.groundSpeedEast +
-            temp2 * lastStatus.accelHeading;
+            lastStatus.longitudeOffs
+            + timeDiff * lastStatus.groundSpeedEast
+		    /// \todo Re-activate when possible
+            // + temp2 * lastStatus.accelHeading
+			;
 
     // STATUS_IND_ALT_MSL
     transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ALT_MSL) = 1.0f;
     transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_VERTICAL_SPEED) = -timeDiff;
-    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ACC_VERTICAL) =  -timeSquareHalf;
+    /// \todo Re-activate when possible
+    // transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ACC_VERTICAL) =  -timeSquareHalf;
 
     newStatus.altMSL =
-            lastStatus.altMSL +
-            -timeDiff * lastStatus.verticalSpeed +
-            -timeSquareHalf * lastStatus.accelVertical;
+            lastStatus.altMSL
+            - timeDiff * lastStatus.verticalSpeed
+		    /// \todo Re-activate when possible
+            //- timeSquareHalf * lastStatus.accelVertical
+			;
 
     // STATUS_IND_PITCH
     transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_PITCH,GliderVarioStatus::STATUS_IND_PITCH) = 1.0f;
@@ -278,39 +290,49 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
 
     // STATUS_IND_HEADING
     transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_HEADING,GliderVarioStatus::STATUS_IND_HEADING) = 1.0f;
-    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_HEADING,GliderVarioStatus::STATUS_IND_ROTATION_Z) = temp1 = timeDiff;
+    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_HEADING,GliderVarioStatus::STATUS_IND_ROTATION_Z) = timeDiff;
 
     newStatus.heading = lastStatus.heading +
-            temp1 * lastStatus.yawRateZ;
+    		timeDiff * lastStatus.yawRateZ;
 
     // STATUS_IND_SPEED_GROUND_N
-    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_TAS) = temp1 = cosHeading;
-    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_ACC_HEADING) = temp2 = temp1 * timeDiff;
+    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_TAS) = cosHeading;
+    /// \todo Re-activate when possible
+    // transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_ACC_HEADING) = temp2 = cosHeading * timeDiff;
     transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_WIND_SPEED_N) = 1.0f;
 
     // angular change to the covariant
     transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_HEADING) =
-            (lastStatus.trueAirSpeed + lastStatus.accelHeading * timeDiff)
+            (lastStatus.trueAirSpeed
+            	    /// \todo Re-activate when possible
+            		// + lastStatus.accelHeading * timeDiff
+					)
             * (-sinHeading) * FastMath::degToRad;
 
     newStatus.groundSpeedNorth =
-            lastStatus.trueAirSpeed * temp1
-            + lastStatus.accelHeading * temp2
+            lastStatus.trueAirSpeed * cosHeading
+		    /// \todo Re-activate when possible
+            // + lastStatus.accelHeading * temp2
             + lastStatus.windSpeedNorth;
 
     // STATUS_IND_SPEED_GROUND_E
-    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_TAS) = temp1 = sinHeading;
-    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_ACC_HEADING) = temp2 = temp1 * timeDiff;
+    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_TAS) = sinHeading;
+    /// \todo Re-activate when possible
+    // transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_ACC_HEADING) = temp2 = sinHeading * timeDiff;
     transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_WIND_SPEED_E) = 1.0f;
 
     // angular change to the covariant
     transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_HEADING) =
-            (lastStatus.trueAirSpeed + lastStatus.accelHeading * timeDiff)
+            (lastStatus.trueAirSpeed
+            	    /// \todo Re-activate when possible
+            		// + lastStatus.accelHeading * timeDiff
+					)
             * cosHeading * FastMath::degToRad;
 
     newStatus.groundSpeedEast =
-            lastStatus.trueAirSpeed * temp1
-            + lastStatus.accelHeading * temp2
+            lastStatus.trueAirSpeed * sinHeading
+    	    /// \todo Re-activate when possible
+            // + lastStatus.accelHeading * temp2
             + lastStatus.windSpeedEast;
 
     // STATUS_IND_TAS
@@ -344,25 +366,32 @@ GliderVarioTransitionMatrix::calcTransitionMatrixAndStatus (
             timeDiff * lastStatus.accelVertical;
 
     // STATUS_IND_THERMAL_SPEED
-    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_THERMAL_SPEED,GliderVarioStatus::STATUS_IND_VERTICAL_SPEED) = 1.0f;
-    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_THERMAL_SPEED,GliderVarioStatus::STATUS_IND_RATE_OF_SINK) = -1.0f;
+    /// \todo Re-activate when possible
+    // transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_THERMAL_SPEED,GliderVarioStatus::STATUS_IND_VERTICAL_SPEED) = 1.0f;
+    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_THERMAL_SPEED,GliderVarioStatus::STATUS_IND_VERTICAL_SPEED) = 0.0f;
+    // transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_THERMAL_SPEED,GliderVarioStatus::STATUS_IND_RATE_OF_SINK) = -1.0f;
+    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_THERMAL_SPEED,GliderVarioStatus::STATUS_IND_RATE_OF_SINK) = 0.0f;
 
     newStatus.thermalSpeed = lastStatus.verticalSpeed - lastStatus.rateOfSink;
 
     // STATUS_IND_ACC_HEADING
-    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_ACC_HEADING,GliderVarioStatus::STATUS_IND_ACC_HEADING) = 1.0f;
+    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_ACC_HEADING,GliderVarioStatus::STATUS_IND_ACC_HEADING) = 0.9f;
 
-    newStatus.accelHeading = lastStatus.accelHeading;
+    newStatus.accelHeading = lastStatus.accelHeading * 0.9f;
 
     // STATUS_IND_ACC_CROSS
-    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_ACC_CROSS,GliderVarioStatus::STATUS_IND_ACC_CROSS) = 1.0f;
+    /// \todo Re-activate when possible
+    // transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_ACC_CROSS,GliderVarioStatus::STATUS_IND_ACC_CROSS) = 1.0f;
+    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_ACC_CROSS,GliderVarioStatus::STATUS_IND_ACC_CROSS) = 0.0f;
 
-    newStatus.accelCross = lastStatus.accelCross;
+    /// \todo Re-activate when possible
+    // newStatus.accelCross = lastStatus.accelCross;
+    newStatus.accelCross = 0.0f;
 
     // STATUS_IND_ACC_VERTICAL
-    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_ACC_VERTICAL,GliderVarioStatus::STATUS_IND_ACC_VERTICAL) = 1.0f;
+    transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_ACC_VERTICAL,GliderVarioStatus::STATUS_IND_ACC_VERTICAL) = 0.9f;
 
-    newStatus.accelVertical = lastStatus.accelVertical;
+    newStatus.accelVertical = lastStatus.accelVertical * 0.9f;
 
     // STATUS_IND_ROTATION_X
     transitionMatrix.coeffRef(GliderVarioStatus::STATUS_IND_ROTATION_X,GliderVarioStatus::STATUS_IND_ROTATION_X) = 1.0f;
