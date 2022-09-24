@@ -112,6 +112,11 @@ GliderVarioMeasurementUpdater::GPSPositionUpd (
         measRowTTst1 = measRowT;
     }
 
+    LOG4CXX_DEBUG(logger,"GPSPositionUpd: measured longitudeOffset(m) = " <<  measuredLongitude
+    		<< ", calculated longitudeOffset = " << varioStatus.longitudeOffsC << ", variance = " << longitudeVariance);
+    LOG4CXX_DEBUG(logger,"GPSPositionUpd: measured latitudeOffset(m) = " <<  measuredLatitude
+    		<< ", calculated latitudeOffset = " << varioStatus.latitudeOffsC << ", variance = " << latitudeVariance);
+
 #if defined HAVE_LOG4CXX_H
     if (logger->isTraceEnabled()) {
 		for (decltype(measRowT.rows()) i = 0; i < measRowT.rows() ; ++i){
@@ -138,9 +143,6 @@ GliderVarioMeasurementUpdater::GPSPositionUpd (
 		}
     }
 #endif
-
-    LOG4CXX_DEBUG(logger,"GPSLatitudeUpd: measured latitudeOffset(m) = " <<  measuredLatitude
-    		<< ", calculated latitudeOffset = " << calculatedValue << ", variance = " << latitudeVariance);
 
 	Vector2DType measuredValue (measuredLatitude,measuredLongitude);
 
@@ -1067,26 +1069,27 @@ void GliderVarioMeasurementUpdater::calc2DMeasureUpdate (
     		<< ", denominatorInv = " << printSparseMatrixSimple(denominatorInv));
 #if HAVE_LOG4CXX_H
 
-    for (int i = 0; i<2; ++i) {
-		for (Eigen::SparseMatrix <FloatType>::InnerIterator it(kalmanGain_K,i); it; ++it) {
-			LOG4CXX_DEBUG(logger ,"    kalmanGain_K[" << GliderVarioStatus::StatusComponentIndex(it.row()) << " , " << i <<"] = " << it.value());
-		}
+    if (logger->isDebugEnabled()) {
+        for (int i = 0; i < kalmanGain_K.rows(); ++i) {
+        	if (kalmanGain_K.coeff(i,0) != 0.0f || kalmanGain_K.coeff(i,1) != 0.0f ) {
+				LOG4CXX_DEBUG(logger ,"    kalmanGain_K[" << GliderVarioStatus::StatusComponentIndex(i) << " , 0/1 ] = "
+						<< kalmanGain_K.coeff(i,0) << ", "
+						<< kalmanGain_K.coeff(i,1)
+						);
+        	}
+        }
     }
 
 #endif // HAVE_LOG4CXX_H
 
     // substitute direct assignment by iterating over the sparse kalman gain vector, and perform the correct element wise.
     // Eigen does not take mixing dense and sparse matrixes lightly.
-    GliderVarioStatus::StatusComponentIndex index;
-    FloatType kalmanGain;
-    FloatType val;
-
     for (int i = 0; i<2; ++i) {
         for (Eigen::SparseMatrix<FloatType>::InnerIterator iter(kalmanGain_K,i); iter ; ++iter){
-            index = GliderVarioStatus::StatusComponentIndex(iter.row());
-            kalmanGain = iter.value();
+        	GliderVarioStatus::StatusComponentIndex index = GliderVarioStatus::StatusComponentIndex(iter.row());
+        	FloatType kalmanGain = iter.value();
             kalmanGain *= valueDiff(i);
-            val = statusVector_x(index);
+            FloatType val = statusVector_x(index);
             statusVector_x(index) = val + kalmanGain;
             LOG4CXX_DEBUG(logger ,"Update " << index << ":" << i
             		<< ": New value = " << statusVector_x(index)
@@ -1099,12 +1102,13 @@ void GliderVarioMeasurementUpdater::calc2DMeasureUpdate (
     coVariance_P -=  (kalmanGain_K * hTimesP);
 
 #if HAVE_LOG4CXX_H
-    for (int i = 0; i<2; ++i) {
-		for (Eigen::SparseMatrix<FloatType>::InnerIterator iter(kalmanGain_K,i); iter ; ++iter){
-			index = GliderVarioStatus::StatusComponentIndex(iter.row());
-			LOG4CXX_DEBUG(logger ,"Update " << index << ":" << i
-					<< ", variance after = " << coVariance_P.coeff(index,index));
-		}
+    if (logger->isDebugEnabled()) {
+        for (int i = 0; i < kalmanGain_K.rows(); ++i) {
+        	if (kalmanGain_K.coeff(i,0) != 0.0f || kalmanGain_K.coeff(i,1) != 0.0f ) {
+    			LOG4CXX_DEBUG(logger ,"Update " << GliderVarioStatus::StatusComponentIndex(i)
+    					<< ": variance after = " << coVariance_P.coeff(i,i));
+        	}
+        }
     }
 #endif
 
@@ -1147,10 +1151,14 @@ void GliderVarioMeasurementUpdater::calc3DMeasureUpdate (
 #if HAVE_LOG4CXX_H
 
     if (logger->isDebugEnabled()) {
-        for (int i = 0; i<3; ++i) {
-			for (Eigen::SparseMatrix <FloatType>::InnerIterator it(kalmanGain_K,i); it; ++it) {
-				LOG4CXX_DEBUG(logger ,"    kalmanGain_K[" << GliderVarioStatus::StatusComponentIndex(it.row()) << " , " << i <<"] = " << it.value());
-			}
+        for (int i = 0; i < kalmanGain_K.rows(); ++i) {
+        	if (kalmanGain_K.coeff(i,0) != 0.0f || kalmanGain_K.coeff(i,1) != 0.0f || kalmanGain_K.coeff(i,2) != 0.0f ) {
+				LOG4CXX_DEBUG(logger ,"    kalmanGain_K[" << GliderVarioStatus::StatusComponentIndex(i) << " , 0/1/2 ] = "
+						<< kalmanGain_K.coeff(i,0) << ", "
+						<< kalmanGain_K.coeff(i,1) << ", "
+						<< kalmanGain_K.coeff(i,2)
+						);
+        	}
         }
     }
 
@@ -1158,16 +1166,13 @@ void GliderVarioMeasurementUpdater::calc3DMeasureUpdate (
 
     // substitute direct assignment by iterating over the sparse kalman gain vector, and perform the correct element wise.
     // Eigen does not take mixing dense and sparse matrixes lightly.
-    GliderVarioStatus::StatusComponentIndex index;
-    FloatType kalmanGain;
-    FloatType val;
 
     for (int i = 0; i<3; ++i) {
         for (Eigen::SparseMatrix<FloatType>::InnerIterator iter(kalmanGain_K,i); iter ; ++iter){
-            index = GliderVarioStatus::StatusComponentIndex(iter.row());
-            kalmanGain = iter.value();
+        	GliderVarioStatus::StatusComponentIndex index = GliderVarioStatus::StatusComponentIndex(iter.row());
+            FloatType kalmanGain = iter.value();
             kalmanGain *= valueDiff(i);
-            val = statusVector_x(index);
+            FloatType val = statusVector_x(index);
             statusVector_x(index) = val + kalmanGain;
             LOG4CXX_DEBUG(logger ,"Update " << index << ":" << i
             		<< ": New value = " << statusVector_x(index)
@@ -1179,13 +1184,14 @@ void GliderVarioMeasurementUpdater::calc3DMeasureUpdate (
     coVariance_P -= kalmanGain_K * hTimesP;
 
 #if HAVE_LOG4CXX_H
-	for (int i = 0; i<3; ++i) {
-		for (Eigen::SparseMatrix<FloatType>::InnerIterator iter(kalmanGain_K,i); iter ; ++iter){
-			index = GliderVarioStatus::StatusComponentIndex(iter.row());
-			LOG4CXX_DEBUG(logger ,"Update " << index << ":" << i
-					<< ", variance after = " << coVariance_P.coeff(index,index));
-		}
-	}
+    if (logger->isDebugEnabled()) {
+        for (int i = 0; i < kalmanGain_K.rows(); ++i) {
+        	if (kalmanGain_K.coeff(i,0) != 0.0f || kalmanGain_K.coeff(i,1) != 0.0f || kalmanGain_K.coeff(i,2) != 0.0f ) {
+    			LOG4CXX_DEBUG(logger ,"Update " << GliderVarioStatus::StatusComponentIndex(i)
+    					<< ": variance after = " << coVariance_P.coeff(i,i));
+        	}
+        }
+    }
 #endif
 
 
