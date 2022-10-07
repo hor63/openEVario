@@ -22,7 +22,7 @@ jobs:
       run: autoreconf -iv
     - name: configure
       run: mkdir build; cd build; ../configure
-    - name: make V=1
-      run: cd build; make
-    - name: make V=1 check
-      run: cd build; make check
+    - name: make
+      run: cd build; make V=1
+    - name: make check
+      run: cd build; make V=1 check
