@@ -50,6 +50,10 @@ AC_SUBST([LIBTOOL_DEPS])
 
 AC_LANG([C++])
 
+# Search for a library which provides dlopen() and friends.
+AC_SEARCH_LIBS([dlopen], [dl dld], [], [
+  AC_MSG_ERROR([unable to find the dlopen() function])
+])
 
 # Explicitly define _GNU_SOURCE under CYGWIN.
 # Some features are not included OOTB in Cygwin as of 16-Apr-2020 with gcc v9
