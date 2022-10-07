@@ -55,6 +55,11 @@ AC_SEARCH_LIBS([dlopen], [dl dld], [], [
   AC_MSG_ERROR([unable to find the dlopen() function])
 ])
 
+
+AC_SEARCH_LIBS([pthread_create], [pthread], [], [
+  AC_MSG_ERROR([unable to find the pthread_create() function])
+])
+
 # Explicitly define _GNU_SOURCE under CYGWIN.
 # Some features are not included OOTB in Cygwin as of 16-Apr-2020 with gcc v9
 # Particularly missing were fileno() and getaddrinfo() and its companions
