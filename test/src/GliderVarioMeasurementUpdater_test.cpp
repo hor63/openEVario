@@ -473,60 +473,42 @@ TEST_F(Inverse3x3MatrixDouble, Test) {
 
 }
 
-TEST_F(MeasurementUpdaterTest, Latitude) {
+TEST_F(MeasurementUpdaterTest, Position) {
 
     // Test the result for a given combination of input values
     // and a number of time differences
 
 	// Increase by 5 arc seconds.
     double measLat = st1.latitude() + 5.0 / 3600.0;
+    double measLon = st1.longitude() + 5.0 / 3600.0 ;
 
-    FloatType expectResult = st1.latitudeOffsC;
+    FloatType expectResultLat = st1.latitudeOffsC;
+    FloatType expectResultLon = st1.longitudeOffsC;
 
-    GliderVarioMeasurementUpdater::GPSLatitudeUpd(measLat,15.0*15.0/3600.0/3600.0,measVect,st1);
+    GliderVarioMeasurementUpdater::GPSPositionUpd(
+    		measLat, measLon,
+			15.0*15.0/3600.0/3600.0,15.0*15.0/3600.0/3600.0,
+			measVect,st1);
 
-    EXPECT_EQ (GliderVarioMeasurementUpdater::calculatedValueTst1,expectResult);
+    EXPECT_EQ (GliderVarioMeasurementUpdater::calculatedValueTst1,expectResultLat);
+    EXPECT_EQ (GliderVarioMeasurementUpdater::calculatedValueTst2,expectResultLon);
 
     for (int i = 0; i < GliderVarioStatus::STATUS_NUM_ROWS; i++) {
         switch (i) {
 
         case GliderVarioStatus::STATUS_IND_LATITUDE_OFFS:
             EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),1.0f);
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,1),0.0f);
             break;
-
-        default:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),0.0f);
-
-        }
-    }
-
-
-}
-
-TEST_F(MeasurementUpdaterTest, Longitude) {
-
-    // Test the result for a given combination of input values
-    // and a number of time differences
-
-	// Increase by 5 arc seconds.
-	//Remember measurement is in degrees, status split into base in arc seconds and offset in meters.
-    double measLon = st1.longitude() + 5.0 / 3600.0 ;
-
-    FloatType expectResult = st1.longitudeOffsC;
-
-    GliderVarioMeasurementUpdater::GPSLongitudeUpd(measLon,15.0*15.0/3600.0/3600.0,measVect,st1);
-
-    EXPECT_EQ (GliderVarioMeasurementUpdater::calculatedValueTst1,expectResult);
-
-    for (int i = 0; i < GliderVarioStatus::STATUS_NUM_ROWS; i++) {
-        switch (i) {
 
         case GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),1.0f);
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),0.0f);
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,1),1.0f);
             break;
 
         default:
             EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),0.0f);
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,1),0.0f);
 
         }
     }
