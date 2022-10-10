@@ -18,8 +18,8 @@ jobs:
     - name: Pull submodules
       run: git submodule init ;
            git submodule update
-    - name: autoreconf
-      run: autoreconf -iv
+#    - name: autoreconf
+#      run: autoreconf -iv
     - name: configure
       run: mkdir build; cd build; ../configure
     - name: make
