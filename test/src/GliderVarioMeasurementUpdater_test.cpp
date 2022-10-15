@@ -746,41 +746,44 @@ TEST_F(MeasurementUpdaterTest, Accelerometer) {
         switch (i) {
 
         case GliderVarioStatus::STATUS_IND_ACC_HEADING:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),diffAccelYX);
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,1),diffAccelYX);
             break;
 
-        case GliderVarioStatus::STATUS_IND_ACC_CROSS:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),diffAccelYY);
-            break;
+/* Cross acceleration is no longer considered in the model because it is indistinguishable from
+ * Gravity's pull when banked. And there is no other measurement to resolve the ambiguity.
+ *        case GliderVarioStatus::STATUS_IND_ACC_CROSS:
+ *            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,1),diffAccelYY);
+ *            break;
+ */
 
         case GliderVarioStatus::STATUS_IND_ACC_VERTICAL:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),diffAccelYZ);
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,1),diffAccelYZ);
             break;
 
         case GliderVarioStatus::STATUS_IND_TAS:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),diffAccelYTAS);
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,1),diffAccelYTAS);
             break;
 
         case GliderVarioStatus::STATUS_IND_ROTATION_Z:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),diffAccelYyawRate);
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,1),diffAccelYyawRate);
             break;
 
         case GliderVarioStatus::STATUS_IND_GRAVITY:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),diffAccelYGravity);
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,1),diffAccelYGravity);
             break;
 
         case GliderVarioStatus::STATUS_IND_ROLL:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),diffRollY);
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,1),diffRollY);
             break;
 
         case GliderVarioStatus::STATUS_IND_PITCH:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),diffPitchY);
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,1),diffPitchY);
             break;
 
         default:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),0.0f)
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,2),0.0f)
               << " Coefficient with index " << i << " is expected 0.0 but actually is "
-              <<  GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0);
+              <<  GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,2);
 
         }
     }
@@ -791,41 +794,44 @@ TEST_F(MeasurementUpdaterTest, Accelerometer) {
         switch (i) {
 
         case GliderVarioStatus::STATUS_IND_ACC_HEADING:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),diffAccelZX);
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,2),diffAccelZX);
             break;
 
-        case GliderVarioStatus::STATUS_IND_ACC_CROSS:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),diffAccelZY);
-            break;
+/* Cross acceleration is no longer considered in the model because it is indistinguishable from
+ * Gravity's pull when banked. And there is no other measurement to resolve the ambiguity.
+ *        case GliderVarioStatus::STATUS_IND_ACC_CROSS:
+ *            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,2),diffAccelZY);
+ *            break;
+ */
 
         case GliderVarioStatus::STATUS_IND_ACC_VERTICAL:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),diffAccelZZ);
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,2),diffAccelZZ);
             break;
 
         case GliderVarioStatus::STATUS_IND_TAS:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),diffAccelZTAS);
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,2),diffAccelZTAS);
             break;
 
         case GliderVarioStatus::STATUS_IND_ROTATION_Z:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),diffAccelZyawRate);
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,2),diffAccelZyawRate);
             break;
 
         case GliderVarioStatus::STATUS_IND_GRAVITY:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),diffAccelZGravity);
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,2),diffAccelZGravity);
             break;
 
         case GliderVarioStatus::STATUS_IND_ROLL:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),diffRollZ);
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,2),diffRollZ);
             break;
 
         case GliderVarioStatus::STATUS_IND_PITCH:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),diffPitchZ);
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,2),diffPitchZ);
             break;
 
         default:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),0.0f)
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,2),0.0f)
               << " Coefficient with index " << i << " is expected 0.0 but actually is "
-              <<  GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0);
+              <<  GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,2);
 
         }
     }
