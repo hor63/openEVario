@@ -90,7 +90,8 @@ TEST_F(TransitionMatrixTest, Latitude) {
                         double expectResult =
                                 lat
                                 + (t*speedGroundN
-                                		+ FastMath::fastCos(heading) * accel *t*t/2.0)/LEN_LAT_ARC_SEC / 3600.0;
+                                		//+ FastMath::fastCos(heading) * accel *t*t/2.0
+										)/LEN_LAT_ARC_SEC / 3600.0;
                                 ;
 
                         EXPECT_NEAR (st2.latitude(),expectResult,abs(expectResult*0.0000000001)) <<
@@ -110,7 +111,8 @@ TEST_F(TransitionMatrixTest, Latitude) {
                         expectResult =
                                 (lat + deltaValue)
                                 + (t*speedGroundN
-                                		+ FastMath::fastCos(heading) * accel *t*t/2.0) / LEN_LAT_ARC_SEC / 3600.0
+                                		//+ FastMath::fastCos(heading) * accel *t*t/2.0
+										) / LEN_LAT_ARC_SEC / 3600.0
                                 ;
 
                         resultDelta = deltaValue *
@@ -127,7 +129,8 @@ TEST_F(TransitionMatrixTest, Latitude) {
                         expectResult =
                                 lat
                                 + (t* (speedGroundN + deltaValue)
-                                		+ FastMath::fastCos(heading) * accel *t*t/2.0) / LEN_LAT_ARC_SEC / 3600.0;
+                                		// + FastMath::fastCos(heading) * accel *t*t/2.0
+										) / LEN_LAT_ARC_SEC / 3600.0;
                                 ;
                         resultDelta =
                         		(deltaValue *
@@ -143,26 +146,6 @@ TEST_F(TransitionMatrixTest, Latitude) {
 
                         st1.groundSpeedNorth = speedGroundN;
 
-                        // Modify the acceleration
-                        deltaValue = 1.0f;
-                        st1.accelHeading = accel + deltaValue;
-                        // transMatrix.updateStatus(st1,st2,t);
-                        expectResult =
-                                lat
-                                + (t* speedGroundN
-                                		+ FastMath::fastCos(heading) * (accel + deltaValue) *t*t/2.0) / LEN_LAT_ARC_SEC / 3600.0;
-
-                        resultDelta =
-                        		( deltaValue *
-                        				transMatrix.getTransitionMatrix().coeff(GliderVarioStatus::STATUS_IND_LATITUDE_OFFS,
-                        						GliderVarioStatus::STATUS_IND_ACC_HEADING))
-								/ LEN_LAT_ARC_SEC / 3600.0;
-
-                        EXPECT_NEAR (expectResult,orgResult + resultDelta,abs(expectResult*0.0000000001)) <<
-                                " accelHeading delta = " << deltaValue <<
-                                " resultDelta = " << resultDelta;
-                        st1.accelHeading = accel;
-
                         // Modify the heading
                         deltaValue = 1.0f;
                         st1.heading = heading + deltaValue;
@@ -170,7 +153,8 @@ TEST_F(TransitionMatrixTest, Latitude) {
                         expectResult =
                                 lat
                                 + (t*speedGroundN
-                                		+ FastMath::fastCos(heading + deltaValue) * accel *t*t/2.0) / LEN_LAT_ARC_SEC / 3600.0
+                                		// + FastMath::fastCos(heading + deltaValue) * accel *t*t/2.0
+										) / LEN_LAT_ARC_SEC / 3600.0
                                 ;
                         resultDelta =
                         		(deltaValue *
@@ -223,7 +207,8 @@ TEST_F(TransitionMatrixTest, Longitude) {
                             double expectResult =
                                     lon
                                     + (t*speedGroundE
-                                    		+ FastMath::fastSin(heading) * accel *t*t/2.0)
+                                    		// + FastMath::fastSin(heading) * accel *t*t/2.0
+											)
 										* degPerM
                                     ;
 
@@ -244,7 +229,8 @@ TEST_F(TransitionMatrixTest, Longitude) {
                             expectResult =
                                     lon + deltaValue
                                     + (t*speedGroundE
-                                    		+ FastMath::fastSin(heading) * accel *t*t/2.0) * degPerM
+                                    		// + FastMath::fastSin(heading) * accel *t*t/2.0
+                                    		) * degPerM
                                     ;
                             resultDelta = deltaValue *
                                     transMatrix.getTransitionMatrix()
@@ -261,7 +247,8 @@ TEST_F(TransitionMatrixTest, Longitude) {
                             expectResult =
                                     lon
                                     + (t* (speedGroundE + deltaValue)
-                                    		+ FastMath::fastSin(heading) * accel *t*t/2.0) * degPerM;
+                                    		// + FastMath::fastSin(heading) * accel *t*t/2.0
+											) * degPerM;
                                     ;
                             resultDelta = deltaValue *
                                     transMatrix.getTransitionMatrix()
@@ -272,24 +259,6 @@ TEST_F(TransitionMatrixTest, Longitude) {
                                     " resultDelta = " << resultDelta;
                             st1.groundSpeedEast = speedGroundE;
 
-                            // Modify the acceleration
-                            deltaValue = 1.0f;
-                            st1.accelHeading = accel + deltaValue;
-                            // transMatrix.updateStatus(st1,st2,t);
-                            expectResult =
-                                    lon
-                                    + (t* speedGroundE
-                                    		+ FastMath::fastSin(heading) * (accel + deltaValue) *t*t/2.0) * degPerM
-                                    ;
-                            resultDelta = deltaValue *
-                                    transMatrix.getTransitionMatrix()
-                                    .coeff(GliderVarioStatus::STATUS_IND_LONGITUDE_OFFS,GliderVarioStatus::STATUS_IND_ACC_HEADING) * degPerM;
-
-                            EXPECT_NEAR (expectResult,orgResult + resultDelta,0.0000000001) <<
-                                    " accelHeading delta = " << deltaValue <<
-                                    " resultDelta = " << resultDelta;
-                            st1.accelHeading = accel;
-
                             // Modify the heading
                             deltaValue = 1.0f;
                             st1.heading = heading + deltaValue;
@@ -297,7 +266,8 @@ TEST_F(TransitionMatrixTest, Longitude) {
                             expectResult =
                                     lon
                                     + (t*speedGroundE
-                                    		+ FastMath::fastSin(heading + deltaValue) * accel *t*t/2.0) * degPerM
+                                    		// + FastMath::fastSin(heading + deltaValue) * accel *t*t/2.0
+											) * degPerM
                                     ;
                             resultDelta = deltaValue *
                                     transMatrix.getTransitionMatrix()
@@ -331,78 +301,55 @@ TEST_F(TransitionMatrixTest, AltMSL) {
     for (FloatType t = 0.01f; t<=1.3f; t+=0.23f  ) {
         for (FloatType alt = 20.0; alt < 1000.0; alt += 123.45) {
             for (FloatType vertSpeed = -3.0f ; vertSpeed <= 3.0f; vertSpeed += 0.83) {
-                for (FloatType vertAcc = -1.0f; vertAcc <= 1.0f; vertAcc += 0.13) {
-                    st1.altMSL = alt;
-                    st1.verticalSpeed = vertSpeed;
-                    st1.accelVertical = vertAcc;
+				st1.altMSL = alt;
+				st1.verticalSpeed = vertSpeed;
 
-                    transMatrix.updateStatus(st1,st2,t);
+				transMatrix.updateStatus(st1,st2,t);
 
-                    FloatType expectResult =
-                            alt
-                            - vertSpeed * t
-                            - vertAcc *t*t/2.0
-                            ;
+				FloatType expectResult =
+						alt
+						- vertSpeed * t
+						;
 
-                    EXPECT_NEAR (st2.altMSL,expectResult,fabsf(expectResult*0.000001f)) <<
-                            " at alt = " << alt << " vertSpeed = " << vertSpeed << " vertAcc = " << vertAcc <<
-                            " time = " << t;
+				EXPECT_NEAR (st2.altMSL,expectResult,fabsf(expectResult*0.000001f)) <<
+						" at alt = " << alt << " vertSpeed = " << vertSpeed << " time = " << t;
 
-                    // Test the coefficients in the matrix as derivatives.
-                    FloatType orgResult = expectResult;
-                    FloatType resultDelta;
-                    FloatType deltaValue;
+				// Test the coefficients in the matrix as derivatives.
+				FloatType orgResult = expectResult;
+				FloatType resultDelta;
+				FloatType deltaValue;
 
 
-                    // Modify the altitude
-                    deltaValue = 3.33f;
-                    st1.altMSL = alt + deltaValue;
-                    // transMatrix.updateStatus(st1,st2,t);
-                    expectResult =
-                            (alt + deltaValue)
-                            - vertSpeed * t
-                            - vertAcc *t*t/2.0
-                            ;
-                    resultDelta = deltaValue *
-                            transMatrix.getTransitionMatrix()
-                            .coeff(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ALT_MSL);
+				// Modify the altitude
+				deltaValue = 3.33f;
+				st1.altMSL = alt + deltaValue;
+				// transMatrix.updateStatus(st1,st2,t);
+				expectResult =
+						(alt + deltaValue)
+						- vertSpeed * t
+						;
+				resultDelta = deltaValue *
+						transMatrix.getTransitionMatrix()
+						.coeff(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ALT_MSL);
 
-                    EXPECT_NEAR (expectResult,orgResult + resultDelta,fabsf(expectResult*0.000001f)) << " Altitude delta = " << deltaValue;
-                    st1.altMSL = alt;
+				EXPECT_NEAR (expectResult,orgResult + resultDelta,fabsf(expectResult*0.000001f)) << " Altitude delta = " << deltaValue;
+				st1.altMSL = alt;
 
-                    // Modify the vertical speed
-                    deltaValue = 1.33f;
-                    st1.verticalSpeed = vertSpeed + deltaValue;
-                    // transMatrix.updateStatus(st1,st2,t);
-                    expectResult =
-                            alt
-                            - (vertSpeed + deltaValue) * t
-                            - vertAcc *t*t/2.0
-                            ;
-                    resultDelta = deltaValue *
-                            transMatrix.getTransitionMatrix()
-                            .coeff(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_VERTICAL_SPEED);
+				// Modify the vertical speed
+				deltaValue = 1.33f;
+				st1.verticalSpeed = vertSpeed + deltaValue;
+				// transMatrix.updateStatus(st1,st2,t);
+				expectResult =
+						alt
+						- (vertSpeed + deltaValue) * t
+						;
+				resultDelta = deltaValue *
+						transMatrix.getTransitionMatrix()
+						.coeff(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_VERTICAL_SPEED);
 
-                    EXPECT_NEAR (expectResult,orgResult + resultDelta,fabsf(expectResult*0.000001f)) << " vertical speed delta = " << deltaValue;
-                    st1.verticalSpeed = vertSpeed;
+				EXPECT_NEAR (expectResult,orgResult + resultDelta,fabsf(expectResult*0.000001f)) << " vertical speed delta = " << deltaValue;
+				st1.verticalSpeed = vertSpeed;
 
-                    // Modify the vertical acceleration
-                    deltaValue = 0.133f;
-                    st1.accelVertical = vertAcc + deltaValue;
-                    // transMatrix.updateStatus(st1,st2,t);
-                    expectResult =
-                            alt
-                            - vertSpeed * t
-                            - (vertAcc + deltaValue) *t*t/2.0
-                            ;
-                    resultDelta = deltaValue *
-                            transMatrix.getTransitionMatrix()
-                            .coeff(GliderVarioStatus::STATUS_IND_ALT_MSL,GliderVarioStatus::STATUS_IND_ACC_VERTICAL);
-
-                    EXPECT_NEAR (expectResult,orgResult + resultDelta,fabsf(expectResult*0.000001f)) << " vertical acceleration delta = " << deltaValue;
-                    st1.accelVertical = vertAcc;
-
-                }
             }
         }
     }
@@ -706,134 +653,145 @@ TEST_F(TransitionMatrixTest, GroundSpeedNorth) {
     for (FloatType t = 0.01f; t<=1.3f; t+=0.34f  ) {
         for (FloatType heading = 10.0f; heading <= 350.0f; heading += 52.33f) {
             for (FloatType trueAirSpeed = 0.0f ; trueAirSpeed <= 50.0f; trueAirSpeed += 8.67f) {
-                for (FloatType accelHeading = 0.0f; accelHeading <= 2.0f; accelHeading += 0.67f) {
-                    for (FloatType windSpeedN = -10.0f; windSpeedN <= 12.0f; windSpeedN += 4.69f) {
+//                for (FloatType accelHeading = 0.0f; accelHeading <= 2.0f; accelHeading += 0.67f) {
+				  for (FloatType windSpeedN = -10.0f; windSpeedN <= 12.0f; windSpeedN += 4.69f) {
 
-                        st1.heading = heading;
-                        st1.trueAirSpeed = trueAirSpeed;
-                        st1.accelHeading = accelHeading;
-                        st1.windSpeedNorth = windSpeedN;
+						st1.heading = heading;
+						st1.trueAirSpeed = trueAirSpeed;
+//						st1.accelHeading = accelHeading;
+						st1.windSpeedNorth = windSpeedN;
 
-                        transMatrix.updateStatus(st1,st2,t);
+						transMatrix.updateStatus(st1,st2,t);
 
-                        FloatType expectResult =
-                                FastMath::fastCos(heading) * (trueAirSpeed + accelHeading*t)
-                                + windSpeedN
-                                ;
+						FloatType expectResult =
+								FastMath::fastCos(heading) * (trueAirSpeed
+//										+ accelHeading*t
+										)
+								+ windSpeedN
+								;
 
-                        EXPECT_NEAR (st2.groundSpeedNorth,expectResult,0.00001f) <<
-                                " at heading   = " << heading <<
-                                " trueAirSpeed = " << trueAirSpeed <<
-                                " accelHeading = " << accelHeading <<
-                                " windSpeedN   = " << windSpeedN <<
-                                " time = " << t;
+						EXPECT_NEAR (st2.groundSpeedNorth,expectResult,0.00001f) <<
+								" at heading   = " << heading <<
+								" trueAirSpeed = " << trueAirSpeed <<
+//								" accelHeading = " << accelHeading <<
+								" windSpeedN   = " << windSpeedN <<
+								" time = " << t;
 
-                        // Test the coefficients in the matrix as derivatives.
-                        FloatType orgResult = expectResult;
-                        FloatType resultDelta;
-                        FloatType deltaResult;
-                        FloatType deltaValue;
-
-
-                        // Modify the heading
-                        deltaValue = 1.0f;
-                        st1.heading = heading + deltaValue;
-                        // transMatrix.updateStatus(st1,st2,t);
-                        expectResult =
-                                FastMath::fastCos(heading + deltaValue) * (trueAirSpeed + accelHeading*t)
-                                + windSpeedN
-                                ;
-
-                        resultDelta = deltaValue *
-                                transMatrix.getTransitionMatrix()
-                                .coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_HEADING);
-                        deltaResult = orgResult + resultDelta;
+						// Test the coefficients in the matrix as derivatives.
+						FloatType orgResult = expectResult;
+						FloatType resultDelta;
+						FloatType deltaResult;
+						FloatType deltaValue;
 
 
-                        // Well, we are entering non-linear territory. The accuracy goes pretty much down the drain here.
-                        EXPECT_NEAR (expectResult,deltaResult,0.007f) << " Heading delta = " << deltaValue <<
-                                " at heading   = " << heading <<
-                                " trueAirSpeed = " << trueAirSpeed <<
-                                " accelHeading = " << accelHeading <<
-                                " windSpeedN   = " << windSpeedN <<
-                                " time = " << t
-                                << std::endl <<
-                                "   resultDelta = " << resultDelta <<
-                                " Coefficient = " << transMatrix.getTransitionMatrix()
-                                .coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_HEADING) <<
-                                " expected coefficient = " << FastMath::degToRad*(-FastMath::fastSin(heading)*(trueAirSpeed + accelHeading*t));
+						// Modify the heading
+						deltaValue = 1.0f;
+						st1.heading = heading + deltaValue;
+						// transMatrix.updateStatus(st1,st2,t);
+						expectResult =
+								FastMath::fastCos(heading + deltaValue) * (trueAirSpeed
+//										+ accelHeading*t
+										)
+								+ windSpeedN
+								;
 
-                        st1.heading = heading;
+						resultDelta = deltaValue *
+								transMatrix.getTransitionMatrix()
+								.coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_HEADING);
+						deltaResult = orgResult + resultDelta;
 
-                        // Modify the TAS
-                        deltaValue = 1.0f;
-                        st1.trueAirSpeed = trueAirSpeed + deltaValue;
-                        // transMatrix.updateStatus(st1,st2,t);
-                        expectResult =
-                                FastMath::fastCos(heading ) * ((trueAirSpeed+ deltaValue) + accelHeading*t)
-                                + windSpeedN
-                                ;
 
-                        resultDelta = deltaValue *
-                                transMatrix.getTransitionMatrix()
-                                .coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_TAS);
-                        deltaResult = orgResult + resultDelta;
+						// Well, we are entering non-linear territory. The accuracy goes pretty much down the drain here.
+						EXPECT_NEAR (expectResult,deltaResult,0.007f) << " Heading delta = " << deltaValue <<
+								" at heading   = " << heading <<
+								" trueAirSpeed = " << trueAirSpeed <<
+//								" accelHeading = " << accelHeading <<
+								" windSpeedN   = " << windSpeedN <<
+								" time = " << t
+								<< std::endl <<
+								"   resultDelta = " << resultDelta <<
+								" Coefficient = " << transMatrix.getTransitionMatrix()
+								.coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_HEADING) <<
+								" expected coefficient = " << FastMath::degToRad*(-FastMath::fastSin(heading)*(trueAirSpeed
+//										+ accelHeading*t
+										));
 
-                        EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " TAS delta = " << deltaValue <<
-                                " at heading   = " << heading <<
-                                " trueAirSpeed = " << trueAirSpeed <<
-                                " accelHeading = " << accelHeading <<
-                                " windSpeedN   = " << windSpeedN <<
-                                " time = " << t;
-                        st1.trueAirSpeed = trueAirSpeed;
+						st1.heading = heading;
 
-                        // Modify the acceleration
-                        deltaValue = 1.0f;
-                        st1.accelHeading = accelHeading + deltaValue;
-                        // transMatrix.updateStatus(st1,st2,t);
-                        expectResult =
-                                FastMath::fastCos(heading) * (trueAirSpeed + (accelHeading + deltaValue)*t)
-                                + windSpeedN
-                                ;
+						// Modify the TAS
+						deltaValue = 1.0f;
+						st1.trueAirSpeed = trueAirSpeed + deltaValue;
+						// transMatrix.updateStatus(st1,st2,t);
+						expectResult =
+								FastMath::fastCos(heading ) * ((trueAirSpeed+ deltaValue)
+//										+ accelHeading*t
+										)
+								+ windSpeedN
+								;
 
-                        resultDelta = deltaValue *
-                                transMatrix.getTransitionMatrix()
-                                .coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_ACC_HEADING);
-                        deltaResult = orgResult + resultDelta;
+						resultDelta = deltaValue *
+								transMatrix.getTransitionMatrix()
+								.coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_TAS);
+						deltaResult = orgResult + resultDelta;
 
-                        EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " aceleration delta = " << deltaValue <<
-                                " at heading   = " << heading <<
-                                " trueAirSpeed = " << trueAirSpeed <<
-                                " accelHeading = " << accelHeading <<
-                                " windSpeedN   = " << windSpeedN <<
-                                " time = " << t;
-                        st1.accelHeading = accelHeading;
+						EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " TAS delta = " << deltaValue <<
+								" at heading   = " << heading <<
+								" trueAirSpeed = " << trueAirSpeed <<
+//								" accelHeading = " << accelHeading <<
+								" windSpeedN   = " << windSpeedN <<
+								" time = " << t;
+						st1.trueAirSpeed = trueAirSpeed;
 
-                        // Modify the Northern wind component
-                        deltaValue = 1.0f;
-                        st1.windSpeedNorth = windSpeedN + deltaValue;
-                        // transMatrix.updateStatus(st1,st2,t);
-                        expectResult =
-                                FastMath::fastCos(heading) * (trueAirSpeed + accelHeading*t)
-                                + (windSpeedN + deltaValue)
-                                ;
+/*
+ *						// Modify the acceleration
+ *						deltaValue = 1.0f;
+ *						st1.accelHeading = accelHeading + deltaValue;
+ *						// transMatrix.updateStatus(st1,st2,t);
+ *						expectResult =
+ *								FastMath::fastCos(heading) * (trueAirSpeed + (accelHeading + deltaValue)*t)
+ *								+ windSpeedN
+ *								;
+ *
+ *						resultDelta = deltaValue *
+ *								transMatrix.getTransitionMatrix()
+ *								.coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_ACC_HEADING);
+ *						deltaResult = orgResult + resultDelta;
+ *
+ *						EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " aceleration delta = " << deltaValue <<
+ *								" at heading   = " << heading <<
+ *								" trueAirSpeed = " << trueAirSpeed <<
+ *								" accelHeading = " << accelHeading <<
+ *								" windSpeedN   = " << windSpeedN <<
+ *								" time = " << t;
+ *						st1.accelHeading = accelHeading;
+ */
+						// Modify the Northern wind component
+						deltaValue = 1.0f;
+						st1.windSpeedNorth = windSpeedN + deltaValue;
+						// transMatrix.updateStatus(st1,st2,t);
+						expectResult =
+								FastMath::fastCos(heading) * (trueAirSpeed
+//										+ accelHeading*t
+										)
+								+ (windSpeedN + deltaValue)
+								;
 
-                        resultDelta = deltaValue *
-                                transMatrix.getTransitionMatrix()
-                                .coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_WIND_SPEED_N);
-                        deltaResult = orgResult + resultDelta;
+						resultDelta = deltaValue *
+								transMatrix.getTransitionMatrix()
+								.coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_N,GliderVarioStatus::STATUS_IND_WIND_SPEED_N);
+						deltaResult = orgResult + resultDelta;
 
-                        EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " windSpeedN delta = " << deltaValue <<
-                                " at heading   = " << heading <<
-                                " trueAirSpeed = " << trueAirSpeed <<
-                                " accelHeading = " << accelHeading <<
-                                " windSpeedN   = " << windSpeedN <<
-                                " time = " << t;
-                        st1.windSpeedNorth = windSpeedN;
+						EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " windSpeedN delta = " << deltaValue <<
+								" at heading   = " << heading <<
+								" trueAirSpeed = " << trueAirSpeed <<
+//								" accelHeading = " << accelHeading <<
+								" windSpeedN   = " << windSpeedN <<
+								" time = " << t;
+						st1.windSpeedNorth = windSpeedN;
 
-                    }
+					}
 
-                }
+//                }
             }
         }
     }
@@ -848,134 +806,145 @@ TEST_F(TransitionMatrixTest, GroundSpeedEast) {
     for (FloatType t = 0.01f; t<=1.3f; t+=0.34f  ) {
         for (FloatType heading = 10.0f; heading <= 350.0f; heading += 52.33f) {
             for (FloatType trueAirSpeed = 0.0f ; trueAirSpeed <= 50.0f; trueAirSpeed += 8.67f) {
-                for (FloatType accelHeading = 0.0f; accelHeading <= 2.0f; accelHeading += 0.67f) {
-                    for (FloatType windSpeedE = -10.0f; windSpeedE <= 12.0f; windSpeedE += 4.69f) {
+//                for (FloatType accelHeading = 0.0f; accelHeading <= 2.0f; accelHeading += 0.67f) {
+				for (FloatType windSpeedE = -10.0f; windSpeedE <= 12.0f; windSpeedE += 4.69f) {
 
-                        st1.heading = heading;
-                        st1.trueAirSpeed = trueAirSpeed;
-                        st1.accelHeading = accelHeading;
-                        st1.windSpeedEast = windSpeedE;
+					st1.heading = heading;
+					st1.trueAirSpeed = trueAirSpeed;
+//					st1.accelHeading = accelHeading;
+					st1.windSpeedEast = windSpeedE;
 
-                        transMatrix.updateStatus(st1,st2,t);
+					transMatrix.updateStatus(st1,st2,t);
 
-                        FloatType expectResult =
-                                FastMath::fastSin(heading) * (trueAirSpeed + accelHeading*t)
-                                + windSpeedE
-                                ;
+					FloatType expectResult =
+							FastMath::fastSin(heading) * (trueAirSpeed
+									// + accelHeading*t
+									)
+							+ windSpeedE
+							;
 
-                        EXPECT_NEAR (st2.groundSpeedEast,expectResult,0.00001f) <<
-                                " at heading   = " << heading <<
-                                " trueAirSpeed = " << trueAirSpeed <<
-                                " accelHeading = " << accelHeading <<
-                                " windSpeedE   = " << windSpeedE <<
-                                " time = " << t;
+					EXPECT_NEAR (st2.groundSpeedEast,expectResult,0.00001f) <<
+							" at heading   = " << heading <<
+							" trueAirSpeed = " << trueAirSpeed <<
+//							" accelHeading = " << accelHeading <<
+							" windSpeedE   = " << windSpeedE <<
+							" time = " << t;
 
-                        // Test the coefficients in the matrix as derivatives.
-                        FloatType orgResult = expectResult;
-                        FloatType resultDelta;
-                        FloatType deltaResult;
-                        FloatType deltaValue;
-
-
-                        // Modify the heading
-                        deltaValue = 1.0f;
-                        st1.heading = heading + deltaValue;
-                        // transMatrix.updateStatus(st1,st2,t);
-                        expectResult =
-                                FastMath::fastSin(heading + deltaValue) * (trueAirSpeed + accelHeading*t)
-                                + windSpeedE
-                                ;
-
-                        resultDelta = deltaValue *
-                                transMatrix.getTransitionMatrix()
-                                .coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_HEADING);
-                        deltaResult = orgResult + resultDelta;
+					// Test the coefficients in the matrix as derivatives.
+					FloatType orgResult = expectResult;
+					FloatType resultDelta;
+					FloatType deltaResult;
+					FloatType deltaValue;
 
 
-                        // Well, we are entering non-linear territory. The accuracy goes pretty much down the drain here.
-                        EXPECT_NEAR (expectResult,deltaResult,0.007f) << " Heading delta = " << deltaValue <<
-                                " at heading   = " << heading <<
-                                " trueAirSpeed = " << trueAirSpeed <<
-                                " accelHeading = " << accelHeading <<
-                                " windSpeedE   = " << windSpeedE <<
-                                " time = " << t
-                                << std::endl <<
-                                "   resultDelta = " << resultDelta <<
-                                " Coefficient = " << transMatrix.getTransitionMatrix()
-                                .coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_HEADING) <<
-                                " expected coefficient = " << FastMath::degToRad*(-FastMath::fastSin(heading)*(trueAirSpeed + accelHeading*t));
+					// Modify the heading
+					deltaValue = 1.0f;
+					st1.heading = heading + deltaValue;
+					// transMatrix.updateStatus(st1,st2,t);
+					expectResult =
+							FastMath::fastSin(heading + deltaValue) * (trueAirSpeed
+									// + accelHeading*t
+									)
+							+ windSpeedE
+							;
 
-                        st1.heading = heading;
+					resultDelta = deltaValue *
+							transMatrix.getTransitionMatrix()
+							.coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_HEADING);
+					deltaResult = orgResult + resultDelta;
 
-                        // Modify the TAS
-                        deltaValue = 1.0f;
-                        st1.trueAirSpeed = trueAirSpeed + deltaValue;
-                        // transMatrix.updateStatus(st1,st2,t);
-                        expectResult =
-                                FastMath::fastSin(heading ) * ((trueAirSpeed+ deltaValue) + accelHeading*t)
-                                + windSpeedE
-                                ;
 
-                        resultDelta = deltaValue *
-                                transMatrix.getTransitionMatrix()
-                                .coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_TAS);
-                        deltaResult = orgResult + resultDelta;
+					// Well, we are entering non-linear territory. The accuracy goes pretty much down the drain here.
+					EXPECT_NEAR (expectResult,deltaResult,0.007f) << " Heading delta = " << deltaValue <<
+							" at heading   = " << heading <<
+							" trueAirSpeed = " << trueAirSpeed <<
+//							" accelHeading = " << accelHeading <<
+							" windSpeedE   = " << windSpeedE <<
+							" time = " << t
+							<< std::endl <<
+							"   resultDelta = " << resultDelta <<
+							" Coefficient = " << transMatrix.getTransitionMatrix()
+							.coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_HEADING) <<
+							" expected coefficient = " << FastMath::degToRad*(-FastMath::fastSin(heading)*(trueAirSpeed
+									// + accelHeading*t
+									));
 
-                        EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " TAS delta = " << deltaValue <<
-                                " at heading   = " << heading <<
-                                " trueAirSpeed = " << trueAirSpeed <<
-                                " accelHeading = " << accelHeading <<
-                                " windSpeedE   = " << windSpeedE <<
-                                " time = " << t;
-                        st1.trueAirSpeed = trueAirSpeed;
+					st1.heading = heading;
 
-                        // Modify the acceleration
-                        deltaValue = 1.0f;
-                        st1.accelHeading = accelHeading + deltaValue;
-                        // transMatrix.updateStatus(st1,st2,t);
-                        expectResult =
-                                FastMath::fastSin(heading) * (trueAirSpeed + (accelHeading + deltaValue)*t)
-                                + windSpeedE
-                                ;
+					// Modify the TAS
+					deltaValue = 1.0f;
+					st1.trueAirSpeed = trueAirSpeed + deltaValue;
+					// transMatrix.updateStatus(st1,st2,t);
+					expectResult =
+							FastMath::fastSin(heading ) * ((trueAirSpeed+ deltaValue)
+									// + accelHeading*t
+									)
+							+ windSpeedE
+							;
 
-                        resultDelta = deltaValue *
-                                transMatrix.getTransitionMatrix()
-                                .coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_ACC_HEADING);
-                        deltaResult = orgResult + resultDelta;
+					resultDelta = deltaValue *
+							transMatrix.getTransitionMatrix()
+							.coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_TAS);
+					deltaResult = orgResult + resultDelta;
 
-                        EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " aceleration delta = " << deltaValue <<
-                                " at heading   = " << heading <<
-                                " trueAirSpeed = " << trueAirSpeed <<
-                                " accelHeading = " << accelHeading <<
-                                " windSpeedE   = " << windSpeedE <<
-                                " time = " << t;
-                        st1.accelHeading = accelHeading;
+					EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " TAS delta = " << deltaValue <<
+							" at heading   = " << heading <<
+							" trueAirSpeed = " << trueAirSpeed <<
+//							" accelHeading = " << accelHeading <<
+							" windSpeedE   = " << windSpeedE <<
+							" time = " << t;
+					st1.trueAirSpeed = trueAirSpeed;
 
-                        // Modify the Eastern wind component
-                        deltaValue = 1.0f;
-                        st1.windSpeedEast = windSpeedE + deltaValue;
-                        // transMatrix.updateStatus(st1,st2,t);
-                        expectResult =
-                                FastMath::fastSin(heading) * (trueAirSpeed + accelHeading*t)
-                                + (windSpeedE + deltaValue)
-                                ;
+/*
+ *					// Modify the acceleration
+ *					deltaValue = 1.0f;
+ *					st1.accelHeading = accelHeading + deltaValue;
+ *					// transMatrix.updateStatus(st1,st2,t);
+ *					expectResult =
+ *							FastMath::fastSin(heading) * (trueAirSpeed + (accelHeading + deltaValue)*t)
+ *							+ windSpeedE
+ *							;
+ *
+ *					resultDelta = deltaValue *
+ *							transMatrix.getTransitionMatrix()
+ *							.coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_ACC_HEADING);
+ *					deltaResult = orgResult + resultDelta;
+ *
+ *					EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " aceleration delta = " << deltaValue <<
+ *							" at heading   = " << heading <<
+ *							" trueAirSpeed = " << trueAirSpeed <<
+ *							" accelHeading = " << accelHeading <<
+ *							" windSpeedE   = " << windSpeedE <<
+ *							" time = " << t;
+ *					st1.accelHeading = accelHeading;
+ */
+					// Modify the Eastern wind component
+					deltaValue = 1.0f;
+					st1.windSpeedEast = windSpeedE + deltaValue;
+					// transMatrix.updateStatus(st1,st2,t);
+					expectResult =
+							FastMath::fastSin(heading) * (trueAirSpeed
+									// + accelHeading*t
+									)
+							+ (windSpeedE + deltaValue)
+							;
 
-                        resultDelta = deltaValue *
-                                transMatrix.getTransitionMatrix()
-                                .coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_WIND_SPEED_E);
-                        deltaResult = orgResult + resultDelta;
+					resultDelta = deltaValue *
+							transMatrix.getTransitionMatrix()
+							.coeff(GliderVarioStatus::STATUS_IND_SPEED_GROUND_E,GliderVarioStatus::STATUS_IND_WIND_SPEED_E);
+					deltaResult = orgResult + resultDelta;
 
-                        EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " windSpeedN delta = " << deltaValue <<
-                                " at heading   = " << heading <<
-                                " trueAirSpeed = " << trueAirSpeed <<
-                                " accelHeading = " << accelHeading <<
-                                " windSpeedE   = " << windSpeedE <<
-                                " time = " << t;
-                        st1.windSpeedEast = windSpeedE;
+					EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " windSpeedN delta = " << deltaValue <<
+							" at heading   = " << heading <<
+							" trueAirSpeed = " << trueAirSpeed <<
+//							" accelHeading = " << accelHeading <<
+							" windSpeedE   = " << windSpeedE <<
+							" time = " << t;
+					st1.windSpeedEast = windSpeedE;
 
-                    }
+				}
 
-                }
+//                }
             }
         }
     }
@@ -1225,42 +1194,43 @@ TEST_F(TransitionMatrixTest, ThermalSpeed) {
             FloatType deltaResult;
             FloatType deltaValue;
 
-            // Modify the Vertical Speed
-            deltaValue = 1.0f;
-            st1.verticalSpeed = verticalSpeed + deltaValue;
-            // transMatrix.updateStatus(st1,st2,t);
-            expectResult =
-                    (verticalSpeed+ deltaValue) - rateOfSink
-                    ;
-
-            resultDelta = deltaValue *
-                    transMatrix.getTransitionMatrix()
-                    .coeff(GliderVarioStatus::STATUS_IND_THERMAL_SPEED,GliderVarioStatus::STATUS_IND_VERTICAL_SPEED);
-            deltaResult = orgResult + resultDelta;
-
-            EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " Vertical speed delta = " << deltaValue <<
-                    " at verticalSpeed = " << verticalSpeed <<
-                    " rateOfSink = " << rateOfSink;
-            st1.verticalSpeed = verticalSpeed;
-
-            // Modify the rate of sink
-            deltaValue = 1.0f;
-            st1.rateOfSink = rateOfSink + deltaValue;
-            // transMatrix.updateStatus(st1,st2,t);
-            expectResult =
-                    verticalSpeed - (rateOfSink + deltaValue)
-                    ;
-
-            resultDelta = deltaValue *
-                    transMatrix.getTransitionMatrix()
-                    .coeff(GliderVarioStatus::STATUS_IND_THERMAL_SPEED,GliderVarioStatus::STATUS_IND_RATE_OF_SINK);
-            deltaResult = orgResult + resultDelta;
-
-            EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " rateOfSink delta = " << deltaValue <<
-                    " at verticalSpeed = " << verticalSpeed <<
-                    " rateOfSink = " << rateOfSink;
-            st1.rateOfSink = rateOfSink;
-
+/* Coefficients are set 0.
+ *            // Modify the Vertical Speed
+ *            deltaValue = 1.0f;
+ *            st1.verticalSpeed = verticalSpeed + deltaValue;
+ *            // transMatrix.updateStatus(st1,st2,t);
+ *            expectResult =
+ *                    (verticalSpeed+ deltaValue) - rateOfSink
+ *                    ;
+ *
+ *            resultDelta = deltaValue *
+ *                    transMatrix.getTransitionMatrix()
+ *                    .coeff(GliderVarioStatus::STATUS_IND_THERMAL_SPEED,GliderVarioStatus::STATUS_IND_VERTICAL_SPEED);
+ *            deltaResult = orgResult + resultDelta;
+ *
+ *            EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " Vertical speed delta = " << deltaValue <<
+ *                    " at verticalSpeed = " << verticalSpeed <<
+ *                    " rateOfSink = " << rateOfSink;
+ *            st1.verticalSpeed = verticalSpeed;
+ *
+ *            // Modify the rate of sink
+ *            deltaValue = 1.0f;
+ *            st1.rateOfSink = rateOfSink + deltaValue;
+ *            // transMatrix.updateStatus(st1,st2,t);
+ *            expectResult =
+ *                    verticalSpeed - (rateOfSink + deltaValue)
+ *                    ;
+ *
+ *            resultDelta = deltaValue *
+ *                    transMatrix.getTransitionMatrix()
+ *                    .coeff(GliderVarioStatus::STATUS_IND_THERMAL_SPEED,GliderVarioStatus::STATUS_IND_RATE_OF_SINK);
+ *            deltaResult = orgResult + resultDelta;
+ *
+ *            EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " rateOfSink delta = " << deltaValue <<
+ *                    " at verticalSpeed = " << verticalSpeed <<
+ *                    " rateOfSink = " << rateOfSink;
+ *            st1.rateOfSink = rateOfSink;
+ */
         }
 
     }
@@ -1279,7 +1249,7 @@ TEST_F(TransitionMatrixTest, AccHeading) {
             transMatrix.updateStatus(st1,st2,0.1f);
 
             FloatType expectResult =
-                    accHeading;
+                    accHeading * 0.9f;
 
             EXPECT_NEAR (st2.accelHeading,expectResult,0.00001f) <<
                     " at accHeading = " << accHeading;
@@ -1292,10 +1262,10 @@ TEST_F(TransitionMatrixTest, AccHeading) {
 
             // Modify the acceleration
             deltaValue = 1.0f;
-            st1.accelHeading = accHeading + deltaValue;
+            st1.accelHeading = orgResult + deltaValue;
             // transMatrix.updateStatus(st1,st2,t);
             expectResult =
-                    (accHeading+ deltaValue)
+                    (orgResult+ deltaValue * 0.9f)
                     ;
 
             resultDelta = deltaValue *
@@ -1304,13 +1274,14 @@ TEST_F(TransitionMatrixTest, AccHeading) {
             deltaResult = orgResult + resultDelta;
 
             EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " acceleration delta = " << deltaValue <<
-                    " at accHeading = " << accHeading;
-            st1.accelHeading = accHeading;
+                    " at orgResult = " << orgResult;
+            st1.accelHeading = orgResult;
 
         }
 
 }
 
+/* Cross acceleration is no longer considered in the model
 TEST_F(TransitionMatrixTest, AccCross) {
 
     // Test the result for a given combination of input values
@@ -1354,6 +1325,7 @@ TEST_F(TransitionMatrixTest, AccCross) {
         }
 
 }
+*/
 
 TEST_F(TransitionMatrixTest, AccVertical) {
 
@@ -1367,7 +1339,7 @@ TEST_F(TransitionMatrixTest, AccVertical) {
             transMatrix.updateStatus(st1,st2,0.1f);
 
             FloatType expectResult =
-                    accVertical;
+                    accVertical * 0.9f;
 
             EXPECT_NEAR (st2.accelVertical,expectResult,0.00001f) <<
                     " at accVertical = " << accVertical;
@@ -1378,12 +1350,12 @@ TEST_F(TransitionMatrixTest, AccVertical) {
             FloatType deltaResult;
             FloatType deltaValue;
 
-            // Modify the
+            // Modify the acceleration
             deltaValue = 1.0f;
-            st1.accelCross = accVertical + deltaValue;
+            st1.accelCross = orgResult + deltaValue;
             // transMatrix.updateStatus(st1,st2,t);
             expectResult =
-                    (accVertical+ deltaValue)
+                    (orgResult+ deltaValue * 0.9f)
                     ;
 
             resultDelta = deltaValue *
@@ -1393,7 +1365,7 @@ TEST_F(TransitionMatrixTest, AccVertical) {
 
             EXPECT_NEAR (expectResult,deltaResult,0.00001f) << " acceleration delta = " << deltaValue <<
                     " at accVertical = " << accVertical;
-            st1.accelVertical = accVertical;
+            st1.accelVertical = orgResult;
 
         }
 
