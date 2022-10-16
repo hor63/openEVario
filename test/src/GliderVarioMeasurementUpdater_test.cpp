@@ -1047,33 +1047,33 @@ TEST_F(MeasurementUpdaterTest, Magnetometer) {
         switch (i) {
 
         case GliderVarioStatus::STATUS_IND_ROLL:
-            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),magVectIncX(1) - magVect(1),0.00001f);
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,1),magVectIncX(1) - magVect(1),0.00001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_PITCH:
-            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),magVectIncY(1) - magVect(1),0.00001f);
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,1),magVectIncY(1) - magVect(1),0.00001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_HEADING:
-            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),magVectIncZ(1) - magVect(1),0.00001f);
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,1),magVectIncZ(1) - magVect(1),0.00001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION:
-            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),magVectIncDecl(1) - magVect(1),0.00001f);
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,1),magVectIncDecl(1) - magVect(1),0.00001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION:
-            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),magVectIncIncl(1) - magVect(1),0.00001f);
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,1),magVectIncIncl(1) - magVect(1),0.00001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Y:
-            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),1.0f,0.00001f);
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,1),1.0f,0.00001f);
             break;
 
         default:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0),0.0f)
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,1),0.0f)
               << " Coefficient with index " << i << " is expected 0.0 but actually is "
-              <<  GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,0);
+              <<  GliderVarioMeasurementUpdater::measRowTTst2.coeff(i,1);
 
         }
     }
@@ -1084,40 +1084,36 @@ TEST_F(MeasurementUpdaterTest, Magnetometer) {
         switch (i) {
 
         case GliderVarioStatus::STATUS_IND_ROLL:
-            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncX(2) - magVect(2),0.00001f);
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,2),magVectIncX(2) - magVect(2),0.00001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_PITCH:
-            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncY(2) - magVect(2),0.00001f);
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,2),magVectIncY(2) - magVect(2),0.00001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_HEADING:
-            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncZ(2) - magVect(2),0.00001f);
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,2),magVectIncZ(2) - magVect(2),0.00001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_MAGNETIC_DECLINATION:
-            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncDecl(2) - magVect(2),0.00001f);
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,2),magVectIncDecl(2) - magVect(2),0.00001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_MAGNETIC_INCLINATION:
-            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),magVectIncIncl(2) - magVect(2),0.00001f);
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,2),magVectIncIncl(2) - magVect(2),0.00001f);
             break;
 
         case GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Z:
-            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),1.0f,0.00001f);
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,2),1.0f,0.00001f);
             break;
 
         default:
-            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0),0.0f)
+            EXPECT_EQ (GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,2),0.0f)
               << " Coefficient with index " << i << " is expected 0.0 but actually is "
-              <<  GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,0);
+              <<  GliderVarioMeasurementUpdater::measRowTTst3.coeff(i,2);
 
         }
     }
-
-    GliderVarioMeasurementUpdater::compassUpd(calcMagX+0.5f,calcMagY+0.5f,calcMagZ+0.5f,0.5f*0.5f,0.5f*0.5f,0.5f*0.5f,measVect,st1);
-    GliderVarioMeasurementUpdater::compassUpd(calcMagX+0.5f,calcMagY+0.5f,calcMagZ+0.5f,0.5f*0.5f,0.5f*0.5f,0.5f*0.5f,measVect,st1);
-    GliderVarioMeasurementUpdater::compassUpd(calcMagX+0.5f,calcMagY+0.5f,calcMagZ+0.5f,0.5f*0.5f,0.5f*0.5f,0.5f*0.5f,measVect,st1);
 
 }
 
@@ -1189,8 +1185,11 @@ TEST_F(MeasurementUpdaterTest, DynamicPressure) {
 
 	const FloatType density = calculatedPressure * (100.0f / Rspec) / (measuredTemp + CtoK);
 
-	const FloatType dynPressure = density * st1.trueAirSpeed * st1.trueAirSpeed / 2.0f;
-	const FloatType dynPressure1 = density * (st1.trueAirSpeed+1.0f) * (st1.trueAirSpeed+1.0f) / 2.0f;
+	const auto cosPitch = FastMath::fastCos(st1.pitchAngle);
+	const auto totalSpeed = st1.trueAirSpeed / cosPitch;
+
+	const FloatType dynPressure = density * totalSpeed * totalSpeed / 2.0f;
+	const FloatType dynPressure1 = density * (totalSpeed+1.0f) * (totalSpeed+1.0f) / 2.0f;
 
 	// const FloatType diffDynPressure = density * st1.trueAirSpeed;
 	const FloatType diffDynPressure = dynPressure1 - dynPressure;
@@ -1204,7 +1203,12 @@ TEST_F(MeasurementUpdaterTest, DynamicPressure) {
         switch (i) {
 
         case GliderVarioStatus::STATUS_IND_TAS:
-            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),diffDynPressure,0.00001);
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),diffDynPressure*cosPitch,0.00001);
+            break;
+
+        case GliderVarioStatus::STATUS_IND_VERTICAL_SPEED:
+            EXPECT_NEAR (GliderVarioMeasurementUpdater::measRowTTst1.coeff(i,0),
+            		diffDynPressure*FastMath::fastSin(st1.pitchAngle),0.00001);
             break;
 
         default:
