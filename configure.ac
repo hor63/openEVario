@@ -17,7 +17,7 @@
 
 dnl Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.71])
+AC_PREREQ([2.69])
 AC_INIT([openEVario],[0.1],[https://github.com/hor63/openEVario/issues],[openEVario],[https://github.com/hor63/openEVario])
 AC_CONFIG_HEADERS(config.h)
 
