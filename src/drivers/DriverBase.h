@@ -7,7 +7,7 @@
  *  Base class of driver classes for OpenEVario
  *
  *   This file is part of openEVario, an electronic variometer for glider planes
- *   Copyright (C) 2017  Kai Horstmann
+ *   Copyright (C) 2022  Kai Horstmann
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@
 #include <list>
 #include <memory>
 #include <thread>
+#include <chrono>
 
 #include "CommonDefs.h"
 #include "Properties4CXX/Properties.h"
@@ -377,6 +378,39 @@ protected:
     /// \brief The sensor driver thread
     std::thread driverThread;
 
+    /// brief Name of the initial calibration data parameter file
+    std::string calibrationDataFileName;
+
+    /// \brief Name of the continuously updated calibration data parameter file
+    std::string calibrationDataUpdateFileName;
+    /// \brief Interval to save the continuously updated calibration data
+    OEVClock::duration calibrationDataWriteInterval = OEVClock::duration(0);
+    /// \brief Time of the last calibration data update, or the initial load
+    OEVClock::time_point lastCalibrationDataWriteTime;
+    bool isCalibrationDataUpdateActive = false;
+    /// When both \ref calibrationDataFileName and \ref calibrationDataUpdateFileName are configured
+    /// try loading the file named by calibrationDataUpdateFileName first. When that does not exist
+    /// try loading the static file named by calibrationDataUpdateFileName.
+    /// Else try loading the files in the opposite order.
+    bool loadCalibrationDataUpdateFileBeforeStatic = true;
+    /// Loaded and parsed calibration data
+    Properties4CXX::Properties *calibrationDataParameters = nullptr;
+    /** \brief Thread object for the calibration data writer thread
+     *
+     * Writing out the calibration data is a fairly time consuming I/O operation.
+     * Therefore it is implemented as a one-shot thread which is re-started every
+     * \ref calibrationDataUpdateCycle seconds.
+     */
+    std::thread calibrationDataWriteThread;
+
+    /** \brief Indicator if the previous calibration write run is still active or finished.
+     *
+     * Indicator if the thread code actually ran to the end.
+     * This prevents blocking the driver thread when it joins the last thread run.
+     */
+    volatile bool calibrationWriterRunning = false;
+
+
     /// Set a driver capability. Capabilities are defined in #SensorCapability.
     inline void setSensorCapability (SensorCapability capability) {
         sensorCapabilities |= (1UL<<capability);
@@ -408,6 +442,55 @@ protected:
      */
     static void driverThreadEntry (DriverBase* tis);
 
+    /** \brief Read calibration data when configured
+     *
+     * When the update calibration file is defined, and initially loading is defined try to load it.
+     * When loading of the update calibration data is not configured, or it does not exist
+     * try loading the initial calibration file.
+     * Then call \ref applyCalibrationData() which writes the calibration data into the object.
+     */
+    void readCalibrationData ();
+    /** \brief Driver specific function to apply calibration data to the driver instance
+     *
+     * This function must be overloaded by the driver which uses calibration data storage.
+     */
+    virtual void applyCalibrationData();
+    /** \brief Driver specific function to apply calibration data to the driver instance
+     *
+     * This function must be overloaded by the driver which uses calibration data storage.
+     * The implementation in this call does nothing.
+     */
+
+    /** \brief Update the calibration data file when needed
+     *
+     * \todo Refactor function name
+     * Check if the calibration cycle time expired,
+     * and write updated calibration data in the file named \ref calibrationDataUpdateFileName
+     */
+    void updateCalibrationData();
+
+    /** \brief Thread function of \ref calibrationDataWriteThread
+     *
+     * Analyze the current status.
+     *   - When the variance of the gyro bias is smaller than the one of the calibration data update the gyro calibration data.
+     *   - When the variance of the magnetic bias (incl. Variance) is smaller than the calibration data update the mag bias data.
+     *   - Accelerometer calibration data are not being touched. I presume they are stable.
+     *   There is also no accelerometer bias and factor in the model. The Gravity parameter in the model actually applies only to the
+     *   Z axis.
+     *
+     * If any calibration data was updated write out the updated configuration back into the configuration parameter file.
+     *
+     * *Note*: This function runs in an own thread!
+     *
+     */
+    void calibrationDataWriteFunc();
+
+    /** \brief Fill calibration data parameter list driver specific
+     *
+     * Collect driver specific calibration data, and write them into \ref calibrationDataParameters.
+     * The base class method does nothing. It must be overridden in a driver class.
+     */
+    virtual void fillCalibrationDataParameters ();
 
 }; // class GliderVarioDriverBase
 

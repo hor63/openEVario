@@ -5,7 +5,7 @@
  *      Author: kai_horstmann
  *
  *   This file is part of openEVario, an electronic variometer for glider planes
- *   Copyright (C) 2020  Kai Horstmann
+ *   Copyright (C) 2022  Kai Horstmann
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -97,21 +97,6 @@ void BMXSensorBoardDriver::readConfiguration (Properties4CXX::Properties const &
 
     errorTimeout = configuration.getPropertyValue(std::string("errorTimeout"),(long long)(10));
     errorMaxNumRetries = configuration.getPropertyValue(std::string("errorMaxNumRetries"),(long long)(0));
-
-    try {
-    	auto fileNameProp = configuration.searchProperty("calibrationDataFile");
-
-		if (!fileNameProp->isList() && !fileNameProp->isStruct()) {
-	    	calibrationDataFileName = fileNameProp->getStringValue();
-	    	calibrationDataParameters = new Properties4CXX::Properties(calibrationDataFileName);
-		}
-
-		calibrationDataUpdateCycle = std::chrono::seconds(configuration.getPropertyValue("calibrationDataUpdateCycle",(long long)(0)));
-
-    } catch (...) {
-    	LOG4CXX_INFO(logger,"Driver" << driverName << ": No calibration data file specified");
-    }
-
 
 }
 

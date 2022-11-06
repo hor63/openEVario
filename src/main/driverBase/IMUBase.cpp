@@ -22,8 +22,7 @@ IMUBase::IMUBase(
 		char const *instanceName,
 		DriverLibBase &driverLib
 		)
-: DriverBase {driverName,description,instanceName,driverLib},
-  calibrationDataUpdateCycle{0}
+: DriverBase {driverName,description,instanceName,driverLib}
 {
 	for (int i = 0; i < SIZE_SENSOR_DATA_ARRAY; ++i) {
 		sensorDataArr[i].accelDataValid = false;
@@ -362,8 +361,6 @@ void IMUBase::initializeStatus(
 
 	} // for (int i = 0; i < 20;i++)
 
-	lastUpdateTime = OEVClock::now();
-
 }
 
 void IMUBase::updateKalmanStatus (GliderVarioStatus &varioStatus) {
@@ -399,107 +396,73 @@ void IMUBase::updateKalman(SensorData &currSensorData) {
 	}
 }
 
-void IMUBase::updateCalibrationData() {
-	auto lastPredictionUpdate = varioMain->getLastPredictionUpdate();
-	auto timeSinceLastCalibrationWrite = lastPredictionUpdate - lastUpdateTime;
-	if (!calibrationWriterRunning && (timeSinceLastCalibrationWrite >= calibrationDataUpdateCycle)) {
-		calibrationWriterRunning = true;
-		if (calibrationDataWriteThread.joinable()) {
-			calibrationDataWriteThread.join();
-		}
-		lastUpdateTime = OEVClock::now();
-		calibrationDataWriteThread = std::thread(&IMUBase::calibrationDataWriteFunc,this);
+void IMUBase::fillCalibrationDataParameters () {
+
+	// Lock the current status as briefly as possible.
+	GliderVarioMainPriv::LockedCurrentStatus currentLockedStatus(*varioMain);
+	GliderVarioStatus* currentStatus = currentLockedStatus.getCurrentStatus();
+	GliderVarioStatus::StatusCoVarianceType &coVariance = currentStatus->getErrorCovariance_P();
+
+	// If the estimated error is in a similar range or better than the current Variance update the estimated bias.
+	// Allow for fluctuations of the variance otherwise necessary updates may never happen
+	auto currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_GYRO_BIAS_X,
+			GliderVarioStatus::STATUS_IND_GYRO_BIAS_X);
+	if (currVariance <= calibrationData.gyrXVariance * 1.5f) {
+		calibrationData.gyrXBias = currentStatus->gyroBiasX;
+		calibrationData.gyrXVariance = currVariance;
+		writeConfigValue(calibrationDataParameters,"gyrXBias",calibrationData.gyrXBias);
+		writeConfigValue(calibrationDataParameters,"gyrXVariance",currVariance);
 	}
-}
-
-void IMUBase::calibrationDataWriteFunc() {
-
-
-	if (!varioMain) {
-		calibrationWriterRunning = false;
-		return;
+	currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Y,
+			GliderVarioStatus::STATUS_IND_GYRO_BIAS_Y);
+	if (currVariance <= calibrationData.gyrYVariance * 1.5f) {
+		calibrationData.gyrYBias = currentStatus->gyroBiasY;
+		calibrationData.gyrYVariance = currVariance;
+		writeConfigValue(calibrationDataParameters,"gyrYBias",calibrationData.gyrYBias);
+		writeConfigValue(calibrationDataParameters,"gyrYVariance",currVariance);
 	}
-
-	{
-		// Lock the current status as briefly as possible.
-		GliderVarioMainPriv::LockedCurrentStatus currentLockedStatus(*varioMain);
-		GliderVarioStatus* currentStatus = currentLockedStatus.getCurrentStatus();
-		GliderVarioStatus::StatusCoVarianceType &coVariance = currentStatus->getErrorCovariance_P();
-
-		// If the estimated error is in a similar range or better than the current Variance update the estimated bias.
-		// Allow for fluctuations of the variance otherwise necessary updates may never happen
-		auto currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_GYRO_BIAS_X,
-				GliderVarioStatus::STATUS_IND_GYRO_BIAS_X);
-		if (currVariance <= calibrationData.gyrXVariance * 1.5f) {
-			calibrationData.gyrXBias = currentStatus->gyroBiasX;
-			calibrationData.gyrXVariance = currVariance;
-			writeConfigValue(calibrationDataParameters,"gyrXBias",calibrationData.gyrXBias);
-			writeConfigValue(calibrationDataParameters,"gyrXVariance",currVariance);
-		}
-		currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Y,
-				GliderVarioStatus::STATUS_IND_GYRO_BIAS_Y);
-		if (currVariance <= calibrationData.gyrYVariance * 1.5f) {
-			calibrationData.gyrYBias = currentStatus->gyroBiasY;
-			calibrationData.gyrYVariance = currVariance;
-			writeConfigValue(calibrationDataParameters,"gyrYBias",calibrationData.gyrYBias);
-			writeConfigValue(calibrationDataParameters,"gyrYVariance",currVariance);
-		}
-		currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Z,
-				GliderVarioStatus::STATUS_IND_GYRO_BIAS_Z);
-		if (currVariance <= calibrationData.gyrZVariance * 1.5f) {
-			calibrationData.gyrZBias = currentStatus->gyroBiasZ;
-			calibrationData.gyrZVariance = currVariance;
-			writeConfigValue(calibrationDataParameters,"gyrZBias",calibrationData.gyrZBias);
-			writeConfigValue(calibrationDataParameters,"gyrZVariance",currVariance);
-		}
-
-		currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_X,
-				GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_X);
-		if (currVariance <= calibrationData.magXVariance * 1.5f) {
-			calibrationData.magXBias = currentStatus->compassDeviationX;
-			calibrationData.magXVariance = currVariance;
-			writeConfigValue(calibrationDataParameters,"magXBias",calibrationData.magXBias);
-			writeConfigValue(calibrationDataParameters,"magXVariance",currVariance);
-		}
-		currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Y,
-				GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Y);
-		if (currVariance <= calibrationData.magYVariance * 1.5f) {
-			calibrationData.magYBias = currentStatus->compassDeviationY;
-			calibrationData.magYVariance = currVariance;
-			writeConfigValue(calibrationDataParameters,"magYBias",calibrationData.magYBias);
-			writeConfigValue(calibrationDataParameters,"magYVariance",currVariance);
-		}
-		currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Z,
-				GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Z);
-		if (currVariance <= calibrationData.magZVariance * 1.5f) {
-			calibrationData.magZBias = currentStatus->compassDeviationZ;
-			calibrationData.magZVariance = currVariance;
-			writeConfigValue(calibrationDataParameters,"magZBias",calibrationData.magZBias);
-			writeConfigValue(calibrationDataParameters,"magZVariance",currVariance);
-		}
-
-		currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_GRAVITY,
-				GliderVarioStatus::STATUS_IND_GRAVITY);
-		if (currVariance <= calibrationData.gravityVariance * 1.5f) {
-			calibrationData.gravity = currentStatus->gravity;
-			calibrationData.gravityVariance = currVariance;
-			writeConfigValue(calibrationDataParameters,"gravityValue",calibrationData.gravity);
-			writeConfigValue(calibrationDataParameters,"gravityVariance",currVariance);
-		}
+	currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Z,
+			GliderVarioStatus::STATUS_IND_GYRO_BIAS_Z);
+	if (currVariance <= calibrationData.gyrZVariance * 1.5f) {
+		calibrationData.gyrZBias = currentStatus->gyroBiasZ;
+		calibrationData.gyrZVariance = currVariance;
+		writeConfigValue(calibrationDataParameters,"gyrZBias",calibrationData.gyrZBias);
+		writeConfigValue(calibrationDataParameters,"gyrZVariance",currVariance);
 	}
 
-	try {
-		std::ofstream of(calibrationDataFileName,of.out | of.trunc);
-		if (of.good()) {
-			calibrationDataParameters->writeOut(of);
-		}
-	} catch (std::exception const &e) {
-		LOG4CXX_ERROR(logger,"Error in " << __PRETTY_FUNCTION__
-				<< ". Cannot write calibration data. Error = " << e.what());
+	currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_X,
+			GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_X);
+	if (currVariance <= calibrationData.magXVariance * 1.5f) {
+		calibrationData.magXBias = currentStatus->compassDeviationX;
+		calibrationData.magXVariance = currVariance;
+		writeConfigValue(calibrationDataParameters,"magXBias",calibrationData.magXBias);
+		writeConfigValue(calibrationDataParameters,"magXVariance",currVariance);
 	}
-	catch (...) {}
+	currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Y,
+			GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Y);
+	if (currVariance <= calibrationData.magYVariance * 1.5f) {
+		calibrationData.magYBias = currentStatus->compassDeviationY;
+		calibrationData.magYVariance = currVariance;
+		writeConfigValue(calibrationDataParameters,"magYBias",calibrationData.magYBias);
+		writeConfigValue(calibrationDataParameters,"magYVariance",currVariance);
+	}
+	currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Z,
+			GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Z);
+	if (currVariance <= calibrationData.magZVariance * 1.5f) {
+		calibrationData.magZBias = currentStatus->compassDeviationZ;
+		calibrationData.magZVariance = currVariance;
+		writeConfigValue(calibrationDataParameters,"magZBias",calibrationData.magZBias);
+		writeConfigValue(calibrationDataParameters,"magZVariance",currVariance);
+	}
 
-	calibrationWriterRunning = false;
+	currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_GRAVITY,
+			GliderVarioStatus::STATUS_IND_GRAVITY);
+	if (currVariance <= calibrationData.gravityVariance * 1.5f) {
+		calibrationData.gravity = currentStatus->gravity;
+		calibrationData.gravityVariance = currVariance;
+		writeConfigValue(calibrationDataParameters,"gravityValue",calibrationData.gravity);
+		writeConfigValue(calibrationDataParameters,"gravityVariance",currVariance);
+	}
 
 }
 

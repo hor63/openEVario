@@ -9,10 +9,8 @@
 #define UTIL_DRIVERS_IMUBASE_H_
 
 #include <fstream>
-#include <string>
 #include <map>
-#include <thread>
-#include <chrono>
+
 
 #include "CommonDefs.h"
 #include "drivers/DriverBase.h"
@@ -203,12 +201,6 @@ protected:
      */
     int32_t errorTimeout = 10;
 
-    /// Name of the calibration data parameter file
-    std::string calibrationDataFileName;
-
-    /// Loaded and parsed calibration data
-    Properties4CXX::Properties *calibrationDataParameters = nullptr;
-
     /// \brief Is the status initialization done
     bool statusInitDone = false;
 
@@ -231,25 +223,6 @@ protected:
 #if defined HAVE_LOG4CXX_H
     static log4cxx::LoggerPtr logger;
 #endif
-
-    /** \brief Thread object for the calibration data writer thread
-     *
-     * Writing out the calibration data is a fairly time consuming I/O operation.
-     * Therefore it is implemented as a one-shot thread which is re-started every
-     * \ref calibrationDataUpdateCycle seconds.
-     */
-    std::thread calibrationDataWriteThread;
-
-    /// \brief Cycle time of calibration data updates when the Kalman filter is running.
-    OEVClock::duration calibrationDataUpdateCycle;
-    /// \brief Time of the last calibration data update, or the initial load
-    OEVClock::time_point lastUpdateTime;
-    /** \brief Indicator if the previous calibration write run is still active or finished.
-     *
-     * Indicator if the thread code actually ran to the end.
-     * This prevents blocking the driver thread when it joins the last thread run.
-     */
-    volatile bool calibrationWriterRunning = false;
 
     /** \brief Initialize the Kalman status from the accelerometer measurements
      *
@@ -312,28 +285,9 @@ protected:
      */
     void updateKalman(SensorData &currSensorData);
 
-    /** \brief Update the calibration data file when needed
-     *
-     * Check if the calibration cycle time expired,
-     * and write updated calibration data in the file named \ref calibrationDataFileName
-     */
-    void updateCalibrationData();
+    virtual void fillCalibrationDataParameters () override;
 
-    /** \brief Thread function of \ref calibrationDataWriteThread
-     *
-     * Analyze the current status.
-     *   - When the variance of the gyro bias is smaller than the one of the calibration data update the gyro calibration data.
-     *   - When the variance of the magnetic bias (incl. Variance) is smaller than the calibration data update the mag bias data.
-     *   - Accelerometer calibration data are not being touched. I presume they are stable.
-     *   There is also no accelerometer bias and factor in the model. The Gravity parameter in the model actually applies only to the
-     *   Z axis.
-     *
-     * If any calibration data was updated write out the updated configuration back into the configuration parameter file.
-     *
-     * *Note*: This function runs in an own thread!
-     *
-     */
-    void calibrationDataWriteFunc();
+
 };
 
 } /* namespace drivers */

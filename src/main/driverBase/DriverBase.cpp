@@ -6,7 +6,7 @@
  *      Author: kai_horstmann
  *
  *   This file is part of openEVario, an electronic variometer for glider planes
- *   Copyright (C) 2017  Kai Horstmann
+ *   Copyright (C) 2022  Kai Horstmann
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -160,7 +160,68 @@ void DriverBase::writeConfigValue (
 }
 
 
+void DriverBase::updateCalibrationData() {
+	auto lastPredictionUpdate = varioMain->getLastPredictionUpdate();
+	auto timeSinceLastCalibrationWrite = lastPredictionUpdate - lastCalibrationDataWriteTime;
+	if (!calibrationWriterRunning && (timeSinceLastCalibrationWrite >= calibrationDataWriteInterval)) {
+		calibrationWriterRunning = true;
+		if (calibrationDataWriteThread.joinable()) {
+			calibrationDataWriteThread.join();
+		}
+		lastCalibrationDataWriteTime = OEVClock::now();
+		calibrationDataWriteThread = std::thread(&DriverBase::calibrationDataWriteFunc,this);
+	}
+}
 
+void DriverBase::calibrationDataWriteFunc() {
+
+
+
+	try {
+		fillCalibrationDataParameters ();
+	} catch (std::exception const &e) {
+		LOG4CXX_ERROR(logger,"Error in " << __PRETTY_FUNCTION__
+				<< ". Exception in fillCalibrationDataParameters (). Error = " << e.what());
+	}
+	catch (...) {
+		LOG4CXX_ERROR(logger,"Error in " << __PRETTY_FUNCTION__
+				<< ". Exception in fillCalibrationDataParameters (). Unknown exception");
+	}
+
+	try {
+		std::ofstream of(calibrationDataFileName,of.out | of.trunc);
+		if (of.good()) {
+			calibrationDataParameters->writeOut(of);
+		}
+	} catch (std::exception const &e) {
+		LOG4CXX_ERROR(logger,"Error in " << __PRETTY_FUNCTION__
+				<< ". Cannot write calibration data. Error = " << e.what());
+	}
+	catch (...) {
+		LOG4CXX_ERROR(logger,"Error in " << __PRETTY_FUNCTION__
+				<< ". Cannot write calibration data. Unknown exception");
+	}
+
+	lastCalibrationDataWriteTime = OEVClock::now();
+
+	calibrationWriterRunning = false;
+}
+
+void DriverBase::applyCalibrationData() {
+	LOG4CXX_WARN(logger, "Cannot apply calibration data from file \""
+			<< calibrationDataFileName
+			<< "\" to device \"" << instanceName
+			<< "\". Driver \"" << driverName
+			<< "\" does not implement reading of calibration data.");
+}
+void DriverBase::fillCalibrationDataParameters () {
+	LOG4CXX_WARN(logger, "Cannot read calibration data from device \""
+			<< instanceName
+			<< "\" for writing to update calibration data file \""
+			<< calibrationDataUpdateFileName
+			<< "\". Driver \"" << driverName
+			<< "\" does not implement reading of calibration data.");
+}
 
 #if !defined DOXYGEN
 DriverBase::SensorCapabilityHelperClass DriverBase::SensorCapabilityHelperObj;
