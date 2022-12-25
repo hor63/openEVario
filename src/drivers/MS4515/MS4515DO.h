@@ -53,9 +53,11 @@ namespace openEV::drivers::MS4515 {
 	 * I cannot believe that TE Connectivity (formerly Measurement Specialties - MEAS Sensors)
 	 * are using something so ill defined.
 	 *
+	 * End of rant
+	 *
 	 * \see [Wikipedia: Inch of water](https://en.wikipedia.org/wiki/Inch_of_water)
 	 */
-	static constexpr FloatType InchH20toMBar = 2.49082;
+	static constexpr FloatType InchH2OtoMBar = 2.49082;
 
 #if defined DOXYGEN
 	enum MS4515Register {

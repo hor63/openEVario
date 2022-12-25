@@ -190,7 +190,7 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
 		try {
 			auto tmpProperty = configuration.searchProperty("pMin_hPa");
 
-			factor = InchH20toMBar;
+			factor = InchH2OtoMBar;
 
 			if (valProperty) {
 				std::ostringstream str;
@@ -239,7 +239,7 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
 		try {
 			auto tmpProperty = configuration.searchProperty("pMax_hPa");
 
-			factor = InchH20toMBar;
+			factor = InchH2OtoMBar;
 
 			if (valProperty) {
 				std::ostringstream str;
