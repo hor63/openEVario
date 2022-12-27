@@ -421,7 +421,7 @@ void GliderVarioMainPriv::startup () {
     driverList.startupDrivers(*this);
 
     // Initialize the status to UnInitVal. Let the drivers initialize the Kalman status with initial measurements.
-    // Finally initialize all remaining items still UnInitVal with default values.
+    // Finally initialize all remaining items still at UnInitVal with default values.
 	intializeStatus();
 
 }
