@@ -157,14 +157,20 @@ void GliderVarioDriverList::loadDriverInstances(Properties4CXX::Properties const
 					loadDriverInstance(nameIter->c_str(),configuration);
 				} catch (GliderVarioDriverLoadException& e) {
 					if (programOptions.terminateOnDriverLoadError) {
+						LOG4CXX_FATAL(logger,"Failed to create device \"" << nameIter->c_str() << "\" because: " << e.what);
+						LOG4CXX_FATAL(logger,"Program will be terminated.");
+						LOG4CXX_FATAL(logger,"Bye bye!");
 						throw;
+					} else {
+						LOG4CXX_ERROR(logger,"Failed to create device \"" << nameIter->c_str() << "\" because: " << e.what);
+						LOG4CXX_ERROR(logger,"Delete device \"" << nameIter->c_str() << "\" from the device list");
 					}
 				}
 
 				nameIter++;
 			}
 		} else {
-			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"Configuration variable \"driverSharedLibs\" is neither a string nor a string list");
+			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"Configuration variable \"drivers\" is neither a string nor a string list");
 		}
 	}
 
@@ -292,7 +298,7 @@ void GliderVarioDriverList::loadDriverInstance(char const *driverInstanceName, P
 	LOG4CXX_INFO (logger,"Driver name is \"" << driverName->getStringValue() << "\"");
 
 	auto driverIter = driverList.find(driverName->getStringValue());
-	if (driverIter == driverList.cend()) {
+	if (driverIter == driverList.end()) {
 		std::ostringstream os;
 		os << "Driver \"" << driverName->getStringValue() << "\" does not exist.";
 
@@ -316,28 +322,13 @@ void GliderVarioDriverList::loadDriverInstance(char const *driverInstanceName, P
 
 	DriverInstanceList::value_type newInstanceListItem {driverInstanceName,driverInstance};
 
-	// Try to read the cycle time. This is a common property for most drivers.
-	try {
-		std::chrono::milliseconds defaultUpdCycleMilli;
-		defaultUpdCycleMilli = std::chrono::duration_cast<std::chrono::milliseconds>(driverInstance->getUpdateCyle());
-		long long defaultUpdCycleMilliTicks = defaultUpdCycleMilli.count();
-		std::chrono::milliseconds updCycle(driverConfigStruct.getPropertyValue(std::string("updateCycle"), defaultUpdCycleMilliTicks));
-		driverInstance->setUpdateCyle(updCycle);
-		LOG4CXX_DEBUG(logger,"Cycle time of driver instance \"" << driverInstance->getInstanceName()
-				<< " is configured at "
-				<< (std::chrono::duration_cast<std::chrono::milliseconds>(driverInstance->getUpdateCyle())).count() << " ms.");
-	}
-	catch (std::exception const& e) {
-		std::ostringstream str;
-		str << "Reading updateCycle for driver \"" << driverIter->second.driverName << "\" failed: "
-				<< e.what();
-		LOG4CXX_ERROR(logger,str.str());
 
-		throw GliderVarioDriverLoadException (__FILE__,__LINE__,str.str().c_str());
-	}
-
+	driverInstance->readCommonConfiguration(driverConfigStruct);
 	driverInstance->readConfiguration(driverConfigStruct);
 
+	// If you are here no major errors occurred during creation of the device=driver instance
+	// and while reading the configuration.
+	// Add the instance to the list.
 	driverInstanceList.insert(newInstanceListItem);
 
 	// Check if the driver will run the idle loop itself. Otherwise the main program runs the idle loop.
@@ -359,9 +350,27 @@ void GliderVarioDriverList::initDrivers (GliderVarioMainPriv &varioMain) {
 	auto iter = driverInstanceList.begin();
 
 	while (iter != driverInstanceList.end()) {
-		iter->second->driverInit(varioMain);
+		try {
+			iter->second->driverInit(varioMain);
+			iter ++;
+		} catch (std::exception const &e) {
 
-		iter ++;
+			if (programOptions.terminateOnDriverLoadError) {
+				LOG4CXX_FATAL(logger,"Failed to initialize device \"" << iter->second->getInstanceName() << "\" because: " << e.what);
+				LOG4CXX_FATAL(logger,"Program will be terminated.");
+				LOG4CXX_FATAL(logger,"Bye bye!");
+				throw;
+			} else {
+				LOG4CXX_ERROR(logger,"Failed to initialize device \"" << iter->second->getInstanceName() << "\" because: " << e.what);
+				LOG4CXX_ERROR(logger,"Delete device \"" << iter->second->getInstanceName() << "\" from the device list");
+				auto delIter = iter;
+				iter ++;
+
+				driverInstanceList.erase(delIter);
+			}
+
+		}
+
 	}
 }
 
