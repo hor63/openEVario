@@ -280,21 +280,19 @@ void DriverBase::readCommonConfiguration(
 				std::string("portName"),
 				"");
 
-		// std::chrono::duration does not allow direct construction of a less precise duration from one with higher precision
-		// when the count is an integer due to loss from integer division.
-		// therefore do it yourself.
-		// Here conversion to milliseconds
-		durTicks = (updateCyle.count() * 1000 * OEVDuration::period::num) / OEVDuration::period::den;
+		{
+			auto durMSec = std::chrono::duration_cast<std::chrono::milliseconds>(updateCyle);
+			durTicks = durMSec.count();
+		}
 		durTicks = configuration.getPropertyValue(
 				std::string("updateCycle"),
 				durTicks);
 		updateCyle = static_cast<OEVDuration>(std::chrono::milliseconds(durTicks));
 
-		// std::chrono::duration does not allow direct construction of a less precise duration from one with higher precision
-		// when the count is an integer due to loss from integer division.
-		// therefore do it yourself.
-		// Here conversion to seconds
-		durTicks = (errorTimeout.count() * OEVDuration::period::num) / OEVDuration::period::den;
+		{
+		auto durSec = std::chrono::duration_cast<std::chrono::seconds>(errorTimeout);
+		durTicks = durSec.count();
+		}
 		durTicks = configuration.getPropertyValue(
 				std::string("errorTimeout"),
 				durTicks);
