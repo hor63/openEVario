@@ -78,38 +78,14 @@ void NmeaGPSDriver::driverInit(GliderVarioMainPriv &varioMain) {
 
 	nmeaSet.setVarioMain(&varioMain);
 
+	ioPort = getIoPort<io::StreamPort>(logger);
+
 }
 
 void NmeaGPSDriver::readConfiguration (Properties4CXX::Properties const &configuration) {
 
-	LOG4CXX_INFO(logger,"Driver" << driverName << " read configuraion");
+	LOG4CXX_INFO(logger,"Device" << instanceName << " read configuraion");
 
-	try {
-		auto portNameConfig = configuration.searchProperty("portName");
-
-		if (portNameConfig->isList() || portNameConfig->isStruct()) {
-			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"Configuration variable \"PortName\" is a struct or a string list.");
-		}
-
-		portName = portNameConfig->getStringValue();
-
-		ioPort = dynamic_cast<io::StreamPort*> (io::PortBase::getPortByName(portName));
-		if (ioPort == nullptr) {
-			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"I/O Port is not a stream port.");
-		}
-	} catch (std::exception const& e) {
-		LOG4CXX_ERROR(logger, "Read configuration of driver \"" << driverName
-				<< "\" failed:"
-				<< e.what());
-		throw;
-	}
-
-    errorTimeout = configuration.getPropertyValue(
-    		std::string("errorTimeout"),
-			(long long)(errorTimeout));
-    errorMaxNumRetries = configuration.getPropertyValue(
-    		std::string("errorMaxNumRetries"),
-			(long long)(errorMaxNumRetries));
     CEP = configuration.getPropertyValue(
     		std::string("CEP"),
 			double (CEP));
@@ -129,7 +105,7 @@ void NmeaGPSDriver::readConfiguration (Properties4CXX::Properties const &configu
 			std::string("maxStdDeviationAltitudeUpdate"),
 			double (maxStdDeviationAltitudeUpdate));
 
-	LOG4CXX_INFO(logger,"	errorTimeout = " << errorTimeout);
+	LOG4CXX_INFO(logger,"	errorTimeout = " << ((errorTimeout.count() * decltype(errorTimeout)::period::num) / decltype(errorTimeout)::period::den));
 	LOG4CXX_INFO(logger,"	errorMaxNumRetries = " << errorMaxNumRetries);
 	LOG4CXX_INFO(logger,"	CEP = " << CEP);
 	LOG4CXX_INFO(logger,"	altStdDev = " << altStdDev);
@@ -175,7 +151,7 @@ void NmeaGPSDriver::driverThreadFunction() {
 						<< "\":" << e.what());
 				ioPort->close();
 
-				sleep(errorTimeout);
+				std::this_thread::sleep_for(errorTimeout);
 			}
 		}
 	}

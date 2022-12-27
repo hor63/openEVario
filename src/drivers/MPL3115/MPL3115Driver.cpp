@@ -79,50 +79,18 @@ void MPL3115Driver::driverInit(GliderVarioMainPriv &varioMain) {
 
 	this->varioMain = &varioMain;
 
+	ioPort = getIoPort<io::I2CPort>(logger);
+
 }
 
 void MPL3115Driver::readConfiguration (Properties4CXX::Properties const &configuration) {
 
-	LOG4CXX_INFO(logger, __FUNCTION__ << " Driver" << driverName << " read configuraion");
-
-	try {
-		auto portNameConfig = configuration.searchProperty("portName");
-
-		if (portNameConfig->isList() || portNameConfig->isStruct()) {
-			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"Configuration variable \"PortName\" is a struct or a string list.");
-		}
-
-		portName = portNameConfig->getStringValue();
-
-		ioPort = dynamic_cast<io::I2CPort*> (io::PortBase::getPortByName(portName));
-		if (ioPort == nullptr) {
-			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"I/O Port is not an I2C port.");
-		}
-
-		i2cAddress = (long long)(configuration.getPropertyValue(
-					std::string("i2cAddress"),
-					(long long)(i2cAddress)));
-		useTemperatureSensor = configuration.getPropertyValue(
-				std::string("useTemperatureSensor"),
-				useTemperatureSensor);
-		errorTimeout = configuration.getPropertyValue(
-				std::string("errorTimeout"),
-				(long long)(errorTimeout));
-		errorMaxNumRetries = configuration.getPropertyValue(
-				std::string("errorMaxNumRetries"),
-				(long long)(errorMaxNumRetries));
-	} catch (std::exception const& e) {
-		std::ostringstream str;
-		LOG4CXX_ERROR(logger, "Read configuration of driver \"" << driverName
-				<< "\" failed: "
-				<< e.what());
-		throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
-	}
+	LOG4CXX_INFO(logger, __FUNCTION__ << " Device" << instanceName << " read configuraion");
 
 	LOG4CXX_INFO(logger,"	portName = " << portName);
 	LOG4CXX_INFO(logger,"	i2cAddress = 0x" << std::hex <<  uint32_t(i2cAddress) << std::dec);
 	LOG4CXX_INFO(logger,"	useTemperatureSensor = " << useTemperatureSensor);
-	LOG4CXX_INFO(logger,"	errorTimeout = " << errorTimeout);
+	LOG4CXX_INFO(logger,"	errorTimeout = " << ((errorTimeout.count() * decltype(errorTimeout)::period::num) / decltype(errorTimeout)::period::den));
 	LOG4CXX_INFO(logger,"	errorMaxNumRetries = " << errorMaxNumRetries);
 
 }
@@ -221,7 +189,7 @@ void MPL3115Driver::driverThreadFunction() {
 						<< "\":" << e.what());
 				ioPort->close();
 
-				sleep(errorTimeout);
+				std::this_thread::sleep_for(errorTimeout);
 			}
 		}
 	}

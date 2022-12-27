@@ -189,18 +189,6 @@ public:
 
 protected:
 
-    /** \brief Name of the communications port.
-     *
-     * I/O ports are defined in the IOPorts section of the configuration
-     */
-    std::string portName;
-
-    /** \brief Timeout in seconds between recovery attempts when an error in the main loop occurs.
-     *
-     * Configuration parameter is "errorTimeout" in the driver section.
-     */
-    int32_t errorTimeout = 10;
-
     /// \brief Is the status initialization done
     bool statusInitDone = false;
 

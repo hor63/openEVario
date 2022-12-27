@@ -31,6 +31,7 @@
 
 #include <system_error>
 #include <sstream>
+#include <typeinfo>
 
 #include "CommonDefs.h"
 #include "drivers/DriverBase.h"
@@ -227,11 +228,118 @@ void DriverBase::fillCalibrationDataParameters () {
 DriverBase::SensorCapabilityHelperClass DriverBase::SensorCapabilityHelperObj;
 #endif
 
+void DriverBase::readCalibrationData() {
+
+	// Read the calibration data file, and extract the initial parameters
+	if (calibrationDataParameters) {
+		try {
+			calibrationDataParameters->readConfiguration();
+		} catch (std::exception const &e) {
+			LOG4CXX_ERROR(logger,"Driver " << driverName
+					<< ": Error reading calibration data from file " << calibrationDataFileName
+					<< ": " << e.what());
+			// The file does not exist, or it has unexpected/undefined content.
+			// Therefore I am initializing the calibration parameters fresh.
+			delete calibrationDataParameters;
+			calibrationDataParameters = new Properties4CXX::Properties(calibrationDataFileName);
+
+		}
+
+	}
+
+}
+
+
+void DriverBase::readCommonConfiguration(
+			const Properties4CXX::Properties &configuration) {
+
+	try {
+		auto portNameConfig = configuration.searchProperty("portName");
+
+		if (portNameConfig->isList() || portNameConfig->isStruct()) {
+			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"Configuration variable \"PortName\" is a struct or a string list.");
+		}
+
+		portName = portNameConfig->getStringValue();
+
+	} catch (std::exception const& e) {
+		// A not found port name is not necessary issue since not all drivers require it.
+		// A missing port name is dealt with later in the driver when necessary.
+		if (typeid(e) != typeid(Properties4CXX::ExceptionPropertyNotFound)) {
+			LOG4CXX_ERROR(logger, "Read configuration of portName \"" << portName
+					<< "\" failed:"
+					<< e.what());
+		throw;
+		}
+	}
+
+	try {
+		long long durTicks;
+
+		portName = configuration.getPropertyValue(
+				std::string("portName"),
+				"");
+
+		// std::chrono::duration does not allow direct construction of a less precise duration from one with higher precision
+		// when the count is an integer due to loss from integer division.
+		// therefore do it yourself.
+		// Here conversion to milliseconds
+		durTicks = (updateCyle.count() * 1000 * OEVDuration::period::num) / OEVDuration::period::den;
+		durTicks = configuration.getPropertyValue(
+				std::string("updateCycle"),
+				durTicks);
+		updateCyle = static_cast<OEVDuration>(std::chrono::milliseconds(durTicks));
+
+		// std::chrono::duration does not allow direct construction of a less precise duration from one with higher precision
+		// when the count is an integer due to loss from integer division.
+		// therefore do it yourself.
+		// Here conversion to seconds
+		durTicks = (errorTimeout.count() * OEVDuration::period::num) / OEVDuration::period::den;
+		durTicks = configuration.getPropertyValue(
+				std::string("errorTimeout"),
+				durTicks);
+		errorTimeout = static_cast<OEVDuration>(std::chrono::seconds(durTicks));
+
+		errorMaxNumRetries = configuration.getPropertyValue(
+				std::string("errorMaxNumRetries"),
+				static_cast<long long>(errorMaxNumRetries));
+
+		calibrationDataFileName = configuration.getPropertyValue(
+				std::string("calibrationDataFile"),
+				"");
+		useCalibrationDataFile = !calibrationDataFileName.empty();
+
+		calibrationDataFileName = configuration.getPropertyValue(
+				std::string("calibrationDataFile"),
+				"");
+		durTicks = configuration.getPropertyValue(
+				std::string("calibrationDataUpdateCycle"),0LL);
+		calibrationDataWriteInterval = static_cast<OEVDuration>(std::chrono::seconds(durTicks));
+		useCalibrationDataFile = !calibrationDataFileName.empty() && durTicks > 0LL;
+
+		loadCalibrationDataUpdateFileBeforeStatic = configuration.getPropertyValue(
+				std::string("loadCalibrationDataUpdateFileBeforeStatic"),
+				loadCalibrationDataUpdateFileBeforeStatic);
+
+	} catch (std::exception const& e) {
+		std::ostringstream str;
+
+		str << "Read configuration of device \"" << instanceName
+				<< "\" failed:"
+				<< e.what();
+
+		LOG4CXX_ERROR(logger, str.str().c_str());
+		throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
+	}
+
+
+
+
+}
+
 }
 
 std::ostream& operator << (std::ostream &o,openEV::drivers::DriverBase::SensorCapability ind) {
 	o << openEV::drivers::DriverBase::SensorCapabilityHelperObj.getString (ind);
 	return o;
 }
-
-

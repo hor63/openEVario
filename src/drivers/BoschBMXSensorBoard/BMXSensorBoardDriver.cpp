@@ -72,32 +72,14 @@ BMXSensorBoardDriver::~BMXSensorBoardDriver() {
 
 void BMXSensorBoardDriver::readConfiguration (Properties4CXX::Properties const &configuration) {
 
-	LOG4CXX_DEBUG(logger,"Driver" << driverName << " read configuraion");
+	LOG4CXX_INFO(logger, __FUNCTION__ << " Device" << instanceName << " read configuraion");
 
+}
 
-	try {
-		auto portNameConfig = configuration.searchProperty("portName");
+void BMXSensorBoardDriver::driverInit(GliderVarioMainPriv &varioMain) {
+	ioPort = getIoPort<io::DatagramPort>(logger);
 
-		if (portNameConfig->isList() || portNameConfig->isStruct()) {
-			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"Configuration variable \"PortName\" is a struct or a string list.");
-		}
-
-		portName = portNameConfig->getStringValue();
-
-		ioPort = dynamic_cast<io::DatagramPort*> (io::PortBase::getPortByName(portName));
-		if (ioPort == nullptr) {
-			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"I/O Port is not a stream port.");
-		}
-	} catch (std::exception const& e) {
-		LOG4CXX_ERROR(logger, "Read configuration of driver \"" << driverName
-				<< "\" failed:"
-				<< e.what());
-		throw;
-	}
-
-    errorTimeout = configuration.getPropertyValue(std::string("errorTimeout"),(long long)(10));
-    errorMaxNumRetries = configuration.getPropertyValue(std::string("errorMaxNumRetries"),(long long)(0));
-
+	IMUBase::driverInit(varioMain);
 }
 
 void BMXSensorBoardDriver::driverThreadFunction() {
@@ -120,7 +102,7 @@ void BMXSensorBoardDriver::driverThreadFunction() {
 						<< "\":" << e.what());
 				ioPort->close();
 
-				sleep(errorTimeout);
+				std::this_thread::sleep_for(errorTimeout);
 			}
 		}
 	}
@@ -361,8 +343,7 @@ void BMXSensorBoardDriver::processingMainLoop () {
 	}
 }
 
-/*!
- * @brief This internal API is used to obtain the compensated
+/** \brief This internal API is used to obtain the compensated
  * magnetometer x axis data(micro-tesla) in float.
  */
 float BMXSensorBoardDriver::compensate_x(int16_t mag_data_x, uint16_t data_rhall)
@@ -393,8 +374,7 @@ float BMXSensorBoardDriver::compensate_x(int16_t mag_data_x, uint16_t data_rhall
 	return retval;
 }
 
-/*!
- * @brief This internal API is used to obtain the compensated
+/** \brief This internal API is used to obtain the compensated
  * magnetometer y axis data(micro-tesla) in float.
  */
 float BMXSensorBoardDriver::compensate_y(int16_t mag_data_y, uint16_t data_rhall)
@@ -425,8 +405,7 @@ float BMXSensorBoardDriver::compensate_y(int16_t mag_data_y, uint16_t data_rhall
 	return retval;
 }
 
-/*!
- * @brief This internal API is used to obtain the compensated
+/** \brief This internal API is used to obtain the compensated
  * magnetometer z axis data(micro-tesla) in float.
  */
 float BMXSensorBoardDriver::compensate_z(int16_t mag_data_z, uint16_t data_rhall)

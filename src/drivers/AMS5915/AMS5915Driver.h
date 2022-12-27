@@ -31,10 +31,10 @@
 #include <map>
 
 #include "CommonDefs.h"
+#include "util/io/I2CPort.h"
 #include "AMS5915Defs.h"
 #include "drivers/DriverBase.h"
 #include "AMS5915Lib.h"
-#include "util/io/I2CPort.h"
 
 namespace openEV::drivers::AMS5915 {
 
@@ -154,12 +154,6 @@ protected:
 
 private:
 
-    /** \brief Name of the communications port.
-     *
-     * I/O ports are defined in the IOPorts section of the configuration
-     */
-    std::string portName;
-
     uint8_t i2cAddress = AMS5915I2CAddr;
 
     /**
@@ -172,23 +166,6 @@ private:
 	 * Optional. Default false.
      */
     bool useTemperatureSensor = false;
-
-    /** \brief Timeout in seconds between recovery attempts when an error in the main loop occurs.
-     *
-     * Configuration parameter is "errorTimeout" in the driver section.
-     */
-    int32_t errorTimeout = 10;
-
-    /** \brief Maximum number of retries upon consecutive errors in the main loop.
-     *
-     * A value <= 0 means that the number of retries is unlimited.
-     *
-     * When the maximum number of retries is exceeded the main loop terminates and the driver ceases to operate
-     *
-     * Configuration parameter is "errorMaxNumRetries" in the driver section.
-     *
-     */
-    int32_t errorMaxNumRetries = 0;
 
     /// \brief The I/O port.
     ///
@@ -238,12 +215,6 @@ private:
      * \see pressureErrorDynFactor
      */
     FloatType pressureErrorStatic = UnInitVal;
-
-    /// Name of the calibration data parameter file
-    std::string calibrationDataFileName;
-
-    /// Loaded and parsed calibration data
-    Properties4CXX::Properties *calibrationDataParameters = nullptr;
 
 };
 

@@ -67,39 +67,20 @@ MPU9150Driver::MPU9150Driver(
 MPU9150Driver::~MPU9150Driver() {
 }
 
+void MPU9150Driver::driverInit(GliderVarioMainPriv &varioMain) {
+	ioPort = getIoPort<io::I2CPort>(logger);
 
+	IMUBase::driverInit(varioMain);
+}
 
 void MPU9150Driver::readConfiguration (Properties4CXX::Properties const &configuration) {
 
-	LOG4CXX_DEBUG(logger,"Driver" << driverName << " read configuraion");
+	LOG4CXX_INFO(logger, __FUNCTION__ << " Device" << instanceName << " read configuraion");
 
 
-	try {
-		auto portNameConfig = configuration.searchProperty("portName");
-
-		if (portNameConfig->isList() || portNameConfig->isStruct()) {
-			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"Configuration variable \"PortName\" is a struct or a string list.");
-		}
-
-		portName = portNameConfig->getStringValue();
-
-		ioPort = dynamic_cast<io::I2CPort*> (io::PortBase::getPortByName(portName));
-		if (ioPort == nullptr) {
-			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"I/O Port is not a stream port.");
-		}
-	} catch (std::exception const& e) {
-		LOG4CXX_ERROR(logger, "Read configuration of driver \"" << driverName
-				<< "\" failed:"
-				<< e.what());
-		throw;
-	}
-
-    errorTimeout = configuration.getPropertyValue(std::string("errorTimeout"),(long long)(10));
-    errorMaxNumRetries = configuration.getPropertyValue(std::string("errorMaxNumRetries"),(long long)(0));
-
-	i2cAddress = (long long)(configuration.getPropertyValue(
+	i2cAddress = static_cast<long long>(configuration.getPropertyValue(
 	    		std::string("i2cAddress"),
-				(long long)(i2cAddress)));
+				static_cast<long long>(i2cAddress)));
 
 
 }
@@ -386,7 +367,7 @@ void MPU9150Driver::driverThreadFunction() {
 						<< "\":" << e.what());
 				ioPort->close();
 
-				sleep(errorTimeout);
+				std::this_thread::sleep_for(errorTimeout);
 			}
 		}
 	}

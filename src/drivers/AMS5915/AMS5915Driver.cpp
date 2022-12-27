@@ -78,53 +78,19 @@ void AMS5915Driver::driverInit(GliderVarioMainPriv &varioMain) {
 
 	this->varioMain = &varioMain;
 
-	// Read the calibration data file, and extract the initial parameters
-	if (calibrationDataParameters) {
-		try {
-			calibrationDataParameters->readConfiguration();
-		} catch (std::exception const &e) {
-			LOG4CXX_ERROR(logger,"Driver " << driverName
-					<< ": Error reading calibration data from file " << calibrationDataFileName
-					<< ": " << e.what());
-			// The file does not exist, or it has unexpected/undefined content.
-			// Therefore I am initializing the calibration parameters fresh.
-			delete calibrationDataParameters;
-			calibrationDataParameters = new Properties4CXX::Properties(calibrationDataFileName);
+	ioPort = getIoPort<io::I2CPort>(logger);
 
-		}
-
-		double pressureBiasD = pressureBias;
-		readOrCreateConfigValue(calibrationDataParameters,pressureBiasCalibrationName,pressureBiasD);
-		pressureBias = FloatType(pressureBiasD);
-		LOG4CXX_DEBUG (logger,__FUNCTION__ << ": Driver " << getDriverName()
-				<< " Read pressure bias from calibration data = " << pressureBias);
-	}
+	double pressureBiasD = pressureBias;
+	readOrCreateConfigValue(calibrationDataParameters,pressureBiasCalibrationName,pressureBiasD);
+	pressureBias = FloatType(pressureBiasD);
+	LOG4CXX_DEBUG (logger,__FUNCTION__ << ": Driver " << getDriverName()
+			<< " Read pressure bias from calibration data = " << pressureBias);
 
 }
 
 void AMS5915Driver::readConfiguration (Properties4CXX::Properties const &configuration) {
 
-	LOG4CXX_INFO(logger, __FUNCTION__ << " Driver" << driverName << " read configuraion");
-
-	try {
-		auto portNameConfig = configuration.searchProperty("portName");
-
-		if (portNameConfig->isList() || portNameConfig->isStruct()) {
-			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"Variable is a struct or a string list.");
-		}
-
-		portName = portNameConfig->getStringValue();
-
-		ioPort = dynamic_cast<io::I2CPort*> (io::PortBase::getPortByName(portName));
-		if (ioPort == nullptr) {
-			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"I/O Port is not an I2C port.");
-		}
-	} catch (std::exception const& e) {
-		LOG4CXX_ERROR(logger, "Read configuration \"portName\" of driver \"" << driverName
-				<< "\" failed:"
-				<< e.what());
-		throw;
-	}
+	LOG4CXX_INFO(logger, __FUNCTION__ << " Device" << instanceName << " read configuraion");
 
 	{
 
@@ -133,7 +99,7 @@ void AMS5915Driver::readConfiguration (Properties4CXX::Properties const &configu
 			pMin = configPMin->getDoubleValue();
 		} catch (const std::exception & e) {
 			std::ostringstream str;
-			str << "Could not read configuration \"pMin\" for driver \"" << driverName
+			str << "Could not read configuration \"pMin\" for device \"" << instanceName
 					<< "\" because: "
 					<< e.what();
 			LOG4CXX_ERROR(logger, str.str());
@@ -154,24 +120,6 @@ void AMS5915Driver::readConfiguration (Properties4CXX::Properties const &configu
 
 	}
 
-    try {
-    	auto fileNameProp = configuration.searchProperty("calibrationDataFile");
-
-		if (fileNameProp->isList() || fileNameProp->isStruct()) {
-			std::ostringstream str;
-			str << "Invalid configuration for driver \"" << driverName
-					<< "\": \"calibrationDataFile\" is either a structure or a string list";
-			LOG4CXX_ERROR(logger, str.str());
-			throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
-		}
-
-    	calibrationDataFileName = fileNameProp->getStringValue();
-    	calibrationDataParameters = new Properties4CXX::Properties(calibrationDataFileName);
-
-    } catch (Properties4CXX::ExceptionPropertyNotFound const &e) {
-    	LOG4CXX_INFO(logger,"Driver" << driverName << ": No calibration data file specified");
-    }
-
     pressureRange = fabs(pMax - pMin);
     pressureResolution = (pMax - pMin) / (AMS5915PressureRangeMaxCount - AMS5915PressureRangeMinCount);
 	// Expected static error is assessed by the full measurement range.
@@ -184,12 +132,6 @@ void AMS5915Driver::readConfiguration (Properties4CXX::Properties const &configu
 		useTemperatureSensor = configuration.getPropertyValue(
 				std::string("useTemperatureSensor"),
 				useTemperatureSensor);
-		errorTimeout = configuration.getPropertyValue(
-				std::string("errorTimeout"),
-				(long long)(errorTimeout));
-		errorMaxNumRetries = configuration.getPropertyValue(
-				std::string("errorMaxNumRetries"),
-				(long long)(errorMaxNumRetries));
 	} catch (std::exception const &e) {
 		std::ostringstream str;
 		str << "Error reading the configuration for driver \"" << driverName
@@ -207,7 +149,7 @@ void AMS5915Driver::readConfiguration (Properties4CXX::Properties const &configu
 	LOG4CXX_INFO(logger,"	portName = " << portName);
 	LOG4CXX_INFO(logger,"	i2cAddress = 0x" << std::hex <<  uint32_t(i2cAddress) << std::dec);
 	LOG4CXX_INFO(logger,"	useTemperatureSensor = " << useTemperatureSensor);
-	LOG4CXX_INFO(logger,"	errorTimeout = " << errorTimeout);
+	LOG4CXX_INFO(logger,"	errorTimeout = " << ((errorTimeout.count() * decltype(errorTimeout)::period::num) / decltype(errorTimeout)::period::den));
 	LOG4CXX_INFO(logger,"	errorMaxNumRetries = " << errorMaxNumRetries);
 	if(calibrationDataParameters) {
 		LOG4CXX_INFO(logger,"	Calibration data file name = " << calibrationDataFileName);
@@ -342,7 +284,7 @@ void AMS5915Driver::driverThreadFunction() {
 						<< "\":" << e.what());
 				ioPort->close();
 
-				sleep(errorTimeout);
+				std::this_thread::sleep_for(errorTimeout);
 			}
 		}
 	}

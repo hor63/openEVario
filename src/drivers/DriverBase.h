@@ -39,7 +39,7 @@
 #include "CommonDefs.h"
 #include "Properties4CXX/Properties.h"
 
-
+#include "util/io/PortBase.h"
 #include "kalman/GliderVarioStatus.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
 #include "drivers/DriverLibBase.h"
@@ -171,7 +171,13 @@ public:
      */
     virtual void driverInit(GliderVarioMainPriv &varioMain) = 0;
 
-    /** \brief Read the configuration for the driver
+    /** \brief Read the configuration values which are common for most or all drivers.
+     *
+     * @param configuration Sub-structure of the driver instance configuration
+     */
+    void readCommonConfiguration (Properties4CXX::Properties const &configuration);
+
+    /** \brief Read the driver specific configuration for the driver
      *
      * @param configuration Sub-structure of the driver instance configuration
      */
@@ -328,6 +334,50 @@ public:
     		double value
     		);
 
+    /** \brief Helper function to obtain the I/O port object of the correct class
+     *
+     * Template helper function to
+     * - check if \ref portName was configured at all
+     * - obtain the the pointer to an I/O port object named by \ref portName
+     * - dynamically up-casting the base pointer type io::PortBase to the template pointer type \p t.
+     *
+     * If any of the activities listed fails an exception with diagnostic text is thrown.
+     *
+     * @tparam t Specialized class derived from base class \ref io::PortBase
+     * @param logger Log4CPP logger object of the calling class
+     * @return Pointer to the I/O port object of the class \p t. The pointer is never \p nullptr.
+     *   In any case where the result would be \p nullptr an exception is thrown.
+     */
+    template <typename t>
+    t* getIoPort(log4cxx::LoggerPtr logger) {
+    	t* port;
+
+    	try {
+    		if (portName.empty()) {
+    			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"\"portName\" was not configured.");
+    		}
+
+    		port = dynamic_cast<t*>(io::PortBase::getPortByName(portName));
+
+    		if (port == nullptr) {
+				std::ostringstream str;
+
+				str << "I/O port \"" << portName << "\" is not of type I2CPort. The type is \""
+						<< typeid(t).name() << "\" instead.";
+				throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
+    		}
+
+    	} catch (std::exception const& e) {
+    		std::ostringstream str;
+    		str << "I/O port configuration error for device \"" << instanceName
+    				<< "\": " << e.what();
+    		LOG4CXX_ERROR(logger, str.str());
+    		throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
+    	}
+
+    	return port;
+    }
+
 private:
 
     /** \brief Flag if sensor data should update the Kalman filter.
@@ -359,6 +409,21 @@ protected:
     std::string description;
     std::string instanceName;
 
+    DriverLibBase &driverLib;
+
+    /// Pointer to the main object. Is being set by \ref startup() and set NULL by \ref shutdown()
+    GliderVarioMainPriv *varioMain = 0;
+
+    /// \brief The sensor driver thread
+    std::thread driverThread;
+
+    // == Common configuration parameters =========================
+    /** \brief Name of the communications port.
+     *
+     * I/O ports are defined in the IOPorts section of the configuration
+     */
+    std::string portName;
+
     /** \brief The update cycle of the driver
      *
      * Most drivers are polling the sensor with an self-determined cycle.
@@ -370,29 +435,58 @@ protected:
      */
     OEVDuration updateCyle = std::chrono::milliseconds(100);
 
-    DriverLibBase &driverLib;
+    /** \brief Timeout in seconds between recovery attempts when an error in the main loop occurs.
+     *
+     * Configuration parameter is "errorTimeout" in the driver section.
+     */
+    OEVDuration errorTimeout = std::chrono::seconds(10);
 
-    /// Pointer to the main object. Is being set by \ref startup() and set NULL by \ref shutdown()
-    GliderVarioMainPriv *varioMain = 0;
+    /** \brief Maximum number of retries upon consecutive errors in the main loop.
+     *
+     * A value <= 0 means that the number of retries is unlimited.
+     *
+     * When the maximum number of retries is exceeded the main loop terminates and the driver ceases to operate
+     *
+     * Configuration parameter is "errorMaxNumRetries" in the driver section.
+     *
+     */
+    int32_t errorMaxNumRetries = 0;
 
-    /// \brief The sensor driver thread
-    std::thread driverThread;
-
-    /// brief Name of the initial calibration data parameter file
+    /// \brief Name of the initial calibration data parameter file
     std::string calibrationDataFileName;
+    /** \brief Try to read calibration data from a file.
+     *
+     * Automatically true when calibrationDataFileName is not empty.
+     */
+    bool useCalibrationDataFile = false;
 
     /// \brief Name of the continuously updated calibration data parameter file
     std::string calibrationDataUpdateFileName;
+
     /// \brief Interval to save the continuously updated calibration data
     OEVClock::duration calibrationDataWriteInterval = OEVClock::duration(0);
+    /** \brief Write updated calibration data to a file.
+     *
+     * Automatically true when calibrationDataUpdateFileName is not empty, and
+     * calibrationDataWriteInterval is > 0.
+     */
+    bool useCalibrationDataUpdateFile = false;
+
     /// \brief Time of the last calibration data update, or the initial load
     OEVClock::time_point lastCalibrationDataWriteTime;
-    bool isCalibrationDataUpdateActive = false;
-    /// When both \ref calibrationDataFileName and \ref calibrationDataUpdateFileName are configured
-    /// try loading the file named by calibrationDataUpdateFileName first. When that does not exist
-    /// try loading the static file named by calibrationDataUpdateFileName.
-    /// Else try loading the files in the opposite order.
+    /// \brief Flag indicating when the calibration data write thread is still active.
+    volatile bool isCalibrationDataUpdateActive = false;
+
+    /** \brief Load dynamic updated calibration date before static calibration data
+	 *
+     *  When both \ref calibrationDataFileName and \ref calibrationDataUpdateFileName are configured
+     *  try loading the file named by calibrationDataUpdateFileName first. When that does not exist
+     *  try loading the static file named by calibrationDataUpdateFileName.
+     *  Else try loading the files in the opposite order.
+     *
+     */
     bool loadCalibrationDataUpdateFileBeforeStatic = true;
+
     /// Loaded and parsed calibration data
     Properties4CXX::Properties *calibrationDataParameters = nullptr;
     /** \brief Thread object for the calibration data writer thread

@@ -79,67 +79,19 @@ void TE_MEAS_AbsPressureDriver::driverInit(GliderVarioMainPriv &varioMain) {
 
 	this->varioMain = &varioMain;
 
+	ioPort = getIoPort<io::I2CPort>(logger);
+
 }
 
 void TE_MEAS_AbsPressureDriver::readConfiguration (Properties4CXX::Properties const &configuration) {
 
-	LOG4CXX_INFO(logger, __FUNCTION__ << " Driver" << driverName << " read configuraion");
-
-	try {
-		auto portNameConfig = configuration.searchProperty("portName");
-
-		if (portNameConfig->isList() || portNameConfig->isStruct()) {
-			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"Configuration variable \"PortName\" is a struct or a string list.");
-		}
-
-		portName = portNameConfig->getStringValue();
-
-#if !TE_MEAS_ABS_PRESSURE_TEST_MODE
-		ioPort = dynamic_cast<io::I2CPort*> (io::PortBase::getPortByName(portName));
-		if (ioPort == nullptr) {
-			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"I/O Port is not an I2C port.");
-		}
-#endif
-
-		i2cAddress = (long long)(configuration.getPropertyValue(
-					std::string("i2cAddress"),
-					(long long)(i2cAddress)));
-		useTemperatureSensor = configuration.getPropertyValue(
-				std::string("useTemperatureSensor"),
-				useTemperatureSensor);
-#if TE_MEAS_ABS_PRESSURE_TEST_MODE
-		// If in test mode the CRC check is guaranteed to fail because
-		// only coefficient example values are given in the data sheets
-		// but not a complete set of PROM memory.
-		checkCRC = false;
-#else
-		checkCRC = configuration.getPropertyValue(
-				std::string("checkCRC"),
-				checkCRC);
-#endif
-		errorTimeout = configuration.getPropertyValue(
-				std::string("errorTimeout"),
-				(long long)(errorTimeout));
-		errorMaxNumRetries = configuration.getPropertyValue(
-				std::string("errorMaxNumRetries"),
-				(long long)(errorMaxNumRetries));
-
-	} catch (std::exception const& e) {
-		std::ostringstream str;
-
-		str << "Read configuration of driver \"" << driverName
-				<< "\" failed:"
-				<< e.what();
-
-		LOG4CXX_ERROR(logger, str.str().c_str());
-		throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
-	}
+	LOG4CXX_INFO(logger, __FUNCTION__ << " Device" << instanceName << " read configuraion");
 
 	LOG4CXX_INFO(logger,"	portName = " << portName);
 	LOG4CXX_INFO(logger,"	i2cAddress = 0x" << std::hex <<  uint32_t(i2cAddress) << std::dec);
 	LOG4CXX_INFO(logger,"	useTemperatureSensor = " << useTemperatureSensor);
 	LOG4CXX_INFO(logger,"	checkCRC = " << checkCRC);
-	LOG4CXX_INFO(logger,"	errorTimeout = " << errorTimeout);
+	LOG4CXX_INFO(logger,"	errorTimeout = " << ((errorTimeout.count() * decltype(errorTimeout)::period::num) / decltype(errorTimeout)::period::den));
 	LOG4CXX_INFO(logger,"	errorMaxNumRetries = " << errorMaxNumRetries);
 
 }
@@ -256,7 +208,7 @@ void TE_MEAS_AbsPressureDriver::driverThreadFunction() {
 				ioPort->close();
 #endif
 
-				sleep(errorTimeout);
+				std::this_thread::sleep_for(errorTimeout);
 			}
 		}
 	}

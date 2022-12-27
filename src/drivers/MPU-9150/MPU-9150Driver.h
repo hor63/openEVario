@@ -90,6 +90,17 @@ public:
      */
     virtual void readConfiguration (Properties4CXX::Properties const &configuration) override;
 
+    /** \brief Initialize the driver
+	 *
+	 * Obtains the I/O port pointer.
+	 * The remainder is handled by calling \ref IMUBase::driverInit()
+     *
+	 * @param varioMain mainVario object; provides all additional information like program parameters, and the parsed properties.
+	 * \see IMUBase::driverInit()
+     * \see GliderVarioDriverBase::driverInit()
+     */
+    virtual void driverInit(GliderVarioMainPriv &varioMain) override;
+
 protected:
 
 	/** \brief Read a single bye using Slave 4 on the auxiliary I2C bus
@@ -148,19 +159,6 @@ protected:
     virtual void processingMainLoop ();
 
 private:
-
-    std::string portName;
-
-    /** \brief Maximum number of retries upon consecutive errors in the main loop.
-     *
-     * A value <= 0 means that the number of retries is unlimited.
-     *
-     * When the maximum number of retries is exceeded the main loop terminates and the driver ceases to operate
-     *
-     * Configuration parameter is "errorMaxNumRetries" in the driver section.
-     *
-     */
-    int32_t errorMaxNumRetries = 0;
 
     /// \brief The I/O port. Typically this is a TCP port.
     io::I2CPort *ioPort = nullptr;

@@ -131,12 +131,6 @@ protected:
 
 private:
 
-    /** \brief Name of the communications port.
-     *
-     * I/O ports are defined in the IOPorts section of the configuration
-     */
-    std::string portName;
-
     uint8_t i2cAddress = MPL3115A2I2CAddr;
 
     /**
@@ -149,23 +143,6 @@ private:
 	 * Optional. Default false.
      */
     bool useTemperatureSensor = false;
-
-    /** \brief Timeout in seconds between recovery attempts when an error in the main loop occurs.
-     *
-     * Configuration parameter is "errorTimeout" in the driver section.
-     */
-    int32_t errorTimeout = 10;
-
-    /** \brief Maximum number of retries upon consecutive errors in the main loop.
-     *
-     * A value <= 0 means that the number of retries is unlimited.
-     *
-     * When the maximum number of retries is exceeded the main loop terminates and the driver ceases to operate
-     *
-     * Configuration parameter is "errorMaxNumRetries" in the driver section.
-     *
-     */
-    int32_t errorMaxNumRetries = 0;
 
     /// \brief The I/O port.
     ///

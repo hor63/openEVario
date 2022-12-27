@@ -79,6 +79,8 @@ void MS4515Driver::driverInit(GliderVarioMainPriv &varioMain) {
 
 	this->varioMain = &varioMain;
 
+	ioPort = getIoPort<io::I2CPort>(logger);
+
 	// Read the calibration data file, and extract the initial parameters
 	if (calibrationDataParameters) {
 		try {
@@ -105,38 +107,7 @@ void MS4515Driver::driverInit(GliderVarioMainPriv &varioMain) {
 
 void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configuration) {
 
-	LOG4CXX_INFO(logger, __FUNCTION__ << " Driver" << driverName << " read configuraion");
-
-	try {
-		auto portNameConfig = configuration.searchProperty("portName");
-
-		if (portNameConfig->isList() || portNameConfig->isStruct()) {
-			std::ostringstream str;
-
-			str << " Variable \"portName\" is a struct or a string list but not a plain string.";
-
-			throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
-		}
-
-		portName = portNameConfig->getStringValue();
-
-		ioPort = dynamic_cast<io::I2CPort*> (io::PortBase::getPortByName(portName));
-		if (ioPort == nullptr) {
-			std::ostringstream str;
-
-			str << " I/O Port \""<< portName << "\" is not an I2C port.";
-
-			throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
-		}
-	} catch (std::exception const& e) {
-		std::ostringstream str;
-
-		str << "Read configuration \"portName\" of driver \"" << driverName
-						<< "\" failed:" << e.what();
-
-		LOG4CXX_ERROR(logger,str.str());
-		throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
-	}
+	LOG4CXX_INFO(logger, __FUNCTION__ << " Device" << instanceName << " read configuraion");
 
 	try {
 		auto sensorTypeConfig =  configuration.searchProperty("sensorType");
@@ -315,12 +286,6 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
 	useTemperatureSensor = configuration.getPropertyValue(
     		std::string("useTemperatureSensor"),
 			useTemperatureSensor);
-    errorTimeout = configuration.getPropertyValue(
-    		std::string("errorTimeout"),
-			(long long)(errorTimeout));
-    errorMaxNumRetries = configuration.getPropertyValue(
-    		std::string("errorMaxNumRetries"),
-			(long long)(errorMaxNumRetries));
 
     LOG4CXX_INFO(logger,"Driver" << driverName << " data>");
     LOG4CXX_INFO(logger,"	sensorType = " << configuration.searchProperty("sensorType")->getStringValue());
@@ -331,7 +296,7 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
 	LOG4CXX_INFO(logger,"	portName = " << portName);
 	LOG4CXX_INFO(logger,"	i2cAddress = 0x" << std::hex <<  uint32_t(i2cAddress) << std::dec);
 	LOG4CXX_INFO(logger,"	useTemperatureSensor = " << useTemperatureSensor);
-	LOG4CXX_INFO(logger,"	errorTimeout = " << errorTimeout);
+	LOG4CXX_INFO(logger,"	errorTimeout = " << ((errorTimeout.count() * decltype(errorTimeout)::period::num) / decltype(errorTimeout)::period::den));
 	LOG4CXX_INFO(logger,"	errorMaxNumRetries = " << errorMaxNumRetries);
 	if(calibrationDataParameters) {
 		LOG4CXX_INFO(logger,"	Calibration data file name = " << calibrationDataFileName);
@@ -476,7 +441,7 @@ void MS4515Driver::driverThreadFunction() {
 						<< "\":" << e.what());
 				ioPort->close();
 
-				sleep(errorTimeout);
+				std::this_thread::sleep_for(errorTimeout);
 			}
 		}
 	}
