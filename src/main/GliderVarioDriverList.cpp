@@ -157,12 +157,12 @@ void GliderVarioDriverList::loadDriverInstances(Properties4CXX::Properties const
 					loadDriverInstance(nameIter->c_str(),configuration);
 				} catch (GliderVarioDriverLoadException& e) {
 					if (programOptions.terminateOnDriverLoadError) {
-						LOG4CXX_FATAL(logger,"Failed to create device \"" << nameIter->c_str() << "\" because: " << e.what);
+						LOG4CXX_FATAL(logger,"Failed to create device \"" << nameIter->c_str() << "\" because: " << e.what());
 						LOG4CXX_FATAL(logger,"Program will be terminated.");
 						LOG4CXX_FATAL(logger,"Bye bye!");
 						throw;
 					} else {
-						LOG4CXX_ERROR(logger,"Failed to create device \"" << nameIter->c_str() << "\" because: " << e.what);
+						LOG4CXX_ERROR(logger,"Failed to create device \"" << nameIter->c_str() << "\" because: " << e.what());
 						LOG4CXX_ERROR(logger,"Delete device \"" << nameIter->c_str() << "\" from the device list");
 					}
 				}
@@ -356,12 +356,12 @@ void GliderVarioDriverList::initDrivers (GliderVarioMainPriv &varioMain) {
 		} catch (std::exception const &e) {
 
 			if (programOptions.terminateOnDriverLoadError) {
-				LOG4CXX_FATAL(logger,"Failed to initialize device \"" << iter->second->getInstanceName() << "\" because: " << e.what);
+				LOG4CXX_FATAL(logger,"Failed to initialize device \"" << iter->second->getInstanceName() << "\" because: " << e.what());
 				LOG4CXX_FATAL(logger,"Program will be terminated.");
 				LOG4CXX_FATAL(logger,"Bye bye!");
 				throw;
 			} else {
-				LOG4CXX_ERROR(logger,"Failed to initialize device \"" << iter->second->getInstanceName() << "\" because: " << e.what);
+				LOG4CXX_ERROR(logger,"Failed to initialize device \"" << iter->second->getInstanceName() << "\" because: " << e.what());
 				LOG4CXX_ERROR(logger,"Delete device \"" << iter->second->getInstanceName() << "\" from the device list");
 				auto delIter = iter;
 				iter ++;
