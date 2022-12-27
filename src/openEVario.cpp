@@ -51,15 +51,12 @@ int main (int argc, char *argv[]) {
     oevMain.startup();
     oevMain.runMainLoop();
 
-    system_clock::time_point nextTime = system_clock::now() + waitTime;
+    /// todo: Do something useful here. Otherwise the program ends right here :)
     while (1) {
 
-    	std::this_thread::sleep_until(nextTime);
-
-    	nextTime += waitTime;
+    	std::this_thread::sleep_for(waitTime);
 
     }
-/// todo: Do something useful here. Otherwise the program ends right here :)
 
     return 0;
 }
