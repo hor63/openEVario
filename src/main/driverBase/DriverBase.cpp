@@ -307,13 +307,13 @@ void DriverBase::readCommonConfiguration(
 				"");
 		useCalibrationDataFile = !calibrationDataFileName.empty();
 
-		calibrationDataFileName = configuration.getPropertyValue(
-				std::string("calibrationDataFile"),
+		calibrationDataUpdateFileName = configuration.getPropertyValue(
+				std::string("calibrationDataUpdateFile"),
 				"");
 		durTicks = configuration.getPropertyValue(
 				std::string("calibrationDataUpdateCycle"),0LL);
 		calibrationDataWriteInterval = static_cast<OEVDuration>(std::chrono::seconds(durTicks));
-		useCalibrationDataFile = !calibrationDataFileName.empty() && durTicks > 0LL;
+		useCalibrationDataUpdateFile = !calibrationDataUpdateFileName.empty() && durTicks > 0LL;
 
 		loadCalibrationDataUpdateFileBeforeStatic = configuration.getPropertyValue(
 				std::string("loadCalibrationDataUpdateFileBeforeStatic"),
@@ -331,6 +331,17 @@ void DriverBase::readCommonConfiguration(
 	}
 
 
+	LOG4CXX_INFO (logger,__FUNCTION__ << " for device \"" << instanceName << "\":");
+	LOG4CXX_INFO (logger,"\t portName = " << portName);
+	LOG4CXX_INFO (logger,"\t updateCyle = " << (std::chrono::duration_cast<std::chrono::milliseconds>(updateCyle).count()) << "ms");
+	LOG4CXX_INFO (logger,"\t errorTimeout = " << (std::chrono::duration_cast<std::chrono::seconds>(errorTimeout).count()) << "s");
+	LOG4CXX_INFO (logger,"\t errorMaxNumRetries = " << errorMaxNumRetries);
+	LOG4CXX_INFO (logger,"\t calibrationDataFileName = " << calibrationDataFileName);
+	LOG4CXX_INFO (logger,"\t useCalibrationDataFile = " << useCalibrationDataFile);
+	LOG4CXX_INFO (logger,"\t calibrationDataUpdateFileName = " << calibrationDataUpdateFileName);
+	LOG4CXX_INFO (logger,"\t calibrationDataWriteInterval = " << (std::chrono::duration_cast<std::chrono::seconds>(calibrationDataWriteInterval).count()) << "s");
+	LOG4CXX_INFO (logger,"\t useCalibrationDataUpdateFile = " << useCalibrationDataUpdateFile);
+	LOG4CXX_INFO (logger,"\t loadCalibrationDataUpdateFileBeforeStatic = " << loadCalibrationDataUpdateFileBeforeStatic);
 
 
 }
