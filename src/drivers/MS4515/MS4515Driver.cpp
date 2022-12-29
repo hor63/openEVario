@@ -79,7 +79,7 @@ void MS4515Driver::driverInit(GliderVarioMainPriv &varioMain) {
 
 	this->varioMain = &varioMain;
 
-	ioPort = getIoPort<io::I2CPort>(logger);
+	ioPort = getIoPort<decltype(ioPort)>(logger);
 
 	// Read the calibration data file, and extract the initial parameters
 	if (calibrationDataParameters) {

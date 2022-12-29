@@ -78,7 +78,7 @@ void AMS5915Driver::driverInit(GliderVarioMainPriv &varioMain) {
 
 	this->varioMain = &varioMain;
 
-	ioPort = getIoPort<io::I2CPort>(logger);
+	ioPort = getIoPort<decltype(ioPort)>(logger);
 
 	double pressureBiasD = pressureBias;
 	readOrCreateConfigValue(calibrationDataParameters,pressureBiasCalibrationName,pressureBiasD);

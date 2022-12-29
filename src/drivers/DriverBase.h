@@ -349,15 +349,15 @@ public:
      *   In any case where the result would be \p nullptr an exception is thrown.
      */
     template <typename t>
-    t* getIoPort(log4cxx::LoggerPtr logger) {
-    	t* port;
+    t getIoPort(log4cxx::LoggerPtr logger) {
+    	t port;
 
     	try {
     		if (portName.empty()) {
     			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"\"portName\" was not configured.");
     		}
 
-    		port = dynamic_cast<t*>(io::PortBase::getPortByName(portName));
+    		port = dynamic_cast<t>(io::PortBase::getPortByName(portName));
 
     		if (port == nullptr) {
 				std::ostringstream str;

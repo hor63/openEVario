@@ -79,7 +79,7 @@ void MPL3115Driver::driverInit(GliderVarioMainPriv &varioMain) {
 
 	this->varioMain = &varioMain;
 
-	ioPort = getIoPort<io::I2CPort>(logger);
+	ioPort = getIoPort<decltype(ioPort)>(logger);
 
 }
 
