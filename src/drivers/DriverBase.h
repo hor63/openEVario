@@ -70,7 +70,7 @@ public:
 			DriverLibBase &driverLib
 			);
 
-    virtual ~DriverBase () {}
+    virtual ~DriverBase ();
 
     /// The list of sensor capabilities. Each one is a position in an integer.
     /// The capabilities are ORed into the capabilities of the driver in #sensorCapabilities.
@@ -315,7 +315,7 @@ public:
      * @param[in,out] value Value of the calibration value
      */
     static void readOrCreateConfigValue(
-    		Properties4CXX::Properties* calibrationDataParameters,
+    		Properties4CXX::Properties& calibrationDataParameters,
     		char const* parameterName,
     		double& value
     		);
@@ -329,7 +329,7 @@ public:
      * @param[in] value New value of the calibration value
      */
     static void writeConfigValue (
-    		Properties4CXX::Properties* calibrationDataParameters,
+    		Properties4CXX::Properties& calibrationDataParameters,
     		char const* parameterName,
     		double value
     		);
@@ -343,9 +343,9 @@ public:
      *
      * If any of the activities listed fails an exception with diagnostic text is thrown.
      *
-     * @tparam t Specialized class derived from base class \ref io::PortBase
+     * @tparam t Pointer to instance of specialized class derived from base class \ref io::PortBase
      * @param logger Log4CPP logger object of the calling class
-     * @return Pointer to the I/O port object of the class \p t. The pointer is never \p nullptr.
+     * @return Pointer to the I/O port object of template type \p t. The pointer is never \p nullptr.
      *   In any case where the result would be \p nullptr an exception is thrown.
      */
     template <typename t>
@@ -488,7 +488,7 @@ protected:
     bool loadCalibrationDataUpdateFileBeforeStatic = true;
 
     /// Loaded and parsed calibration data
-    Properties4CXX::Properties *calibrationDataParameters = nullptr;
+    std::unique_ptr<Properties4CXX::Properties> calibrationDataParameters;
     /** \brief Thread object for the calibration data writer thread
      *
      * Writing out the calibration data is a fairly time consuming I/O operation.
@@ -544,18 +544,8 @@ protected:
      * Then call \ref applyCalibrationData() which writes the calibration data into the object.
      */
     void readCalibrationData ();
-    /** \brief Driver specific function to apply calibration data to the driver instance
-     *
-     * This function must be overloaded by the driver which uses calibration data storage.
-     */
-    virtual void applyCalibrationData();
-    /** \brief Driver specific function to apply calibration data to the driver instance
-     *
-     * This function must be overloaded by the driver which uses calibration data storage.
-     * The implementation in this call does nothing.
-     */
 
-    /** \brief Update the calibration data file when needed
+    /** \brief Update the cconfigalibration data file when needed
      *
      * \todo Refactor function name
      * Check if the calibration cycle time expired,
@@ -579,7 +569,14 @@ protected:
      */
     void calibrationDataWriteFunc();
 
-    /** \brief Fill calibration data parameter list driver specific
+    /** \brief Driver specific function to apply calibration data to the driver instance
+     *
+     * This function must be overloaded by the driver which uses calibration data storage.
+     * The implementation in this call does nothing.
+     */
+    virtual void applyCalibrationData();
+
+    /** \brief Fill calibration data parameter list; driver specific
      *
      * Collect driver specific calibration data, and write them into \ref calibrationDataParameters.
      * The base class method does nothing. It must be overridden in a driver class.

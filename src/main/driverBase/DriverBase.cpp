@@ -29,6 +29,7 @@
 
 #define BUILDING_OEV_DRIVER 1
 
+#include <cerrno>
 #include <system_error>
 #include <sstream>
 #include <typeinfo>
@@ -61,6 +62,9 @@ DriverBase::DriverBase (
   driverLib {driverLib}
 {
 	initLogger();
+}
+
+DriverBase::~DriverBase () {
 }
 
 void DriverBase::startup(GliderVarioMainPriv &varioMain) {
@@ -136,28 +140,28 @@ void DriverBase::shutdown() {
 }
 
 void DriverBase::readOrCreateConfigValue(
-		Properties4CXX::Properties* calibrationDataParameters,
+		Properties4CXX::Properties& calibrationDataParameters,
 		char const* parameterName,
 		double& value
 		) {
 
 	try {
-		Properties4CXX::Property const * prop = calibrationDataParameters->searchProperty(parameterName);
+		Properties4CXX::Property const * prop = calibrationDataParameters.searchProperty(parameterName);
 		value = prop->getDoubleValue();
 	} catch (Properties4CXX::ExceptionPropertyNotFound const &e) {
-		calibrationDataParameters->addProperty(new Properties4CXX::PropertyDouble(parameterName,value));
+		calibrationDataParameters.addProperty(new Properties4CXX::PropertyDouble(parameterName,value));
 	}
 	catch (std::exception const &e) {}
 
 }
 
 void DriverBase::writeConfigValue (
-		Properties4CXX::Properties* calibrationDataParameters,
+		Properties4CXX::Properties& calibrationDataParameters,
 		char const* parameterName,
 		double value
 		) {
-	calibrationDataParameters->deletePropery(parameterName);
-	calibrationDataParameters->addProperty(new Properties4CXX::PropertyDouble(parameterName,value));
+	calibrationDataParameters.deletePropery(parameterName);
+	calibrationDataParameters.addProperty(new Properties4CXX::PropertyDouble(parameterName,value));
 }
 
 
@@ -180,27 +184,24 @@ void DriverBase::calibrationDataWriteFunc() {
 
 	try {
 		fillCalibrationDataParameters ();
-	} catch (std::exception const &e) {
-		LOG4CXX_ERROR(logger,"Error in " << __PRETTY_FUNCTION__
-				<< ". Exception in fillCalibrationDataParameters (). Error = " << e.what());
-	}
-	catch (...) {
-		LOG4CXX_ERROR(logger,"Error in " << __PRETTY_FUNCTION__
-				<< ". Exception in fillCalibrationDataParameters (). Unknown exception");
-	}
 
-	try {
-		std::ofstream of(calibrationDataFileName,of.out | of.trunc);
-		if (of.good()) {
-			calibrationDataParameters->writeOut(of);
+		std::ofstream of(calibrationDataUpdateFileName,of.out | of.trunc);
+		if (!of.good()) {
+			auto err = errno;
+			std::ostringstream str;
+
+			str << __PRETTY_FUNCTION__ << ": Cannot open calibration update file \"" << calibrationDataUpdateFileName
+					<< "\". Error: " << strerror(err);
+			throw GliderVarioDriverCalibrationFileException(__FILE__, __LINE__, str.str().c_str());
 		}
+		calibrationDataParameters->writeOut(of);
 	} catch (std::exception const &e) {
 		LOG4CXX_ERROR(logger,"Error in " << __PRETTY_FUNCTION__
-				<< ". Cannot write calibration data. Error = " << e.what());
+				<< ". Error = " << e.what());
 	}
 	catch (...) {
 		LOG4CXX_ERROR(logger,"Error in " << __PRETTY_FUNCTION__
-				<< ". Cannot write calibration data. Unknown exception");
+				<< ". Unknown exception.");
 	}
 
 	lastCalibrationDataWriteTime = OEVClock::now();
@@ -214,6 +215,8 @@ void DriverBase::applyCalibrationData() {
 			<< "\" to device \"" << instanceName
 			<< "\". Driver \"" << driverName
 			<< "\" does not implement reading of calibration data.");
+
+	useCalibrationDataFile = false;
 }
 void DriverBase::fillCalibrationDataParameters () {
 	LOG4CXX_WARN(logger, "Cannot read calibration data from device \""
@@ -222,6 +225,8 @@ void DriverBase::fillCalibrationDataParameters () {
 			<< calibrationDataUpdateFileName
 			<< "\". Driver \"" << driverName
 			<< "\" does not implement reading of calibration data.");
+
+	useCalibrationDataUpdateFile = false;
 }
 
 #if !defined DOXYGEN
@@ -230,23 +235,28 @@ DriverBase::SensorCapabilityHelperClass DriverBase::SensorCapabilityHelperObj;
 
 void DriverBase::readCalibrationData() {
 
-	// Read the calibration data file, and extract the initial parameters
-	if (calibrationDataParameters) {
-		try {
-			calibrationDataParameters->readConfiguration();
-		} catch (std::exception const &e) {
-			LOG4CXX_ERROR(logger,"Driver " << driverName
-					<< ": Error reading calibration data from file " << calibrationDataFileName
-					<< ": " << e.what());
-			// The file does not exist, or it has unexpected/undefined content.
-			// Therefore I am initializing the calibration parameters fresh.
-			delete calibrationDataParameters;
-			calibrationDataParameters = new Properties4CXX::Properties(calibrationDataFileName);
+	if (useCalibrationDataFile) {
 
+		if (calibrationDataParameters == nullptr) {
+			calibrationDataParameters = std::unique_ptr<Properties4CXX::Properties>(new Properties4CXX::Properties(calibrationDataFileName));
 		}
 
-	}
+		// Read the calibration data file, and extract the initial parameters
+		if (calibrationDataParameters) {
+			try {
+				calibrationDataParameters->readConfiguration();
+			} catch (std::exception const &e) {
+				LOG4CXX_ERROR(logger,"Driver " << driverName
+						<< ": Error reading calibration data from file " << calibrationDataFileName
+						<< ": " << e.what());
+				// The file does not exist, or it has unexpected/undefined content.
+				// Therefore I am initializing the calibration parameters fresh.
+				// Just assign the new pointer. std::unique_prt cares about deleting the old object.
+				calibrationDataParameters = std::unique_ptr<Properties4CXX::Properties>(new Properties4CXX::Properties(calibrationDataFileName));
+			}
 
+		}
+	} // if (useCalibrationDataFile) {
 }
 
 
