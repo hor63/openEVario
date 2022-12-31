@@ -132,6 +132,17 @@ public:
 
 protected:
 
+    /** \brief Fill calibration data parameter list; driver specific
+     *
+     *	\see DriverBase::fillCalibrationDataParameters()
+     */
+    virtual void fillCalibrationDataParameters () override;
+
+    /** \brief Driver specific function to apply calibration data to the driver instance
+     *
+     * \see DriverBase::applyCalibrationData()
+     */
+    virtual void applyCalibrationData() override;
 
     /** \brief The main worker thread of this driver
      *

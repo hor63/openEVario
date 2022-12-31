@@ -73,18 +73,29 @@ AMS5915Driver::~AMS5915Driver() {
 
 }
 
+void AMS5915Driver::fillCalibrationDataParameters () {
+
+	writeConfigValue(*calibrationDataParameters, pressureBiasCalibrationName, pressureBias);
+
+	LOG4CXX_DEBUG (logger,__PRETTY_FUNCTION__ << ": Device " << instanceName
+			<< " Read pressure bias from calibration data = " << pressureBias);
+}
+
+void AMS5915Driver::applyCalibrationData(){
+
+	double pressureBiasD = pressureBias;
+	readOrCreateConfigValue(*calibrationDataParameters,pressureBiasCalibrationName,pressureBiasD);
+	pressureBias = FloatType(pressureBiasD);
+	LOG4CXX_DEBUG (logger,__PRETTY_FUNCTION__ << ": Device " << instanceName
+			<< " Read pressure bias from calibration data = " << pressureBias);
+}
+
 
 void AMS5915Driver::driverInit(GliderVarioMainPriv &varioMain) {
 
 	this->varioMain = &varioMain;
 
 	ioPort = getIoPort<decltype(ioPort)>(logger);
-
-	double pressureBiasD = pressureBias;
-	readOrCreateConfigValue(calibrationDataParameters,pressureBiasCalibrationName,pressureBiasD);
-	pressureBias = FloatType(pressureBiasD);
-	LOG4CXX_DEBUG (logger,__FUNCTION__ << ": Driver " << getDriverName()
-			<< " Read pressure bias from calibration data = " << pressureBias);
 
 }
 
@@ -212,23 +223,7 @@ void AMS5915Driver::initializeStatus(
 
 		}
 
-		if (pressureBias == avgPressure && calibrationDataParameters) {
-			// The bias has been updated or freshly set.
-			try {
-
-				writeConfigValue(calibrationDataParameters, pressureBiasCalibrationName, pressureBias);
-
-				std::ofstream of(calibrationDataFileName,of.out | of.trunc);
-				if (of.good()) {
-					calibrationDataParameters->writeOut(of);
-					LOG4CXX_DEBUG(logger,__FUNCTION__ << ": written new avg. measurement as bias.");
-				}
-			} catch (std::exception const &e) {
-				LOG4CXX_ERROR(logger,"Error in " << __PRETTY_FUNCTION__
-						<< ". Cannot write calibration data. Error = " << e.what());
-			}
-			catch (...) {}
-		} else {
+		if (pressureBias != avgPressure) {
 			// There is a significant pressure on the sensor.
 			// Convert it into IAS. On the ground this is approximately TAS
 			// \p varioStatus.lastPressure is initialized to standard sea level pressure

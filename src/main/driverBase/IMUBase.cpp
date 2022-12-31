@@ -43,61 +43,80 @@ IMUBase::IMUBase(
 }
 
 IMUBase::~IMUBase() {
-	if (calibrationDataParameters) {
-		delete calibrationDataParameters;
-	}
+}
+
+void IMUBase::applyCalibrationData(){
+
+	readOrCreateConfigValue(*calibrationDataParameters,"magXFactor",	calibrationData.magXFactor);
+	readOrCreateConfigValue(*calibrationDataParameters,"magYFactor",	calibrationData.magYFactor);
+	readOrCreateConfigValue(*calibrationDataParameters,"magZFactor",	calibrationData.magZFactor);
+	readOrCreateConfigValue(*calibrationDataParameters,"magXBias",		calibrationData.magXBias);
+	readOrCreateConfigValue(*calibrationDataParameters,"magYBias",		calibrationData.magYBias);
+	readOrCreateConfigValue(*calibrationDataParameters,"magZBias",		calibrationData.magZBias);
+	readOrCreateConfigValue(*calibrationDataParameters,"magXVariance",	calibrationData.magXVariance);
+	readOrCreateConfigValue(*calibrationDataParameters,"magYVariance",	calibrationData.magYVariance);
+	readOrCreateConfigValue(*calibrationDataParameters,"magZVariance",	calibrationData.magZVariance);
+
+	readOrCreateConfigValue(*calibrationDataParameters,"gyrXFactor",	calibrationData.gyrXFactor);
+	readOrCreateConfigValue(*calibrationDataParameters,"gyrYFactor",	calibrationData.gyrYFactor);
+	readOrCreateConfigValue(*calibrationDataParameters,"gyrZFactor",	calibrationData.gyrZFactor);
+	readOrCreateConfigValue(*calibrationDataParameters,"gyrXBias",		calibrationData.gyrXBias);
+	readOrCreateConfigValue(*calibrationDataParameters,"gyrYBias",		calibrationData.gyrYBias);
+	readOrCreateConfigValue(*calibrationDataParameters,"gyrZBias",		calibrationData.gyrZBias);
+	readOrCreateConfigValue(*calibrationDataParameters,"gyrXVariance",	calibrationData.gyrXVariance);
+	readOrCreateConfigValue(*calibrationDataParameters,"gyrYVariance",	calibrationData.gyrYVariance);
+	readOrCreateConfigValue(*calibrationDataParameters,"gyrZVariance",	calibrationData.gyrZVariance);
+
+	readOrCreateConfigValue(*calibrationDataParameters,"accelXBias",	calibrationData.accelXBias);
+	readOrCreateConfigValue(*calibrationDataParameters,"accelYBias",	calibrationData.accelYBias);
+	readOrCreateConfigValue(*calibrationDataParameters,"accelZBias",	calibrationData.accelZBias);
+	readOrCreateConfigValue(*calibrationDataParameters,"accelXFactor",	calibrationData.accelXFactor);
+	readOrCreateConfigValue(*calibrationDataParameters,"accelYFactor",	calibrationData.accelYFactor);
+	readOrCreateConfigValue(*calibrationDataParameters,"accelZFactor",	calibrationData.accelZFactor);
+	readOrCreateConfigValue(*calibrationDataParameters,"accelXVariance",calibrationData.accelXVariance);
+	readOrCreateConfigValue(*calibrationDataParameters,"accelYVariance",calibrationData.accelYVariance);
+	readOrCreateConfigValue(*calibrationDataParameters,"accelZVariance",calibrationData.accelZVariance);
+
+	readOrCreateConfigValue(*calibrationDataParameters,"gravityValue",	calibrationData.gravity);
+	readOrCreateConfigValue(*calibrationDataParameters,"gravityVariance",calibrationData.gravityVariance);
+
+	LOG4CXX_DEBUG (logger, __PRETTY_FUNCTION__ << " Set calibration data for device \"" << instanceName << "\": \n"
+			<< "\tmagXFactor		 = " << calibrationData.magXFactor << "\n"
+			<< "\tmagYFactor		 = " << calibrationData.magYFactor << "\n"
+			<< "\tmagZFactor		 = " << calibrationData.magZFactor << "\n"
+			<< "\tmagXBias		 	 = " << calibrationData.magXBias << "\n"
+			<< "\tmagYBias			 = " << calibrationData.magYBias << "\n"
+			<< "\tmagZBias			 = " << calibrationData.magZBias << "\n"
+			<< "\tmagXVariance		 = " << calibrationData.magXVariance << "\n"
+			<< "\tmagYVariance		 = " << calibrationData.magYVariance << "\n"
+			<< "\tmagZVariance		 = " << calibrationData.magZVariance << "\n"
+
+			<< "\tgyrXFactor		 = " << calibrationData.gyrXFactor << "\n"
+			<< "\tgyrYFactor		 = " << calibrationData.gyrYFactor << "\n"
+			<< "\tgyrZFactor		 = " << calibrationData.gyrZFactor << "\n"
+			<< "\tgyrXBias			 = " << calibrationData.gyrXBias << "\n"
+			<< "\tgyrYBias			 = " << calibrationData.gyrYBias << "\n"
+			<< "\tgyrZBias			 = " << calibrationData.gyrZBias << "\n"
+			<< "\tgyrXVariance		 = " << calibrationData.gyrXVariance << "\n"
+			<< "\tgyrYVariance		 = " << calibrationData.gyrYVariance << "\n"
+			<< "\tgyrZVariance		 = " << calibrationData.gyrZVariance << "\n"
+
+			<< "\taccelXBias		 = " << calibrationData.accelXBias << "\n"
+			<< "\taccelYBias		 = " << calibrationData.accelYBias << "\n"
+			<< "\taccelZBias		 = " << calibrationData.accelZBias << "\n"
+			<< "\taccelXFactor		 = " << calibrationData.accelXFactor << "\n"
+			<< "\taccelYFactor		 = " << calibrationData.accelYFactor << "\n"
+			<< "\taccelZFactor		 = " << calibrationData.accelZFactor << "\n"
+			<< "\taccelXVariance	 = " << calibrationData.accelXVariance << "\n"
+			<< "\taccelYVariance	 = " << calibrationData.accelYVariance << "\n"
+			<< "\taccelZVariance	 = " << calibrationData.accelZVariance << "\n"
+
+			<< "\tgravity			 = " << calibrationData.gravity << "\n"
+			<< "\tgravityVariance	 = " << calibrationData.gravityVariance << "\n"
+			);
 }
 
 void IMUBase::driverInit(GliderVarioMainPriv &varioMain) {
-
-	// Read the calibration data file, and extract the initial parameters
-	if (calibrationDataParameters) {
-		try {
-			calibrationDataParameters->readConfiguration();
-		} catch (std::exception const &e) {
-			LOG4CXX_ERROR(logger,"Driver " << driverName
-					<< ": Error reading calibration data from file " << calibrationDataFileName
-					<< ": " << e.what());
-			// The file does not exist, or it has unexpected/undefined content.
-			// Therefore I am initializing the calibration parameters fresh.
-			delete calibrationDataParameters;
-			calibrationDataParameters = new Properties4CXX::Properties(calibrationDataFileName);
-
-		}
-
-		readOrCreateConfigValue(calibrationDataParameters,"magXFactor",calibrationData.magXFactor);
-		readOrCreateConfigValue(calibrationDataParameters,"magYFactor",calibrationData.magYFactor);
-		readOrCreateConfigValue(calibrationDataParameters,"magZFactor",calibrationData.magZFactor);
-		readOrCreateConfigValue(calibrationDataParameters,"magXBias",calibrationData.magXBias);
-		readOrCreateConfigValue(calibrationDataParameters,"magYBias",calibrationData.magYBias);
-		readOrCreateConfigValue(calibrationDataParameters,"magZBias",calibrationData.magZBias);
-		readOrCreateConfigValue(calibrationDataParameters,"magXVariance",calibrationData.magXVariance);
-		readOrCreateConfigValue(calibrationDataParameters,"magYVariance",calibrationData.magYVariance);
-		readOrCreateConfigValue(calibrationDataParameters,"magZVariance",calibrationData.magZVariance);
-
-		readOrCreateConfigValue(calibrationDataParameters,"gyrXFactor",calibrationData.gyrXFactor);
-		readOrCreateConfigValue(calibrationDataParameters,"gyrYFactor",calibrationData.gyrYFactor);
-		readOrCreateConfigValue(calibrationDataParameters,"gyrZFactor",calibrationData.gyrZFactor);
-		readOrCreateConfigValue(calibrationDataParameters,"gyrXBias",calibrationData.gyrXBias);
-		readOrCreateConfigValue(calibrationDataParameters,"gyrYBias",calibrationData.gyrYBias);
-		readOrCreateConfigValue(calibrationDataParameters,"gyrZBias",calibrationData.gyrZBias);
-		readOrCreateConfigValue(calibrationDataParameters,"gyrXVariance",calibrationData.gyrXVariance);
-		readOrCreateConfigValue(calibrationDataParameters,"gyrYVariance",calibrationData.gyrYVariance);
-		readOrCreateConfigValue(calibrationDataParameters,"gyrZVariance",calibrationData.gyrZVariance);
-
-		readOrCreateConfigValue(calibrationDataParameters,"accelXBias",calibrationData.accelXBias);
-		readOrCreateConfigValue(calibrationDataParameters,"accelYBias",calibrationData.accelYBias);
-		readOrCreateConfigValue(calibrationDataParameters,"accelZBias",calibrationData.accelZBias);
-		readOrCreateConfigValue(calibrationDataParameters,"accelXFactor",calibrationData.accelXFactor);
-		readOrCreateConfigValue(calibrationDataParameters,"accelYFactor",calibrationData.accelYFactor);
-		readOrCreateConfigValue(calibrationDataParameters,"accelZFactor",calibrationData.accelZFactor);
-		readOrCreateConfigValue(calibrationDataParameters,"accelXVariance",calibrationData.accelXVariance);
-		readOrCreateConfigValue(calibrationDataParameters,"accelYVariance",calibrationData.accelYVariance);
-		readOrCreateConfigValue(calibrationDataParameters,"accelZVariance",calibrationData.accelZVariance);
-
-		readOrCreateConfigValue(calibrationDataParameters,"gravityValue",calibrationData.gravity);
-		readOrCreateConfigValue(calibrationDataParameters,"gravityVariance",calibrationData.gravityVariance);
-	}
 
 }
 
@@ -407,62 +426,97 @@ void IMUBase::fillCalibrationDataParameters () {
 	// Allow for fluctuations of the variance otherwise necessary updates may never happen
 	auto currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_GYRO_BIAS_X,
 			GliderVarioStatus::STATUS_IND_GYRO_BIAS_X);
-	if (currVariance <= calibrationData.gyrXVariance * 1.5f) {
+	if (currVariance <= calibrationData.gyrXVariance) {
 		calibrationData.gyrXBias = currentStatus->gyroBiasX;
 		calibrationData.gyrXVariance = currVariance;
-		writeConfigValue(calibrationDataParameters,"gyrXBias",calibrationData.gyrXBias);
-		writeConfigValue(calibrationDataParameters,"gyrXVariance",currVariance);
+		writeConfigValue(*calibrationDataParameters,"gyrXBias",calibrationData.gyrXBias);
+		writeConfigValue(*calibrationDataParameters,"gyrXVariance",currVariance);
 	}
 	currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Y,
 			GliderVarioStatus::STATUS_IND_GYRO_BIAS_Y);
-	if (currVariance <= calibrationData.gyrYVariance * 1.5f) {
+	if (currVariance <= calibrationData.gyrYVariance) {
 		calibrationData.gyrYBias = currentStatus->gyroBiasY;
 		calibrationData.gyrYVariance = currVariance;
-		writeConfigValue(calibrationDataParameters,"gyrYBias",calibrationData.gyrYBias);
-		writeConfigValue(calibrationDataParameters,"gyrYVariance",currVariance);
+		writeConfigValue(*calibrationDataParameters,"gyrYBias",calibrationData.gyrYBias);
+		writeConfigValue(*calibrationDataParameters,"gyrYVariance",currVariance);
 	}
 	currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_GYRO_BIAS_Z,
 			GliderVarioStatus::STATUS_IND_GYRO_BIAS_Z);
-	if (currVariance <= calibrationData.gyrZVariance * 1.5f) {
+	if (currVariance <= calibrationData.gyrZVariance) {
 		calibrationData.gyrZBias = currentStatus->gyroBiasZ;
 		calibrationData.gyrZVariance = currVariance;
-		writeConfigValue(calibrationDataParameters,"gyrZBias",calibrationData.gyrZBias);
-		writeConfigValue(calibrationDataParameters,"gyrZVariance",currVariance);
+		writeConfigValue(*calibrationDataParameters,"gyrZBias",calibrationData.gyrZBias);
+		writeConfigValue(*calibrationDataParameters,"gyrZVariance",currVariance);
 	}
 
 	currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_X,
 			GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_X);
-	if (currVariance <= calibrationData.magXVariance * 1.5f) {
+	if (currVariance <= calibrationData.magXVariance) {
 		calibrationData.magXBias = currentStatus->compassDeviationX;
 		calibrationData.magXVariance = currVariance;
-		writeConfigValue(calibrationDataParameters,"magXBias",calibrationData.magXBias);
-		writeConfigValue(calibrationDataParameters,"magXVariance",currVariance);
+		writeConfigValue(*calibrationDataParameters,"magXBias",calibrationData.magXBias);
+		writeConfigValue(*calibrationDataParameters,"magXVariance",currVariance);
 	}
 	currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Y,
 			GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Y);
-	if (currVariance <= calibrationData.magYVariance * 1.5f) {
+	if (currVariance <= calibrationData.magYVariance) {
 		calibrationData.magYBias = currentStatus->compassDeviationY;
 		calibrationData.magYVariance = currVariance;
-		writeConfigValue(calibrationDataParameters,"magYBias",calibrationData.magYBias);
-		writeConfigValue(calibrationDataParameters,"magYVariance",currVariance);
+		writeConfigValue(*calibrationDataParameters,"magYBias",calibrationData.magYBias);
+		writeConfigValue(*calibrationDataParameters,"magYVariance",currVariance);
 	}
 	currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Z,
 			GliderVarioStatus::STATUS_IND_COMPASS_DEVIATION_Z);
-	if (currVariance <= calibrationData.magZVariance * 1.5f) {
+	if (currVariance <= calibrationData.magZVariance) {
 		calibrationData.magZBias = currentStatus->compassDeviationZ;
 		calibrationData.magZVariance = currVariance;
-		writeConfigValue(calibrationDataParameters,"magZBias",calibrationData.magZBias);
-		writeConfigValue(calibrationDataParameters,"magZVariance",currVariance);
+		writeConfigValue(*calibrationDataParameters,"magZBias",calibrationData.magZBias);
+		writeConfigValue(*calibrationDataParameters,"magZVariance",currVariance);
 	}
 
 	currVariance = coVariance.coeff(GliderVarioStatus::STATUS_IND_GRAVITY,
 			GliderVarioStatus::STATUS_IND_GRAVITY);
-	if (currVariance <= calibrationData.gravityVariance * 1.5f) {
+	if (currVariance <= calibrationData.gravityVariance) {
 		calibrationData.gravity = currentStatus->gravity;
 		calibrationData.gravityVariance = currVariance;
-		writeConfigValue(calibrationDataParameters,"gravityValue",calibrationData.gravity);
-		writeConfigValue(calibrationDataParameters,"gravityVariance",currVariance);
+		writeConfigValue(*calibrationDataParameters,"gravityValue",calibrationData.gravity);
+		writeConfigValue(*calibrationDataParameters,"gravityVariance",currVariance);
 	}
+
+	LOG4CXX_DEBUG (logger, __PRETTY_FUNCTION__ << " Fill calibration data for device \"" << instanceName << "\": \n"
+			<< "\tmagXFactor		 = " << calibrationData.magXFactor << "\n"
+			<< "\tmagYFactor		 = " << calibrationData.magYFactor << "\n"
+			<< "\tmagZFactor		 = " << calibrationData.magZFactor << "\n"
+			<< "\tmagXBias		 	 = " << calibrationData.magXBias << "\n"
+			<< "\tmagYBias			 = " << calibrationData.magYBias << "\n"
+			<< "\tmagZBias			 = " << calibrationData.magZBias << "\n"
+			<< "\tmagXVariance		 = " << calibrationData.magXVariance << "\n"
+			<< "\tmagYVariance		 = " << calibrationData.magYVariance << "\n"
+			<< "\tmagZVariance		 = " << calibrationData.magZVariance << "\n"
+
+			<< "\tgyrXFactor		 = " << calibrationData.gyrXFactor << "\n"
+			<< "\tgyrYFactor		 = " << calibrationData.gyrYFactor << "\n"
+			<< "\tgyrZFactor		 = " << calibrationData.gyrZFactor << "\n"
+			<< "\tgyrXBias			 = " << calibrationData.gyrXBias << "\n"
+			<< "\tgyrYBias			 = " << calibrationData.gyrYBias << "\n"
+			<< "\tgyrZBias			 = " << calibrationData.gyrZBias << "\n"
+			<< "\tgyrXVariance		 = " << calibrationData.gyrXVariance << "\n"
+			<< "\tgyrYVariance		 = " << calibrationData.gyrYVariance << "\n"
+			<< "\tgyrZVariance		 = " << calibrationData.gyrZVariance << "\n"
+
+			<< "\taccelXBias		 = " << calibrationData.accelXBias << "\n"
+			<< "\taccelYBias		 = " << calibrationData.accelYBias << "\n"
+			<< "\taccelZBias		 = " << calibrationData.accelZBias << "\n"
+			<< "\taccelXFactor		 = " << calibrationData.accelXFactor << "\n"
+			<< "\taccelYFactor		 = " << calibrationData.accelYFactor << "\n"
+			<< "\taccelZFactor		 = " << calibrationData.accelZFactor << "\n"
+			<< "\taccelXVariance	 = " << calibrationData.accelXVariance << "\n"
+			<< "\taccelYVariance	 = " << calibrationData.accelYVariance << "\n"
+			<< "\taccelZVariance	 = " << calibrationData.accelZVariance << "\n"
+
+			<< "\tgravity			 = " << calibrationData.gravity << "\n"
+			<< "\tgravityVariance	 = " << calibrationData.gravityVariance << "\n"
+			);
 
 }
 

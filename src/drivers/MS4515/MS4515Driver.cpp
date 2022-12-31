@@ -74,34 +74,28 @@ MS4515Driver::~MS4515Driver() {
 
 }
 
+void MS4515Driver::fillCalibrationDataParameters () {
+
+	writeConfigValue(*calibrationDataParameters, pressureBiasCalibrationName, pressureBias);
+
+	LOG4CXX_DEBUG (logger,__PRETTY_FUNCTION__ << ": Device " << instanceName
+			<< " Read pressure bias from calibration data = " << pressureBias);
+}
+
+void MS4515Driver::applyCalibrationData(){
+
+	double pressureBiasD = pressureBias;
+	readOrCreateConfigValue(*calibrationDataParameters,pressureBiasCalibrationName,pressureBiasD);
+	pressureBias = FloatType(pressureBiasD);
+	LOG4CXX_DEBUG (logger,__PRETTY_FUNCTION__ << ": Device " << instanceName
+			<< " Read pressure bias from calibration data = " << pressureBias);
+}
 
 void MS4515Driver::driverInit(GliderVarioMainPriv &varioMain) {
 
 	this->varioMain = &varioMain;
 
 	ioPort = getIoPort<decltype(ioPort)>(logger);
-
-	// Read the calibration data file, and extract the initial parameters
-	if (calibrationDataParameters) {
-		try {
-			calibrationDataParameters->readConfiguration();
-		} catch (std::exception const &e) {
-			LOG4CXX_ERROR(logger,"Driver " << driverName
-					<< ": Error reading calibration data from file " << calibrationDataFileName
-					<< ": " << e.what());
-			// The file does not exist, or it has unexpected/undefined content.
-			// Therefore I am initializing the calibration parameters fresh.
-			delete calibrationDataParameters;
-			calibrationDataParameters = new Properties4CXX::Properties(calibrationDataFileName);
-
-		}
-
-		double pressureBiasD = pressureBias;
-		readOrCreateConfigValue(calibrationDataParameters,pressureBiasCalibrationName,pressureBiasD);
-		pressureBias = FloatType(pressureBiasD);
-		LOG4CXX_DEBUG (logger,__FUNCTION__ << ": Driver " << getDriverName()
-				<< " Read pressure bias from calibration data = " << pressureBias);
-	}
 
 }
 
@@ -264,18 +258,6 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
 	     f2 = (pMax-pMin)/(16383.0*hiFact);
 	}
 
-    try {
-    	auto fileNameProp = configuration.searchProperty("calibrationDataFile");
-
-		if (!fileNameProp->isList() && !fileNameProp->isStruct()) {
-	    	calibrationDataFileName = fileNameProp->getStringValue();
-	    	calibrationDataParameters = new Properties4CXX::Properties(calibrationDataFileName);
-		}
-
-    } catch (...) {
-    	LOG4CXX_INFO(logger,"Driver" << driverName << ": No calibration data file specified");
-    }
-
     pressureRange = fabs(pMax - pMin);
 	// Expected static error is assessed by the full measurement range.
 	pressureErrorStatic = pressureErrorStaticFactor * pressureRange;
@@ -360,23 +342,7 @@ void MS4515Driver::initializeStatus(
 
 		}
 
-		if (pressureBias == avgPressure && calibrationDataParameters != nullptr) {
-			// The bias has been updated or freshly set.
-			try {
-
-				writeConfigValue(calibrationDataParameters, pressureBiasCalibrationName, pressureBias);
-
-				std::ofstream of(calibrationDataFileName,of.out | of.trunc);
-				if (of.good()) {
-					calibrationDataParameters->writeOut(of);
-					LOG4CXX_DEBUG(logger,__FUNCTION__ << ": written new avg. measurement as bias.");
-				}
-			} catch (std::exception const &e) {
-				LOG4CXX_ERROR(logger,"Error in " << __PRETTY_FUNCTION__
-						<< ". Cannot write calibration data. Error = " << e.what());
-			}
-			catch (...) {}
-		} else {
+		if (pressureBias != avgPressure) {
 			// There is a significant pressure on the sensor.
 			// Convert it into into IAS. On the ground this is approximately TAS
 			// When there is already an actual pressure value available, even better.

@@ -105,6 +105,17 @@ public:
 
 };
 
+class OEV_UTILS_PUBLIC GliderVarioDriverCalibrationFileException :public GliderVarioExceptionBase {
+public:
+	GliderVarioDriverCalibrationFileException (
+			char const *source,
+			int line,
+			char const *description)
+		:GliderVarioExceptionBase {source,line,description}
+	{}
+
+};
+
 namespace io {
 
 class OEV_UTILS_PUBLIC GliderVarioPortException :public GliderVarioExceptionBase {

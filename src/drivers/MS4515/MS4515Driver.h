@@ -152,6 +152,17 @@ public:
 
 protected:
 
+    /** \brief Fill calibration data parameter list; driver specific
+     *
+     *	\see DriverBase::fillCalibrationDataParameters()
+     */
+    virtual void fillCalibrationDataParameters () override;
+
+    /** \brief Driver specific function to apply calibration data to the driver instance
+     *
+     * \see DriverBase::applyCalibrationData()
+     */
+    virtual void applyCalibrationData() override;
 
     /** \brief The main worker thread of this driver
      *
@@ -250,12 +261,6 @@ private:
      * \see \ref convertRegisterPressureToMBar() what is it for and how it is calculated.
      */
     FloatType f2 = UnInitVal;
-
-    /// Name of the calibration data parameter file
-    std::string calibrationDataFileName;
-
-    /// Loaded and parsed calibration data
-    Properties4CXX::Properties *calibrationDataParameters = nullptr;
 
 };
 
