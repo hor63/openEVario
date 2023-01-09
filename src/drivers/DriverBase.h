@@ -465,6 +465,7 @@ protected:
 
     /// \brief Interval to save the continuously updated calibration data
     OEVClock::duration calibrationDataWriteInterval = OEVClock::duration(0);
+
     /** \brief Write updated calibration data to a file.
      *
      * Automatically true when calibrationDataUpdateFileName is not empty, and
@@ -493,7 +494,7 @@ protected:
      *
      * Writing out the calibration data is a fairly time consuming I/O operation.
      * Therefore it is implemented as a one-shot thread which is re-started every
-     * \ref calibrationDataUpdateCycle seconds.
+     * \ref calibrationDataWriteInterval.
      */
     std::thread calibrationDataWriteThread;
 

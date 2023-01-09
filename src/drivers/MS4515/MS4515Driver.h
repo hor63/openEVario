@@ -226,7 +226,7 @@ private:
 
     /** \brief Minimum pressure of the defined range in mBar.
      *
-     * The configuration values can be defined in in inH20 (See my rant in \ref InchH20toMBar)
+     * The configuration values can be defined in inH2O (inch of water column) (See my rant in \ref InchH2OtoMBar)
      * because the sensors are defined this way, and you can simply transcribe from the sensor type.
      */
     FloatType pMin = UnInitVal;

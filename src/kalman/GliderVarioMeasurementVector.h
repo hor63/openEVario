@@ -91,7 +91,7 @@ public:
 protected:
     /** \brief Holder of the measurement vector
      *
-     * All values are initialized to \ref UnInitiVal to indicate if a value has even been set by a measurement.
+     * All values are initialized to \ref UnInitVal to indicate if a value has even been set by a measurement.
      */
     MeasureVectorType measureVector;
 
