@@ -35,6 +35,7 @@
 #include <memory>
 #include <thread>
 #include <chrono>
+#include <typeinfo>
 
 #include "CommonDefs.h"
 #include "Properties4CXX/Properties.h"
@@ -357,13 +358,14 @@ public:
     			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"\"portName\" was not configured.");
     		}
 
-    		port = dynamic_cast<t>(io::PortBase::getPortByName(portName));
+    		auto portBasePtr = io::PortBase::getPortByName(portName);
+    		port = dynamic_cast<t>(portBasePtr);
 
     		if (port == nullptr) {
 				std::ostringstream str;
 
-				str << "I/O port \"" << portName << "\" is not of type I2CPort. The type is \""
-						<< typeid(t).name() << "\" instead.";
+				str << "I/O port \"" << portName << "\" is not of type "<< typeid(t).name() << ". The type is \""
+						<< typeid(portBasePtr).name() << "\" instead.";
 				throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
     		}
 
