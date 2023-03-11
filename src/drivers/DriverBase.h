@@ -548,13 +548,12 @@ protected:
      */
     void readCalibrationData ();
 
-    /** \brief Update the cconfigalibration data file when needed
+    /** \brief Update the calibration data file when needed
      *
-     * \todo Refactor function name
      * Check if the calibration cycle time expired,
      * and write updated calibration data in the file named \ref calibrationDataUpdateFileName
      */
-    void updateCalibrationData();
+    void writeCyclicCalibrationDataUpdate();
 
     /** \brief Thread function of \ref calibrationDataWriteThread
      *
@@ -575,7 +574,10 @@ protected:
     /** \brief Driver specific function to apply calibration data to the driver instance
      *
      * This function must be overloaded by the driver which uses calibration data storage.
-     * The implementation in this call does nothing.
+     * The implementation in this class does nothing. \n
+     * This function is called by readCalibrationData().
+     *
+     * \see \ref readCalibrationData()
      */
     virtual void applyCalibrationData();
 

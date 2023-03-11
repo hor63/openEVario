@@ -411,7 +411,7 @@ void IMUBase::updateKalman(SensorData &currSensorData) {
 					*currStatus.getMeasurementVector(),*currStatus.getCurrentStatus());
 		}
 
-		updateCalibrationData();
+		writeCyclicCalibrationDataUpdate();
 	}
 }
 
