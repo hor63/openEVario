@@ -86,14 +86,14 @@ void DriverBase::driverThreadEntry (DriverBase* tis) {
 	}
 	catch (std::exception &e) {
 		std::ostringstream str;
-		str << "Uncaught exception in driver "
+		str << "Uncaught exception in driver/instance "
 				<< tis->driverName << ":" << tis->instanceName
 				<< ". Message = " << e.what();
 		LOG4CXX_ERROR(logger,str.str());
 	}
 	catch (...) {
 		std::ostringstream str;
-		str << "Uncaught unknown exception in driver "
+		str << "Uncaught unknown exception in driver/instance "
 				<< tis->driverName << ":" << tis->instanceName;
 		LOG4CXX_ERROR(logger,str.str());
 	}
@@ -165,7 +165,7 @@ void DriverBase::writeConfigValue (
 }
 
 
-void DriverBase::updateCalibrationData() {
+void DriverBase::writeCyclicCalibrationDataUpdate() {
 	auto lastPredictionUpdate = varioMain->getLastPredictionUpdate();
 	auto timeSinceLastCalibrationWrite = lastPredictionUpdate - lastCalibrationDataWriteTime;
 	if (!calibrationWriterRunning && (timeSinceLastCalibrationWrite >= calibrationDataWriteInterval)) {
@@ -229,33 +229,55 @@ void DriverBase::fillCalibrationDataParameters () {
 	useCalibrationDataUpdateFile = false;
 }
 
-#if !defined DOXYGEN
-DriverBase::SensorCapabilityHelperClass DriverBase::SensorCapabilityHelperObj;
-#endif
-
 void DriverBase::readCalibrationData() {
 
-	if (useCalibrationDataFile) {
+	if (useCalibrationDataFile || useCalibrationDataUpdateFile) {
 
-		if (calibrationDataParameters == nullptr) {
-			calibrationDataParameters = std::unique_ptr<Properties4CXX::Properties>(new Properties4CXX::Properties(calibrationDataFileName));
+		std::string lCalibDataFileName;
+
+		if (loadCalibrationDataUpdateFileBeforeStatic && useCalibrationDataUpdateFile) {
+			lCalibDataFileName = calibrationDataUpdateFileName;
+		} else {
+			lCalibDataFileName = calibrationDataFileName;
 		}
 
-		// Read the calibration data file, and extract the initial parameters
-		if (calibrationDataParameters) {
+		calibrationDataParameters = std::unique_ptr<Properties4CXX::Properties>(new Properties4CXX::Properties(lCalibDataFileName));
+
+	// Read the calibration data file, and extract the initial parameters
+		try {
+			// Nest another try-catch block in case that both initial and update file names are defined.
 			try {
 				calibrationDataParameters->readConfiguration();
 			} catch (std::exception const &e) {
-				LOG4CXX_ERROR(logger,"Driver " << driverName
-						<< ": Error reading calibration data from file " << calibrationDataFileName
-						<< ": " << e.what());
-				// The file does not exist, or it has unexpected/undefined content.
-				// Therefore I am initializing the calibration parameters fresh.
-				// Just assign the new pointer. std::unique_prt cares about deleting the old object.
-				calibrationDataParameters = std::unique_ptr<Properties4CXX::Properties>(new Properties4CXX::Properties(calibrationDataFileName));
-			}
+				if (useCalibrationDataFile && useCalibrationDataUpdateFile) {
+					// Both file names are defined. So one more try left.
+					std::string failedFileName = lCalibDataFileName;
+					if (loadCalibrationDataUpdateFileBeforeStatic) {
+						lCalibDataFileName = calibrationDataFileName;
+					} else {
+						lCalibDataFileName = calibrationDataUpdateFileName;
+					}
+					LOG4CXX_INFO(logger,"Cannot read configuration data from file "<< failedFileName
+							<< ". Trying alternative" << lCalibDataFileName);
+					// Re-create an empty set of calibration data and try to read the other file.
+					calibrationDataParameters = std::unique_ptr<Properties4CXX::Properties>(new Properties4CXX::Properties(lCalibDataFileName));
+					calibrationDataParameters->readConfiguration();
+				} else {
+					// The end of trying to reading the configuration data.
+					throw;
+				}
 
+			}
+		} catch (std::exception const &e) {
+			LOG4CXX_WARN(logger,"Device " << instanceName
+					<< ": Error reading calibration data from file " << lCalibDataFileName
+					<< ": " << e.what());
+			LOG4CXX_WARN(logger,"Device " << instanceName
+					<< ": Using builtin default calibration data");
+			// Re-create empty calibration data.
+			calibrationDataParameters = std::unique_ptr<Properties4CXX::Properties>(new Properties4CXX::Properties());
 		}
+
 	} // if (useCalibrationDataFile) {
 }
 
@@ -356,7 +378,11 @@ void DriverBase::readCommonConfiguration(
 
 }
 
-}
+#if !defined DOXYGEN
+DriverBase::SensorCapabilityHelperClass DriverBase::SensorCapabilityHelperObj;
+#endif
+
+} // namespace openEV::drivers
 
 std::ostream& operator << (std::ostream &o,openEV::drivers::DriverBase::SensorCapability ind) {
 	o << openEV::drivers::DriverBase::SensorCapabilityHelperObj.getString (ind);
