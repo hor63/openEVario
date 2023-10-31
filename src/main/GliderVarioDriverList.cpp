@@ -325,6 +325,7 @@ void GliderVarioDriverList::loadDriverInstance(char const *driverInstanceName, P
 
 	driverInstance->readCommonConfiguration(driverConfigStruct);
 	driverInstance->readConfiguration(driverConfigStruct);
+	driverInstance->readCalibrationData();
 
 	// If you are here no major errors occurred during creation of the device=driver instance
 	// and while reading the configuration.
