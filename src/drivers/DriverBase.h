@@ -184,6 +184,15 @@ public:
      */
     virtual void readConfiguration (Properties4CXX::Properties const &configuration) = 0;
 
+    /** \brief Read calibration data when configured
+     *
+     * When the update calibration file is defined, and initially loading is defined try to load it.
+     * When loading of the update calibration data is not configured, or it does not exist
+     * try loading the initial calibration file.
+     * Then call \ref applyCalibrationData() which writes the calibration data into the object.
+     */
+    void readCalibrationData ();
+
     /** \brief todo Don't know if I really need this...
      *
      * @param varioStatus The current Kalman status to update
@@ -538,15 +547,6 @@ protected:
      * @param tis Pointer to the object to which the thread belongs
      */
     static void driverThreadEntry (DriverBase* tis);
-
-    /** \brief Read calibration data when configured
-     *
-     * When the update calibration file is defined, and initially loading is defined try to load it.
-     * When loading of the update calibration data is not configured, or it does not exist
-     * try loading the initial calibration file.
-     * Then call \ref applyCalibrationData() which writes the calibration data into the object.
-     */
-    void readCalibrationData ();
 
     /** \brief Update the calibration data file when needed
      *
