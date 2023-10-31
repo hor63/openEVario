@@ -104,11 +104,11 @@ parse_opt (int key, char *arg, struct argp_state *state)
           if (programOptions.defaultLoggerLevel > 3) {programOptions.defaultLoggerLevel = 3;}
           break;
         case 'c':
-          programOptions.configFile = arg;
+          programOptions.configFileName = arg;
           break;
 
         case 'l':
-          programOptions.loggerConfigFile = arg;
+          programOptions.loggerConfigFileName = arg;
           break;
 
         default:
@@ -251,11 +251,11 @@ static int readOptions (int& argc, char*argv[],openEV::ProgramOptions &programOp
                if (programOptions.defaultLoggerLevel > 3) {programOptions.defaultLoggerLevel = 3;}
                break;
              case 'c':
-               programOptions.configFile = optarg;
+               programOptions.configFileName = optarg;
                break;
 
              case 'l':
-               programOptions.loggerConfigFile = optarg;
+               programOptions.loggerConfigFileName = optarg;
                break;
 
              case '?':
@@ -373,7 +373,7 @@ void GliderVarioMainPriv::startup () {
 
 
     // The configuration file (when I can load it) will overwrite the command line settings.
-    log4cxx::PropertyConfigurator::configure(log4cxx::File(programOptions.loggerConfigFile));
+    log4cxx::PropertyConfigurator::configure(log4cxx::File(programOptions.loggerConfigFileName));
 
 #endif /* defined HAVE_LOG4CXX_H */
 
@@ -382,9 +382,9 @@ void GliderVarioMainPriv::startup () {
 	std::cout << "logger->getParent()->getName() " << logger->getParent()->getName() << std::endl;
 	std::cout << "logger->getParent()->getLevel() " << logger->getParent()->getLevel() << std::endl;
 
-    LOG4CXX_INFO(logger,"programOptions.configFile = " << programOptions.configFile);
+    LOG4CXX_INFO(logger,"programOptions.configFile = " << programOptions.configFileName);
     LOG4CXX_INFO(logger,"programOptions.defaultLoggerLevel = " << programOptions.defaultLoggerLevel);
-    LOG4CXX_INFO(logger,"programOptions.loggerConfigFile = " << programOptions.loggerConfigFile);
+    LOG4CXX_INFO(logger,"programOptions.loggerConfigFile = " << programOptions.loggerConfigFileName);
 
 	LOG4CXX_DEBUG(logger,"argc = " << argc);
 	if (argc > 0) {
@@ -430,11 +430,11 @@ void GliderVarioMainPriv::readConfiguration () {
 
 
 	try {
-	configuration.setFileName(programOptions.configFile);
+	configuration.setFileName(programOptions.configFileName);
 	configuration.readConfiguration();
 	} catch (Properties4CXX::ExceptionBase const& e) {
 		std::ostringstream os;
-		os << "Error reading the configuration from file \"" << programOptions.configFile << "\": " << e.what();
+		os << "Error reading the configuration from file \"" << programOptions.configFileName << "\": " << e.what();
 		LOG4CXX_FATAL(logger,os.str());
 		throw;
 	}

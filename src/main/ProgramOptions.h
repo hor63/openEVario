@@ -37,8 +37,8 @@
 namespace openEV {
 
 	struct ProgramOptions{
-	    std::string configFile       = defaultConfigFileName;
-	    std::string loggerConfigFile = defaultLoggerConfigFileName;
+	    std::string configFileName       = defaultConfigFileName;
+	    std::string loggerConfigFileName = defaultLoggerConfigFileName;
 	    /**
 	     * logger level can be
 	     * 0: Quiet. No output at all
