@@ -278,7 +278,10 @@ void DriverBase::readCalibrationData() {
 			calibrationDataParameters = std::unique_ptr<Properties4CXX::Properties>(new Properties4CXX::Properties());
 		}
 
-	} // if (useCalibrationDataFile) {
+		// Now apply them driver specific to the driver.
+		applyCalibrationData();
+
+	} // if (useCalibrationDataFile || useCalibrationDataUpdateFile) {
 }
 
 
