@@ -82,7 +82,7 @@ public:
 
     /** \brief Static part of the expected error of the sensor as factor of the measurement range.
      *
-     * The static part of the expected error is calculated as 0.1% of the &lt;measurement range&gt;.
+     * The static part of the expected error is calculated as 0.02% of the &lt;measurement range&gt;.
      *
      * \see \ref pressureErrorDynFactor
      */
