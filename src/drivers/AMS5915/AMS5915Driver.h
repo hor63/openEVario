@@ -48,17 +48,15 @@ namespace openEV::drivers::AMS5915 {
  * and no significant wind is blowing into it. \n
  * If the wind is stronger or the device is even switched on mid-flight it falls back to a previously stored 0-offset value.
  * For this purpose a measured 0-offset is compared with the previous value.
- * If the new 0-offser differs less 0.2mBar (~20km/h at MSL pressure) from the previous 0-offset the new value is taken as new 0-offset,
+ * If the new 0-offset differs less 0.2mBar (~20km/h at MSL pressure) from the previous 0-offset the new value is taken as new 0-offset,
  * and also immediately stored back to the calibration data file. Else the previous 0-offset is taken.\n
  * Reading and storing of 0-offsets is optional and enabled by configuring the calibration data file name.
  *
- * You should use either a 20inH2O(~50mBar) or a 10inH2O sensor. The 20inH2O sensor is good up to 300km/h, the 10inH2O sensor still up to 210km/h.
+ * You should use either a 50mBar or a 35mBar sensor. The 50mBar sensor is good up to 300km/h, but the 35mBar is still for 250km/h.
  * Anyway use a differential sensor with two ports, one for static pressure the other one for total pressure.
  *
- * \see [AMS5915 online at TE Connectivity](https://www.te.com/usa-en/product-CAT-BLPS0001.html)
- * \see [AMS5915 Datasheet](https://www.te.com/commerce/DocumentDelivery/DDEController?Action=showdoc&DocId=Data+Sheet%7FAMS5915%7FB10%7Fpdf%7FEnglish%7FENG_DS_AMS5915_B10.pdf%7FCAT-BLPS0001)
- * \see [Interface to MS Connectivity digital pressure modules](https://www.te.com/commerce/DocumentDelivery/DDEController?Action=showdoc&DocId=Specification+Or+Standard%7FInterfacing_to_DigitalPressure_Modules%7FA3%7Fpdf%7FEnglish%7FENG_SS_Interfacing_to_DigitalPressure_Modules_A3.pdf%7FCAT-BLPS0001)
- * \see [Configuration, POR, and Power consumption](https://www.te.com/commerce/DocumentDelivery/DDEController?Action=showdoc&DocId=Specification+Or+Standard%7FConfiguration_POR_and_Power_Consumption%7FA3%7Fpdf%7FEnglish%7FENG_SS_Configuration_POR_and_Power_Consumption_A3.pdf%7FCAT-BLPS0001)
+ * \see [AMS5915 online at Analog Microelectronics](https://www.analog-micro.com/en/products/pressure-sensors/board-mount-pressure-sensors/ams5915/)
+ * \see [AMS5915 Datasheet](https://www.analog-micro.com/products/pressure-sensors/board-mount-pressure-sensors/ams5915/ams5915-datasheet.pdf)
  *
  */
 class AMS5915Driver  : public DriverBase {
