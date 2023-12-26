@@ -190,6 +190,9 @@ private:
     FloatType initValues[NumInitValues];
     int numValidInitValues = 0;
 
+    /// \brief Status initialization, and dynamic determination of zero-bias are done.
+    bool statusInitDone = false;
+
     /// Estimated bias of the sensor in mBar/hPa
     FloatType pressureBias = UnInitVal;
 

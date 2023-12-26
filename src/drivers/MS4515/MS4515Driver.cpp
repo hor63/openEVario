@@ -76,10 +76,19 @@ MS4515Driver::~MS4515Driver() {
 
 void MS4515Driver::fillCalibrationDataParameters () {
 
-	writeConfigValue(*calibrationDataParameters, pressureBiasCalibrationName, pressureBias);
+	if (UnInitVal == pressureBias) {
+		writeConfigValue(*calibrationDataParameters, pressureBiasCalibrationName, 0.0);
+	} else {
+		writeConfigValue(*calibrationDataParameters, pressureBiasCalibrationName, pressureBias);
+	}
+
+	// write the 0-bias only once after the status initialization.
+	if (statusInitDone) {
+		useCalibrationDataUpdateFile = false;
+	}
 
 	LOG4CXX_DEBUG (logger,__PRETTY_FUNCTION__ << ": Device " << instanceName
-			<< " Read pressure bias from calibration data = " << pressureBias);
+			<< " Write pressure bias to calibration data = " << pressureBias);
 }
 
 void MS4515Driver::applyCalibrationData(){
@@ -343,7 +352,7 @@ void MS4515Driver::initializeStatus(
 		}
 
 		if (pressureBias != avgPressure) {
-			// There is a significant pressure on the sensor.
+			// There is a significant pressure on the sensor. Otherwise pressureBias would have been set to avgPressure above.
 			// Convert it into into IAS. On the ground this is approximately TAS
 			// When there is already an actual pressure value available, even better.
 			FloatType currStaticPressure;
@@ -377,6 +386,8 @@ void MS4515Driver::initializeStatus(
 	if (UnInitVal == pressureBias) {
 		pressureBias = 0.0f;
 	}
+
+	statusInitDone = true;
 
 }
 

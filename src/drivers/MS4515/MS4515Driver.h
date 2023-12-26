@@ -218,6 +218,9 @@ private:
      */
     SensorType sensorType = SENSOR_TYPE_UNDEFINED;
 
+    /// \brief Status initialization, and dynamic determination of zero-bias are done.
+    bool statusInitDone = false;
+
     /// Estimated bias of the sensor in mBar/hPa
     FloatType pressureBias = UnInitVal;
 

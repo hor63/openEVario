@@ -75,10 +75,19 @@ AMS5915Driver::~AMS5915Driver() {
 
 void AMS5915Driver::fillCalibrationDataParameters () {
 
-	writeConfigValue(*calibrationDataParameters, pressureBiasCalibrationName, pressureBias);
+	if (UnInitVal == pressureBias) {
+		writeConfigValue(*calibrationDataParameters, pressureBiasCalibrationName, 0.0);
+	} else {
+		writeConfigValue(*calibrationDataParameters, pressureBiasCalibrationName, pressureBias);
+	}
+
+	// write the 0-bias only once after the status initialization.
+	if (statusInitDone) {
+		useCalibrationDataUpdateFile = false;
+	}
 
 	LOG4CXX_DEBUG (logger,__PRETTY_FUNCTION__ << ": Device " << instanceName
-			<< " Read pressure bias from calibration data = " << pressureBias);
+			<< " Write pressure bias to calibration data = " << pressureBias);
 }
 
 void AMS5915Driver::applyCalibrationData(){
@@ -249,6 +258,8 @@ void AMS5915Driver::initializeStatus(
 	if (UnInitVal == pressureBias) {
 		pressureBias = 0.0f;
 	}
+
+	statusInitDone = true;
 
 }
 
