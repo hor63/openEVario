@@ -410,9 +410,7 @@ void IMUBase::updateKalman(SensorData &currSensorData) {
 					2.0f,2.0f,2.0f,
 					*currStatus.getMeasurementVector(),*currStatus.getCurrentStatus());
 		}
-
-		writeCyclicCalibrationDataUpdate();
-	}
+	} // if (getIsKalmanUpdateRunning())
 }
 
 void IMUBase::fillCalibrationDataParameters () {

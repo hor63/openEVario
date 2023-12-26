@@ -33,7 +33,6 @@
 #include <string>
 #include <list>
 #include <memory>
-#include <thread>
 #include <chrono>
 #include <typeinfo>
 
@@ -316,6 +315,32 @@ public:
     	return stopDriverThread;
     }
 
+    /** \brief Set the start time of the next calibration update cycle
+     *
+     *	Calculate the next update time for this driver instance.
+     *
+     * @param refTime Reference timestamp of the start of update cycles, or the last update time.
+     */
+    void setCalibrationUpdateNextTime(OEVClock::time_point refTime);
+
+    OEVClock::time_point getNextCalibrationDataWriteTime() {
+    	return nextCalibrationDataWriteTime;
+    }
+
+    bool getUseCalibrationDataUpdateFile() {
+    	return useCalibrationDataUpdateFile;
+    }
+
+    /** \brief Collect dynamic calibreation data, and write them out to the dynamic calibration data file
+     *
+     * When the variance of the calibration data becomes lower than the one read from the calibration data file in the first place
+     * the data are marked for update.
+     *
+     * If any calibration data was marked for update write out the updated configuration back into the configuration parameter file.
+     *
+     */
+    void updateAndWriteCalibrationData();
+
     /** \brief Little helper to reduce code size
      *
      * If the property \p parameterName does not exist in the properties set \p value will be unchanged.
@@ -400,7 +425,7 @@ private:
 
     /** \brief Communication flag if the driver thread is running
      *
-     * When the flag is \p true the driver thread is running.
+     * When the flag is \p true the driver OEVClock::time_point nextCalibrationDataWriteTimethread is running.
      */
     volatile bool isDriverThreadRunning = false;
 
@@ -475,7 +500,7 @@ protected:
     std::string calibrationDataUpdateFileName;
 
     /// \brief Interval to save the continuously updated calibration data
-    OEVClock::duration calibrationDataWriteInterval = OEVClock::duration(0);
+    OEVDuration calibrationDataWriteInterval = OEVDuration(0);
 
     /** \brief Write updated calibration data to a file.
      *
@@ -484,10 +509,8 @@ protected:
      */
     bool useCalibrationDataUpdateFile = false;
 
-    /// \brief Time of the last calibration data update, or the initial load
-    OEVClock::time_point lastCalibrationDataWriteTime;
-    /// \brief Flag indicating when the calibration data write thread is still active.
-    volatile bool isCalibrationDataUpdateActive = false;
+    /// \brief Time of the planned next calibration data update.
+    OEVClock::time_point nextCalibrationDataWriteTime;
 
     /** \brief Load dynamic updated calibration date before static calibration data
 	 *
@@ -547,29 +570,6 @@ protected:
      * @param tis Pointer to the object to which the thread belongs
      */
     static void driverThreadEntry (DriverBase* tis);
-
-    /** \brief Update the calibration data file when needed
-     *
-     * Check if the calibration cycle time expired,
-     * and write updated calibration data in the file named \ref calibrationDataUpdateFileName
-     */
-    void writeCyclicCalibrationDataUpdate();
-
-    /** \brief Thread function of \ref calibrationDataWriteThread
-     *
-     * Analyze the current status.
-     *   - When the variance of the gyro bias is smaller than the one of the calibration data update the gyro calibration data.
-     *   - When the variance of the magnetic bias (incl. Variance) is smaller than the calibration data update the mag bias data.
-     *   - Accelerometer calibration data are not being touched. I presume they are stable.
-     *   There is also no accelerometer bias and factor in the model. The Gravity parameter in the model actually applies only to the
-     *   Z axis.
-     *
-     * If any calibration data was updated write out the updated configuration back into the configuration parameter file.
-     *
-     * *Note*: This function runs in an own thread!
-     *
-     */
-    void calibrationDataWriteFunc();
 
     /** \brief Driver specific function to apply calibration data to the driver instance
      *

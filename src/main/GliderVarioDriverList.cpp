@@ -377,12 +377,8 @@ void GliderVarioDriverList::initDrivers (GliderVarioMainPriv &varioMain) {
 
 void GliderVarioDriverList::startupDrivers (GliderVarioMainPriv &varioMain) {
 
-	auto iter = driverInstanceList.begin();
-
-	while (iter != driverInstanceList.end()) {
-		iter->second->startup(varioMain);
-
-		iter ++;
+	for (DriverInstanceList::value_type const& i: driverInstanceList) {
+		i.second->startup(varioMain);
 	}
 
 }
@@ -392,55 +388,81 @@ void GliderVarioDriverList::initializeKalmanStatus(
 		GliderVarioMeasurementVector &measurements,
 		GliderVarioMainPriv &varioMain) {
 
-	auto iter = driverInstanceList.begin();
+	for (DriverInstanceList::value_type const& i: driverInstanceList) {
+		i.second->initializeStatus(currentStatus,measurements,varioMain);
 
-	while (iter != driverInstanceList.end()) {
-		iter->second->initializeStatus(currentStatus,measurements,varioMain);
-
-		iter ++;
 	}
 
 }
 
 void GliderVarioDriverList::runDrivers () {
 
-	auto iter = driverInstanceList.begin();
 
-	while (iter != driverInstanceList.end()) {
-		iter->second->run();
-
-		iter ++;
+	for (DriverInstanceList::value_type const& i: driverInstanceList) {
+		i.second->run();
 	}
 
 }
 
 void GliderVarioDriverList::stopDrivers () {
 
-	auto iter = driverInstanceList.begin();
+	for (DriverInstanceList::value_type const& i: driverInstanceList) {
+		i.second->shutdown();
 
-	while (iter != driverInstanceList.end()) {
-		iter->second->shutdown();
-
-		iter ++;
 	}
 
 }
 
 bool GliderVarioDriverList::isDriverRunningIdleLoop() {
 
-	auto iter = driverInstanceList.begin();
 
-	while (iter != driverInstanceList.end()) {
-		if (iter->second->hasSensorCapability(drivers::DriverBase::RUN_IDLE_LOOP)) {
+	for (DriverInstanceList::value_type const& i: driverInstanceList) {
+		if (i.second->hasSensorCapability(drivers::DriverBase::RUN_IDLE_LOOP)) {
 			return true;
 		}
-
-		iter ++;
 	}
 
 	return false;
 }
 
+void GliderVarioDriverList::calibrationDataUpdateThreadFunc() {
+	auto now = OEVClock::now();
+	constexpr OEVDuration oneHour = static_cast<OEVDuration>(std::chrono::hours(1));
+	OEVClock::time_point nextCycleTime = now + oneHour;
 
+	for (DriverInstanceList::value_type const& i :driverInstanceList) {
+		i.second->setCalibrationUpdateNextTime(now);
+	}
+
+	// Enter the endless loop
+	for (;;) {
+
+		// run through all driver instances and get the lowest next wakeup time
+		for (DriverInstanceList::value_type const& i :driverInstanceList) {
+
+			if (i.second->getUseCalibrationDataUpdateFile() &&
+					i.second->getNextCalibrationDataWriteTime() < nextCycleTime) {
+				nextCycleTime = i.second->getNextCalibrationDataWriteTime();
+			}
+		}
+		std::this_thread::sleep_until(nextCycleTime);
+
+		// Run through all driver instances, and
+		for (DriverInstanceList::value_type const& i :driverInstanceList) {
+
+			if (i.second->getUseCalibrationDataUpdateFile() &&
+					i.second->getNextCalibrationDataWriteTime() <= nextCycleTime) {
+				i.second->updateAndWriteCalibrationData();
+				i.second->setCalibrationUpdateNextTime(nextCycleTime);
+			}
+		}
+
+		// Setup the default for the next update cycle.
+		nextCycleTime += oneHour;
+	}
+	// Now collect the update times
+
+
+}
 
 } /* namespace openEV */

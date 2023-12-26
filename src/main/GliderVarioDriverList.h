@@ -28,6 +28,7 @@
 
 #include <map>
 #include <string>
+#include <thread>
 
 #include "CommonDefs.h"
 #include "Properties4CXX/Properties.h"
@@ -178,6 +179,26 @@ protected:
 
 	ProgramOptions &programOptions;
 
+	/** \brief Time when the next update cycle is planned.
+	 *
+	 * This timestamp is the basis for the calculation of the next update cycle
+	 * of the driver instances.
+	 *
+	 * This one timestamp eliminates divergent update times of instances due to runtime of writing
+	 * the calibration data sequentially, and minimizes the use of the expensive OEVClock::now() function
+	 */
+	OEVClock::time_point nextCalibrationDataUpdate;
+
+	/** \brief The independent calibration data writer thread
+	 *
+	 * The calibration data write cycles are slow (>> 1sec) and not time critical or critical
+	 * regarding accuracy of the actual writing interval.
+	 * Therefore only one thread residing in this class is being implemented.
+	 *
+	 * The executing function is \ref calibrationDataUpdateThreadFunc().
+	 */
+	std::thread calibrationDataUpdateThread;
+
 	/** \brief Load a driver shared library.
 	 *
 	 * Load the driver libs and add them to \ref driverList.
@@ -197,6 +218,19 @@ protected:
 	 * @param configuration Configuration of the program. Must contain a structure named as the driverInstanceName.
 	 */
 	void loadDriverInstance(char const *driverInstanceName, Properties4CXX::Properties const &configuration);
+
+
+	/** \brief Calibration date update thread function.
+	 *
+	 * The thread which is running this function is owned by \ref calibrationDataUpdateThread.
+	 *
+	 * This function never returns.
+	 * If it does not find any driver instance with a calibration update it will still run an update cycle of
+	 * 1 min and tries again to find any driver instance with an update cycle.
+	 *
+	 * \see calibrationDataUpdateThread
+	 */
+	void calibrationDataUpdateThreadFunc();
 
 };
 

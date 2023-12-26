@@ -164,23 +164,7 @@ void DriverBase::writeConfigValue (
 	calibrationDataParameters.addProperty(new Properties4CXX::PropertyDouble(parameterName,value));
 }
 
-
-void DriverBase::writeCyclicCalibrationDataUpdate() {
-	auto lastPredictionUpdate = varioMain->getLastPredictionUpdate();
-	auto timeSinceLastCalibrationWrite = lastPredictionUpdate - lastCalibrationDataWriteTime;
-	if (!calibrationWriterRunning && (timeSinceLastCalibrationWrite >= calibrationDataWriteInterval)) {
-		calibrationWriterRunning = true;
-		if (calibrationDataWriteThread.joinable()) {
-			calibrationDataWriteThread.join();
-		}
-		lastCalibrationDataWriteTime = OEVClock::now();
-		calibrationDataWriteThread = std::thread(&DriverBase::calibrationDataWriteFunc,this);
-	}
-}
-
-void DriverBase::calibrationDataWriteFunc() {
-
-
+void DriverBase::updateAndWriteCalibrationData() {
 
 	try {
 		fillCalibrationDataParameters ();
@@ -191,22 +175,24 @@ void DriverBase::calibrationDataWriteFunc() {
 			std::ostringstream str;
 
 			str << __PRETTY_FUNCTION__ << ": Cannot open calibration update file \"" << calibrationDataUpdateFileName
+					<< " for driver instance " << instanceName
 					<< "\". Error: " << strerror(err);
 			throw GliderVarioDriverCalibrationFileException(__FILE__, __LINE__, str.str().c_str());
 		}
 		calibrationDataParameters->writeOut(of);
 	} catch (std::exception const &e) {
 		LOG4CXX_ERROR(logger,"Error in " << __PRETTY_FUNCTION__
+				<< " for driver instance " << instanceName
 				<< ". Error = " << e.what());
 	}
 	catch (...) {
 		LOG4CXX_ERROR(logger,"Error in " << __PRETTY_FUNCTION__
-				<< ". Unknown exception.");
+				<< " for driver instance " << instanceName
+				<< ". Unknown exception. Disable further calibration data updates.");
+		// Something went completely wrong
+		useCalibrationDataUpdateFile = false;
 	}
 
-	lastCalibrationDataWriteTime = OEVClock::now();
-
-	calibrationWriterRunning = false;
 }
 
 void DriverBase::applyCalibrationData() {
@@ -379,6 +365,16 @@ void DriverBase::readCommonConfiguration(
 	LOG4CXX_INFO (logger,"\t loadCalibrationDataUpdateFileBeforeStatic = " << loadCalibrationDataUpdateFileBeforeStatic);
 
 
+}
+
+
+void DriverBase::setCalibrationUpdateNextTime(OEVClock::time_point refTime) {
+	if (useCalibrationDataUpdateFile) {
+		nextCalibrationDataWriteTime = refTime + calibrationDataWriteInterval;
+	} else {
+		// Set the next calibration data update 10 years from now, i.e. never :D
+		nextCalibrationDataWriteTime = refTime + std::chrono::hours(24*356*10);
+	}
 }
 
 #if !defined DOXYGEN
