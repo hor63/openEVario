@@ -22,7 +22,7 @@ pkglib_LTLIBRARIES=libopenEVMain.la
 
 libopenEVMain_la_SOURCES=GliderVarioMain.cpp GliderVarioMainPriv.cpp GliderVarioDriverList.cpp \
 	driverBase/DriverBase.cpp driverBase/DriverLibBase.cpp \
-	driverBase/IMUBase.cpp
+	driverBase/IMUBase.cpp driverBase/DifferentialPressureSensorBase.cpp
 
  
 libopenEVMain_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT) $(MAIN_LDFLAGS) $(LOG4CXX_LDFLAGS)

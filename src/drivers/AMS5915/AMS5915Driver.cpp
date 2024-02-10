@@ -54,24 +54,15 @@ AMS5915Driver::AMS5915Driver(
 		char const *description,
 		char const *instanceName
 		)
-: DriverBase {driverName,description,instanceName,AMS5915Lib::theOneAndOnly}
+: DifferentialPressureSensorBase {driverName,description,instanceName,AMS5915Lib::theOneAndOnly}
 {
-
 #if defined HAVE_LOG4CXX_H
 	initLogger();
 #endif /* HAVE_LOG4CXX_H */
-
-	setSensorCapability(DYNAMIC_PRESSURE);
-
-	// Default cycle time as documented in the template parameter file
-	using namespace std::chrono_literals;
-	updateCyle = 100ms;
 }
 
 
-AMS5915Driver::~AMS5915Driver() {
-
-}
+AMS5915Driver::~AMS5915Driver() {}
 
 void AMS5915Driver::fillCalibrationDataParameters () {
 
@@ -99,14 +90,6 @@ void AMS5915Driver::applyCalibrationData(){
 			<< " Read pressure bias from calibration data = " << pressureBias);
 }
 
-
-void AMS5915Driver::driverInit(GliderVarioMainPriv &varioMain) {
-
-	this->varioMain = &varioMain;
-
-	ioPort = getIoPort<decltype(ioPort)>(logger);
-
-}
 
 void AMS5915Driver::readConfiguration (Properties4CXX::Properties const &configuration) {
 
@@ -176,99 +159,6 @@ void AMS5915Driver::readConfiguration (Properties4CXX::Properties const &configu
 	}
 
 }
-
-#define SQUARE(x) ((x)*(x))
-
-void AMS5915Driver::initializeStatus(
-		GliderVarioStatus &varioStatus,
-		GliderVarioMeasurementVector &measurements,
-		GliderVarioMainPriv &varioMain) {
-
-	// Wait for 20 seconds for 16 samples to appear, and a defined temperature value
-	for (int i = 0; i < 20; i++) {
-		if (numValidInitValues < NumInitValues || UnInitVal == temperatureVal) {
-			using namespace std::chrono_literals; // used for the term "1s" below. 's' being the second literal.
-
-			LOG4CXX_TRACE(logger,__FUNCTION__ << ": Only " << numValidInitValues <<
-					" valid samples collected. Wait another second");
-			std::this_thread::sleep_for(1s);
-		} else {
-			break;
-		}
-	}
-
-	if (numValidInitValues >= NumInitValues) {
-		FloatType avgPressure = 0.0f;
-		FloatType initialTAS = 0.0f;
-
-		for (int i = 0 ; i < NumInitValues; i++) {
-			avgPressure += FloatType(initValues[i]);
-			LOG4CXX_TRACE(logger," initValues[" << i << "] = " << initValues[i]);
-		}
-		avgPressure /= FloatType(NumInitValues);
-		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": avgPressure = " << avgPressure << " mBar");
-
-		// Store the avg pressure as offset only when the instrument is obviously not switched on during flight.
-		// or during high-wind conditions on the field (> 20 km/h)
-
-		if (UnInitVal == pressureBias) {
-			// No pre-loaded bias value from calibration data.
-			// Assume initial startup in controlled environment.
-			pressureBias = avgPressure;
-			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": No bias from calibration data available. pressureBias = " << pressureBias << " mBar");
-		} else {
-
-			// Dynamic pressure in mBar at about 20km/h on the ground at 0C. Variations at different temperatures
-			// and atmospheric pressures are insignificant here.
-			// I only want a threshold to differentiate between switching the device on in high-wind conditions or even in flight.
-			static constexpr FloatType PressureLimit = 0.2;
-
-			if (fabs(avgPressure - pressureBias) < PressureLimit) {
-				// Not too far off.
-				// Assume the measured value is the new offset/bias of the sensor.
-				LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Old Pressure bias = " << pressureBias << ", new pressureBias = " << avgPressure << " mBar");
-				pressureBias = avgPressure;
-			}
-
-		}
-
-		if (pressureBias != avgPressure) {
-			// There is a significant pressure on the sensor.
-			// Convert it into IAS. On the ground this is approximately TAS
-			// \p varioStatus.lastPressure is initialized to standard sea level pressure
-			// When there is already an actual pressure value available, even better.
-			FloatType airDensity = varioStatus.lastPressure*100.0f / Rspec / (temperatureVal + CtoK);
-			initialTAS = sqrtf(200.0f * avgPressure / airDensity);
-
-			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": TAS @ "
-					<< temperatureVal << "C, " << varioStatus.lastPressure << "mBar = "
-					<< initialTAS << "m/s.");
-		}
-
-		// All data is collected. Initialize the status
-		varioStatus.trueAirSpeed = initialTAS;
-		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) = 9.0f;
-
-	} else {
-		LOG4CXX_WARN(logger,__FUNCTION__ << "Could not obtain " << NumInitValues
-				<< " valid measurements in a row for 20 seconds. Cannot initialize the Kalman filter state.");
-
-	}
-
-	if (UnInitVal == pressureBias) {
-		pressureBias = 0.0f;
-	}
-
-	statusInitDone = true;
-
-}
-
-void AMS5915Driver::updateKalmanStatus (GliderVarioStatus &varioStatus) {
-
-	// Nothing to do here
-
-}
-
 
 void AMS5915Driver::driverThreadFunction() {
 
