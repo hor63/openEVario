@@ -30,10 +30,8 @@
 #include <string>
 #include <map>
 
-#include "CommonDefs.h"
-#include "util/io/I2CPort.h"
 #include "AMS5915Defs.h"
-#include "drivers/DriverBase.h"
+#include "main/driverBase/DifferentialPressureSensorBase.h"
 #include "AMS5915Lib.h"
 
 namespace openEV::drivers::AMS5915 {
@@ -59,29 +57,8 @@ namespace openEV::drivers::AMS5915 {
  * \see [AMS5915 Datasheet](https://www.analog-micro.com/products/pressure-sensors/board-mount-pressure-sensors/ams5915/ams5915-datasheet.pdf)
  *
  */
-class AMS5915Driver  : public DriverBase {
+class AMS5915Driver  : public DifferentialPressureSensorBase {
 public:
-
-    /** \brief Dynamic part of the expected error of the sensor as factor of the measurement range.
-     *
-     * The dynamic part of the expected error is calculated as 1% of the &lt;measured value&gt;/&lt;measurement range&gt;.
-     * The dynamic error and the static error calculated by \ref pressureErrorStaticFactor are added together to
-     * calculate the variance for a measured value.
-     * The combination of a small static error, and a dynamic component comes from the relative accuracy at low values
-     * due to automatic offset detection at startup, and the fact that the dynamic pressure is square to the air speed.
-     */
-    static constexpr FloatType pressureErrorDynFactor = 0.01;
-
-    /** \brief Static part of the expected error of the sensor as factor of the measurement range.
-     *
-     * The static part of the expected error is calculated as 0.02% of the &lt;measurement range&gt;.
-     *
-     * \see \ref pressureErrorDynFactor
-     */
-    // static constexpr FloatType pressureErrorStaticFactor = 0.001;
-    static constexpr FloatType pressureErrorStaticFactor = 0.0002;
-
-    static constexpr char const * const pressureBiasCalibrationName = "pressureBias";
 
 	AMS5915Driver(
     	    char const *driverName,
@@ -90,44 +67,11 @@ public:
 			);
 	virtual ~AMS5915Driver();
 
-    /** \brief Initialize the driver
-     *
-     * \see GliderVarioDriverBase::driverInit()
-     */
-    virtual void driverInit(GliderVarioMainPriv &varioMain) override;
-
-
     /** \brief Read the configuration
      *
      * \see \ref DriverBase::readConfiguration()
      */
     virtual void readConfiguration (Properties4CXX::Properties const &configuration) override;
-
-    /** \brief Initialize the Kalman filter status from initial sensor measurements
-     *
-     * \see GliderVarioDriverBase::initializeStatus()
-     */
-    virtual void initializeStatus(
-    		GliderVarioStatus &varioStatus,
-			GliderVarioMeasurementVector &measurements,
-			GliderVarioMainPriv &varioMain) override;
-
-    /** \brief Callback to update the Kalman filter status based on received data.
-     *
-     * \see GliderVarioDriverBase::updateKalmanStatus()
-     */
-    virtual void updateKalmanStatus (GliderVarioStatus &varioStatus) override;
-
-    /** \brief Convert pressure sensor reading to pressure in mBar
-     *
-     * Calculation is simple: Interpolate the sensor reading between \ref pMin at a register value \ref AMS5915PressureRangeMinCount
-     * and \ref pMax at a register value \ref AMS5915PressureRangeMaxCount
-     *
-     * @param registerVal Binary value from register index \ref AMS5915_PRESSURE_HIGH and \ref AMS5915_PRESSURE_LOW.
-     * @return Converted value in mBar
-     */
-    FloatType convertRegisterPressureToMBar (uint16_t registerVal) const;
-
 
 protected:
 
@@ -162,42 +106,18 @@ protected:
      */
     virtual void readoutAMS5915();
 
+    /** \brief Convert pressure sensor reading to pressure in mBar
+     *
+     * Calculation is simple: Interpolate the sensor reading between \ref pMin at a register value \ref AMS5915PressureRangeMinCount
+     * and \ref pMax at a register value \ref AMS5915PressureRangeMaxCount
+     *
+     * @param registerVal Binary value from register index \ref AMS5915_PRESSURE_HIGH and \ref AMS5915_PRESSURE_LOW.
+     * @return Converted value in mBar
+     */
+    FloatType convertRegisterPressureToMBar (uint16_t registerVal) const;
+
 private:
 
-    uint8_t i2cAddress = AMS5915I2CAddr;
-
-    /**
-     * Use the builtin temperature sensor. The current temperature is used for calculating altitude from pressure and vice versa,
-	 * by means of the Barometric formula.
-	 * Using the temperature sensor of the pressure sensor is not advised, and should only be used as a back-stop
-	 * When an accurate external temperature sensor is not available.
-	 * Reason is that the temperature in the cockpit is usually quite a bit higher than outside due to the greenhouse
-	 * effect of the canopy.
-	 * Optional. Default false.
-     */
-    bool useTemperatureSensor = false;
-
-    /// \brief The I/O port.
-    ///
-    /// This must be an I2C port.
-    io::I2CPort *ioPort = nullptr;
-
-	/// Pointer to the main vario object which also hosts the Kalman filter.
-    GliderVarioMainPriv *varioMain = nullptr;
-
-    bool kalmanInitDone = false;
-    static constexpr int NumInitValues = 0x10;
-    FloatType initValues[NumInitValues];
-    int numValidInitValues = 0;
-
-    /// \brief Status initialization, and dynamic determination of zero-bias are done.
-    bool statusInitDone = false;
-
-    /// Estimated bias of the sensor in mBar/hPa
-    FloatType pressureBias = UnInitVal;
-
-    /// Latest temperature value in C
-    FloatType temperatureVal = UnInitVal;
 
     /** \brief Minimum pressure of the defined range in mBar.
      *

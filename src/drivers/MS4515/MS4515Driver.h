@@ -32,7 +32,7 @@
 
 #include "CommonDefs.h"
 #include "MS4515DO.h"
-#include "drivers/DriverBase.h"
+#include "main/driverBase/DifferentialPressureSensorBase.h"
 #include "MS4515Lib.h"
 #include "util/io/I2CPort.h"
 
@@ -61,7 +61,7 @@ namespace openEV::drivers::MS4515 {
  * \see [Configuration, POR, and Power consumption](https://www.te.com/commerce/DocumentDelivery/DDEController?Action=showdoc&DocId=Specification+Or+Standard%7FConfiguration_POR_and_Power_Consumption%7FA3%7Fpdf%7FEnglish%7FENG_SS_Configuration_POR_and_Power_Consumption_A3.pdf%7FCAT-BLPS0001)
  *
  */
-class MS4515Driver  : public DriverBase {
+class MS4515Driver  : public DifferentialPressureSensorBase {
 public:
 
 	enum SensorType {
@@ -70,27 +70,6 @@ public:
 		SENSOR_TYPE_B, ///< Sensor type B defines pMin as 5%, and pMax as 95% of the physical measurement range of 0x3fff.
 	};
 
-    /** \brief Dynamic part of the expected error of the sensor as factor of the measurement range.
-     *
-     * The dynamic part of the expected error is calculated as 1% of the &lt;measured value&gt;/&lt;measurement range&gt;.
-     * The dynamic error and the static error calculated by \ref pressureErrorStaticFactor are added together to
-     * calculate the variance for a measured value.
-     * The combination of a small static error, and a dynamic component comes from the relative accuracy at low values
-     * due to automatic offset detection at startup, and the fact that the dynamic pressure is square to the air speed.
-     */
-    static constexpr FloatType pressureErrorDynFactor = 0.01;
-
-    /** \brief Static part of the expected error of the sensor as factor of the measurement range.
-     *
-     * The static part of the expected error is calculated as 0.02% of the &lt;measurement range&gt;.
-     *
-     * \see \ref pressureErrorDynFactor
-     */
-    // static constexpr FloatType pressureErrorStaticFactor = 0.001;
-    static constexpr FloatType pressureErrorStaticFactor = 0.0002;
-
-    static constexpr char const * const pressureBiasCalibrationName = "pressureBias";
-
 	MS4515Driver(
     	    char const *driverName,
 			char const *description,
@@ -98,57 +77,11 @@ public:
 			);
 	virtual ~MS4515Driver();
 
-    /** \brief Initialize the driver
-     *
-     * \see GliderVarioDriverBase::driverInit()
-     */
-    virtual void driverInit(GliderVarioMainPriv &varioMain) override;
-
-
     /** \brief Read the configuration
      *
      * \see \ref DriverBase::readConfiguration()
      */
     virtual void readConfiguration (Properties4CXX::Properties const &configuration) override;
-
-    /** \brief Initialize the Kalman filter status from initial sensor measurements
-     *
-     * \see GliderVarioDriverBase::initializeStatus()
-     */
-    virtual void initializeStatus(
-    		GliderVarioStatus &varioStatus,
-			GliderVarioMeasurementVector &measurements,
-			GliderVarioMainPriv &varioMain) override;
-
-    /** \brief Callback to update the Kalman filter status based on received data.
-     *
-     * \see GliderVarioDriverBase::updateKalmanStatus()
-     */
-    virtual void updateKalmanStatus (GliderVarioStatus &varioStatus) override;
-
-    /** \brief Convert pressure sensor reading to pressure in mBar for a Type A sensor
-     *
-     * Look up "Interfacing To MEAS Digital Pressure Modules" in the
-     * \ref openEV::drivers::MS4515 namespace description how to retrieve
-     * the binary register values from the register bank of the sensor.
-     *
-     * The formula is: \n
-     * (output - 16383*loFact) * (pMax-pMin) / (16383*hiFact) + pMin \n
-     * \p loFact is 0.05 for B-type, and 0.1 for A-type sensors. \n
-     * \p hiFact is 0.9 for B-type, and 0.8 for A-type sensors.
-     *
-     * Constant factors in the formula up there are pre-calculated in \ref readConfiguration():
-     * - \ref f1 = 16383*loFact
-     * - \ref f2 = (pMax-pMin)/(16383*hiFact)
-     *
-     * Thus the formula becomes \n
-     * (output - f1) * f2 + pMin
-     *
-     * @param registerVal Binary value from registers 0 and 1 of the sensor.
-     * @return Converted value in mBar
-     */
-    FloatType convertRegisterPressureToMBar (FloatType registerVal) const;
-
 
 protected:
 
@@ -182,6 +115,30 @@ protected:
      * Before reading out the data wait for the conversion to complete.
      */
     virtual void readoutMS4515();
+
+    /** \brief Convert pressure sensor reading to pressure in mBar for a Type A sensor
+     *
+     *
+     * Look up "Interfacing To MEAS Digital Pressure Modules" in the
+     * \ref openEV::drivers::MS4515 namespace description how to retrieve
+     * the binary register values from the register bank of the sensor.
+     *
+     * The formula is: \n
+     * (output - 16383*loFact) * (pMax-pMin) / (16383*hiFact) + pMin \n
+     * \p loFact is 0.05 for B-type, and 0.1 for A-type sensors. \n
+     * \p hiFact is 0.9 for B-type, and 0.8 for A-type sensors.
+     *
+     * Constant factors in the formula up there are pre-calculated in \ref readConfiguration():
+     * - \ref f1 = 16383*loFact
+     * - \ref f2 = (pMax-pMin)/(16383*hiFact)
+     *
+     * Thus the formula becomes \n
+     * (output - f1) * f2 + pMin
+     *
+     * @param registerVal Binary value from registers 0 and 1 of the sensor.
+     * @return Converted value in mBar
+     */
+    FloatType convertRegisterPressureToMBar (FloatType registerVal) const;
 
 private:
 

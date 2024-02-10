@@ -156,7 +156,8 @@ am_libopenEVMain_la_OBJECTS = libopenEVMain_la-GliderVarioMain.lo \
 	libopenEVMain_la-GliderVarioMainPriv.lo \
 	libopenEVMain_la-GliderVarioDriverList.lo \
 	libopenEVMain_la-DriverBase.lo \
-	libopenEVMain_la-DriverLibBase.lo libopenEVMain_la-IMUBase.lo
+	libopenEVMain_la-DriverLibBase.lo libopenEVMain_la-IMUBase.lo \
+	libopenEVMain_la-DifferentialPressureSensorBase.lo
 libopenEVMain_la_OBJECTS = $(am_libopenEVMain_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -181,7 +182,8 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/libopenEVMain_la-DriverBase.Plo \
+am__depfiles_remade = ./$(DEPDIR)/libopenEVMain_la-DifferentialPressureSensorBase.Plo \
+	./$(DEPDIR)/libopenEVMain_la-DriverBase.Plo \
 	./$(DEPDIR)/libopenEVMain_la-DriverLibBase.Plo \
 	./$(DEPDIR)/libopenEVMain_la-GliderVarioDriverList.Plo \
 	./$(DEPDIR)/libopenEVMain_la-GliderVarioMain.Plo \
@@ -470,7 +472,7 @@ SUBDIRS = ../util ../kalman
 pkglib_LTLIBRARIES = libopenEVMain.la
 libopenEVMain_la_SOURCES = GliderVarioMain.cpp GliderVarioMainPriv.cpp GliderVarioDriverList.cpp \
 	driverBase/DriverBase.cpp driverBase/DriverLibBase.cpp \
-	driverBase/IMUBase.cpp
+	driverBase/IMUBase.cpp driverBase/DifferentialPressureSensorBase.cpp
 
 libopenEVMain_la_LDFLAGS = $(LD_NO_UNDEFINED_OPT) $(MAIN_LDFLAGS) $(LOG4CXX_LDFLAGS)
 libopenEVMain_la_LIBADD = ../kalman/libopenEVKalman.la ../util/libopenEVUtil.la $(LOG4CXX_LIBS) $(MAIN_LIBS) $(PTHREAD_LIBS)
@@ -557,6 +559,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopenEVMain_la-DifferentialPressureSensorBase.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopenEVMain_la-DriverBase.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopenEVMain_la-DriverLibBase.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopenEVMain_la-GliderVarioDriverList.Plo@am__quote@ # am--include-marker
@@ -632,6 +635,13 @@ libopenEVMain_la-IMUBase.lo: driverBase/IMUBase.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='driverBase/IMUBase.cpp' object='libopenEVMain_la-IMUBase.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVMain_la_CXXFLAGS) $(CXXFLAGS) -c -o libopenEVMain_la-IMUBase.lo `test -f 'driverBase/IMUBase.cpp' || echo '$(srcdir)/'`driverBase/IMUBase.cpp
+
+libopenEVMain_la-DifferentialPressureSensorBase.lo: driverBase/DifferentialPressureSensorBase.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVMain_la_CXXFLAGS) $(CXXFLAGS) -MT libopenEVMain_la-DifferentialPressureSensorBase.lo -MD -MP -MF $(DEPDIR)/libopenEVMain_la-DifferentialPressureSensorBase.Tpo -c -o libopenEVMain_la-DifferentialPressureSensorBase.lo `test -f 'driverBase/DifferentialPressureSensorBase.cpp' || echo '$(srcdir)/'`driverBase/DifferentialPressureSensorBase.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libopenEVMain_la-DifferentialPressureSensorBase.Tpo $(DEPDIR)/libopenEVMain_la-DifferentialPressureSensorBase.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='driverBase/DifferentialPressureSensorBase.cpp' object='libopenEVMain_la-DifferentialPressureSensorBase.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVMain_la_CXXFLAGS) $(CXXFLAGS) -c -o libopenEVMain_la-DifferentialPressureSensorBase.lo `test -f 'driverBase/DifferentialPressureSensorBase.cpp' || echo '$(srcdir)/'`driverBase/DifferentialPressureSensorBase.cpp
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -839,7 +849,8 @@ clean-am: clean-generic clean-libtool clean-pkglibLTLIBRARIES \
 	mostlyclean-am
 
 distclean: distclean-recursive
-		-rm -f ./$(DEPDIR)/libopenEVMain_la-DriverBase.Plo
+		-rm -f ./$(DEPDIR)/libopenEVMain_la-DifferentialPressureSensorBase.Plo
+	-rm -f ./$(DEPDIR)/libopenEVMain_la-DriverBase.Plo
 	-rm -f ./$(DEPDIR)/libopenEVMain_la-DriverLibBase.Plo
 	-rm -f ./$(DEPDIR)/libopenEVMain_la-GliderVarioDriverList.Plo
 	-rm -f ./$(DEPDIR)/libopenEVMain_la-GliderVarioMain.Plo
@@ -890,7 +901,8 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-recursive
-		-rm -f ./$(DEPDIR)/libopenEVMain_la-DriverBase.Plo
+		-rm -f ./$(DEPDIR)/libopenEVMain_la-DifferentialPressureSensorBase.Plo
+	-rm -f ./$(DEPDIR)/libopenEVMain_la-DriverBase.Plo
 	-rm -f ./$(DEPDIR)/libopenEVMain_la-DriverLibBase.Plo
 	-rm -f ./$(DEPDIR)/libopenEVMain_la-GliderVarioDriverList.Plo
 	-rm -f ./$(DEPDIR)/libopenEVMain_la-GliderVarioMain.Plo
