@@ -502,6 +502,11 @@ protected:
     /// \brief Interval to save the continuously updated calibration data
     OEVDuration calibrationDataWriteInterval = OEVDuration(0);
 
+    /** \brief Write calibration data once after startup self-calibration
+     *
+     */
+    bool saveZeroOffsetCalibrationOnce = false;
+
     /** \brief Write updated calibration data to a file.
      *
      * Automatically true when calibrationDataUpdateFileName is not empty, and

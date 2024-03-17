@@ -334,7 +334,14 @@ void DriverBase::readCommonConfiguration(
 		durTicks = configuration.getPropertyValue(
 				std::string("calibrationDataUpdateCycle"),0LL);
 		calibrationDataWriteInterval = static_cast<OEVDuration>(std::chrono::seconds(durTicks));
-		useCalibrationDataUpdateFile = !calibrationDataUpdateFileName.empty() && durTicks > 0LL;
+		if (!calibrationDataUpdateFileName.empty()) {
+			useCalibrationDataUpdateFile = durTicks > 0LL;
+
+			saveZeroOffsetCalibrationOnce = configuration.getPropertyValue(
+					std::string("saveZeroOffsetCalibrationOnce"),
+					saveZeroOffsetCalibrationOnce);
+
+		}
 
 		loadCalibrationDataUpdateFileBeforeStatic = configuration.getPropertyValue(
 				std::string("loadCalibrationDataUpdateFileBeforeStatic"),
@@ -361,6 +368,7 @@ void DriverBase::readCommonConfiguration(
 	LOG4CXX_INFO (logger,"\t useCalibrationDataFile = " << useCalibrationDataFile);
 	LOG4CXX_INFO (logger,"\t calibrationDataUpdateFileName = " << calibrationDataUpdateFileName);
 	LOG4CXX_INFO (logger,"\t calibrationDataWriteInterval = " << (std::chrono::duration_cast<std::chrono::seconds>(calibrationDataWriteInterval).count()) << "s");
+	LOG4CXX_INFO (logger,"\t saveZeroOffsetCalibrationOnce = " << saveZeroOffsetCalibrationOnce);
 	LOG4CXX_INFO (logger,"\t useCalibrationDataUpdateFile = " << useCalibrationDataUpdateFile);
 	LOG4CXX_INFO (logger,"\t loadCalibrationDataUpdateFileBeforeStatic = " << loadCalibrationDataUpdateFileBeforeStatic);
 
