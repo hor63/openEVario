@@ -87,23 +87,25 @@ void DifferentialPressureSensorBase::initializeStatus(
 	}
 
 	if (numValidInitValues >= NumInitValues) {
-		FloatType avgPressure = 0.0f;
+
 		FloatType initialTAS = 0.0f;
 
-		for (int i = 0 ; i < NumInitValues; i++) {
-			avgPressure += FloatType(initValues[i]);
+		for (int i = 0 ; i < numValidInitValues; i++) {
+			avgPressureOnStartup += FloatType(initValues[i]);
 			LOG4CXX_TRACE(logger," initValues[" << i << "] = " << initValues[i]);
 		}
-		avgPressure /= FloatType(NumInitValues);
-		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": avgPressure = " << avgPressure << " mBar");
+		avgPressureOnStartup /= static_cast<FloatType>(numValidInitValues);
+		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": avgPressureOnStartup = " << avgPressureOnStartup << " mBar");
 
-		// Store the avg pressure as offset only when the instrument is obviously not switched on during flight.
-		// or during high-wind conditions on the field (> 20 km/h)
+		// Use the avg pressure as offset only when the instrument is obviously not switched on during flight,
+		// or during high-wind conditions on the field (> 20 km/h),
+		// unless there is no calibration data of the bias available.
+		// When there is no previous calibration data is available use the average obained at startup, and hope for the best.
 
 		if (UnInitVal == pressureBias) {
 			// No pre-loaded bias value from calibration data.
 			// Assume initial startup in controlled environment.
-			pressureBias = avgPressure;
+			pressureBias = avgPressureOnStartup;
 			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": No bias from calibration data available. pressureBias = " << pressureBias << " mBar");
 		} else {
 
@@ -112,16 +114,21 @@ void DifferentialPressureSensorBase::initializeStatus(
 			// I only want a threshold to differentiate between switching the device on in high-wind conditions or even in flight.
 			static constexpr FloatType PressureLimit = 0.2;
 
-			if (fabs(avgPressure - pressureBias) < PressureLimit) {
+			if (fabs(avgPressureOnStartup - pressureBias) < PressureLimit) {
 				// Not too far off.
 				// Assume the measured value is the new offset/bias of the sensor.
-				LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Old Pressure bias = " << pressureBias << ", new pressureBias = " << avgPressure << " mBar");
-				pressureBias = avgPressure;
-			}
+				LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Old Pressure bias = " << pressureBias
+						<< ", new pressureBias = " << avgPressureOnStartup << " mBar");
+				pressureBias = avgPressureOnStartup;
 
+				if (saveZeroOffsetCalibrationOnce) {
+					updateAndWriteCalibrationData();
+				}
+
+			}
 		}
 
-		if (pressureBias != avgPressure) {
+		if (pressureBias != avgPressureOnStartup) {
 			// There is a significant pressure on the sensor.
 			// Convert it into IAS. On the ground this is approximately TAS
 			// \p varioStatus.lastPressure is initialized to standard sea level pressure
@@ -134,7 +141,7 @@ void DifferentialPressureSensorBase::initializeStatus(
 			}
 
 			FloatType airDensity = currStaticPressure*100.0f / Rspec / (temperatureVal + CtoK);
-			initialTAS = sqrtf(200.0f * avgPressure / airDensity);
+			initialTAS = sqrtf(200.0f * avgPressureOnStartup / airDensity);
 
 			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": TAS @ "
 					<< temperatureVal << "C, " << varioStatus.lastPressure << "mBar = "
@@ -165,6 +172,27 @@ void DifferentialPressureSensorBase::updateKalmanStatus (GliderVarioStatus &vari
 
 }
 
+void DifferentialPressureSensorBase::fillCalibrationDataParameters () {
+
+	calibrationData.pressureBias = pressureBias;
+
+	writeConfigValue(*calibrationDataParameters,"zeroOffset",calibrationData.pressureBias);
+
+	LOG4CXX_DEBUG (logger, __PRETTY_FUNCTION__ << " Fill calibration data for device \"" << instanceName << "\": \n"
+			<< "\tpressureBias	= " << calibrationData.pressureBias << "\n");
+}
+
+void DifferentialPressureSensorBase::applyCalibrationData(){
+
+	calibrationData.pressureBias = pressureBias;
+
+	readOrCreateConfigValue(*calibrationDataParameters,"zeroOffset", calibrationData.pressureBias);
+
+	pressureBias = static_cast<FloatType>(calibrationData.pressureBias);
+
+	LOG4CXX_DEBUG (logger, __PRETTY_FUNCTION__ << " Set calibration data for device \"" << instanceName << "\": \n"
+			<< "\tpressureBias		 = " << calibrationData.pressureBias << "\n");
+}
 
 } /* namespace drivers */
 } /* namespace openEV */

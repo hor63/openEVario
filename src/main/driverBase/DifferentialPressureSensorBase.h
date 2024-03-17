@@ -95,6 +95,7 @@ protected:
     static constexpr int NumInitValues = 0x10;
     FloatType initValues[NumInitValues];
     int numValidInitValues = 0;
+    FloatType avgPressureOnStartup = 0.0f;
 
     /// \brief Status initialization, and dynamic determination of zero-bias are done.
     bool statusInitDone = false;
@@ -104,6 +105,25 @@ protected:
 
     /// Latest temperature value in C
     FloatType temperatureVal = UnInitVal;
+
+    /** \brief Calibration data for the IMU
+     *
+     */
+    struct SensorCalibrationData {
+    	double pressureBias = 0.0; //< zero-offset of the sensor in hPa
+    } calibrationData;
+
+    /** \brief Fill calibration data parameter list; driver specific
+     *
+     *	\see DriverBase::fillCalibrationDataParameters()
+     */
+    virtual void fillCalibrationDataParameters () override;
+
+    /** \brief Driver specific function to apply calibration data to the driver instance
+     *
+     * \see DriverBase::applyCalibrationData()
+     */
+    virtual void applyCalibrationData() override;
 
 private:
 };
