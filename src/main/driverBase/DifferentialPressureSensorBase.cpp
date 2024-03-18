@@ -16,21 +16,14 @@
 #include "kalman/GliderVarioTransitionMatrix.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
 
-
-#if defined HAVE_LOG4CXX_H
-static log4cxx::LoggerPtr logger = 0;
-
-static inline void initLogger() {
-	if (!logger) {
-		logger = log4cxx::Logger::getLogger("openEV.Drivers.DifferentialPressureSensorBase");
-	}
-}
-#endif
-
 #include "DifferentialPressureSensorBase.h"
 
 namespace openEV {
 namespace drivers {
+
+#if defined HAVE_LOG4CXX_H
+log4cxx::LoggerPtr DifferentialPressureSensorBase::logger = nullptr;
+#endif
 
 DifferentialPressureSensorBase::DifferentialPressureSensorBase (
 	    char const *driverName,
@@ -44,9 +37,6 @@ DifferentialPressureSensorBase::DifferentialPressureSensorBase (
 				instanceName,
 				driverLib
 				) {
-#if defined HAVE_LOG4CXX_H
-	initLogger();
-#endif /* HAVE_LOG4CXX_H */
 
 	setSensorCapability(DYNAMIC_PRESSURE);
 
@@ -63,6 +53,9 @@ void DifferentialPressureSensorBase::driverInit(GliderVarioMainPriv &varioMain) 
 	this->varioMain = &varioMain;
 
 	ioPort = getIoPort<decltype(ioPort)>(logger);
+
+	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Loaded port with name " << portName
+			<< ". Pointer = " << static_cast<void*>(ioPort));
 
 }
 
@@ -107,6 +100,11 @@ void DifferentialPressureSensorBase::initializeStatus(
 			// Assume initial startup in controlled environment.
 			pressureBias = avgPressureOnStartup;
 			LOG4CXX_DEBUG(logger,__FUNCTION__ << ": No bias from calibration data available. pressureBias = " << pressureBias << " mBar");
+
+			if (saveZeroOffsetCalibrationOnce) {
+				updateAndWriteCalibrationData();
+			}
+
 		} else {
 
 			// Dynamic pressure in mBar at about 20km/h on the ground at 0C. Variations at different temperatures

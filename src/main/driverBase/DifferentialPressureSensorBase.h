@@ -106,12 +106,55 @@ protected:
     /// Latest temperature value in C
     FloatType temperatureVal = UnInitVal;
 
+
+    /** \brief Minimum pressure of the defined range in mBar.
+     *
+     */
+    FloatType pMin = UnInitVal;
+
+    /** \brief Maximum pressure of the defined range in mBar
+     *
+     */
+    FloatType pMax = UnInitVal;
+
+    /** \brief Pressure range of the sensor in mBar.
+     *
+     * Range is \ref pMax - \ref pMin.
+     */
+    FloatType pressureRange = UnInitVal;
+
+    /** \brief Resolution of the sensor in mBar/bit of register reading
+     *
+     * Calculated from (pMax - pMin)/(AMS5915PressureRangeMaxCount - AMS5915PressureRangeMinCount) .
+     *
+     */
+    FloatType pressureResolution = UnInitVal;
+
+    /** \brief Static error component of measurements
+     *
+     * This value is calculated in readConfiguration() because it only depends on the range.
+     * \see pressureErrorDynFactor
+     */
+    FloatType pressureErrorStatic = UnInitVal;
+
+
     /** \brief Calibration data for the IMU
      *
      */
     struct SensorCalibrationData {
     	double pressureBias = 0.0; //< zero-offset of the sensor in hPa
     } calibrationData;
+
+#if defined HAVE_LOG4CXX_H
+    /** \brief Logger for the base and specialized sub-classes
+     *
+     * This logger is being used by this base class as well as the actual implementation classes.
+     *
+     * *Important*: The base class must create the logger object! Thus this base class as well as the
+     * driver implementation class will log under the name of the driver class.
+     */
+    static log4cxx::LoggerPtr logger;
+#endif
 
     /** \brief Fill calibration data parameter list; driver specific
      *
