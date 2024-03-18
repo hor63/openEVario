@@ -38,11 +38,11 @@
 #include "drivers/DriverBase.h"
 
 #if defined HAVE_LOG4CXX_H
-static log4cxx::LoggerPtr logger = 0;
+static log4cxx::LoggerPtr logger = nullptr;
 
 static inline void initLogger() {
 	if (!logger) {
-		logger = log4cxx::Logger::getLogger("openEV.Drivers.GliderVarioDriverBase");
+		logger = log4cxx::Logger::getLogger("openEV.Drivers.DriverBase");
 	}
 }
 #endif
@@ -221,11 +221,21 @@ void DriverBase::readCalibrationData() {
 
 		std::string lCalibDataFileName;
 
-		if (loadCalibrationDataUpdateFileBeforeStatic && useCalibrationDataUpdateFile) {
+		LOG4CXX_DEBUG(logger,__FUNCTION__
+				<< ": loadCalibrationDataUpdateFileBeforeStatic = " << loadCalibrationDataUpdateFileBeforeStatic
+				<< ", useCalibrationDataUpdateFile = " << useCalibrationDataUpdateFile);
+
+		LOG4CXX_DEBUG(logger,__FUNCTION__
+				<< ": calibrationDataUpdateFileName = " << calibrationDataUpdateFileName
+				<< ", calibrationDataFileName = " << calibrationDataFileName);
+
+		if (loadCalibrationDataUpdateFileBeforeStatic && !calibrationDataUpdateFileName.empty()) {
 			lCalibDataFileName = calibrationDataUpdateFileName;
 		} else {
 			lCalibDataFileName = calibrationDataFileName;
 		}
+
+		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Calibration file name = " << lCalibDataFileName);
 
 		calibrationDataParameters = std::unique_ptr<Properties4CXX::Properties>(new Properties4CXX::Properties(lCalibDataFileName));
 
@@ -234,8 +244,9 @@ void DriverBase::readCalibrationData() {
 			// Nest another try-catch block in case that both initial and update file names are defined.
 			try {
 				calibrationDataParameters->readConfiguration();
+				LOG4CXX_INFO(logger,"Read from calibration file " << lCalibDataFileName);
 			} catch (std::exception const &e) {
-				if (useCalibrationDataFile && useCalibrationDataUpdateFile) {
+				if (useCalibrationDataFile && !calibrationDataUpdateFileName.empty()) {
 					// Both file names are defined. So one more try left.
 					std::string failedFileName = lCalibDataFileName;
 					if (loadCalibrationDataUpdateFileBeforeStatic) {
@@ -248,6 +259,7 @@ void DriverBase::readCalibrationData() {
 					// Re-create an empty set of calibration data and try to read the other file.
 					calibrationDataParameters = std::unique_ptr<Properties4CXX::Properties>(new Properties4CXX::Properties(lCalibDataFileName));
 					calibrationDataParameters->readConfiguration();
+					LOG4CXX_INFO(logger,"Read from alternative calibration file " << lCalibDataFileName);
 				} else {
 					// The end of trying to reading the configuration data.
 					throw;
