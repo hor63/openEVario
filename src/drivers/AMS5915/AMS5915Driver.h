@@ -117,38 +117,6 @@ protected:
     FloatType convertRegisterPressureToMBar (uint16_t registerVal) const;
 
 private:
-
-
-    /** \brief Minimum pressure of the defined range in mBar.
-     *
-     */
-    FloatType pMin = UnInitVal;
-
-    /** \brief Maximum pressure of the defined range in mBar
-     *
-     */
-    FloatType pMax = UnInitVal;
-
-    /** \brief Pressure range of the sensor in mBar.
-     *
-     * Range is \ref pMax - \ref pMin.
-     */
-    FloatType pressureRange = UnInitVal;
-
-    /** \brief Resolution of the sensor in mBar/bit of register reading
-     *
-     * Calculated from (pMax - pMin)/(AMS5915PressureRangeMaxCount - AMS5915PressureRangeMinCount) .
-     *
-     */
-    FloatType pressureResolution = UnInitVal;
-
-    /** \brief Static error component of measurements
-     *
-     * This value is calculated in readConfiguration() because it only depends on the range.
-     * \see pressureErrorDynFactor
-     */
-    FloatType pressureErrorStatic = UnInitVal;
-
 };
 
 } /* namespace openEV */
