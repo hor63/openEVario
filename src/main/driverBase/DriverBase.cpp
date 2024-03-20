@@ -190,7 +190,7 @@ void DriverBase::updateAndWriteCalibrationData() {
 				<< " for driver instance " << instanceName
 				<< ". Unknown exception. Disable further calibration data updates.");
 		// Something went completely wrong
-		useCalibrationDataUpdateFile = false;
+		doCyclicUpdateCalibrationDataFile = false;
 	}
 
 }
@@ -212,18 +212,18 @@ void DriverBase::fillCalibrationDataParameters () {
 			<< "\". Driver \"" << driverName
 			<< "\" does not implement reading of calibration data.");
 
-	useCalibrationDataUpdateFile = false;
+	doCyclicUpdateCalibrationDataFile = false;
 }
 
 void DriverBase::readCalibrationData() {
 
-	if (useCalibrationDataFile || useCalibrationDataUpdateFile) {
+	if (useCalibrationDataFile || doCyclicUpdateCalibrationDataFile) {
 
 		std::string lCalibDataFileName;
 
 		LOG4CXX_DEBUG(logger,__FUNCTION__
 				<< ": loadCalibrationDataUpdateFileBeforeStatic = " << loadCalibrationDataUpdateFileBeforeStatic
-				<< ", useCalibrationDataUpdateFile = " << useCalibrationDataUpdateFile);
+				<< ", useCalibrationDataUpdateFile = " << doCyclicUpdateCalibrationDataFile);
 
 		LOG4CXX_DEBUG(logger,__FUNCTION__
 				<< ": calibrationDataUpdateFileName = " << calibrationDataUpdateFileName
@@ -347,7 +347,7 @@ void DriverBase::readCommonConfiguration(
 				std::string("calibrationDataUpdateCycle"),0LL);
 		calibrationDataWriteInterval = static_cast<OEVDuration>(std::chrono::seconds(durTicks));
 		if (!calibrationDataUpdateFileName.empty()) {
-			useCalibrationDataUpdateFile = durTicks > 0LL;
+			doCyclicUpdateCalibrationDataFile = durTicks > 0LL;
 
 			saveZeroOffsetCalibrationOnce = configuration.getPropertyValue(
 					std::string("saveZeroOffsetCalibrationOnce"),
@@ -381,7 +381,7 @@ void DriverBase::readCommonConfiguration(
 	LOG4CXX_INFO (logger,"\t calibrationDataUpdateFileName = " << calibrationDataUpdateFileName);
 	LOG4CXX_INFO (logger,"\t calibrationDataWriteInterval = " << (std::chrono::duration_cast<std::chrono::seconds>(calibrationDataWriteInterval).count()) << "s");
 	LOG4CXX_INFO (logger,"\t saveZeroOffsetCalibrationOnce = " << saveZeroOffsetCalibrationOnce);
-	LOG4CXX_INFO (logger,"\t useCalibrationDataUpdateFile = " << useCalibrationDataUpdateFile);
+	LOG4CXX_INFO (logger,"\t doCyclicUpdateCalibrationDataFile = " << doCyclicUpdateCalibrationDataFile);
 	LOG4CXX_INFO (logger,"\t loadCalibrationDataUpdateFileBeforeStatic = " << loadCalibrationDataUpdateFileBeforeStatic);
 
 
@@ -389,7 +389,7 @@ void DriverBase::readCommonConfiguration(
 
 
 void DriverBase::setCalibrationUpdateNextTime(OEVClock::time_point refTime) {
-	if (useCalibrationDataUpdateFile) {
+	if (doCyclicUpdateCalibrationDataFile) {
 		nextCalibrationDataWriteTime = refTime + calibrationDataWriteInterval;
 	} else {
 		// Set the next calibration data update 10 years from now, i.e. never :D

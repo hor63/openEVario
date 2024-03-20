@@ -67,7 +67,7 @@ void MS4515Driver::fillCalibrationDataParameters () {
 
 	// write the 0-bias only once after the status initialization.
 	if (statusInitDone) {
-		useCalibrationDataUpdateFile = false;
+		doCyclicUpdateCalibrationDataFile = false;
 	}
 
 	LOG4CXX_DEBUG (logger,__PRETTY_FUNCTION__ << ": Device " << instanceName

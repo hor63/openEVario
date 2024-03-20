@@ -327,8 +327,8 @@ public:
     	return nextCalibrationDataWriteTime;
     }
 
-    bool getUseCalibrationDataUpdateFile() {
-    	return useCalibrationDataUpdateFile;
+    bool getDoCyclicUpdateCalibrationDataFile() {
+    	return doCyclicUpdateCalibrationDataFile;
     }
 
     /** \brief Collect dynamic calibreation data, and write them out to the dynamic calibration data file
@@ -512,7 +512,7 @@ protected:
      * Automatically true when calibrationDataUpdateFileName is not empty, and
      * calibrationDataWriteInterval is > 0.
      */
-    bool useCalibrationDataUpdateFile = false;
+    bool doCyclicUpdateCalibrationDataFile = false;
 
     /// \brief Time of the planned next calibration data update.
     OEVClock::time_point nextCalibrationDataWriteTime;

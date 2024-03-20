@@ -440,7 +440,7 @@ void GliderVarioDriverList::calibrationDataUpdateThreadFunc() {
 		// run through all driver instances and get the lowest next wakeup time
 		for (DriverInstanceList::value_type const& i :driverInstanceList) {
 
-			if (i.second->getUseCalibrationDataUpdateFile() &&
+			if (i.second->getDoCyclicUpdateCalibrationDataFile() &&
 					i.second->getNextCalibrationDataWriteTime() < nextCycleTime) {
 				nextCycleTime = i.second->getNextCalibrationDataWriteTime();
 			}
@@ -450,7 +450,7 @@ void GliderVarioDriverList::calibrationDataUpdateThreadFunc() {
 		// Run through all driver instances, and
 		for (DriverInstanceList::value_type const& i :driverInstanceList) {
 
-			if (i.second->getUseCalibrationDataUpdateFile() &&
+			if (i.second->getDoCyclicUpdateCalibrationDataFile() &&
 					i.second->getNextCalibrationDataWriteTime() <= nextCycleTime) {
 				i.second->updateAndWriteCalibrationData();
 				i.second->setCalibrationUpdateNextTime(nextCycleTime);
