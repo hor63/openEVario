@@ -38,6 +38,7 @@
 #include "drivers/DriverBase.h"
 
 #if defined HAVE_LOG4CXX_H
+#include <ctime>
 static log4cxx::LoggerPtr logger = nullptr;
 
 static inline void initLogger() {
@@ -222,10 +223,6 @@ void DriverBase::readCalibrationData() {
 		std::string lCalibDataFileName;
 
 		LOG4CXX_DEBUG(logger,__FUNCTION__
-				<< ": loadCalibrationDataUpdateFileBeforeStatic = " << loadCalibrationDataUpdateFileBeforeStatic
-				<< ", useCalibrationDataUpdateFile = " << doCyclicUpdateCalibrationDataFile);
-
-		LOG4CXX_DEBUG(logger,__FUNCTION__
 				<< ": calibrationDataUpdateFileName = " << calibrationDataUpdateFileName
 				<< ", calibrationDataFileName = " << calibrationDataFileName);
 
@@ -244,7 +241,7 @@ void DriverBase::readCalibrationData() {
 			// Nest another try-catch block in case that both initial and update file names are defined.
 			try {
 				calibrationDataParameters->readConfiguration();
-				LOG4CXX_INFO(logger,"Read from calibration file " << lCalibDataFileName);
+				LOG4CXX_INFO(logger,"Read from calibration data file " << lCalibDataFileName);
 			} catch (std::exception const &e) {
 				if (useCalibrationDataFile && !calibrationDataUpdateFileName.empty()) {
 					// Both file names are defined. So one more try left.
@@ -259,7 +256,7 @@ void DriverBase::readCalibrationData() {
 					// Re-create an empty set of calibration data and try to read the other file.
 					calibrationDataParameters = std::unique_ptr<Properties4CXX::Properties>(new Properties4CXX::Properties(lCalibDataFileName));
 					calibrationDataParameters->readConfiguration();
-					LOG4CXX_INFO(logger,"Read from alternative calibration file " << lCalibDataFileName);
+					LOG4CXX_INFO(logger,"Read from alternative calibration data file " << lCalibDataFileName);
 				} else {
 					// The end of trying to reading the configuration data.
 					throw;
@@ -389,12 +386,33 @@ void DriverBase::readCommonConfiguration(
 
 
 void DriverBase::setCalibrationUpdateNextTime(OEVClock::time_point refTime) {
+	LOG4CXX_DEBUG(logger, __FUNCTION__ << ": Instance " << instanceName
+			<< ": doCyclicUpdateCalibrationDataFile  = " << doCyclicUpdateCalibrationDataFile
+			<< "calibrationDataWriteInterval = "
+			<< (std::chrono::duration_cast<std::chrono::milliseconds>(calibrationDataWriteInterval).count()) << "ms");
 	if (doCyclicUpdateCalibrationDataFile) {
 		nextCalibrationDataWriteTime = refTime + calibrationDataWriteInterval;
 	} else {
 		// Set the next calibration data update 10 years from now, i.e. never :D
 		nextCalibrationDataWriteTime = refTime + std::chrono::hours(24*356*10);
 	}
+
+#if defined HAVE_LOG4CXX_H
+	if (logger->isDebugEnabled()) {
+		const std::time_t nextWriteTimeTT = std::chrono::system_clock::to_time_t(nextCalibrationDataWriteTime);
+		std::tm nextTimeWriteCal;
+		memcpy(&nextTimeWriteCal, std::localtime(&nextWriteTimeTT), sizeof(nextTimeWriteCal));
+		LOG4CXX_DEBUG(logger," nextCalibrationDataWriteTime = "
+				<< (nextTimeWriteCal.tm_year+1900) << '-'
+				<< (nextTimeWriteCal.tm_mon + 1) << '-'
+				<<  nextTimeWriteCal.tm_mday << ' '
+				<< nextTimeWriteCal.tm_hour << ':'
+				<< nextTimeWriteCal.tm_min << ':'
+				<< nextTimeWriteCal.tm_sec << " @"
+				<< nextTimeWriteCal.tm_zone
+						);
+	}
+#endif // #if defined HAVE_LOG4CXX_H
 }
 
 #if !defined DOXYGEN
