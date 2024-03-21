@@ -333,7 +333,7 @@ void GliderVarioDriverList::loadDriverInstance(char const *driverInstanceName, P
 	driverInstanceList.insert(newInstanceListItem);
 
 	// Check if the driver will run the idle loop itself. Otherwise the main program runs the idle loop.
-	if (driverInstance->getSensorCapabilities() & drivers::DriverBase::RUN_IDLE_LOOP) {
+	if (driverInstance->hasSensorCapability(drivers::DriverBase::RUN_IDLE_LOOP) ) {
 
 #if defined HAVE_LOG4CXX_H
 		if (!programOptions.runIdleLoop) {
