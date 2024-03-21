@@ -35,6 +35,8 @@
 #endif
 
 #include <chrono>
+#include <ctime>
+#include <string>
 
 #if HAVE_SYS_TIME_H == 1
 #	include <sys/time.h>
@@ -81,6 +83,15 @@ namespace openEV {
 	 */
 	typedef OEVClock::duration OEVDuration;
 
+	template <typename TimePointType>
+	std::string timePointToString (const TimePointType t) {
+		char buf[64];
+		std::time_t tTimeT = TimePointType::clock::to_time_t(t);
+
+		std::strftime(buf, sizeof buf,  "%F %T %Z", std::localtime(&tTimeT));
+
+		return std::string(buf);
+	}
 
 }
 
