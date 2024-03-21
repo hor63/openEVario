@@ -9,10 +9,6 @@
 #  include "config.h"
 #endif
 
-#include <fstream>
-#include <chrono>
-#include <thread>
-
 #include "kalman/GliderVarioTransitionMatrix.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
 
