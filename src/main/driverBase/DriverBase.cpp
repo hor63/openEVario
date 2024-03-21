@@ -38,7 +38,6 @@
 #include "drivers/DriverBase.h"
 
 #if defined HAVE_LOG4CXX_H
-#include <ctime>
 static log4cxx::LoggerPtr logger = nullptr;
 
 static inline void initLogger() {
@@ -399,9 +398,9 @@ void DriverBase::setCalibrationUpdateNextTime(OEVClock::time_point refTime) {
 
 #if defined HAVE_LOG4CXX_H
 	if (logger->isDebugEnabled()) {
-		const std::time_t nextWriteTimeTT = std::chrono::system_clock::to_time_t(nextCalibrationDataWriteTime);
-		std::tm nextTimeWriteCal;
-		memcpy(&nextTimeWriteCal, std::localtime(&nextWriteTimeTT), sizeof(nextTimeWriteCal));
+		const std::time_t nextWriteTimeTT = OEVClock::to_time_t(nextCalibrationDataWriteTime);
+		struct ::tm nextTimeWriteCal;
+		::localtime_r(&nextWriteTimeTT, &nextTimeWriteCal);
 		LOG4CXX_DEBUG(logger," nextCalibrationDataWriteTime = "
 				<< (nextTimeWriteCal.tm_year+1900) << '-'
 				<< (nextTimeWriteCal.tm_mon + 1) << '-'
