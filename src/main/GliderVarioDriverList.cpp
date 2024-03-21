@@ -395,6 +395,14 @@ void GliderVarioDriverList::initializeKalmanStatus(
 
 }
 
+void GliderVarioDriverList::startupCalibrationDataUpdateThread() {
+
+	if (!calibrationDataUpdateThread.joinable()) {
+		calibrationDataUpdateThread = std::thread(GliderVarioDriverList::calibrationDataUpdateThreadEntry,this);
+	}
+
+}
+
 void GliderVarioDriverList::runDrivers () {
 
 
@@ -463,6 +471,10 @@ void GliderVarioDriverList::calibrationDataUpdateThreadFunc() {
 	// Now collect the update times
 
 
+}
+
+void GliderVarioDriverList::calibrationDataUpdateThreadEntry (GliderVarioDriverList* tis) {
+	tis->calibrationDataUpdateThreadFunc();
 }
 
 } /* namespace openEV */

@@ -129,11 +129,15 @@ public:
 
 	/** \brief Startup the driver threads of all drivers
 	 *
+	 * Called between \ref initDrivers() and \ref initializeKalmanStatus().
+	 *
 	 * @param varioMain mainVario object; provides all additional information like program parameters, and the parsed properties.
 	 */
 	void startupDrivers (GliderVarioMainPriv &varioMain);
 
 	/** \brief Each driver initializes a part of the Kalman filter with initial sensor readings
+	 *
+	 * Called after \ref startupDrivers()
 	 *
 	 * @param[in,out] currentStatus Kalman status to be initialized
 	 * @param[in,out] measurements Current measurement vector.
@@ -144,6 +148,12 @@ public:
 			GliderVarioStatus &currentStatus,
 			GliderVarioMeasurementVector &measurements,
 			GliderVarioMainPriv &varioMain);
+
+	/** \brief Starts the from now on continuously running calibration data update thread
+	 *
+	 * The thread runs \ref calibrationDataUpdateThreadFunc()
+	 */
+	void startupCalibrationDataUpdateThread();
 
 	/** \brief Start data capturing from all drivers
 	 *
@@ -231,6 +241,16 @@ protected:
 	 * \see calibrationDataUpdateThread
 	 */
 	void calibrationDataUpdateThreadFunc();
+
+	/** \brief Static entry function for the \ref calibrationDataUpdateThread
+	 *
+	 * std::thread::thread does not allow a non-static class method.
+	 * This static method is a work-around this restriction.
+	 * It just calls \ref calibrationDataUpdateThreadFunc().
+	 *
+	 * @param tis
+	 */
+	static void calibrationDataUpdateThreadEntry (GliderVarioDriverList* tis);
 
 };
 
