@@ -367,6 +367,8 @@ void MS4515Driver::readoutMS4515() {
 
     FloatType pressureVal = convertRegisterPressureToMBar(pressureRawVal);
 
+    LOG4CXX_DEBUG(logger, __FUNCTION__ << ": pressureVal = " << pressureVal);
+
 	if (getIsKalmanUpdateRunning()) {
 
 		// When the sensor is saturated skip the measurement
