@@ -10,11 +10,6 @@
 namespace openEV {
 namespace drivers {
 
-#if defined HAVE_LOG4CXX_H
-log4cxx::LoggerPtr IMUBase::logger = nullptr;
-
-#endif
-
 
 IMUBase::IMUBase(
 		char const *driverName,

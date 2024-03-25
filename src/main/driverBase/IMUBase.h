@@ -208,17 +208,6 @@ protected:
 
     } calibrationData;
 
-#if defined HAVE_LOG4CXX_H
-    /** \brief Logger for the base and specialized sub-classes
-     *
-     * This logger is being used by this base class as well as the actual implementation classes.
-     *
-     * *Important*: The base class must create the logger object! Thus this base class as well as the
-     * driver implementation class will log under the name of the driver class.
-     */
-    static log4cxx::LoggerPtr logger;
-#endif
-
     /** \brief Initialize the Kalman status from the accelerometer measurements
      *
      * Actually I am *not* initializing the acceleration values of the Kalman status.

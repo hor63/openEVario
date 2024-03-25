@@ -34,18 +34,7 @@
 #include <sstream>
 #include <typeinfo>
 
-#include "CommonDefs.h"
 #include "drivers/DriverBase.h"
-
-#if defined HAVE_LOG4CXX_H
-static log4cxx::LoggerPtr logger = nullptr;
-
-static inline void initLogger() {
-	if (!logger) {
-		logger = log4cxx::Logger::getLogger("openEV.Drivers.DriverBase");
-	}
-}
-#endif
 
 namespace openEV::drivers {
 
@@ -61,7 +50,9 @@ DriverBase::DriverBase (
   instanceName {instanceName},
   driverLib {driverLib}
 {
-	initLogger();
+#if defined HAVE_LOG4CXX_H
+		logger = log4cxx::Logger::getLogger("openEV.Drivers.DriverBase");
+#endif
 }
 
 DriverBase::~DriverBase () {
@@ -89,13 +80,13 @@ void DriverBase::driverThreadEntry (DriverBase* tis) {
 		str << "Uncaught exception in driver/instance "
 				<< tis->driverName << ":" << tis->instanceName
 				<< ". Message = " << e.what();
-		LOG4CXX_ERROR(logger,str.str());
+		LOG4CXX_ERROR(tis->logger,str.str());
 	}
 	catch (...) {
 		std::ostringstream str;
 		str << "Uncaught unknown exception in driver/instance "
 				<< tis->driverName << ":" << tis->instanceName;
-		LOG4CXX_ERROR(logger,str.str());
+		LOG4CXX_ERROR(tis->logger,str.str());
 	}
 
 	tis->isDriverThreadRunning = false;

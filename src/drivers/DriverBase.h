@@ -548,6 +548,9 @@ protected:
      */
     volatile bool calibrationWriterRunning = false;
 
+#if defined HAVE_LOG4CXX_H
+    log4cxx::LoggerPtr logger = nullptr;
+#endif
 
     /// Set a driver capability. Capabilities are defined in #SensorCapability.
     inline void setSensorCapability (SensorCapability capability) {

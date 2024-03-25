@@ -45,9 +45,7 @@ MS4515Driver::MS4515Driver(
 : DifferentialPressureSensorBase {driverName,description,instanceName,MS4515Lib::theOneAndOnly}
 {
 #if defined HAVE_LOG4CXX_H
-	if (!logger) {
-		logger = log4cxx::Logger::getLogger("openEV.Drivers.MS4515");
-	}
+	logger = log4cxx::Logger::getLogger("openEV.Drivers.MS4515");
 #endif /* HAVE_LOG4CXX_H */
 
   i2cAddress = MS4515DOI2CAddr;

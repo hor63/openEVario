@@ -34,16 +34,6 @@
 #include "kalman/GliderVarioMeasurementUpdater.h"
 
 
-#if defined HAVE_LOG4CXX_H
-static log4cxx::LoggerPtr logger = 0;
-
-static inline void initLogger() {
-	if (!logger) {
-		logger = log4cxx::Logger::getLogger("openEV.Drivers.IGCReader");
-	}
-}
-
-#endif
 
 namespace openEV::drivers::IGCReader {
 
@@ -54,9 +44,8 @@ IGCReaderDriver::IGCReaderDriver(
 		)
 : DriverBase {driverName,description,instanceName,IGCReaderLib::theOneAndOnly}
 {
-
 #if defined HAVE_LOG4CXX_H
-	initLogger();
+	logger = log4cxx::Logger::getLogger("openEV.Drivers.IGCReader");
 #endif /* HAVE_LOG4CXX_H */
 
 	setSensorCapability(GPS_POSITION	);

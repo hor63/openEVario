@@ -17,10 +17,6 @@
 namespace openEV {
 namespace drivers {
 
-#if defined HAVE_LOG4CXX_H
-log4cxx::LoggerPtr DifferentialPressureSensorBase::logger = nullptr;
-#endif
-
 DifferentialPressureSensorBase::DifferentialPressureSensorBase (
 	    char const *driverName,
 		char const *description,
