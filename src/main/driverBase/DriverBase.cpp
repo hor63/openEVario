@@ -387,7 +387,7 @@ void DriverBase::readCommonConfiguration(
 void DriverBase::setCalibrationUpdateNextTime(OEVClock::time_point refTime) {
 	LOG4CXX_DEBUG(logger, __FUNCTION__ << ": Instance " << instanceName
 			<< ": doCyclicUpdateCalibrationDataFile  = " << doCyclicUpdateCalibrationDataFile
-			<< "calibrationDataWriteInterval = "
+			<< ", calibrationDataWriteInterval = "
 			<< (std::chrono::duration_cast<std::chrono::milliseconds>(calibrationDataWriteInterval).count()) << "ms");
 	if (doCyclicUpdateCalibrationDataFile) {
 		nextCalibrationDataWriteTime = refTime + calibrationDataWriteInterval;
@@ -396,12 +396,7 @@ void DriverBase::setCalibrationUpdateNextTime(OEVClock::time_point refTime) {
 		nextCalibrationDataWriteTime = refTime + std::chrono::hours(24*356*10);
 	}
 
-#if defined HAVE_LOG4CXX_H
-	if (logger->isDebugEnabled()) {
-		auto nextTimeStr = timePointToString(nextCalibrationDataWriteTime);
-		LOG4CXX_DEBUG(logger," nextCalibrationDataWriteTime = " << nextTimeStr);
-	}
-#endif // #if defined HAVE_LOG4CXX_H
+	LOG4CXX_DEBUG(logger," nextCalibrationDataWriteTime = " << timePointToString(nextCalibrationDataWriteTime));
 }
 
 #if !defined DOXYGEN
