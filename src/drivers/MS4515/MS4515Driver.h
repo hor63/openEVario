@@ -142,73 +142,12 @@ protected:
 
 private:
 
-    uint8_t i2cAddress = MS4515DOI2CAddr;
-
-    /**
-     * Use the builtin temperature sensor. The current temperature is used for calculating altitude from pressure and vice versa,
-	 * by means of the Barometric formula.
-	 * Using the temperature sensor of the pressure sensor is not advised, and should only be used as a back-stop
-	 * When an accurate external temperature sensor is not available.
-	 * Reason is that the temperature in the cockpit is usually quite a bit higher than outside due to the greenhouse
-	 * effect of the canopy.
-	 * Optional. Default false.
-     */
-    bool useTemperatureSensor = false;
-
-    /// \brief The I/O port.
-    ///
-    /// This must be an I2C port.
-    io::I2CPort *ioPort = nullptr;
-
-	/// Pointer to the main vario object which also hosts the Kalman filter.
-    GliderVarioMainPriv *varioMain = nullptr;
-
-    bool kalmanInitDone = false;
-    static constexpr int NumInitValues = 0x10;
-    FloatType initValues[NumInitValues];
-    int numValidInitValues = 0;
-
     /** \brief Type of sensor (A or B)
      *
      * \see SensorType for definitions of A and B types.
      *
      */
     SensorType sensorType = SENSOR_TYPE_UNDEFINED;
-
-    /// \brief Status initialization, and dynamic determination of zero-bias are done.
-    bool statusInitDone = false;
-
-    /// Estimated bias of the sensor in mBar/hPa
-    FloatType pressureBias = UnInitVal;
-
-    /// Latest temperature value in C
-    FloatType temperatureVal = UnInitVal;
-
-    /** \brief Minimum pressure of the defined range in mBar.
-     *
-     * The configuration values can be defined in inH2O (inch of water column) (See my rant in \ref InchH2OtoMBar)
-     * because the sensors are defined this way, and you can simply transcribe from the sensor type.
-     */
-    FloatType pMin = UnInitVal;
-
-    /** \brief Maximum pressure of the defined range in mBar
-     *
-     * \see \ref pMin
-     */
-    FloatType pMax = UnInitVal;
-
-    /** \brief Pressure range of the sensor in mBar.
-     *
-     * Range is \ref pMax - \ref pMin.
-     */
-    FloatType pressureRange = UnInitVal;
-
-    /** \brief Static error component of measurements
-     *
-     * This value is calculated in readConfiguration() because it only depends on the range.
-     * \see pressureErrorDynFactor
-     */
-    FloatType pressureErrorStatic = UnInitVal;
 
     /** \brief Helper for convertRegisterPressureToMBar()
      *

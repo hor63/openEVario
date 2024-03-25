@@ -333,7 +333,7 @@ void GliderVarioDriverList::loadDriverInstance(char const *driverInstanceName, P
 	driverInstanceList.insert(newInstanceListItem);
 
 	// Check if the driver will run the idle loop itself. Otherwise the main program runs the idle loop.
-	if (driverInstance->getSensorCapabilities() & drivers::DriverBase::RUN_IDLE_LOOP) {
+	if (driverInstance->hasSensorCapability(drivers::DriverBase::RUN_IDLE_LOOP) ) {
 
 #if defined HAVE_LOG4CXX_H
 		if (!programOptions.runIdleLoop) {
@@ -395,6 +395,14 @@ void GliderVarioDriverList::initializeKalmanStatus(
 
 }
 
+void GliderVarioDriverList::startupCalibrationDataUpdateThread() {
+
+	if (!calibrationDataUpdateThread.joinable()) {
+		calibrationDataUpdateThread = std::thread(GliderVarioDriverList::calibrationDataUpdateThreadEntry,this);
+	}
+
+}
+
 void GliderVarioDriverList::runDrivers () {
 
 
@@ -437,21 +445,33 @@ void GliderVarioDriverList::calibrationDataUpdateThreadFunc() {
 	// Enter the endless loop
 	for (;;) {
 
-		// run through all driver instances and get the lowest next wakeup time
+		// Run through all driver instances and get the lowest next wakeup time
+		// The maximim cycle time is one hour, even if there is no driver that requires an update.
 		for (DriverInstanceList::value_type const& i :driverInstanceList) {
 
-			if (i.second->getUseCalibrationDataUpdateFile() &&
+			if (i.second->getDoCyclicUpdateCalibrationDataFile() &&
 					i.second->getNextCalibrationDataWriteTime() < nextCycleTime) {
+
+				LOG4CXX_DEBUG(logger,__FUNCTION__ << " Driver instance " << i.second->getInstanceName()
+						<< " next cycle time is the smallest so far = "
+						<< timePointToString(i.second->getNextCalibrationDataWriteTime()));
+
 				nextCycleTime = i.second->getNextCalibrationDataWriteTime();
 			}
 		}
+
+		LOG4CXX_DEBUG(logger,"\tSleep until " << timePointToString(nextCycleTime));
 		std::this_thread::sleep_until(nextCycleTime);
 
 		// Run through all driver instances, and
 		for (DriverInstanceList::value_type const& i :driverInstanceList) {
 
-			if (i.second->getUseCalibrationDataUpdateFile() &&
+			if (i.second->getDoCyclicUpdateCalibrationDataFile() &&
 					i.second->getNextCalibrationDataWriteTime() <= nextCycleTime) {
+
+				LOG4CXX_DEBUG(logger, "\tCalibration data of driver instance "
+						<< i.second->getInstanceName() << " are being written now");
+
 				i.second->updateAndWriteCalibrationData();
 				i.second->setCalibrationUpdateNextTime(nextCycleTime);
 			}
@@ -463,6 +483,10 @@ void GliderVarioDriverList::calibrationDataUpdateThreadFunc() {
 	// Now collect the update times
 
 
+}
+
+void GliderVarioDriverList::calibrationDataUpdateThreadEntry (GliderVarioDriverList* tis) {
+	tis->calibrationDataUpdateThreadFunc();
 }
 
 } /* namespace openEV */

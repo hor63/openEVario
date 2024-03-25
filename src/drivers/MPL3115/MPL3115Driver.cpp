@@ -35,18 +35,6 @@
 #include "kalman/GliderVarioTransitionMatrix.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
 
-
-#if defined HAVE_LOG4CXX_H
-static log4cxx::LoggerPtr logger = 0;
-
-static inline void initLogger() {
-	if (!logger) {
-		logger = log4cxx::Logger::getLogger("openEV.Drivers.MPL3115");
-	}
-}
-
-#endif
-
 namespace openEV::drivers::MPL3115 {
 
 MPL3115Driver::MPL3115Driver(
@@ -58,7 +46,7 @@ MPL3115Driver::MPL3115Driver(
 {
 
 #if defined HAVE_LOG4CXX_H
-	initLogger();
+	logger = log4cxx::Logger::getLogger("openEV.Drivers.MPL3115");
 #endif /* HAVE_LOG4CXX_H */
 
 	setSensorCapability(STATIC_PRESSURE	);

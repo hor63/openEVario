@@ -35,6 +35,10 @@
 #include <memory>
 #include <chrono>
 #include <typeinfo>
+#include <fstream>
+#include <thread>
+
+
 
 #include "CommonDefs.h"
 #include "Properties4CXX/Properties.h"
@@ -327,8 +331,8 @@ public:
     	return nextCalibrationDataWriteTime;
     }
 
-    bool getUseCalibrationDataUpdateFile() {
-    	return useCalibrationDataUpdateFile;
+    bool getDoCyclicUpdateCalibrationDataFile() {
+    	return doCyclicUpdateCalibrationDataFile;
     }
 
     /** \brief Collect dynamic calibreation data, and write them out to the dynamic calibration data file
@@ -502,12 +506,17 @@ protected:
     /// \brief Interval to save the continuously updated calibration data
     OEVDuration calibrationDataWriteInterval = OEVDuration(0);
 
+    /** \brief Write calibration data once after startup self-calibration
+     *
+     */
+    bool saveZeroOffsetCalibrationOnce = false;
+
     /** \brief Write updated calibration data to a file.
      *
      * Automatically true when calibrationDataUpdateFileName is not empty, and
      * calibrationDataWriteInterval is > 0.
      */
-    bool useCalibrationDataUpdateFile = false;
+    bool doCyclicUpdateCalibrationDataFile = false;
 
     /// \brief Time of the planned next calibration data update.
     OEVClock::time_point nextCalibrationDataWriteTime;
@@ -539,6 +548,9 @@ protected:
      */
     volatile bool calibrationWriterRunning = false;
 
+#if defined HAVE_LOG4CXX_H
+    log4cxx::LoggerPtr logger = nullptr;
+#endif
 
     /// Set a driver capability. Capabilities are defined in #SensorCapability.
     inline void setSensorCapability (SensorCapability capability) {

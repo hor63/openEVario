@@ -52,9 +52,7 @@ BMXSensorBoardDriver::BMXSensorBoardDriver(
 {
 
 #if defined HAVE_LOG4CXX_H
-	if (!logger) {
-		logger = log4cxx::Logger::getLogger("openEV.Drivers.BMXSensorBoard");
-	}
+	logger = log4cxx::Logger::getLogger("openEV.Drivers.BMXSensorBoard");
 #endif /* HAVE_LOG4CXX_H */
 
 	setSensorCapability(ACCEL_3D);

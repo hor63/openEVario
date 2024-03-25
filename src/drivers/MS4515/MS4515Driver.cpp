@@ -35,18 +35,6 @@
 #include "kalman/GliderVarioTransitionMatrix.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
 
-
-#if defined HAVE_LOG4CXX_H
-static log4cxx::LoggerPtr logger = 0;
-
-static inline void initLogger() {
-	if (!logger) {
-		logger = log4cxx::Logger::getLogger("openEV.Drivers.MS4515");
-	}
-}
-
-#endif
-
 namespace openEV::drivers::MS4515 {
 
 MS4515Driver::MS4515Driver(
@@ -54,12 +42,14 @@ MS4515Driver::MS4515Driver(
 		char const *description,
 		char const *instanceName
 		)
-: DifferentialPressureSensorBase {driverName,description,instanceName,MS4515Lib::theOneAndOnly},
-  i2cAddress {MS4515DOI2CAddr}
+: DifferentialPressureSensorBase {driverName,description,instanceName,MS4515Lib::theOneAndOnly}
 {
 #if defined HAVE_LOG4CXX_H
-	initLogger();
+	logger = log4cxx::Logger::getLogger("openEV.Drivers.MS4515");
 #endif /* HAVE_LOG4CXX_H */
+
+  i2cAddress = MS4515DOI2CAddr;
+
 }
 
 
@@ -75,7 +65,7 @@ void MS4515Driver::fillCalibrationDataParameters () {
 
 	// write the 0-bias only once after the status initialization.
 	if (statusInitDone) {
-		useCalibrationDataUpdateFile = false;
+		doCyclicUpdateCalibrationDataFile = false;
 	}
 
 	LOG4CXX_DEBUG (logger,__PRETTY_FUNCTION__ << ": Device " << instanceName

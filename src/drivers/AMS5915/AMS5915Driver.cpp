@@ -35,18 +35,6 @@
 #include "kalman/GliderVarioTransitionMatrix.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
 
-
-#if defined HAVE_LOG4CXX_H
-static log4cxx::LoggerPtr logger = 0;
-
-static inline void initLogger() {
-	if (!logger) {
-		logger = log4cxx::Logger::getLogger("openEV.Drivers.AMS5915");
-	}
-}
-
-#endif
-
 namespace openEV::drivers::AMS5915 {
 
 AMS5915Driver::AMS5915Driver(
@@ -57,7 +45,7 @@ AMS5915Driver::AMS5915Driver(
 : DifferentialPressureSensorBase {driverName,description,instanceName,AMS5915Lib::theOneAndOnly}
 {
 #if defined HAVE_LOG4CXX_H
-	initLogger();
+	logger = log4cxx::Logger::getLogger("openEV.Drivers.AMS5915");
 #endif /* HAVE_LOG4CXX_H */
 }
 
@@ -74,7 +62,7 @@ void AMS5915Driver::fillCalibrationDataParameters () {
 
 	// write the 0-bias only once after the status initialization.
 	if (statusInitDone) {
-		useCalibrationDataUpdateFile = false;
+		doCyclicUpdateCalibrationDataFile = false;
 	}
 
 	LOG4CXX_DEBUG (logger,__PRETTY_FUNCTION__ << ": Device " << instanceName

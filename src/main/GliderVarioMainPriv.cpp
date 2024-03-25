@@ -424,6 +424,8 @@ void GliderVarioMainPriv::startup () {
     // Finally initialize all remaining items still at UnInitVal with default values.
 	intializeStatus();
 
+	driverList.startupCalibrationDataUpdateThread();
+
 }
 
 void GliderVarioMainPriv::readConfiguration () {

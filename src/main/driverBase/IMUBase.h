@@ -44,6 +44,60 @@ public:
 		float magZ; ///< \brief Magnetic field strength along the Z axis in uT.
     };
 
+    IMUBase(
+			char const *driverName,
+			char const *description,
+			char const *instanceName,
+			DriverLibBase &driverLib
+			);
+	virtual ~IMUBase();
+
+    /// \brief Size of the array \ref sensorDataArr
+    static constexpr int SIZE_SENSOR_DATA_ARRAY = 16;
+
+    /** \brief Initialize the driver
+     *
+	 * @param varioMain mainVario object; provides all additional information like program parameters, and the parsed properties.
+     * \see GliderVarioDriverBase::driverInit()
+     */
+    virtual void driverInit(GliderVarioMainPriv &varioMain) override;
+
+    /** \brief Initialize the Kalman filter status from initial sensor measurements
+     *
+     * \see GliderVarioDriverBase::initializeStatus()
+     */
+    virtual void initializeStatus(
+    		GliderVarioStatus &varioStatus,
+			GliderVarioMeasurementVector &measurements,
+			GliderVarioMainPriv &varioMain) override;
+
+    /** \brief Callback to update the Kalman filter status based on received data.
+     *
+     * \see GliderVarioDriverBase::updateKalmanStatus()
+     */
+    virtual void updateKalmanStatus (GliderVarioStatus &varioStatus) override;
+
+protected:
+
+    /// \brief Is the status initialization done
+    bool statusInitDone = false;
+
+    /** \brief Array of sensor data
+     *
+     * Ring buffer of sensor data.
+     * For continuous operation only the recent record which is indicated by \ref currSensorDataIndex is being used.
+     * During initialization I use the whole array to get a recent average to prime the Kalman status.
+     *
+     */
+    SensorData sensorDataArr [SIZE_SENSOR_DATA_ARRAY];
+
+    /** \brief Index of current sensor data into sensorDataArr
+     *
+     * The array \ref sensorDataArr is filled in ring buffer fashion. For status initialization the average is calculated.
+     * For continuous updates only the current record is used.
+     */
+    int currSensorDataIndex = 0;
+
     /** \brief Calibration data for the IMU
      *
      */
@@ -153,64 +207,6 @@ public:
     	double gravityVariance = 0.0001;
 
     } calibrationData;
-
-    IMUBase(
-			char const *driverName,
-			char const *description,
-			char const *instanceName,
-			DriverLibBase &driverLib
-			);
-	virtual ~IMUBase();
-
-    /// \brief Size of the array \ref sensorDataArr
-    static constexpr int SIZE_SENSOR_DATA_ARRAY = 16;
-
-    /** \brief Initialize the driver
-     *
-	 * @param varioMain mainVario object; provides all additional information like program parameters, and the parsed properties.
-     * \see GliderVarioDriverBase::driverInit()
-     */
-    virtual void driverInit(GliderVarioMainPriv &varioMain) override;
-
-    /** \brief Initialize the Kalman filter status from initial sensor measurements
-     *
-     * \see GliderVarioDriverBase::initializeStatus()
-     */
-    virtual void initializeStatus(
-    		GliderVarioStatus &varioStatus,
-			GliderVarioMeasurementVector &measurements,
-			GliderVarioMainPriv &varioMain) override;
-
-    /** \brief Callback to update the Kalman filter status based on received data.
-     *
-     * \see GliderVarioDriverBase::updateKalmanStatus()
-     */
-    virtual void updateKalmanStatus (GliderVarioStatus &varioStatus) override;
-
-protected:
-
-    /// \brief Is the status initialization done
-    bool statusInitDone = false;
-
-    /** \brief Array of sensor data
-     *
-     * Ring buffer of sensor data.
-     * For continuous operation only the recent record which is indicated by \ref currSensorDataIndex is being used.
-     * During initialization I use the whole array to get a recent average to prime the Kalman status.
-     *
-     */
-    SensorData sensorDataArr [SIZE_SENSOR_DATA_ARRAY];
-
-    /** \brief Index of current sensor data into sensorDataArr
-     *
-     * The array \ref sensorDataArr is filled in ring buffer fashion. For status initialization the average is calculated.
-     * For continuous updates only the current record is used.
-     */
-    int currSensorDataIndex = 0;
-
-#if defined HAVE_LOG4CXX_H
-    static log4cxx::LoggerPtr logger;
-#endif
 
     /** \brief Initialize the Kalman status from the accelerometer measurements
      *

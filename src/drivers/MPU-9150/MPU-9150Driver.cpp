@@ -48,9 +48,7 @@ MPU9150Driver::MPU9150Driver(
 {
 
 #if defined HAVE_LOG4CXX_H
-	if (!logger) {
-		logger = log4cxx::Logger::getLogger("openEV.Drivers.MPU9150");
-	}
+	logger = log4cxx::Logger::getLogger("openEV.Drivers.MPU9150");
 #endif /* HAVE_LOG4CXX_H */
 
 	setSensorCapability(ACCEL_3D);
@@ -86,7 +84,6 @@ void MPU9150Driver::readConfiguration (Properties4CXX::Properties const &configu
 }
 
 uint8_t MPU9150Driver::readByteAux (uint8_t slaveDevAddr, uint8_t regAddr) {
-	log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("readByteAux");
 	uint8_t buf[5];
 
 	// Slave 4 register set start
@@ -112,7 +109,7 @@ uint8_t MPU9150Driver::readByteAux (uint8_t slaveDevAddr, uint8_t regAddr) {
 	for (int i = 0; i < 100; ++i) {
 		// Read I2C_SLV4_CTRL and I2C_SLV4_DI at once
 		ioPort->readBlockAtRegAddrByte(i2cAddress, REG_9150_I2C_SLV4_CTRL,buf,2);
-		LOG4CXX_TRACE(logger,"Cycle #" << i << ": REG_9150_I2C_SLV4_CTRL = 0x" << std::hex << uint32_t(buf[0]) << std::dec);
+		LOG4CXX_TRACE(logger,__FUNCTION__ << ":Cycle #" << i << ": REG_9150_I2C_SLV4_CTRL = 0x" << std::hex << uint32_t(buf[0]) << std::dec);
 
 		// check if the enable flag was cleared, i.e the transaction finished.
 		if ((buf[0] & I2C_SLV4_EN) == 0) {
@@ -128,7 +125,6 @@ uint8_t MPU9150Driver::readByteAux (uint8_t slaveDevAddr, uint8_t regAddr) {
 
 // Use slave 4 for single transactions
 void MPU9150Driver::writeByteAux (uint8_t slaveDevAddr, uint8_t regAddr, uint8_t data) {
-	log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("writeByteAux");
 	uint8_t buf[5];
 
 	// Slave 4 register set start
@@ -154,7 +150,7 @@ void MPU9150Driver::writeByteAux (uint8_t slaveDevAddr, uint8_t regAddr, uint8_t
 	for (int i = 0; i < 1000; ++i) {
 		// Read I2C_SLV4_CTRL
 		ioPort->readBlockAtRegAddrByte(i2cAddress, REG_9150_I2C_SLV4_CTRL,buf,1);
-		LOG4CXX_TRACE(logger,"Cycle #" << i << ": REG_9150_I2C_SLV4_CTRL = 0x" << std::hex << uint32_t(buf[0]) << std::dec);
+		LOG4CXX_TRACE(logger,__FUNCTION__ << ":Cycle #" << i << ": REG_9150_I2C_SLV4_CTRL = 0x" << std::hex << uint32_t(buf[0]) << std::dec);
 
 		// check if the enable flag was cleared, i.e the transaction finished.
 		if ((buf[0] & I2C_SLV4_EN) == 0) {
@@ -437,7 +433,7 @@ void MPU9150Driver::processingMainLoop () {
 				<< ", " << measurementData.accelY.intVal
 				<< ", " << measurementData.accelZ.intVal
 				);
-		LOG4CXX_TRACE(logger,"Accel  data in g = "
+		LOG4CXX_DEBUG(logger,"Accel  data in g = "
 				<< (FloatType(measurementData.accelX.intVal) * accFactor) << ", "
 				<< (FloatType(measurementData.accelY.intVal) * accFactor) << ", "
 				<< (FloatType(measurementData.accelZ.intVal) * accFactor)
@@ -455,7 +451,7 @@ void MPU9150Driver::processingMainLoop () {
 				<< ", " << measurementData.gyroY.intVal
 				<< ", " << measurementData.gyroZ.intVal
 				);
-		LOG4CXX_TRACE(logger,"Gyro  data in deg/s = "
+		LOG4CXX_DEBUG(logger,"Gyro  data in deg/s = "
 				<< (FloatType(measurementData.gyroX.intVal) * gyrFactor) << ", "
 				<< (FloatType(measurementData.gyroY.intVal) * gyrFactor) << ", "
 				<< (FloatType(measurementData.gyroZ.intVal) * gyrFactor)
@@ -481,7 +477,7 @@ void MPU9150Driver::processingMainLoop () {
 					<< ", " << measurementData.magX.intVal
 					<< ", " << measurementData.magZ.intVal
 					);
-			LOG4CXX_TRACE(logger,"Magnet data in uT = "
+			LOG4CXX_DEBUG(logger,"Magnet data in uT = "
 					<< currSensorData.magX << ", "
 					<< currSensorData.magY << ", "
 					<< currSensorData.magZ
