@@ -16,13 +16,12 @@ jobs:
     - name: Ubuntu packages
       run: sudo apt-get install autoconf-archive liblog4cxx-dev libi2c-dev
     - name: Pull submodules
-      run: git submodule init ;
-           git submodule update
+      run: git submodule update --init --recursive
     - name: autoreconf
       run: autoreconf -iv
     - name: configure
       run: mkdir build; cd build; ../configure
-    - name: make
+    - name: make -j6
       run: cd build; make V=1
     - name: make check
       run: cd build; make V=1 check
