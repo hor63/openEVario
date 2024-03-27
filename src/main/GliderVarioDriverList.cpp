@@ -88,7 +88,7 @@ void GliderVarioDriverList::loadDriverLibs(Properties4CXX::Properties const &con
 				"Configuration does not contain variable \"driverSharedLibs\"" );
 	}
 
-	LOG4CXX_INFO(logger,"Driver libraries are :" << driverLibNames->getStrValue());
+	LOG4CXX_INFO(logger,_("Driver libraries are :") << driverLibNames->getStrValue());
 
 	if (driverLibNames->isString()) {
 		// If this single driver load fails I cannot ignore a load failure.

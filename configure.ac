@@ -19,10 +19,13 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
 AC_INIT([openEVario],[0.1],[https://github.com/hor63/openEVario/issues],[openEVario],[https://github.com/hor63/openEVario])
+
+AM_GNU_GETTEXT([external])
+AM_GNU_GETTEXT_VERSION([0.21])
+
 AC_CONFIG_HEADERS(config.h)
 
 AC_CONFIG_MACRO_DIRS([m4])
-
 
 AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE()
@@ -316,7 +319,7 @@ DX_PDF_FEATURE(ON)
 DX_PS_FEATURE(OFF)
 DX_INIT_DOXYGEN(openEVario, $(srcdir)/doxygen.cfg, doc/doxygen)
 
-AC_CONFIG_FILES(Makefile
+AC_CONFIG_FILES(Makefile po/Makefile.in
 				3rdParty/apache/Makefile
                 src/util/Makefile
                 src/kalman/Makefile

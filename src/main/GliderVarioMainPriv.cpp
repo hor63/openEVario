@@ -446,7 +446,7 @@ void GliderVarioMainPriv::readConfiguration () {
 		if (prop && prop->isBool()) {
 			programOptions.terminateOnDriverLoadError = prop->getBoolValue();
 		} else {
-			LOG4CXX_ERROR(logger, "Property \"terminateOnDriverLoadError\" is not boolean. Use default value");
+			LOG4CXX_ERROR(logger, _("Property \"terminateOnDriverLoadError\" is not boolean. Use default value"));
 		}
 	} catch (Properties4CXX::ExceptionBase const& e) {
 			LOG4CXX_DEBUG(logger,"Property \"terminateOnDriverLoadError\" does not exist. Use default value");

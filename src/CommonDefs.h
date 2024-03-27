@@ -44,6 +44,9 @@
 
 #include "CommonLogger_ShLib.h"
 
+#include "gettext.h"
+#define _(str) gettext(str)
+
 namespace openEV {
 
 	/**
