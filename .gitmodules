@@ -19,3 +19,6 @@
 [submodule "3rdParty/horOvIp-I2C-Bridge"]
 	path = 3rdParty/horOvIp-I2C-Bridge
 	url = https://github.com/hor63/horOvIp-I2C-Bridge.git
+[submodule "3rdParty/fmt"]
+	path = 3rdParty/fmt
+	url = https://github.com/hor63/fmt
