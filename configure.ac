@@ -150,6 +150,7 @@ AS_IF(
 AM_CONDITIONAL([BUILD_IP_PORT_DRIVERS],[test "x$WITH_IP_PORT_DRIVERS" = x1])
 
 AX_CHECK_COMPILE_FLAG([-fvisibility=internal],[DLL_VISIBLE_CFLAGS="-fvisibility=internal"])
+AX_CHECK_COMPILE_FLAG([-fvisibility-inlines-hidden],[DLL_VISIBLE_CFLAGS="$DLL_VISIBLE_CFLAGS -fvisibility-inlines-hidden]")
 AC_SUBST([DLL_VISIBLE_CFLAGS])
 
 AX_CHECK_LINK_FLAG([-Wl,--no-undefined], [LD_NO_UNDEFINED_OPT=-Wl,--no-undefined])
