@@ -41,6 +41,8 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 
+#include "fmt/format.h"
+
 #include "GliderVarioMain.h"
 #include "main/GliderVarioMainPriv.h"
 #include "util/io/PortBase.h"

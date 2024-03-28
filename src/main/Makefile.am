@@ -30,7 +30,7 @@ libopenEVMain_la_LIBADD=../kalman/libopenEVKalman.la ../util/libopenEVUtil.la $(
 
 libopenEVMain_la_CXXFLAGS=$(AM_CXXFLAGS) -DBUILDING_OEV_MAIN=1 $(DLL_VISIBLE_CFLAGS)
 
-AM_CXXFLAGS = -I$(top_srcdir)/src -isystem $(top_srcdir)/3rdParty/eigen \
+AM_CXXFLAGS = -I$(top_srcdir)/src -isystem $(top_srcdir)/3rdParty/eigen -I$(top_srcdir)/3rdParty/fmt/include \
 	$(LOG4CXX_CXXFLAGS) \
 	$(PTHREAD_CFLAGS)
 
