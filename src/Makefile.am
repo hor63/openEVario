@@ -30,8 +30,8 @@ openEVario_SOURCES=openEVario.cpp
  
 openEVario_LDADD=main/libopenEVMain.la util/libopenEVUtil.la $(LOG4CXX_LIBS) $(PTHREAD_LIBS)
 
-AM_CXXFLAGS = -I$(top_srcdir)/src -isystem $(top_srcdir)/3rdParty/eigen $(LOG4CXX_CXXFLAGS) \
-	$(PTHREAD_CFLAGS)
+AM_CXXFLAGS = -I$(top_srcdir)/src -isystem $(top_srcdir)/3rdParty/eigen -I$(top_srcdir)/3rdParty/fmt/include \
+	$(LOG4CXX_CXXFLAGS) $(PTHREAD_CFLAGS)
 
 AM_LDFLAGS=$(LOG4CXX_LDFLAGS)
 

@@ -21,7 +21,9 @@ pkglib_LTLIBRARIES=libopenEVUtil.la
 libopenEVUtil_la_SOURCES=RotationMatrix.cpp FastMath.cpp FastMathSineTable.cpp crc.cpp \
 	GliderVarioExceptionBase.cpp \
 	io/PortBase.cpp io/StreamPort.cpp \
-	io/DatagramPort.cpp
+	io/DatagramPort.cpp \
+	../../3rdParty/fmt/src/format.cc \
+	../../3rdParty/fmt/src/os.cc
 
 if BUILD_SERIAL_PORT_DRIVER
 libopenEVUtil_la_SOURCES += io/SerialPort.cpp
@@ -44,8 +46,9 @@ libopenEVUtil_la_LIBADD = $(LOG4CXX_LIBS) $(MAIN_LIBS) $(PTHREAD_LIBS)
 # Build compiler sources are not well supported by autotools. Back to manual
 genSineTables_sources=genSineTables.cpp
 
-AM_CXXFLAGS = -I$(top_srcdir)/src -isystem $(top_srcdir)/3rdParty/eigen $(LOG4CXX_CXXFLAGS) \
-	$(PTHREAD_CFLAGS)
+AM_CXXFLAGS = -I$(top_srcdir)/src -isystem $(top_srcdir)/3rdParty/eigen -I$(top_srcdir)/3rdParty/fmt/include $(LOG4CXX_CXXFLAGS) \
+	$(PTHREAD_CFLAGS) \
+	-DFMT_LIB_EXPORT -Dfmt_EXPORTS
 
 AM_CXXFLAGS_FOR_BUILD=-I$(top_srcdir)/src -isystem $(top_srcdir)/3rdParty/eigen
 

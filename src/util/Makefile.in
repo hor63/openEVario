@@ -162,6 +162,7 @@ libopenEVUtil_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 am__libopenEVUtil_la_SOURCES_DIST = RotationMatrix.cpp FastMath.cpp \
 	FastMathSineTable.cpp crc.cpp GliderVarioExceptionBase.cpp \
 	io/PortBase.cpp io/StreamPort.cpp io/DatagramPort.cpp \
+	../../3rdParty/fmt/src/format.cc ../../3rdParty/fmt/src/os.cc \
 	io/SerialPort.cpp io/TCPPort.cpp io/UDPPort.cpp io/I2CPort.cpp
 @BUILD_SERIAL_PORT_DRIVER_TRUE@am__objects_1 =  \
 @BUILD_SERIAL_PORT_DRIVER_TRUE@	libopenEVUtil_la-SerialPort.lo
@@ -175,8 +176,9 @@ am_libopenEVUtil_la_OBJECTS = libopenEVUtil_la-RotationMatrix.lo \
 	libopenEVUtil_la-FastMathSineTable.lo libopenEVUtil_la-crc.lo \
 	libopenEVUtil_la-GliderVarioExceptionBase.lo \
 	libopenEVUtil_la-PortBase.lo libopenEVUtil_la-StreamPort.lo \
-	libopenEVUtil_la-DatagramPort.lo $(am__objects_1) \
-	$(am__objects_2) $(am__objects_3)
+	libopenEVUtil_la-DatagramPort.lo libopenEVUtil_la-format.lo \
+	libopenEVUtil_la-os.lo $(am__objects_1) $(am__objects_2) \
+	$(am__objects_3)
 libopenEVUtil_la_OBJECTS = $(am_libopenEVUtil_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -212,7 +214,9 @@ am__depfiles_remade = ./$(DEPDIR)/libopenEVUtil_la-DatagramPort.Plo \
 	./$(DEPDIR)/libopenEVUtil_la-StreamPort.Plo \
 	./$(DEPDIR)/libopenEVUtil_la-TCPPort.Plo \
 	./$(DEPDIR)/libopenEVUtil_la-UDPPort.Plo \
-	./$(DEPDIR)/libopenEVUtil_la-crc.Plo
+	./$(DEPDIR)/libopenEVUtil_la-crc.Plo \
+	./$(DEPDIR)/libopenEVUtil_la-format.Plo \
+	./$(DEPDIR)/libopenEVUtil_la-os.Plo
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -471,6 +475,7 @@ pkglib_LTLIBRARIES = libopenEVUtil.la
 libopenEVUtil_la_SOURCES = RotationMatrix.cpp FastMath.cpp \
 	FastMathSineTable.cpp crc.cpp GliderVarioExceptionBase.cpp \
 	io/PortBase.cpp io/StreamPort.cpp io/DatagramPort.cpp \
+	../../3rdParty/fmt/src/format.cc ../../3rdParty/fmt/src/os.cc \
 	$(am__append_1) $(am__append_2) $(am__append_3)
 libopenEVUtil_la_CXXFLAGS = $(AM_CXXFLAGS) -DBUILDING_OEV_UTILS=1 $(DLL_VISIBLE_CFLAGS)
 libopenEVUtil_la_LDFLAGS = $(LD_NO_UNDEFINED_OPT) $(MAIN_LDFLAGS) $(LOG4CXX_LDFLAGS)
@@ -478,15 +483,16 @@ libopenEVUtil_la_LIBADD = $(LOG4CXX_LIBS) $(MAIN_LIBS) $(PTHREAD_LIBS)
 
 # Build compiler sources are not well supported by autotools. Back to manual
 genSineTables_sources = genSineTables.cpp
-AM_CXXFLAGS = -I$(top_srcdir)/src -isystem $(top_srcdir)/3rdParty/eigen $(LOG4CXX_CXXFLAGS) \
-	$(PTHREAD_CFLAGS)
+AM_CXXFLAGS = -I$(top_srcdir)/src -isystem $(top_srcdir)/3rdParty/eigen -I$(top_srcdir)/3rdParty/fmt/include $(LOG4CXX_CXXFLAGS) \
+	$(PTHREAD_CFLAGS) \
+	-DFMT_LIB_EXPORT -Dfmt_EXPORTS
 
 AM_CXXFLAGS_FOR_BUILD = -I$(top_srcdir)/src -isystem $(top_srcdir)/3rdParty/eigen
 LINK_FOR_BUILD.cpp = $(CXX_FOR_BUILD) $(CXXFLAGS_FOR_BUILD) $(CPPFLAGS_FOR_BUILD) $(AM_CXXFLAGS_FOR_BUILD) $(LDFLAGS_FOR_BUILD) $(TARGET_ARCH_FOR_BUILD)
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .cpp .lo .o .obj
+.SUFFIXES: .cc .cpp .lo .o .obj
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -573,6 +579,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopenEVUtil_la-TCPPort.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopenEVUtil_la-UDPPort.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopenEVUtil_la-crc.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopenEVUtil_la-format.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopenEVUtil_la-os.Plo@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -580,21 +588,21 @@ $(am__depfiles_remade):
 
 am--depfiles: $(am__depfiles_remade)
 
-.cpp.o:
+.cc.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ $<
 
-.cpp.obj:
+.cc.obj:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-.cpp.lo:
+.cc.lo:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LTCXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
@@ -657,6 +665,20 @@ libopenEVUtil_la-DatagramPort.lo: io/DatagramPort.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVUtil_la_CXXFLAGS) $(CXXFLAGS) -c -o libopenEVUtil_la-DatagramPort.lo `test -f 'io/DatagramPort.cpp' || echo '$(srcdir)/'`io/DatagramPort.cpp
 
+libopenEVUtil_la-format.lo: ../../3rdParty/fmt/src/format.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVUtil_la_CXXFLAGS) $(CXXFLAGS) -MT libopenEVUtil_la-format.lo -MD -MP -MF $(DEPDIR)/libopenEVUtil_la-format.Tpo -c -o libopenEVUtil_la-format.lo `test -f '../../3rdParty/fmt/src/format.cc' || echo '$(srcdir)/'`../../3rdParty/fmt/src/format.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libopenEVUtil_la-format.Tpo $(DEPDIR)/libopenEVUtil_la-format.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../../3rdParty/fmt/src/format.cc' object='libopenEVUtil_la-format.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVUtil_la_CXXFLAGS) $(CXXFLAGS) -c -o libopenEVUtil_la-format.lo `test -f '../../3rdParty/fmt/src/format.cc' || echo '$(srcdir)/'`../../3rdParty/fmt/src/format.cc
+
+libopenEVUtil_la-os.lo: ../../3rdParty/fmt/src/os.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVUtil_la_CXXFLAGS) $(CXXFLAGS) -MT libopenEVUtil_la-os.lo -MD -MP -MF $(DEPDIR)/libopenEVUtil_la-os.Tpo -c -o libopenEVUtil_la-os.lo `test -f '../../3rdParty/fmt/src/os.cc' || echo '$(srcdir)/'`../../3rdParty/fmt/src/os.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libopenEVUtil_la-os.Tpo $(DEPDIR)/libopenEVUtil_la-os.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='../../3rdParty/fmt/src/os.cc' object='libopenEVUtil_la-os.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVUtil_la_CXXFLAGS) $(CXXFLAGS) -c -o libopenEVUtil_la-os.lo `test -f '../../3rdParty/fmt/src/os.cc' || echo '$(srcdir)/'`../../3rdParty/fmt/src/os.cc
+
 libopenEVUtil_la-SerialPort.lo: io/SerialPort.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVUtil_la_CXXFLAGS) $(CXXFLAGS) -MT libopenEVUtil_la-SerialPort.lo -MD -MP -MF $(DEPDIR)/libopenEVUtil_la-SerialPort.Tpo -c -o libopenEVUtil_la-SerialPort.lo `test -f 'io/SerialPort.cpp' || echo '$(srcdir)/'`io/SerialPort.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libopenEVUtil_la-SerialPort.Tpo $(DEPDIR)/libopenEVUtil_la-SerialPort.Plo
@@ -684,6 +706,27 @@ libopenEVUtil_la-I2CPort.lo: io/I2CPort.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='io/I2CPort.cpp' object='libopenEVUtil_la-I2CPort.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libopenEVUtil_la_CXXFLAGS) $(CXXFLAGS) -c -o libopenEVUtil_la-I2CPort.lo `test -f 'io/I2CPort.cpp' || echo '$(srcdir)/'`io/I2CPort.cpp
+
+.cpp.o:
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ $<
+
+.cpp.obj:
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+.cpp.lo:
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LTCXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -830,6 +873,8 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/libopenEVUtil_la-TCPPort.Plo
 	-rm -f ./$(DEPDIR)/libopenEVUtil_la-UDPPort.Plo
 	-rm -f ./$(DEPDIR)/libopenEVUtil_la-crc.Plo
+	-rm -f ./$(DEPDIR)/libopenEVUtil_la-format.Plo
+	-rm -f ./$(DEPDIR)/libopenEVUtil_la-os.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -887,6 +932,8 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/libopenEVUtil_la-TCPPort.Plo
 	-rm -f ./$(DEPDIR)/libopenEVUtil_la-UDPPort.Plo
 	-rm -f ./$(DEPDIR)/libopenEVUtil_la-crc.Plo
+	-rm -f ./$(DEPDIR)/libopenEVUtil_la-format.Plo
+	-rm -f ./$(DEPDIR)/libopenEVUtil_la-os.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
