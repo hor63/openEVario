@@ -63,3 +63,6 @@ stamp-h1
 *.exe
 *.out
 *.app
+
+# Binary translation files
+*.gmo
