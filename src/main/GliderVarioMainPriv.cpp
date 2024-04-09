@@ -79,15 +79,6 @@ const char * argp_program_bug_address = PACKAGE_BUGREPORT;
 static const char* argpDoc= PROGRAM_DESCRIPTION;
 } // extern "C"
 
-static struct argp_option options[] = {
-  {"configuration",        'c', "configFileName",   0, "Name of the configuration file [" defaultConfigFileName "]",0},
-  {"logger-configuration", 'l', "loggerConfigFile", 0, "Name of logger configuration file [" defaultLoggerConfigFileName "]",0},
-  {"debug",                'd', 0,                  0, "Increase default logger level (Silent-[Error]-Info-Debug)",0},
-  {"quiet",                'q', 0,                  0, "Shhhh. Be quiet. Suppress any logger output, i.e. set logger level to Silent (see -d)",0},
-  {"silent",               's', 0,                  OPTION_ALIAS, 0 ,0},
-  {0,0,0,0,0,0}
-};
-
 static error_t
 parse_opt (int key, char *arg, struct argp_state *state)
 {
@@ -121,7 +112,7 @@ parse_opt (int key, char *arg, struct argp_state *state)
 
 
 #else /* HAVE_ARGP_PARSE == 1 */
-    #if HAVE_GETOPT_LONG == 1
+#	if HAVE_GETOPT_LONG == 1
 
 static struct option longOptions[] =
   {
@@ -137,76 +128,65 @@ static struct option longOptions[] =
           {0, 0, 0, 0}
   };
 
-
-    #else /* HAVE_GETOPT_LONG == 1 */
-        #if HAVE_GETOPT_LONG == 1
-        #else /* HAVE_GETOPT_LONG == 1 */
-        #endif /* HAVE_GETOPT_LONG == 1 */
-    #endif /* HAVE_GETOPT_LONG == 1 */
+#	endif /* HAVE_GETOPT_LONG == 1 */
 #endif /* HAVE_ARGP_PARSE == 1 */
 
-#if HAVE_ARGP_PARSE != 1
+//#if HAVE_ARGP_PARSE != 1
 
 static void usage(std::ostream& outStr){
-    static char const * const usageText =
 
 #if HAVE_GETOPT_LONG == 1
-
-"            Usage: openEVario [OPTION...]\n"
-"\n"
-"             openEVario: Electronic variometer application using inertial and pressure sensors \n"
-"            (typically I2C on ARM SoC) and GPS input.\n"
-"\n"
-"              -c, --configuration=configFileName\n"
-"                                         Name of the configuration file [" defaultConfigFileName "]\n"
-"              -d, --debug                Increase default logger level\n"
-"                                         (Silent-[Error]-Info-Debug)\n"
-"              -l, --logger-configuration=loggerConfigFile\n"
-"                                         Name of logger configuration file\n"
-"                                         [" defaultLoggerConfigFileName "]\n"
-"              -q, -s, --quiet, --silent  Shhhh. Be quiet. Suppress any logger output,\n"
-"                                         i.e. set logger level to Silent (see -d)\n"
-"              -?, --help                 Give this help list\n"
-"                  --usage                Give a short usage message\n"
-"              -V, --version              Print program version\n"
-"\n"
-"            Mandatory or optional arguments to long options are also mandatory or optional\n"
-"            for any corresponding short options.\n"
-"\n"
-"            Report bugs to https://github.com/hor63/openEVario/issues."
+    std::string const usageText = fmt::format(
+    		_(
+    				"            Usage: openEVario [OPTION...]\n"
+    				"\n"
+    				"              -c, --configuration=configFileName\n"
+    				"                                         Name of the configuration file [{1}]\n"
+    				"              -d, --debug                Increase default logger level\n"
+    				"                                         (Silent-[Error]-Info-Debug)\n"
+    				"              -l, --logger-configuration=loggerConfigFile\n"
+    				"                                         Name of logger configuration file\n"
+    				"                                         [{2}]\n"
+    				"              -q, -s, --quiet, --silent  Shhhh. Be quiet. Suppress any logger output,\n"
+    				"                                         i.e. set logger level to Silent (see -d)\n"
+    				"              -?, --help                 Give this help list\n"
+    				"                  --usage                Give a short usage message\n"
+    				"              -V, --version              Print program version\n"
+    				"\n"
+    				"            Mandatory or optional arguments to long options are also mandatory or optional\n"
+    				"            for any corresponding short options.\n"
+    				"\n"
+    				"            Report bugs to https://github.com/hor63/openEVario/issues."
+    		)
+			,defaultConfigFileName,defaultLoggerConfigFileName);
 
 #else /* HAVE_GETOPT_LONG == 1 */
-
-"            Usage: openEVario [OPTION...]\n"
-"\n"
-"             openEVario: Electronic variometer application using inertial and pressure sensors \n"
-"            (typically I2C on ARM SoC) and GPS input.\n"
-"\n"
-"              -c configFileName\n"
-"                                         Name of the configuration file [./openEvario.cfg]\n"
-"              -d                         Increase default logger level\n"
-"                                         (Silent-[Error]-Info-Debug)\n"
-"              -l loggerConfigFile        Name of logger configuration file\n"
-"                                         [./log4cxx.properties]\n"
-"              -q, -s                     Shhhh. Be quiet. Suppress any logger output,\n"
-"                                         i.e. set logger level to Silent (see -d)\n"
-"              -?                         Give this help list\n"
-"              -V                         Print program version\n"
-"\n"
-"            Mandatory or optional arguments to long options are also mandatory or optional\n"
-"            for any corresponding short options.\n"
-"\n"
-"            Report bugs to https://github.com/hor63/openEVario/issues.\n"
-
+    std::string const usageText = fmt::format(
+    		_(
+    				"            Usage: openEVario [OPTION...]\n"
+    				"\n"
+    				"              -c configFileName\n"
+    				"                                         Name of the configuration file [{1}]\n"
+    				"              -d                         Increase default logger level\n"
+    				"                                         (Silent-[Error]-Info-Debug)\n"
+    				"              -l loggerConfigFile        Name of logger configuration file\n"
+    				"                                         [{2}]\n"
+    				"              -q, -s                     Shhhh. Be quiet. Suppress any logger output,\n"
+    				"                                         i.e. set logger level to Silent (see -d)\n"
+    				"              -?                         Give this help list\n"
+    				"              -V                         Print program version\n"
+    				"\n"
+    				"            Report bugs to https://github.com/hor63/openEVario/issues.\n"
+    		)
+			,defaultConfigFileName,defaultLoggerConfigFileName);
 
 #endif /* HAVE_GETOPT_LONG == 1 */
-;
 
     outStr << usageText << std::endl;
 
 }
 
-#endif  // HAVE_ARGP_PARSE != 1
+//#endif  // HAVE_ARGP_PARSE != 1
 
 /**
  * Reads command line arguments and extracts options
@@ -218,6 +198,19 @@ static void usage(std::ostream& outStr){
  */
 static int readOptions (int& argc, char*argv[],openEV::ProgramOptions &programOptions) {
     int rc = 0;
+
+    static std::string configFileDoc = fmt::format(_("Name of the configuration file [{1}]"),defaultConfigFileName);
+    static std::string loggerConfigFileDoc = fmt::format(_("Name of logger configuration file [{1}]"),defaultLoggerConfigFileName);
+
+    static struct argp_option options[] = {
+      {"configuration",        'c', "configFileName",   0, configFileDoc.c_str(),0},
+      {"logger-configuration", 'l', "loggerConfigFile", 0, loggerConfigFileDoc.c_str(),0},
+      {"debug",                'd', 0,                  0, _("Increase default logger level (Silent-[Error]-Info-Debug)"),0},
+      {"quiet",                'q', 0,                  0, _("Shhhh. Be quiet. Suppress any logger output, i.e. set logger level to Silent"),0},
+      {"silent",               's', 0,                  OPTION_ALIAS, 0 ,0},
+      {0,0,0,0,0,0}
+    };
+
 
 #if HAVE_ARGP_PARSE == 1
 
@@ -268,15 +261,14 @@ static int readOptions (int& argc, char*argv[],openEV::ProgramOptions &programOp
 
              case ':':
                  if (argv[0]) {
-                     std::cerr << "Try `" << argv[0] << " --help' or `" << argv[0] << " --usage' for more information." << std::endl;
+                     std::cerr << std::format(_("Try \"{1} --help\" or \"{2} --usage\" for more information."),argv[0],argv[0]) << std::endl;
                  }
                  break;
 
              default:
                  if (argv[0]) {
-                	 std::ostringstream errMsg;
-                	 errMsg << argv[0] << ": getopt_long returned unexpected value" << key <<". Program aborting";
-                	 throw openEV::GliderVarioExceptionBase(__FILE__,__LINE__,errMsg.str().c_str());
+                	 auto errMsg = fmt::format(_("{1}: getopt_long returned unexpected value {2}. Program aborting"),argv[0],key);
+                	 throw openEV::GliderVarioExceptionBase(__FILE__,__LINE__,errMsg.c_str());
                  }
               exit(1);
              }
@@ -437,10 +429,11 @@ void GliderVarioMainPriv::readConfiguration () {
 	configuration.setFileName(programOptions.configFileName);
 	configuration.readConfiguration();
 	} catch (Properties4CXX::ExceptionBase const& e) {
-		std::ostringstream os;
-		os << "Error reading the configuration from file \"" << programOptions.configFileName << "\": " << e.what();
-		LOG4CXX_FATAL(logger,os.str());
-		throw;
+
+		std::string errStr = fmt::format(_("Error reading the configuration from file \"{1}\" is: {2}"),
+				programOptions.configFileName, e.what());
+		LOG4CXX_FATAL(logger,errStr);
+		throw GliderVarioFatalConfigException(__FILE__,__LINE__,errStr.c_str());
 	}
 
 	try {
@@ -448,10 +441,11 @@ void GliderVarioMainPriv::readConfiguration () {
 		if (prop && prop->isBool()) {
 			programOptions.terminateOnDriverLoadError = prop->getBoolValue();
 		} else {
-			LOG4CXX_ERROR(logger, _("Property \"terminateOnDriverLoadError\" is not boolean. Use default value"));
+			LOG4CXX_ERROR(logger, fmt::format(_("Property \"terminateOnDriverLoadError\" is not boolean. Use default value {}"),
+					programOptions.terminateOnDriverLoadError));
 		}
 	} catch (Properties4CXX::ExceptionBase const& e) {
-			LOG4CXX_DEBUG(logger,"Property \"terminateOnDriverLoadError\" does not exist. Use default value");
+			LOG4CXX_DEBUG(logger,"Property \"terminateOnDriverLoadError\" does not exist. Use default value ");
 		}
 	LOG4CXX_DEBUG(logger, "programOptions.terminateOnDriverLoadError = " << programOptions.terminateOnDriverLoadError);
 
@@ -461,7 +455,8 @@ void GliderVarioMainPriv::readConfiguration () {
 			programOptions.idlePredictionCycleMilliSec =  prop->getDoubleValue();
 			programOptions.idlePredictionCycle = std::chrono::milliseconds( prop->getIntVal());
 		} else {
-			LOG4CXX_ERROR(logger, "Property \"idlePredictionCycle\" is not double or integer. Use default value");
+			LOG4CXX_ERROR(logger, fmt::format(_("Property \"idlePredictionCycle\" is not double or integer. Use default value {1}ms"),
+					programOptions.idlePredictionCycleMilliSec));
 		}
 	} catch (Properties4CXX::ExceptionBase const& e) {
 			LOG4CXX_DEBUG(logger,"Property \"idlePredictionCycle\" does not exist. Use default value");
@@ -474,7 +469,8 @@ void GliderVarioMainPriv::readConfiguration () {
 		if (prop && (prop->isDouble()||prop->isInteger())) {
 			programOptions.maxTimeBetweenPredictionAndMeasurementUpdate = std::chrono::milliseconds(prop->getIntVal());
 		} else {
-			LOG4CXX_ERROR(logger, "Property \"maxTimeBetweenPredictionAndMeasurementUpdate\" is not double or integer. Use default value");
+			LOG4CXX_ERROR(logger, fmt::format(_("Property \"maxTimeBetweenPredictionAndMeasurementUpdate\" is not double or integer. Use default value"),
+					std::chrono::duration_cast<std::chrono::milliseconds>(programOptions.maxTimeBetweenPredictionAndMeasurementUpdate).count()));
 		}
 	} catch (Properties4CXX::ExceptionBase const& e) {
 			LOG4CXX_DEBUG(logger,"Property \"maxTimeBetweenPredictionAndMeasurementUpdate\" does not exist. Use default value");
