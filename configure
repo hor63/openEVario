@@ -25547,6 +25547,14 @@ MAIN_LIBS="-lProperties4CXX"
 
 
 
+# Define LOCALEDIR in config.h
+# Expand $localedir completely
+eval LOCALEDIR=$localedir
+eval LOCALEDIR=$LOCALEDIR
+eval LOCALEDIR=$LOCALEDIR
+
+printf "%s\n" "#define LOCALEDIR \"$LOCALEDIR\"" >>confdefs.h
+
 
 
 

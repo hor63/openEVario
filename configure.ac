@@ -312,6 +312,12 @@ MAIN_LIBS="-lProperties4CXX"
 AC_SUBST([MAIN_LDFLAGS])
 AC_SUBST([MAIN_LIBS])
 
+# Define LOCALEDIR in config.h
+# Expand $localedir completely
+eval LOCALEDIR=$localedir
+eval LOCALEDIR=$LOCALEDIR
+eval LOCALEDIR=$LOCALEDIR
+AC_DEFINE_UNQUOTED([LOCALEDIR],["$LOCALEDIR"],[Location of binary language files; default /usr/share/locale])
 
 DX_DOXYGEN_FEATURE(ON)
 DX_DOT_FEATURE(ON)
