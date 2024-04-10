@@ -33,6 +33,8 @@
 #include <chrono>
 #include <thread>
 
+#include "gettext.h"
+
 using namespace openEV;
 using namespace std::chrono;
 using namespace std::chrono_literals;
@@ -45,6 +47,14 @@ using namespace std::chrono_literals;
  * @return Return code of the program. 0 means without error.
  */
 int main (int argc, char *argv[]) {
+
+
+#if defined ENABLE_NLS && ENABLE_NLS
+	setlocale (LC_ALL, "");
+	bindtextdomain ("OeV", "/usr/share/locale");
+	textdomain ("OeV");
+#endif // #if defined ENABLE_NLS && ENABLE_NLS
+
     GliderVarioMain oevMain (argc, (const char**)( argv));
     system_clock::duration waitTime = 10s;
 
