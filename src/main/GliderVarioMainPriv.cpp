@@ -141,12 +141,12 @@ static void usage(std::ostream& outStr){
     				"            Usage: openEVario [OPTION...]\n"
     				"\n"
     				"              -c, --configuration=configFileName\n"
-    				"                                         Name of the configuration file [{1}]\n"
+    				"                                         Name of the configuration file [{0}]\n"
     				"              -d, --debug                Increase default logger level\n"
     				"                                         (Silent-[Error]-Info-Debug)\n"
     				"              -l, --logger-configuration=loggerConfigFile\n"
     				"                                         Name of logger configuration file\n"
-    				"                                         [{2}]\n"
+    				"                                         [{1}]\n"
     				"              -q, -s, --quiet, --silent  Shhhh. Be quiet. Suppress any logger output,\n"
     				"                                         i.e. set logger level to Silent (see -d)\n"
     				"              -?, --help                 Give this help list\n"
@@ -166,11 +166,11 @@ static void usage(std::ostream& outStr){
     				"            Usage: openEVario [OPTION...]\n"
     				"\n"
     				"              -c configFileName\n"
-    				"                                         Name of the configuration file [{1}]\n"
+    				"                                         Name of the configuration file [{0}]\n"
     				"              -d                         Increase default logger level\n"
     				"                                         (Silent-[Error]-Info-Debug)\n"
     				"              -l loggerConfigFile        Name of logger configuration file\n"
-    				"                                         [{2}]\n"
+    				"                                         [{1}]\n"
     				"              -q, -s                     Shhhh. Be quiet. Suppress any logger output,\n"
     				"                                         i.e. set logger level to Silent (see -d)\n"
     				"              -?                         Give this help list\n"
@@ -261,13 +261,13 @@ static int readOptions (int& argc, char*argv[],openEV::ProgramOptions &programOp
 
              case ':':
                  if (argv[0]) {
-                     std::cerr << std::format(_("Try \"{1} --help\" or \"{2} --usage\" for more information."),argv[0],argv[0]) << std::endl;
+                     std::cerr << std::format(_("Try \"{0} --help\" or \"{1} --usage\" for more information."),argv[0],argv[0]) << std::endl;
                  }
                  break;
 
              default:
                  if (argv[0]) {
-                	 auto errMsg = fmt::format(_("{1}: getopt_long returned unexpected value {2}. Program aborting"),argv[0],key);
+                	 auto errMsg = fmt::format(_("{0}: getopt_long returned unexpected value {1}. Program aborting"),argv[0],key);
                 	 throw openEV::GliderVarioExceptionBase(__FILE__,__LINE__,errMsg.c_str());
                  }
               exit(1);
@@ -338,6 +338,11 @@ GliderVarioMainPriv::~GliderVarioMainPriv() {
 
 void GliderVarioMainPriv::startup () {
 
+#if defined ENABLE_NLS && ENABLE_NLS
+	bindtextdomain (PACKAGE, LOCALEDIR);
+#endif // #if defined ENABLE_NLS && ENABLE_NLS
+
+
 	readOptions (argc,argv,programOptions);
 
 #if defined HAVE_LOG4CXX_H
@@ -368,6 +373,8 @@ void GliderVarioMainPriv::startup () {
 
     // The configuration file (when I can load it) will overwrite the command line settings.
     log4cxx::PropertyConfigurator::configure(log4cxx::File(programOptions.loggerConfigFileName));
+
+    LOG4CXX_INFO(logger,fmt::format(_("{0}, version {1} starting up."),PACKAGE_NAME,PACKAGE_VERSION));
 
 #endif /* defined HAVE_LOG4CXX_H */
 
@@ -430,7 +437,7 @@ void GliderVarioMainPriv::readConfiguration () {
 	configuration.readConfiguration();
 	} catch (Properties4CXX::ExceptionBase const& e) {
 
-		std::string errStr = fmt::format(_("Error reading the configuration from file \"{1}\" is: {2}"),
+		std::string errStr = fmt::format(_("Error reading the configuration from file \"{0}\" is: {1}"),
 				programOptions.configFileName, e.what());
 		LOG4CXX_FATAL(logger,errStr);
 		throw GliderVarioFatalConfigException(__FILE__,__LINE__,errStr.c_str());
@@ -441,7 +448,7 @@ void GliderVarioMainPriv::readConfiguration () {
 		if (prop && prop->isBool()) {
 			programOptions.terminateOnDriverLoadError = prop->getBoolValue();
 		} else {
-			LOG4CXX_ERROR(logger, fmt::format(_("Property \"terminateOnDriverLoadError\" is not boolean. Use default value {}"),
+			LOG4CXX_ERROR(logger, fmt::format(_("Property \"terminateOnDriverLoadError\" is not boolean. Use default value {0}"),
 					programOptions.terminateOnDriverLoadError));
 		}
 	} catch (Properties4CXX::ExceptionBase const& e) {
@@ -455,7 +462,7 @@ void GliderVarioMainPriv::readConfiguration () {
 			programOptions.idlePredictionCycleMilliSec =  prop->getDoubleValue();
 			programOptions.idlePredictionCycle = std::chrono::milliseconds( prop->getIntVal());
 		} else {
-			LOG4CXX_ERROR(logger, fmt::format(_("Property \"idlePredictionCycle\" is not double or integer. Use default value {1}ms"),
+			LOG4CXX_ERROR(logger, fmt::format(_("Property \"idlePredictionCycle\" is not double or integer. Use default value {0}ms"),
 					programOptions.idlePredictionCycleMilliSec));
 		}
 	} catch (Properties4CXX::ExceptionBase const& e) {
@@ -469,7 +476,7 @@ void GliderVarioMainPriv::readConfiguration () {
 		if (prop && (prop->isDouble()||prop->isInteger())) {
 			programOptions.maxTimeBetweenPredictionAndMeasurementUpdate = std::chrono::milliseconds(prop->getIntVal());
 		} else {
-			LOG4CXX_ERROR(logger, fmt::format(_("Property \"maxTimeBetweenPredictionAndMeasurementUpdate\" is not double or integer. Use default value"),
+			LOG4CXX_ERROR(logger, fmt::format(_("Property \"maxTimeBetweenPredictionAndMeasurementUpdate\" is not double or integer. Use default value {0}ms"),
 					std::chrono::duration_cast<std::chrono::milliseconds>(programOptions.maxTimeBetweenPredictionAndMeasurementUpdate).count()));
 		}
 	} catch (Properties4CXX::ExceptionBase const& e) {
