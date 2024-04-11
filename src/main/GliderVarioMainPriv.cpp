@@ -946,27 +946,30 @@ void GliderVarioMainPriv::intializeStatus() {
 
 
 		if (UnInitVal == currentStatus->getStatusVector_x()(i)) {
-			std::ostringstream str;
-			str << __PRETTY_FUNCTION__ << ": currentStatus->getStatusVector_x().coeffRef("
-					<< GliderVarioStatus::StatusComponentIndex(i) << "," << GliderVarioStatus::StatusComponentIndex(i)
-					<< ") is not initialized.";
-			LOG4CXX_WARN(logger,str.str());
+			auto indexName = GliderVarioStatus::StatusComponentIndexHelperObj.getString(
+					static_cast<GliderVarioStatus::StatusComponentIndex>(i));
+			LOG4CXX_WARN(logger,fmt::format(
+					_("{0}: currentStatus->getStatusVector_x()({1}) is not initialized."),
+					__PRETTY_FUNCTION__,
+					indexName));
 			// throw GliderVarioExceptionBase(__FILE__, __LINE__, str.str().c_str());
 		}
 		if (UnInitVal == currentStatus->getErrorCovariance_P().coeffRef(i,i)) {
-			std::ostringstream str;
-			str << __PRETTY_FUNCTION__ << ": currentStatus->getErrorCovariance_P().coeffRef("
-					<< GliderVarioStatus::StatusComponentIndex(i) << "," << GliderVarioStatus::StatusComponentIndex(i)
-					<< ") is not initialized.";
-			LOG4CXX_WARN(logger,str.str());
+			auto indexName = GliderVarioStatus::StatusComponentIndexHelperObj.getString(
+					static_cast<GliderVarioStatus::StatusComponentIndex>(i));
+			LOG4CXX_WARN(logger,fmt::format(
+					_("{0}: currentStatus->getErrorCovariance_P().coeffRef({1},{2}) is not initialized."),
+					__PRETTY_FUNCTION__,
+					indexName,indexName));
 			// throw GliderVarioExceptionBase(__FILE__, __LINE__, str.str().c_str());
 		}
 		if (UnInitVal == currentStatus->getSystemNoiseCovariance_Q().coeffRef(i,i)) {
-			std::ostringstream str;
-			str << __PRETTY_FUNCTION__ << ": currentStatus->getSystemNoiseCovariance_Q().coeffRef("
-					<< GliderVarioStatus::StatusComponentIndex(i) << "," << GliderVarioStatus::StatusComponentIndex(i)
-					<< ") is not initialized.";
-			LOG4CXX_WARN(logger,str.str());
+			auto indexName = GliderVarioStatus::StatusComponentIndexHelperObj.getString(
+					static_cast<GliderVarioStatus::StatusComponentIndex>(i));
+			LOG4CXX_WARN(logger,fmt::format(
+					_("{0}: urrentStatus->getSystemNoiseCovariance_Q().coeffRef({1},{2}) is not initialized."),
+					__PRETTY_FUNCTION__,
+					indexName,indexName));
 			// throw GliderVarioExceptionBase(__FILE__, __LINE__, str.str().c_str());
 		}
 	}
