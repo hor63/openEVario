@@ -1,3 +1,4 @@
 # List of source files which contain translatable strings.
 src/main/GliderVarioMainPriv.cpp
 src/main/GliderVarioDriverList.cpp
+src/main/driverBase/DriverBase.cpp

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openEVario 0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/hor63/openEVario/issues\n"
-"POT-Creation-Date: 2024-04-13 17:48+0200\n"
+"POT-Creation-Date: 2024-04-13 21:40+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -240,4 +240,81 @@ msgstr ""
 #: src/main/GliderVarioDriverList.cpp:381
 #: src/main/GliderVarioDriverList.cpp:386
 msgid "Failed to initialize device \"{0}\" because: {1}"
+msgstr ""
+
+#: src/main/driverBase/DriverBase.cpp:82
+msgid "Uncaught exception in driver/instance \"{0}\"/\"{1}\". Message = {2}"
+msgstr ""
+
+#: src/main/driverBase/DriverBase.cpp:87
+msgid ""
+"Uncaught exception from unknown class/type in driver/instance \"{0}\"/\"{1}\""
+msgstr ""
+
+#: src/main/driverBase/DriverBase.cpp:92
+msgid ""
+"Driver/instance \"{0}\"/\"{1}\" left the driver thread function. The "
+"instance is now defunct."
+msgstr ""
+
+#: src/main/driverBase/DriverBase.cpp:170
+msgid ""
+"Cannot open calibration update file \"{0}\" for driver instance \"{1}\". "
+"Error: {2}"
+msgstr ""
+
+#: src/main/driverBase/DriverBase.cpp:177
+msgid "Error in {0} for driver instance \"{1}\". Error = {2}"
+msgstr ""
+
+#: src/main/driverBase/DriverBase.cpp:179
+#: src/main/driverBase/DriverBase.cpp:185
+msgid "Disable further calibration data updates."
+msgstr ""
+
+#: src/main/driverBase/DriverBase.cpp:184
+msgid "Error in {0} for driver instance {1}. Unknown exception."
+msgstr ""
+
+#: src/main/driverBase/DriverBase.cpp:194
+msgid ""
+"Cannot apply calibration data from file \"{0}\" to device \"{1}\".Driver "
+"\"{2}\" does not implement reading of calibration data."
+msgstr ""
+
+#: src/main/driverBase/DriverBase.cpp:202
+msgid ""
+"Cannot read calibration data from device \"{0}\" for writing to update "
+"calibration data file \"{1}\". Driver \"{2}\" does not implement reading of "
+"calibration data."
+msgstr ""
+
+#: src/main/driverBase/DriverBase.cpp:235
+msgid "Read from calibration data file \"{0}\""
+msgstr ""
+
+#: src/main/driverBase/DriverBase.cpp:246
+msgid "Cannot read calibration data from file \"{0}\". Trying alternative {1}"
+msgstr ""
+
+#: src/main/driverBase/DriverBase.cpp:251
+msgid "Read from alternative calibration data file \"{0}\""
+msgstr ""
+
+#: src/main/driverBase/DriverBase.cpp:260
+msgid ""
+"Device instance \"{0}\": Error reading calibration data from file \"{1}\": "
+"{2}"
+msgstr ""
+
+#: src/main/driverBase/DriverBase.cpp:263
+msgid "Device instance \"{0}\": Using builtin default calibration data"
+msgstr ""
+
+#: src/main/driverBase/DriverBase.cpp:332
+msgid "Error reading configuration of device instance \"{0}\": {1}"
+msgstr ""
+
+#: src/main/driverBase/DriverBase.cpp:339
+msgid "Common parameters of driver instance \"{0}\":"
 msgstr ""

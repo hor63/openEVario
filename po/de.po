@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openEVario 0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/hor63/openEVario/issues\n"
-"POT-Creation-Date: 2024-04-13 17:48+0200\n"
+"POT-Creation-Date: 2024-04-13 21:40+0200\n"
 "PO-Revision-Date: 2024-04-09 16:05+0200\n"
 "Last-Translator: Kai Horstmann <horstmannkai@hotmail.com>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
@@ -309,3 +309,98 @@ msgstr ""
 #: src/main/GliderVarioDriverList.cpp:386
 msgid "Failed to initialize device \"{0}\" because: {1}"
 msgstr "Gerät „{0}“ kann nicht initialisiert werden wegen: {1}"
+
+#: src/main/driverBase/DriverBase.cpp:82
+msgid "Uncaught exception in driver/instance \"{0}\"/\"{1}\". Message = {2}"
+msgstr ""
+"Nicht gefangene Exception in Treiber/Instanz \"{0}\"/\"{1}\". Fehlermeldung "
+"= {2}"
+
+#: src/main/driverBase/DriverBase.cpp:87
+msgid ""
+"Uncaught exception from unknown class/type in driver/instance \"{0}\"/\"{1}\""
+msgstr ""
+"Nicht gefangene Exception unbekannten Typs in Treiber/Instanz \"{0}\"/\"{1}\""
+
+#: src/main/driverBase/DriverBase.cpp:92
+msgid ""
+"Driver/instance \"{0}\"/\"{1}\" left the driver thread function. The "
+"instance is now defunct."
+msgstr ""
+"Treiber/Instanz \"{0}\"/\"{1}\" verließ die Thread-Schleife. Die Instanz ist "
+"außer Betrieb."
+
+#: src/main/driverBase/DriverBase.cpp:170
+msgid ""
+"Cannot open calibration update file \"{0}\" for driver instance \"{1}\". "
+"Error: {2}"
+msgstr ""
+"Kann Datei mit aktualisierten Kalibierdaten \"{0}\" für Treiberinstanz {1} "
+"nicht öffnen. Fehler ist: {2}"
+
+#: src/main/driverBase/DriverBase.cpp:177
+msgid "Error in {0} for driver instance \"{1}\". Error = {2}"
+msgstr "Fehler in {0} für Treiberinstanz \"{1}\". Fehler = {2}"
+
+#: src/main/driverBase/DriverBase.cpp:179
+#: src/main/driverBase/DriverBase.cpp:185
+msgid "Disable further calibration data updates."
+msgstr "Deaktiviere weitere Aktualisierungen der Kalibrierdaten."
+
+#: src/main/driverBase/DriverBase.cpp:184
+msgid "Error in {0} for driver instance {1}. Unknown exception."
+msgstr "Fehler in {0} für Treiberinstanz {1}. Unbekannter Exceptiontyp"
+
+#: src/main/driverBase/DriverBase.cpp:194
+msgid ""
+"Cannot apply calibration data from file \"{0}\" to device \"{1}\".Driver "
+"\"{2}\" does not implement reading of calibration data."
+msgstr ""
+"Kann Kalibrierdaten aus Datei \"{0}\" nicht für Treiberinstanz \"{1}\" "
+"anwenden. Treiber \"{2}\" implementiert implement nicht das Lesen von "
+"Kalibrierdaten."
+
+#: src/main/driverBase/DriverBase.cpp:202
+msgid ""
+"Cannot read calibration data from device \"{0}\" for writing to update "
+"calibration data file \"{1}\". Driver \"{2}\" does not implement reading of "
+"calibration data."
+msgstr ""
+"Kann keine Kalibierdaten aus Treiberinstanz \"{0}\" auslesen, um sie in "
+"Kalibierdatendatei \"{1}\" zu schreiben. Treiber \"{2}\" implementiert nicht "
+"das Lesen von Kalibrierdaten oder hat gar keine."
+
+#: src/main/driverBase/DriverBase.cpp:235
+msgid "Read from calibration data file \"{0}\""
+msgstr "Lese aus Kalibrierdatendatei \"{0}\""
+
+#: src/main/driverBase/DriverBase.cpp:246
+msgid "Cannot read calibration data from file \"{0}\". Trying alternative {1}"
+msgstr ""
+"Kann keine Kalibrierdaten aus Datei \"{0}\" lesen. Versuche Alternative "
+"Datei {1}."
+
+#: src/main/driverBase/DriverBase.cpp:251
+msgid "Read from alternative calibration data file \"{0}\""
+msgstr "Lese von alternativer Kalibrierdatendatei \"{0}\""
+
+#: src/main/driverBase/DriverBase.cpp:260
+msgid ""
+"Device instance \"{0}\": Error reading calibration data from file \"{1}\": "
+"{2}"
+msgstr ""
+"Treiberinstanz \"{0}\": Fehler bein Lesen der Kalibierdaten aus Datei "
+"\"{1}\" ist: "
+
+#: src/main/driverBase/DriverBase.cpp:263
+msgid "Device instance \"{0}\": Using builtin default calibration data"
+msgstr ""
+
+#: src/main/driverBase/DriverBase.cpp:332
+msgid "Error reading configuration of device instance \"{0}\": {1}"
+msgstr ""
+"Fehler beim Lesen der Konfiguration von Treiberinstanz \"{0}\" ist: {1}"
+
+#: src/main/driverBase/DriverBase.cpp:339
+msgid "Common parameters of driver instance \"{0}\":"
+msgstr "Allgemeine Parameter von Treiberinstanz \"{0}\":"

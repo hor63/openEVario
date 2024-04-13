@@ -34,6 +34,8 @@
 #include <sstream>
 #include <typeinfo>
 
+#include "fmt/format.h"
+
 #include "drivers/DriverBase.h"
 
 namespace openEV::drivers {
@@ -76,18 +78,19 @@ void DriverBase::driverThreadEntry (DriverBase* tis) {
 		tis->driverThreadFunction();
 	}
 	catch (std::exception &e) {
-		std::ostringstream str;
-		str << "Uncaught exception in driver/instance "
-				<< tis->driverName << ":" << tis->instanceName
-				<< ". Message = " << e.what();
-		LOG4CXX_ERROR(tis->logger,str.str());
+		LOG4CXX_ERROR(tis->logger,fmt::format (_(
+				"Uncaught exception in driver/instance \"{0}\"/\"{1}\". Message = {2}"),
+				tis->driverName, tis->instanceName, e.what()));
 	}
 	catch (...) {
-		std::ostringstream str;
-		str << "Uncaught unknown exception in driver/instance "
-				<< tis->driverName << ":" << tis->instanceName;
-		LOG4CXX_ERROR(tis->logger,str.str());
+		LOG4CXX_ERROR(tis->logger,fmt::format (_(
+				"Uncaught exception from unknown class/type in driver/instance \"{0}\"/\"{1}\""),
+				tis->driverName, tis->instanceName));
 	}
+
+	LOG4CXX_INFO(tis->logger,fmt::format (_(
+			"Driver/instance \"{0}\"/\"{1}\" left the driver thread function. The instance is now defunct."),
+			tis->driverName, tis->instanceName));
 
 	tis->isDriverThreadRunning = false;
 	tis->stopDriverThread = false;
@@ -163,23 +166,23 @@ void DriverBase::updateAndWriteCalibrationData() {
 		std::ofstream of(calibrationDataUpdateFileName,of.out | of.trunc);
 		if (!of.good()) {
 			auto err = errno;
-			std::ostringstream str;
-
-			str << __PRETTY_FUNCTION__ << ": Cannot open calibration update file \"" << calibrationDataUpdateFileName
-					<< " for driver instance " << instanceName
-					<< "\". Error: " << strerror(err);
-			throw GliderVarioDriverCalibrationFileException(__FILE__, __LINE__, str.str().c_str());
+			auto str = fmt::format(_(
+					"Cannot open calibration update file \"{0}\" for driver instance \"{1}\". Error: {2}"),
+					calibrationDataUpdateFileName, instanceName, strerror(err));
+			throw GliderVarioDriverCalibrationFileException(__FILE__, __LINE__, str.c_str());
 		}
 		calibrationDataParameters->writeOut(of);
 	} catch (std::exception const &e) {
-		LOG4CXX_ERROR(logger,"Error in " << __PRETTY_FUNCTION__
-				<< " for driver instance " << instanceName
-				<< ". Error = " << e.what());
+		LOG4CXX_ERROR(logger,fmt::format(_(
+				"Error in {0} for driver instance \"{1}\". Error = {2}"),
+				__PRETTY_FUNCTION__, instanceName, e.what()));
+		LOG4CXX_ERROR(logger,_("Disable further calibration data updates."));
+		doCyclicUpdateCalibrationDataFile = false;
 	}
 	catch (...) {
-		LOG4CXX_ERROR(logger,"Error in " << __PRETTY_FUNCTION__
-				<< " for driver instance " << instanceName
-				<< ". Unknown exception. Disable further calibration data updates.");
+		LOG4CXX_ERROR(logger,fmt::format(_(
+				"Error in {0} for driver instance {1}. Unknown exception."),__PRETTY_FUNCTION__,instanceName));
+		LOG4CXX_ERROR(logger,_("Disable further calibration data updates."));
 		// Something went completely wrong
 		doCyclicUpdateCalibrationDataFile = false;
 	}
@@ -187,21 +190,19 @@ void DriverBase::updateAndWriteCalibrationData() {
 }
 
 void DriverBase::applyCalibrationData() {
-	LOG4CXX_WARN(logger, "Cannot apply calibration data from file \""
-			<< calibrationDataFileName
-			<< "\" to device \"" << instanceName
-			<< "\". Driver \"" << driverName
-			<< "\" does not implement reading of calibration data.");
+	LOG4CXX_WARN(logger, fmt::format(_(
+			"Cannot apply calibration data from file \"{0}\" to device \"{1}\"."
+			"Driver \"{2}\" does not implement reading of calibration data."),
+			calibrationDataFileName, instanceName, driverName));
 
 	useCalibrationDataFile = false;
 }
 void DriverBase::fillCalibrationDataParameters () {
-	LOG4CXX_WARN(logger, "Cannot read calibration data from device \""
-			<< instanceName
-			<< "\" for writing to update calibration data file \""
-			<< calibrationDataUpdateFileName
-			<< "\". Driver \"" << driverName
-			<< "\" does not implement reading of calibration data.");
+	LOG4CXX_WARN(logger, fmt::format(_(
+			"Cannot read calibration data from device \"{0}\""
+			" for writing to update calibration data file \"{1}\"."
+			" Driver \"{2}\" does not implement reading of calibration data."),
+			instanceName,calibrationDataUpdateFileName,driverName));
 
 	doCyclicUpdateCalibrationDataFile = false;
 }
@@ -210,43 +211,44 @@ void DriverBase::readCalibrationData() {
 
 	if (useCalibrationDataFile || doCyclicUpdateCalibrationDataFile) {
 
-		std::string lCalibDataFileName;
+		std::string locCalibDataFileName;
 
 		LOG4CXX_DEBUG(logger,__FUNCTION__
 				<< ": calibrationDataUpdateFileName = " << calibrationDataUpdateFileName
 				<< ", calibrationDataFileName = " << calibrationDataFileName);
 
 		if (loadCalibrationDataUpdateFileBeforeStatic && !calibrationDataUpdateFileName.empty()) {
-			lCalibDataFileName = calibrationDataUpdateFileName;
+			locCalibDataFileName = calibrationDataUpdateFileName;
 		} else {
-			lCalibDataFileName = calibrationDataFileName;
+			locCalibDataFileName = calibrationDataFileName;
 		}
 
-		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Calibration file name = " << lCalibDataFileName);
+		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Calibration file name = " << locCalibDataFileName);
 
-		calibrationDataParameters = std::unique_ptr<Properties4CXX::Properties>(new Properties4CXX::Properties(lCalibDataFileName));
+		calibrationDataParameters = std::unique_ptr<Properties4CXX::Properties>(new Properties4CXX::Properties(locCalibDataFileName));
 
 	// Read the calibration data file, and extract the initial parameters
 		try {
 			// Nest another try-catch block in case that both initial and update file names are defined.
 			try {
 				calibrationDataParameters->readConfiguration();
-				LOG4CXX_INFO(logger,"Read from calibration data file " << lCalibDataFileName);
+				LOG4CXX_INFO(logger,fmt::format(_("Read from calibration data file \"{0}\""),locCalibDataFileName));
 			} catch (std::exception const &e) {
 				if (useCalibrationDataFile && !calibrationDataUpdateFileName.empty()) {
 					// Both file names are defined. So one more try left.
-					std::string failedFileName = lCalibDataFileName;
+					std::string failedFileName = locCalibDataFileName;
 					if (loadCalibrationDataUpdateFileBeforeStatic) {
-						lCalibDataFileName = calibrationDataFileName;
+						locCalibDataFileName = calibrationDataFileName;
 					} else {
-						lCalibDataFileName = calibrationDataUpdateFileName;
+						locCalibDataFileName = calibrationDataUpdateFileName;
 					}
-					LOG4CXX_INFO(logger,"Cannot read configuration data from file "<< failedFileName
-							<< ". Trying alternative" << lCalibDataFileName);
+					LOG4CXX_INFO(logger,fmt::format(_(
+							"Cannot read calibration data from file \"{0}\". Trying alternative {1}"),
+							failedFileName, locCalibDataFileName));
 					// Re-create an empty set of calibration data and try to read the other file.
-					calibrationDataParameters = std::unique_ptr<Properties4CXX::Properties>(new Properties4CXX::Properties(lCalibDataFileName));
+					calibrationDataParameters = std::unique_ptr<Properties4CXX::Properties>(new Properties4CXX::Properties(locCalibDataFileName));
 					calibrationDataParameters->readConfiguration();
-					LOG4CXX_INFO(logger,"Read from alternative calibration data file " << lCalibDataFileName);
+					LOG4CXX_INFO(logger,fmt::format(_("Read from alternative calibration data file \"{0}\""), locCalibDataFileName));
 				} else {
 					// The end of trying to reading the configuration data.
 					throw;
@@ -254,11 +256,11 @@ void DriverBase::readCalibrationData() {
 
 			}
 		} catch (std::exception const &e) {
-			LOG4CXX_WARN(logger,"Device " << instanceName
-					<< ": Error reading calibration data from file " << lCalibDataFileName
-					<< ": " << e.what());
-			LOG4CXX_WARN(logger,"Device " << instanceName
-					<< ": Using builtin default calibration data");
+			LOG4CXX_WARN(logger,fmt::format(_(
+					"Device instance \"{0}\": Error reading calibration data from file \"{1}\": {2}"),
+					instanceName, locCalibDataFileName,e.what()));
+			LOG4CXX_WARN(logger,fmt::format(_(
+					"Device instance \"{0}\": Using builtin default calibration data"),instanceName));
 			// Re-create empty calibration data.
 			calibrationDataParameters = std::unique_ptr<Properties4CXX::Properties>(new Properties4CXX::Properties());
 		}
@@ -272,26 +274,6 @@ void DriverBase::readCalibrationData() {
 
 void DriverBase::readCommonConfiguration(
 			const Properties4CXX::Properties &configuration) {
-
-	try {
-		auto portNameConfig = configuration.searchProperty("portName");
-
-		if (portNameConfig->isList() || portNameConfig->isStruct()) {
-			throw GliderVarioFatalConfigException(__FILE__,__LINE__,"Configuration variable \"PortName\" is a struct or a string list.");
-		}
-
-		portName = portNameConfig->getStringValue();
-
-	} catch (std::exception const& e) {
-		// A not found port name is not necessary issue since not all drivers require it.
-		// A missing port name is dealt with later in the driver when necessary.
-		if (typeid(e) != typeid(Properties4CXX::ExceptionPropertyNotFound)) {
-			LOG4CXX_ERROR(logger, "Read configuration of portName \"" << portName
-					<< "\" failed:"
-					<< e.what());
-		throw;
-		}
-	}
 
 	try {
 		long long durTicks;
@@ -347,18 +329,14 @@ void DriverBase::readCommonConfiguration(
 				loadCalibrationDataUpdateFileBeforeStatic);
 
 	} catch (std::exception const& e) {
-		std::ostringstream str;
+		auto str = fmt::format(_("Error reading configuration of device instance \"{0}\": {1}"),instanceName, e.what());
 
-		str << "Read configuration of device \"" << instanceName
-				<< "\" failed:"
-				<< e.what();
-
-		LOG4CXX_ERROR(logger, str.str().c_str());
-		throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
+		LOG4CXX_ERROR(logger, str);
+		throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.c_str());
 	}
 
 
-	LOG4CXX_INFO (logger,__FUNCTION__ << " for device \"" << instanceName << "\":");
+	LOG4CXX_INFO (logger,fmt::format(_("Common parameters of driver instance \"{0}\":"),instanceName));
 	LOG4CXX_INFO (logger,"\t portName = " << portName);
 	LOG4CXX_INFO (logger,"\t updateCyle = " << (std::chrono::duration_cast<std::chrono::milliseconds>(updateCyle).count()) << "ms");
 	LOG4CXX_INFO (logger,"\t errorTimeout = " << (std::chrono::duration_cast<std::chrono::seconds>(errorTimeout).count()) << "s");
