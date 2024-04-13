@@ -199,8 +199,8 @@ static void usage(std::ostream& outStr){
 static int readOptions (int& argc, char*argv[],openEV::ProgramOptions &programOptions) {
     int rc = 0;
 
-    static std::string configFileDoc = fmt::format(_("Name of the configuration file [{1}]"),defaultConfigFileName);
-    static std::string loggerConfigFileDoc = fmt::format(_("Name of logger configuration file [{1}]"),defaultLoggerConfigFileName);
+    static std::string configFileDoc = fmt::format(_("Name of the configuration file [{0}]"),defaultConfigFileName);
+    static std::string loggerConfigFileDoc = fmt::format(_("Name of logger configuration file [{0}]"),defaultLoggerConfigFileName);
 
     static struct argp_option options[] = {
       {"configuration",        'c', "configFileName",   0, configFileDoc.c_str(),0},
