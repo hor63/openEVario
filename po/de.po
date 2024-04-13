@@ -3,11 +3,13 @@
 # This file is distributed under the same license as the openEVario package.
 # Kai Horstmann <horstmannkai@hotmail.com>, 2024.
 #
+# Hint for German Anführungszeichen use these: „“
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: openEVario 0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/hor63/openEVario/issues\n"
-"POT-Creation-Date: 2024-04-10 11:37+0200\n"
+"POT-Creation-Date: 2024-04-13 17:48+0200\n"
 "PO-Revision-Date: 2024-04-09 16:05+0200\n"
 "Last-Translator: Kai Horstmann <horstmannkai@hotmail.com>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
@@ -126,12 +128,14 @@ msgstr ""
 #: src/main/GliderVarioMainPriv.cpp:209
 msgid ""
 "Shhhh. Be quiet. Suppress any logger output, i.e. set logger level to Silent"
-msgstr "Pssst. Sei leise. Unterdrückt alle Loggerausgaben"
+msgstr ""
+"Pssst. Sei leise. Unterdrückt alle Loggerausgaben, d.h. setzt die "
+"Loggerebene auf „Leise“"
 
 #: src/main/GliderVarioMainPriv.cpp:264
 msgid "Try \"{0} --help\" or \"{1} --usage\" for more information."
 msgstr ""
-"Versuche “{0} --help” oder “{1} --usage” um mehr Informationen zu erhalten."
+"Versuche „{0} --help“ oder „{1} --usage“ um mehr Informationen zu erhalten."
 
 #: src/main/GliderVarioMainPriv.cpp:270
 msgid "{0}: getopt_long returned unexpected value {1}. Program aborting"
@@ -146,14 +150,14 @@ msgstr "{0}, Version {1} startet."
 #: src/main/GliderVarioMainPriv.cpp:440
 msgid "Error reading the configuration from file \"{0}\" is: {1}"
 msgstr ""
-"Ein Fehler trat beim Lesen der Konfiguration aus Datei “{0}” auf. Der Fehler "
+"Ein Fehler trat beim Lesen der Konfiguration aus Datei „{0}“ auf. Der Fehler "
 "ist: {1}"
 
 #: src/main/GliderVarioMainPriv.cpp:451
 msgid ""
 "Property \"terminateOnDriverLoadError\" is not boolean. Use default value {0}"
 msgstr ""
-"Parameter “terminateOnDriverLoadError” ist kein Boolean-Typ. Standardwert "
+"Parameter „terminateOnDriverLoadError“ ist kein Boolean-Typ. Standardwert "
 "{0} wird benutzt"
 
 #: src/main/GliderVarioMainPriv.cpp:465
@@ -161,7 +165,7 @@ msgid ""
 "Property \"idlePredictionCycle\" is not double or integer. Use default value "
 "{0}ms"
 msgstr ""
-"Parameter “idlePredictionCycle” ist weder vom Typ Double noch Integer. "
+"Parameter „idlePredictionCycle“ ist weder vom Typ Double noch Integer. "
 "Standardwert {0}ms wird verwendet"
 
 #: src/main/GliderVarioMainPriv.cpp:479
@@ -169,9 +173,139 @@ msgid ""
 "Property \"maxTimeBetweenPredictionAndMeasurementUpdate\" is not double or "
 "integer. Use default value {0}ms"
 msgstr ""
-"Parameter “maxTimeBetweenPredictionAndMeasurementUpdate” ist weder vom Typ "
+"Parameter „maxTimeBetweenPredictionAndMeasurementUpdate“ ist weder vom Typ "
 "Double noch Integer. Standardwert {0}ms wird verwendet"
 
+#: src/main/GliderVarioMainPriv.cpp:952
+msgid "{0}: currentStatus->getStatusVector_x()({1}) is not initialized."
+msgstr "{0}: currentStatus->getStatusVector_x()({1}) ist nicht initialisiert."
+
+#: src/main/GliderVarioMainPriv.cpp:961
+msgid ""
+"{0}: currentStatus->getErrorCovariance_P().coeffRef({1},{2}) is not "
+"initialized."
+msgstr ""
+"{0}: currentStatus->getErrorCovariance_P().coeffRef({1},{2}) ist nicht "
+"initialisiert."
+
+#: src/main/GliderVarioMainPriv.cpp:970
+msgid ""
+"{0}: urrentStatus->getSystemNoiseCovariance_Q().coeffRef({1},{2}) is not "
+"initialized."
+msgstr ""
+"{0}: urrentStatus->getSystemNoiseCovariance_Q().coeffRef({1},{2}) ist nicht "
+"initialisiert."
+
+#: src/main/GliderVarioDriverList.cpp:65
+msgid "Adding new driver \"{0}\": {1}"
+msgstr "Füge neuen Treiber „{0}“ hinzu; Beschreibung: {1}"
+
+#: src/main/GliderVarioDriverList.cpp:79 src/main/GliderVarioDriverList.cpp:134
+msgid "Error searching mandatory configuration parameter \"{0}\": {1}"
+msgstr "Fehler beim Suchen nach obligatorischen Parameter „{0}“: {1}"
+
+#: src/main/GliderVarioDriverList.cpp:85 src/main/GliderVarioDriverList.cpp:140
+msgid "Configuration does not contain mandatory parameter \"{0}\""
+msgstr "Der obligatorische Parameter „{0}“ fehlt in der Konfiguration"
+
 #: src/main/GliderVarioDriverList.cpp:91
-msgid "Driver libraries are :"
-msgstr "Liste der Treiberbibliotheken: "
+msgid "List of dynamically loaded driver libraries : {0}"
+msgstr "Liste der dynamisch geladenen Treiberbiblotheken: {0}"
+
+#: src/main/GliderVarioDriverList.cpp:117
+#: src/main/GliderVarioDriverList.cpp:175
+msgid "Configuration variable \"{0}\" is neither a string nor a string list"
+msgstr ""
+"Konfigurationparameter „{0}“ ist weder ein String noch eine Stringliste."
+
+#: src/main/GliderVarioDriverList.cpp:162
+#: src/main/GliderVarioDriverList.cpp:167
+msgid "Failed to create device \"{0}\" because: {1}"
+msgstr "Gerät „{0}“ kann nicht erzeugt werden wegen: {1}"
+
+#: src/main/GliderVarioDriverList.cpp:163
+#: src/main/GliderVarioDriverList.cpp:382
+msgid "Program will be terminated."
+msgstr "Programm wird beendet."
+
+#: src/main/GliderVarioDriverList.cpp:164
+#: src/main/GliderVarioDriverList.cpp:383
+msgid "Bye bye!"
+msgstr "Tschüß!"
+
+#: src/main/GliderVarioDriverList.cpp:168
+#: src/main/GliderVarioDriverList.cpp:387
+msgid "Deleting device \"{0}\" from the device list"
+msgstr "Lösche Gerät „{0}“ von der Geräteliste."
+
+#: src/main/GliderVarioDriverList.cpp:190
+msgid "Loading driver library \"{0}\""
+msgstr "Lade Treiberbibliothek „{0}“"
+
+#: src/main/GliderVarioDriverList.cpp:202
+#: src/main/GliderVarioDriverList.cpp:220
+#: src/main/GliderVarioDriverList.cpp:242
+msgid "No error information available"
+msgstr "Keine Informationen für den Fehler verfügbar"
+
+#: src/main/GliderVarioDriverList.cpp:205
+msgid "Error loading shared library \"{0}\": {1}"
+msgstr "Fehler beim Laden der dynmischen Bibliothek „{0}“ ist: {1}"
+
+#: src/main/GliderVarioDriverList.cpp:222
+#: src/main/GliderVarioDriverList.cpp:244
+msgid "Error loading symbol \"{0}\" from shared library library \"{1}\": {2}"
+msgstr "Fehler beim Laden von Symbol „{0}“ aus Bibliothek „{1}“ ist: {2}"
+
+#: src/main/GliderVarioDriverList.cpp:261
+msgid "Library \"{0}\" returned NULL for the library object."
+msgstr "Bibliothek „{0}“ lieferte NULL für das Bibliotheksobjekt."
+
+#: src/main/GliderVarioDriverList.cpp:271
+msgid "Obtained library object \"{0}\": {1}"
+msgstr "Bekam Bibliotheksobjekt „{0}“: {1}"
+
+#: src/main/GliderVarioDriverList.cpp:287
+msgid "Loading driver instance \"{0}\""
+msgstr "Lade Treiberinstanz „{0}“"
+
+#: src/main/GliderVarioDriverList.cpp:292
+msgid "Could not find property for driver instance \"{0}\""
+msgstr "Kann Parametersatz für Treiberinstanz „{0}“ nicht finden."
+
+#: src/main/GliderVarioDriverList.cpp:298
+msgid "Property for driver instance \"{0}\" is not a structure"
+msgstr "Parameter für Treiberinstanz „{0}“ ist keine Struktur."
+
+#: src/main/GliderVarioDriverList.cpp:309
+msgid "Could not find property \"{0}\" within structure \"{1}\"."
+msgstr "Kann Parameter „{0}“ in der Struktur „{1}“ nicht finden"
+
+#: src/main/GliderVarioDriverList.cpp:314
+msgid "Driver of driver instance {0} is {1}"
+msgstr "Treiber für Instanz „{0}“ ist „{1}“."
+
+#: src/main/GliderVarioDriverList.cpp:318
+msgid "Driver \"{0}\" for instance {1} does not exist."
+msgstr "Treiber „{0}“ für Treiberinstanz „{1}“ existiert nicht."
+
+#: src/main/GliderVarioDriverList.cpp:331
+msgid "Instance {0} of driver \"{1}\" could not be created."
+msgstr "Kann Instanz „{0}“ für Treiber „{1}“ nicht erzeugen."
+
+#: src/main/GliderVarioDriverList.cpp:338
+msgid "Created driver instance \"{0}\" for driver \"{1}\" from library \"{2}\""
+msgstr "Erzeute Treiberinstanz „{0}“ für Treiber „{1}“ aus Bibliothek „{2}“."
+
+#: src/main/GliderVarioDriverList.cpp:360
+msgid ""
+"Driver instance \"{0}\" implements the idle loop. Another driver implements "
+"the idle loop too."
+msgstr ""
+"Treiberinstanz „{0}“ implementiert die Idle-Scheife. Ein andere "
+"Treiberinstanz implmentiert diese Schleife bereits."
+
+#: src/main/GliderVarioDriverList.cpp:381
+#: src/main/GliderVarioDriverList.cpp:386
+msgid "Failed to initialize device \"{0}\" because: {1}"
+msgstr "Gerät „{0}“ kann nicht initialisiert werden wegen: {1}"

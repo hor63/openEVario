@@ -172,9 +172,9 @@ void GliderVarioDriverList::loadDriverInstances(Properties4CXX::Properties const
 				nameIter++;
 			}
 		} else {
-			const char* str = _("Configuration variable \"drivers\" is neither a string nor a string list");
+			auto str = fmt::format(_("Configuration variable \"{0}\" is neither a string nor a string list"),"drivers");
 			LOG4CXX_FATAL(logger,str);
-			throw GliderVarioFatalConfigException(__FILE__,__LINE__,str);
+			throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.c_str());
 		}
 	}
 
@@ -187,7 +187,7 @@ void GliderVarioDriverList::loadDriverLib(const char* driverLibName) {
 	char const* errStr = NULL;
 	DriverLibListItem listItem;
 
-	LOG4CXX_INFO(logger,"Loading driver library \"" << driverLibName << "\"");
+	LOG4CXX_INFO(logger,fmt::format(_("Loading driver library \"{0}\""),driverLibName));
 
 	listItem.shLibName = driverLibName;
 	// Clear the error information before calling dlopen.
@@ -378,13 +378,13 @@ void GliderVarioDriverList::initDrivers (GliderVarioMainPriv &varioMain) {
 		} catch (std::exception const &e) {
 
 			if (programOptions.terminateOnDriverLoadError) {
-				LOG4CXX_FATAL(logger,"Failed to initialize device \"" << iter->second->getInstanceName() << "\" because: " << e.what());
-				LOG4CXX_FATAL(logger,"Program will be terminated.");
-				LOG4CXX_FATAL(logger,"Bye bye!");
+				LOG4CXX_FATAL(logger,fmt::format(_("Failed to initialize device \"{0}\" because: {1}"),iter->second->getInstanceName(), e.what()));
+				LOG4CXX_FATAL(logger,_("Program will be terminated."));
+				LOG4CXX_FATAL(logger,_("Bye bye!"));
 				throw;
 			} else {
-				LOG4CXX_ERROR(logger,"Failed to initialize device \"" << iter->second->getInstanceName() << "\" because: " << e.what());
-				LOG4CXX_ERROR(logger,"Delete device \"" << iter->second->getInstanceName() << "\" from the device list");
+				LOG4CXX_ERROR(logger,fmt::format(_("Failed to initialize device \"{0}\" because: {1}"),iter->second->getInstanceName(), e.what()));
+				LOG4CXX_ERROR(logger,fmt::format(_("Deleting device \"{0}\" from the device list"),iter->second->getInstanceName()));
 				auto delIter = iter;
 				iter ++;
 
