@@ -29,8 +29,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openEVario 0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/hor63/openEVario/issues\n"
-"POT-Creation-Date: 2024-04-13 21:40+0200\n"
-"PO-Revision-Date: 2024-04-13 21:40+0200\n"
+"POT-Creation-Date: 2024-04-15 22:00+0200\n"
+"PO-Revision-Date: 2024-04-15 22:00+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: en@quot\n"
@@ -47,7 +47,7 @@ msgid ""
 "                                         Name of the configuration file "
 "[{0}]\n"
 "              -d, --debug                Increase default logger level\n"
-"                                         (Silent-[Error]-Info-Debug)\n"
+"                                         (Silent-[Error]-Info-Debug-Trace)\n"
 "              -l, --logger-configuration=loggerConfigFile\n"
 "                                         Name of logger configuration file\n"
 "                                         [{1}]\n"
@@ -71,7 +71,7 @@ msgstr ""
 "                                         Name of the configuration file "
 "[{0}]\n"
 "              -d, --debug                Increase default logger level\n"
-"                                         (Silent-[Error]-Info-Debug)\n"
+"                                         (Silent-[Error]-Info-Debug-Trace)\n"
 "              -l, --logger-configuration=loggerConfigFile\n"
 "                                         Name of logger configuration file\n"
 "                                         [{1}]\n"
@@ -97,7 +97,7 @@ msgid ""
 "                                         Name of the configuration file "
 "[{0}]\n"
 "              -d                         Increase default logger level\n"
-"                                         (Silent-[Error]-Info-Debug)\n"
+"                                         (Silent-[Error]-Info-Debug-Trace)\n"
 "              -l loggerConfigFile        Name of logger configuration file\n"
 "                                         [{1}]\n"
 "              -q, -s                     Shhhh. Be quiet. Suppress any "
@@ -115,7 +115,7 @@ msgstr ""
 "                                         Name of the configuration file "
 "[{0}]\n"
 "              -d                         Increase default logger level\n"
-"                                         (Silent-[Error]-Info-Debug)\n"
+"                                         (Silent-[Error]-Info-Debug-Trace)\n"
 "              -l loggerConfigFile        Name of logger configuration file\n"
 "                                         [{1}]\n"
 "              -q, -s                     Shhhh. Be quiet. Suppress any "
@@ -136,8 +136,8 @@ msgid "Name of logger configuration file [{0}]"
 msgstr "Name of logger configuration file [{0}]"
 
 #: src/main/GliderVarioMainPriv.cpp:208
-msgid "Increase default logger level (Silent-[Error]-Info-Debug)"
-msgstr "Increase default logger level (Silent-[Error]-Info-Debug)"
+msgid "Increase default logger level (Silent-[Error]-Info-Debug-Trace)"
+msgstr "Increase default logger level (Silent-[Error]-Info-Debug-Trace)"
 
 #: src/main/GliderVarioMainPriv.cpp:209
 msgid ""
@@ -153,21 +153,21 @@ msgstr "Try “{0} --help” or “{1} --usage” for more information."
 msgid "{0}: getopt_long returned unexpected value {1}. Program aborting"
 msgstr "{0}: getopt_long returned unexpected value {1}. Program aborting"
 
-#: src/main/GliderVarioMainPriv.cpp:377
+#: src/main/GliderVarioMainPriv.cpp:381
 msgid "{0}, version {1} starting up."
 msgstr "{0}, version {1} starting up."
 
-#: src/main/GliderVarioMainPriv.cpp:440
+#: src/main/GliderVarioMainPriv.cpp:444
 msgid "Error reading the configuration from file \"{0}\" is: {1}"
 msgstr "Error reading the configuration from file “{0}” is: {1}"
 
-#: src/main/GliderVarioMainPriv.cpp:451
+#: src/main/GliderVarioMainPriv.cpp:455
 msgid ""
 "Property \"terminateOnDriverLoadError\" is not boolean. Use default value {0}"
 msgstr ""
 "Property “terminateOnDriverLoadError” is not boolean. Use default value {0}"
 
-#: src/main/GliderVarioMainPriv.cpp:465
+#: src/main/GliderVarioMainPriv.cpp:469
 msgid ""
 "Property \"idlePredictionCycle\" is not double or integer. Use default value "
 "{0}ms"
@@ -175,7 +175,7 @@ msgstr ""
 "Property “idlePredictionCycle” is not double or integer. Use default value "
 "{0}ms"
 
-#: src/main/GliderVarioMainPriv.cpp:479
+#: src/main/GliderVarioMainPriv.cpp:483
 msgid ""
 "Property \"maxTimeBetweenPredictionAndMeasurementUpdate\" is not double or "
 "integer. Use default value {0}ms"
@@ -183,11 +183,11 @@ msgstr ""
 "Property “maxTimeBetweenPredictionAndMeasurementUpdate” is not double or "
 "integer. Use default value {0}ms"
 
-#: src/main/GliderVarioMainPriv.cpp:952
+#: src/main/GliderVarioMainPriv.cpp:956
 msgid "{0}: currentStatus->getStatusVector_x()({1}) is not initialized."
 msgstr "{0}: currentStatus->getStatusVector_x()({1}) is not initialized."
 
-#: src/main/GliderVarioMainPriv.cpp:961
+#: src/main/GliderVarioMainPriv.cpp:965
 msgid ""
 "{0}: currentStatus->getErrorCovariance_P().coeffRef({1},{2}) is not "
 "initialized."
@@ -195,7 +195,7 @@ msgstr ""
 "{0}: currentStatus->getErrorCovariance_P().coeffRef({1},{2}) is not "
 "initialized."
 
-#: src/main/GliderVarioMainPriv.cpp:970
+#: src/main/GliderVarioMainPriv.cpp:974
 msgid ""
 "{0}: urrentStatus->getSystemNoiseCovariance_Q().coeffRef({1},{2}) is not "
 "initialized."

@@ -44,7 +44,8 @@ namespace openEV {
 	     * 0: Quiet. No output at all
 	     * 1: Errors are reported
 	     * 2: Info. Major events and activities
-	     * 3: Debug. Be really chatty
+	     * 3: Debug. Be chatty
+	     * 4: Trace. Be a total gossip
 	     */
 	    int defaultLoggerLevel = 2; // Default level info.
 	    bool terminateOnDriverLoadError = true;

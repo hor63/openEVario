@@ -94,7 +94,7 @@ parse_opt (int key, char *arg, struct argp_state *state)
           break;
         case 'd':
           programOptions.defaultLoggerLevel ++;
-          if (programOptions.defaultLoggerLevel > 3) {programOptions.defaultLoggerLevel = 3;}
+          if (programOptions.defaultLoggerLevel > 4) {programOptions.defaultLoggerLevel = 4;}
           break;
         case 'c':
           programOptions.configFileName = arg;
@@ -143,7 +143,7 @@ static void usage(std::ostream& outStr){
     				"              -c, --configuration=configFileName\n"
     				"                                         Name of the configuration file [{0}]\n"
     				"              -d, --debug                Increase default logger level\n"
-    				"                                         (Silent-[Error]-Info-Debug)\n"
+    				"                                         (Silent-[Error]-Info-Debug-Trace)\n"
     				"              -l, --logger-configuration=loggerConfigFile\n"
     				"                                         Name of logger configuration file\n"
     				"                                         [{1}]\n"
@@ -168,7 +168,7 @@ static void usage(std::ostream& outStr){
     				"              -c configFileName\n"
     				"                                         Name of the configuration file [{0}]\n"
     				"              -d                         Increase default logger level\n"
-    				"                                         (Silent-[Error]-Info-Debug)\n"
+    				"                                         (Silent-[Error]-Info-Debug-Trace)\n"
     				"              -l loggerConfigFile        Name of logger configuration file\n"
     				"                                         [{1}]\n"
     				"              -q, -s                     Shhhh. Be quiet. Suppress any logger output,\n"
@@ -205,7 +205,7 @@ static int readOptions (int& argc, char*argv[],openEV::ProgramOptions &programOp
     static struct argp_option options[] = {
       {"configuration",        'c', "configFileName",   0, configFileDoc.c_str(),0},
       {"logger-configuration", 'l', "loggerConfigFile", 0, loggerConfigFileDoc.c_str(),0},
-      {"debug",                'd', 0,                  0, _("Increase default logger level (Silent-[Error]-Info-Debug)"),0},
+      {"debug",                'd', 0,                  0, _("Increase default logger level (Silent-[Error]-Info-Debug-Trace)"),0},
       {"quiet",                'q', 0,                  0, _("Shhhh. Be quiet. Suppress any logger output, i.e. set logger level to Silent"),0},
       {"silent",               's', 0,                  OPTION_ALIAS, 0 ,0},
       {0,0,0,0,0,0}
@@ -243,7 +243,7 @@ static int readOptions (int& argc, char*argv[],openEV::ProgramOptions &programOp
                break;
              case 'd':
                programOptions.defaultLoggerLevel ++;
-               if (programOptions.defaultLoggerLevel > 3) {programOptions.defaultLoggerLevel = 3;}
+               if (programOptions.defaultLoggerLevel > 4) {programOptions.defaultLoggerLevel = 4;}
                break;
              case 'c':
                programOptions.configFileName = optarg;
@@ -362,6 +362,10 @@ void GliderVarioMainPriv::startup () {
 
 		case 3:
 			rootLogger->setLevel(log4cxx::Level::getDebug());
+			break;
+
+		case 4:
+			rootLogger->setLevel(log4cxx::Level::getTrace());
 			break;
 
 		case 2:
