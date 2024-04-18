@@ -269,10 +269,10 @@ public:
 
 };
 
-class OEV_UTILS_PUBLIC GliderVarioPortDontExistException :public GliderVarioPortIOException {
+class OEV_UTILS_PUBLIC GliderVarioPortDeviceDontExistException :public GliderVarioPortIOException {
 public:
 	/// \see GliderVarioPortIOException::GliderVarioPortIOException()
-	GliderVarioPortDontExistException (
+	GliderVarioPortDeviceDontExistException (
 			char const *source,
 			int line,
 			char const *description,
