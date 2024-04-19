@@ -239,8 +239,9 @@ class OEV_UTILS_PUBLIC GliderVarioPortBufferTooSmallForDatagramException :public
 public:
 	GliderVarioPortBufferTooSmallForDatagramException (
 			char const *source,
-			int line)
-		:GliderVarioPortException {source,line,"Buffer too small for datagram."}
+			int line,
+			char const *description)
+		:GliderVarioPortException {source,line,description}
 	{}
 
 };

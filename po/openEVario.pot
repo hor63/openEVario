@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openEVario 0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/hor63/openEVario/issues\n"
-"POT-Creation-Date: 2024-04-15 22:00+0200\n"
+"POT-Creation-Date: 2024-04-19 12:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -317,4 +317,86 @@ msgstr ""
 
 #: src/main/driverBase/DriverBase.cpp:339
 msgid "Common parameters of driver instance \"{0}\":"
+msgstr ""
+
+#: src/util/io/PortBase.cpp:96
+msgid "Port type \"{0}\" is defined more than once"
+msgstr ""
+
+#: src/util/io/PortBase.cpp:108
+msgid "{0} with portName={1}, portType={2}"
+msgstr ""
+
+#: src/util/io/PortBase.cpp:113
+msgid "Port \"{0}\" is defined more than once"
+msgstr ""
+
+#: src/util/io/PortBase.cpp:137
+msgid "Type \"{0}\" of port \"{1}\" does not exist."
+msgstr ""
+
+#: src/util/io/PortBase.cpp:139 src/util/io/PortBase.cpp:147
+#: src/util/io/PortBase.cpp:151
+msgid "  Port \"{0}\" will not be created."
+msgstr ""
+
+#: src/util/io/PortBase.cpp:146
+msgid "Port \"{0}\" has no \"type\" property."
+msgstr ""
+
+#: src/util/io/PortBase.cpp:150
+msgid "Port configuration property \"{0}\" is not a structure."
+msgstr ""
+
+#: src/util/io/PortBase.cpp:171
+msgid "Port \"{0}\" was successfully created and configured."
+msgstr ""
+
+#: src/util/io/PortBase.cpp:172
+msgid "  deviceName = \"{0}\"."
+msgstr ""
+
+#: src/util/io/PortBase.cpp:173
+msgid "  blocking = {0}"
+msgstr ""
+
+#: src/util/io/PortBase.cpp:196
+msgid "Exception when configuring port \"{0)\" in source {1} at line {2}: {3}"
+msgstr ""
+
+#: src/util/io/PortBase.cpp:201
+msgid "Exception when configuring port \"{0)\" : {1}"
+msgstr ""
+
+#: src/util/io/PortBase.cpp:207
+msgid "Property \"IOPorts\" is not a structure. No I/O ports will be created."
+msgstr ""
+
+#: src/util/io/PortBase.cpp:210
+msgid ""
+"Properties section \"IOPorts\" does not exist. No I/O ports will be created."
+msgstr ""
+
+#: src/util/io/PortBase.cpp:220
+msgid "{0}: Cannot find IO port \"{1}\""
+msgstr ""
+
+#: src/util/io/PortBase.cpp:243
+msgid "Port {0} of type {1}: Opened port device \"{2}\""
+msgstr ""
+
+#: src/util/io/PortBase.cpp:255
+msgid "Port {0} of type {1}: Cannot open device \"{2}\""
+msgstr ""
+
+#: src/util/io/PortBase.cpp:256
+msgid "Port {0} of type {1}: Cannot open device \"{2}\". errno = {3}: {4}"
+msgstr ""
+
+#: src/util/io/PortBase.cpp:268
+msgid "Port {0} of type {1}: Opened device \"{2}\""
+msgstr ""
+
+#: src/util/io/PortBase.cpp:279
+msgid "Port {0} of type {1}: Closed device \"{2}\""
 msgstr ""

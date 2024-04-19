@@ -31,6 +31,8 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
+#include "fmt/format.h"
+
 #include "util/io/DatagramPort.h"
 
 #if defined HAVE_LOG4CXX_H
@@ -89,22 +91,23 @@ ssize_t DatagramPort::recv(uint8_t *buffer, size_t bufLen) {
 				ret = 0;
 				break;
 			default:
-				std::ostringstream str;
-
-				str << "Port" << getPortName() << ':' << getPortType() << ": Recv error " << err << ":" << strerror(err);
-				LOG4CXX_ERROR (logger,str.str());
-				throw GliderVarioPortReadException(__FILE__,__LINE__,str.str().c_str(),err);
+				auto str = fmt::format(_("Port \"{0}\" of type \"{1}\": {4} error {2}: {3}"),
+						getPortName(), getPortType(), err, strerror(err),"recv()");
+				LOG4CXX_ERROR (logger,str);
+				throw GliderVarioPortReadException(__FILE__,__LINE__,str.c_str(),err);
 			}
 		}
 
 	} while (err == EINTR);
 
-	if (ret > ssize_t(bufLen)) {
+	if (ret > static_cast<ssize_t>(bufLen)) {
 		// The datagram was longer than the available buffer. This the message is truncated.
 		// This is not acceptable for the sake of data integrity.
-		LOG4CXX_ERROR(logger,"Port" << getPortName() << ':' << getPortType() << ": Buffer too small for the datagram."
-				" Buffer length = " << bufLen << ", datagram length = " << ret);
-		throw GliderVarioPortBufferTooSmallForDatagramException(__FILE__,__LINE__);
+		auto str = fmt::format(_("Port \"{0} of type \"{1}\": Buffer too small for the datagram."
+				" Buffer length = {2}, datagram length = {3}."),
+				getPortName(), getPortType(),bufLen,ret);
+		LOG4CXX_ERROR(logger,str);
+		throw GliderVarioPortBufferTooSmallForDatagramException(__FILE__,__LINE__,str.c_str());
 	}
 
 	LOG4CXX_DEBUG(logger,"DatagramPort::recv: ret = " << ret);
@@ -144,11 +147,10 @@ ssize_t DatagramPort::send(uint8_t *buffer, size_t bufLen) {
 				ret = 0;
 				break;
 			default:
-				std::ostringstream str;
-
-				str << "Port" << getPortName() << ':' << getPortType() << ": send error " << err << ":" << strerror(err);
-				LOG4CXX_ERROR (logger,str.str());
-				throw GliderVarioPortWriteException(__FILE__,__LINE__,str.str().c_str(),err);
+				auto str = fmt::format(_("Port \"{0}\" of type \"{1}\": {4} error {2}: {3}"),
+						getPortName(), getPortType(), err, strerror(err),"send()");
+				LOG4CXX_ERROR (logger,str);
+				throw GliderVarioPortWriteException(__FILE__,__LINE__,str.c_str(),err);
 			}
 		}
 

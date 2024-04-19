@@ -2,3 +2,5 @@
 src/main/GliderVarioMainPriv.cpp
 src/main/GliderVarioDriverList.cpp
 src/main/driverBase/DriverBase.cpp
+src/util/io/PortBase.cpp
+src/util/io/DatagramPort.cpp
