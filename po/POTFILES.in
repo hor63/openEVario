@@ -4,3 +4,4 @@ src/main/GliderVarioDriverList.cpp
 src/main/driverBase/DriverBase.cpp
 src/util/io/PortBase.cpp
 src/util/io/DatagramPort.cpp
+src/util/io/I2CPort.cpp

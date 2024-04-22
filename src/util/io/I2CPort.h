@@ -97,7 +97,7 @@ public:
 	 * If not the entire length can be written an exception is thrown.
 	 *
 	 * To write a single byte or a block to a specific address use this function too.
-	 * Simply incement the data buffer size, and write the register address into byte #0 of \p data.
+	 * Simply increment the data buffer size, and write the register address into byte #0 of \p data.
 	 *
 	 * @param devAddr 7 or 10 bit address (if supported) of the device on the I2C bus
 	 * @param[in] data Pointer to buffer containing data
