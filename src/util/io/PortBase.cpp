@@ -198,7 +198,7 @@ void PortBase::loadPorts(Properties4CXX::Properties const &properties) {
 				}
 				catch (std::exception const& e) {
 					LOG4CXX_ERROR (logger, fmt::format(_(
-							"Exception when configuring port \"{0)\" : {1}"),
+							"Exception when configuring port \"{0}\": {1}"),
 							portPropIter->second->getPropertyName(),e.what()));
 				}
 				portPropIter++;
@@ -240,7 +240,7 @@ void PortBase::open() {
 		status = OPEN;
 	}
 
-	LOG4CXX_INFO(logger,fmt::format(_("Port {0} of type {1}: Opened port device \"{2}\"" ),portName, portType, deviceName));
+	LOG4CXX_INFO(logger,fmt::format(_("Port {0} of type {1} is open." ),portName, portType));
 
 	devHandleMutex.unlock();
 }
