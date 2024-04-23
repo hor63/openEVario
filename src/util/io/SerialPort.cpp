@@ -31,6 +31,8 @@
 #include <sstream>
 #include <cstring>
 
+#include "fmt/format.h"
+
 #include "util/io/SerialPort.h"
 
 #if defined HAVE_LOG4CXX_H
@@ -211,7 +213,6 @@ void SerialPort::openInternal() {
 }
 
 void SerialPort::setupPort() {
-	std::ostringstream errTxt;
 	DeviceHandleAccess devHandleAcc (*this);
 	int rc;
 
@@ -219,19 +220,21 @@ void SerialPort::setupPort() {
 
 	rc = ::isatty(devHandleAcc.deviceHandle);
 	if (rc != 1) {
-		errTxt << getPortName()<< ":" << getDeviceName() << " is not a TTY.";
-		LOG4CXX_ERROR(logger,errTxt.str());
-		throw GliderVarioPortIsNoTTYException (__FILE__,__LINE__,errTxt.str().c_str());
+		auto str = fmt::format(_("Device {1} of port \"{0}\" is not a tty/serial line device"), getPortName(), getDeviceName());
+		LOG4CXX_ERROR(logger,str);
+		throw GliderVarioPortIsNoTTYException (__FILE__,__LINE__,str.c_str());
 	}
 
-	LOG4CXX_DEBUG(logger,getPortName() << " is a TTY. OK");
+	LOG4CXX_DEBUG(logger,getPortName() << ": " << getDeviceName() << " is a TTY. OK");
 
 	memset (&tios,0,sizeof(tios));
 	rc = ::tcgetattr(devHandleAcc.deviceHandle,&tios);
 	if (rc != 0) {
-		errTxt << "Port "<< getPortName() << ": Error tcgetattr: " << ::strerror(rc);
-		LOG4CXX_ERROR(logger,errTxt.str());
-		throw GliderVarioPortIsNoTTYException (__FILE__,__LINE__,errTxt.str().c_str());
+		auto str = fmt::format(_(
+				"Cannot retrieve tty attributes for port \"{0}\", device {1}. tcgetattr error = {2}: {3}"),
+				getPortName(),getDeviceName(),rc,::strerror(rc));
+		LOG4CXX_ERROR(logger,str);
+		throw GliderVarioPortIsNoTTYException (__FILE__,__LINE__,str.c_str());
 	}
 	LOG4CXX_DEBUG(logger,"Read struct termios for port " << getPortName());
 
@@ -393,9 +396,11 @@ void SerialPort::setupPort() {
 
 	rc = ::tcsetattr(devHandleAcc.deviceHandle,TCSANOW,&tios);
 	if (rc != 0) {
-		errTxt << "Port "<< getPortName() << ": Error tcsetattr: " << ::strerror(rc);
-		LOG4CXX_ERROR(logger,errTxt.str());
-		throw GliderVarioPortIsNoTTYException (__FILE__,__LINE__,errTxt.str().c_str());
+		auto str = fmt::format(_(
+				"Cannot set tty attributes for port \"{0}\", device {1}. tcsetattr error = {2}: {3}"),
+				getPortName(),getDeviceName(),rc,::strerror(rc));
+		LOG4CXX_ERROR(logger,str);
+		throw GliderVarioPortIsNoTTYException (__FILE__,__LINE__,str.c_str());
 	}
 	LOG4CXX_DEBUG(logger,"Set struct termios for port " << getPortName());
 
@@ -403,9 +408,11 @@ void SerialPort::setupPort() {
 	memset (&tios,0,sizeof(tios));
 	rc = ::tcgetattr(devHandleAcc.deviceHandle,&tios);
 	if (rc != 0) {
-		errTxt << "Port "<< getPortName() << ": Error tcgetattr: " << ::strerror(rc);
-		LOG4CXX_ERROR(logger,errTxt.str());
-		throw GliderVarioPortIsNoTTYException (__FILE__,__LINE__,errTxt.str().c_str());
+		auto str = fmt::format(_(
+				"Cannot retrieve tty attributes for port \"{0}\", device {1}. tcgetattr error = {2}: {3}"),
+				getPortName(),getDeviceName(),rc,::strerror(rc));
+		LOG4CXX_ERROR(logger,str);
+		throw GliderVarioPortIsNoTTYException (__FILE__,__LINE__,str.c_str());
 	}
 	LOG4CXX_DEBUG(logger,"Re-read struct termios for port " << getPortName());
 
@@ -434,10 +441,10 @@ void SerialPort::configurePort(
 		LOG4CXX_DEBUG (logger,"Configure serial port \"" << getPortName() << ": No baud rate specified. Keep existing setting.");
 	}
 	catch (Properties4CXX::ExceptionWrongPropertyType const& e) {
-		std::ostringstream errTxt;
-		errTxt << "Configure serial port \"" << getPortName() << ": Baud rate is not numeric: " << e.what();
-		LOG4CXX_ERROR(logger,errTxt.str());
-		throw GliderVarioPortConfigException (__FILE__,__LINE__,errTxt.str().c_str());
+		auto str = fmt::format(_("Error configuring port \"{0}\": Baud rate \"{1}\" is not numeric"),
+				getPortName(),propVal->getStrValue());
+		LOG4CXX_ERROR(logger,str);
+		throw GliderVarioPortConfigException (__FILE__,__LINE__,str.c_str());
 	}
 
 	try {
@@ -458,11 +465,10 @@ void SerialPort::configurePort(
 			numBitsMask = CSIZE;
 			break;
 		default:
-			std::ostringstream errTxt;
-			errTxt << "Configure serial port \"" << getPortName() << ": Number bits "<< propVal->getStringValue() <<
-					" is invalid.";
-			LOG4CXX_ERROR(logger,errTxt.str());
-			throw GliderVarioPortConfigException (__FILE__,__LINE__,errTxt.str().c_str());
+			auto str = fmt::format(_("Error configuring port \"{0}\": Number data bits \"{1}\" must be 7 or 8."),
+					getPortName(),propVal->getStrValue());
+			LOG4CXX_ERROR(logger,str);
+			throw GliderVarioPortConfigException (__FILE__,__LINE__,str.c_str());
 		}
 
 	}
@@ -470,10 +476,10 @@ void SerialPort::configurePort(
 		LOG4CXX_DEBUG (logger,"Configure serial port \"" << getPortName() << ": No bit number rate specified. Keep existing setting.");
 	}
 	catch (Properties4CXX::ExceptionWrongPropertyType const& e) {
-		std::ostringstream errTxt;
-		errTxt << "Configure serial port \"" << getPortName() << ": Number bits is not numeric: " << e.what();
-		LOG4CXX_ERROR(logger,errTxt.str());
-		throw GliderVarioPortConfigException (__FILE__,__LINE__,errTxt.str().c_str());
+		auto str = fmt::format(_("Error configuring port \"{0}\": Number data bits \"{1}\" is not numeric"),
+				getPortName(),propVal->getStrValue());
+		LOG4CXX_ERROR(logger,str);
+		throw GliderVarioPortConfigException (__FILE__,__LINE__,str.c_str());
 	}
 
 	try {
@@ -494,11 +500,10 @@ void SerialPort::configurePort(
 			parity = PARENB|PARODD;
 			parityMask = PARENB|PARODD;
 		} else {
-			std::ostringstream errTxt;
-			errTxt << "Configure serial port \"" << getPortName() << ": Parity value "<< propVal->getStringValue() <<
-					" is invalid.";
-			LOG4CXX_ERROR(logger,errTxt.str());
-			throw GliderVarioPortConfigException (__FILE__,__LINE__,errTxt.str().c_str());
+			auto str = fmt::format(_("Error configuring port \"{0}\": Parity value \"{1}\" is invalid"),
+					getPortName(),propVal->getStrValue());
+			LOG4CXX_ERROR(logger,str);
+			throw GliderVarioPortConfigException (__FILE__,__LINE__,str.c_str());
 		}
 
 	}
@@ -524,11 +529,10 @@ void SerialPort::configurePort(
 			stopBitsMask = CSTOPB;
 			break;
 		default:
-			std::ostringstream errTxt;
-			errTxt << "Configure serial port \"" << getPortName() << ": Number stop bits "<< propVal->getStringValue() <<
-					" is invalid.";
-			LOG4CXX_ERROR(logger,errTxt.str());
-			throw GliderVarioPortConfigException (__FILE__,__LINE__,errTxt.str().c_str());
+			auto str = fmt::format(_("Error configuring port \"{0}\": Number stop bits \"{1}\" must be 1 or 2."),
+					getPortName(),propVal->getStrValue());
+			LOG4CXX_ERROR(logger,str);
+			throw GliderVarioPortConfigException (__FILE__,__LINE__,str.c_str());
 		}
 
 	}
@@ -538,10 +542,10 @@ void SerialPort::configurePort(
 		stopBitsMask = 0;
 	}
 	catch (Properties4CXX::ExceptionWrongPropertyType const& e) {
-		std::ostringstream errTxt;
-		errTxt << "Configure serial port \"" << getPortName() << ": Number bits is not numeric: " << e.what();
-		LOG4CXX_ERROR(logger,errTxt.str());
-		throw GliderVarioPortConfigException (__FILE__,__LINE__,errTxt.str().c_str());
+		auto str = fmt::format(_("Error configuring port \"{0}\": Number stop bits \"{1}\" is not numeric"),
+				getPortName(),propVal->getStrValue());
+		LOG4CXX_ERROR(logger,str);
+		throw GliderVarioPortConfigException (__FILE__,__LINE__,str.c_str());
 	}
 
 	try {
@@ -567,11 +571,10 @@ void SerialPort::configurePort(
 			xonXoff = IXON|IXOFF;
 			xonXoffMask = IXON|IXOFF;
 		} else {
-			std::ostringstream errTxt;
-			errTxt << "Configure serial port \"" << getPortName() << ": handshake value "<< propVal->getStringValue() <<
-					" is invalid.";
-			LOG4CXX_ERROR(logger,errTxt.str());
-			throw GliderVarioPortConfigException (__FILE__,__LINE__,errTxt.str().c_str());
+			auto str = fmt::format(_("Error configuring port \"{0}\": Handshake \"{1}\" is invalid."),
+					getPortName(),propVal->getStrValue());
+			LOG4CXX_ERROR(logger,str);
+			throw GliderVarioPortConfigException (__FILE__,__LINE__,str.c_str());
 		}
 
 	}
@@ -605,7 +608,6 @@ char const * SerialPort::getSpeedStr(speed_t speed) {
 }
 
 speed_t SerialPort::getSpeedFromStr(const char *speedStr) {
-	std::ostringstream errTxt;
 
 	for (int i = 0; lineSpeeds[i].speedStr != nullptr; i++) {
 		if (!strcmp(speedStr,lineSpeeds[i].speedStr)) {
@@ -613,8 +615,10 @@ speed_t SerialPort::getSpeedFromStr(const char *speedStr) {
 		}
 	}
 
-	errTxt << "Error in " << __PRETTY_FUNCTION__ << ": Speed value \"" << speedStr << "\" is undefined";
-	throw GliderVarioPortConfigException (__FILE__,__LINE__,errTxt.str().c_str());
+	auto str = fmt::format(_("Error configuring port \"{0}\": Speed value \"{1}\" is invalid."),
+			getPortName(),speedStr);
+	LOG4CXX_ERROR(logger,str);
+	throw GliderVarioPortConfigException (__FILE__,__LINE__,str.c_str());
 }
 
 static inline std::string printFlag(tcflag_t param,tcflag_t flag,char const *flagName) {

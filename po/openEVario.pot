@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openEVario 0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/hor63/openEVario/issues\n"
-"POT-Creation-Date: 2024-04-19 12:00+0200\n"
+"POT-Creation-Date: 2024-04-24 01:10+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -399,4 +399,102 @@ msgstr ""
 
 #: src/util/io/PortBase.cpp:279
 msgid "Port {0} of type {1}: Closed device \"{2}\""
+msgstr ""
+
+#: src/util/io/DatagramPort.cpp:94 src/util/io/DatagramPort.cpp:150
+msgid "Port \"{0}\" of type \"{1}\": {4} error {2}: {3}"
+msgstr ""
+
+#: src/util/io/DatagramPort.cpp:106
+msgid ""
+"Port \"{0} of type \"{1}\": Buffer too small for the datagram. Buffer length "
+"= {2}, datagram length = {3}."
+msgstr ""
+
+#: src/util/io/I2CPort.cpp:107
+msgid ""
+"Error opening device \"{0}\". Cannot retrieve I2C capabilites. errno = {1} : "
+"{2}"
+msgstr ""
+
+#: src/util/io/I2CPort.cpp:178 src/util/io/I2CPort.cpp:193
+#: src/util/io/I2CPort.cpp:238 src/util/io/I2CPort.cpp:264
+#: src/util/io/I2CPort.cpp:293 src/util/io/I2CPort.cpp:323
+#: src/util/io/I2CPort.cpp:372 src/util/io/I2CPort.cpp:388
+#: src/util/io/I2CPort.cpp:441 src/util/io/I2CPort.cpp:457
+#: src/util/io/I2CPort.cpp:504 src/util/io/I2CPort.cpp:555
+#: src/util/io/I2CPort.cpp:572 src/util/io/I2CPort.cpp:624
+msgid "{0}: {1} error for device \"{2}\". errno = {3}: {4}"
+msgstr ""
+
+#: src/util/io/I2CPort.cpp:204 src/util/io/I2CPort.cpp:333
+#: src/util/io/I2CPort.cpp:401 src/util/io/I2CPort.cpp:470
+#: src/util/io/I2CPort.cpp:515 src/util/io/I2CPort.cpp:584
+msgid "{0}, device \"{1}\": Neither SMBus nor direct I2C is supported."
+msgstr ""
+
+#: src/util/io/I2CPort.cpp:253
+msgid ""
+"{0} for device \"{1}\": Why the hell do you want to send 0 (ZERO!) bytes to "
+"I2C device 0x{2:#04X}"
+msgstr ""
+
+#: src/util/io/I2CPort.cpp:636
+msgid "{0}, device \"{1}\": Direct I2C is not supported."
+msgstr ""
+
+#: src/util/io/I2CPort.cpp:652
+msgid ""
+"I2CPort::check10BitAddr: Error using 10-bit I2C address {0:#04X} is not "
+"supported for device \"{1}\""
+msgstr ""
+
+#: src/util/io/SerialPort.cpp:223
+msgid "Device {1} of port \"{0}\" is not a tty/serial line device"
+msgstr ""
+
+#: src/util/io/SerialPort.cpp:234 src/util/io/SerialPort.cpp:412
+msgid ""
+"Cannot retrieve tty attributes for port \"{0}\", device {1}. tcgetattr error "
+"= {2}: {3}"
+msgstr ""
+
+#: src/util/io/SerialPort.cpp:400
+msgid ""
+"Cannot set tty attributes for port \"{0}\", device {1}. tcsetattr error = "
+"{2}: {3}"
+msgstr ""
+
+#: src/util/io/SerialPort.cpp:444
+msgid "Error configuring port \"{0}\": Baud rate \"{1}\" is not numeric"
+msgstr ""
+
+#: src/util/io/SerialPort.cpp:468
+msgid ""
+"Error configuring port \"{0}\": Number data bits \"{1}\" must be 7 or 8."
+msgstr ""
+
+#: src/util/io/SerialPort.cpp:479
+msgid "Error configuring port \"{0}\": Number data bits \"{1}\" is not numeric"
+msgstr ""
+
+#: src/util/io/SerialPort.cpp:503
+msgid "Error configuring port \"{0}\": Parity value \"{1}\" is invalid"
+msgstr ""
+
+#: src/util/io/SerialPort.cpp:532
+msgid ""
+"Error configuring port \"{0}\": Number stop bits \"{1}\" must be 1 or 2."
+msgstr ""
+
+#: src/util/io/SerialPort.cpp:545
+msgid "Error configuring port \"{0}\": Number stop bits \"{1}\" is not numeric"
+msgstr ""
+
+#: src/util/io/SerialPort.cpp:574
+msgid "Error configuring port \"{0}\": Handshake \"{1}\" is invalid."
+msgstr ""
+
+#: src/util/io/SerialPort.cpp:618
+msgid "Error configuring port \"{0}\": Speed value \"{1}\" is invalid."
 msgstr ""

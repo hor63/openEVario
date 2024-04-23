@@ -101,7 +101,7 @@ public:
 	 * @return Bxxx constant defined in [termios(3)](https://man7.org/linux/man-pages/man3/termios.3.html)
 	 * @throws GliderVarioPortConfigException
 	 */
-	static speed_t getSpeedFromStr(char const * speedStr);
+	speed_t getSpeedFromStr(char const * speedStr);
 
 	/** \brief Static member function which constructs a SerialPort object
 	 *

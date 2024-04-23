@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openEVario 0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/hor63/openEVario/issues\n"
-"POT-Creation-Date: 2024-04-19 12:00+0200\n"
+"POT-Creation-Date: 2024-04-24 01:10+0200\n"
 "PO-Revision-Date: 2024-04-09 16:05+0200\n"
 "Last-Translator: Kai Horstmann <horstmannkai@hotmail.com>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
@@ -394,7 +394,7 @@ msgstr ""
 
 #: src/main/driverBase/DriverBase.cpp:263
 msgid "Device instance \"{0}\": Using builtin default calibration data"
-msgstr ""
+msgstr "Treiberinstanz \"{0}\": Benutze eingebaute Standard-Kalibierdaten"
 
 #: src/main/driverBase/DriverBase.cpp:332
 msgid "Error reading configuration of device instance \"{0}\": {1}"
@@ -407,84 +407,221 @@ msgstr "Allgemeine Parameter von Treiberinstanz \"{0}\":"
 
 #: src/util/io/PortBase.cpp:96
 msgid "Port type \"{0}\" is defined more than once"
-msgstr ""
+msgstr "Porttyp \"{0}\" wurde mehr als einmal definiert."
 
 #: src/util/io/PortBase.cpp:108
 msgid "{0} with portName={1}, portType={2}"
-msgstr ""
+msgstr "{0} mit Portname={1}, Porttyp={2}"
 
 #: src/util/io/PortBase.cpp:113
 msgid "Port \"{0}\" is defined more than once"
-msgstr ""
+msgstr "Port \"{0}\" wurde mehr als einmal definiert."
 
 #: src/util/io/PortBase.cpp:137
 msgid "Type \"{0}\" of port \"{1}\" does not exist."
-msgstr "Treiber „{0}“ für Treiberinstanz „{1}“ existiert nicht."
+msgstr "Typ „{0}“ für Port „{1}“ existiert nicht."
 
 #: src/util/io/PortBase.cpp:139 src/util/io/PortBase.cpp:147
 #: src/util/io/PortBase.cpp:151
 msgid "  Port \"{0}\" will not be created."
-msgstr "Kann Instanz „{0}“ für Treiber „{1}“ nicht erzeugen."
+msgstr "  Kann Port „{0}“ nicht erzeugen."
 
 #: src/util/io/PortBase.cpp:146
 msgid "Port \"{0}\" has no \"type\" property."
-msgstr ""
+msgstr "Port \"{0}\" hat keinen \"type\" Parameter."
 
 #: src/util/io/PortBase.cpp:150
 msgid "Port configuration property \"{0}\" is not a structure."
-msgstr "Parameter für Treiberinstanz „{0}“ ist keine Struktur."
+msgstr "Parameter für Port „{0}“ ist keine Struktur."
 
 #: src/util/io/PortBase.cpp:171
 msgid "Port \"{0}\" was successfully created and configured."
-msgstr ""
+msgstr "Port \"{0}\" wurde erfolgreich eryeugt und konfiguriert."
 
 #: src/util/io/PortBase.cpp:172
 msgid "  deviceName = \"{0}\"."
-msgstr ""
+msgstr "  Gerätename = \"{0}\"."
 
 #: src/util/io/PortBase.cpp:173
 msgid "  blocking = {0}"
-msgstr ""
+msgstr "  blockierend = {0}"
 
 #: src/util/io/PortBase.cpp:196
 msgid "Exception when configuring port \"{0)\" in source {1} at line {2}: {3}"
 msgstr ""
+"Exception bei Konfiguration von Port \"{0)\" in Quelldatei {1} in Zeile {2}: "
+"{3}"
 
 #: src/util/io/PortBase.cpp:201
+#, fuzzy
+#| msgid "Exception when configuring port \"{0}\": {1}"
 msgid "Exception when configuring port \"{0)\" : {1}"
-msgstr ""
-"Ein Fehler trat beim Lesen der Konfiguration aus Datei „{0}“ auf. Der Fehler "
-"ist: {1}"
+msgstr "Exception bei Konfiguration von Port \"{0)\": {1}"
 
 #: src/util/io/PortBase.cpp:207
 msgid "Property \"IOPorts\" is not a structure. No I/O ports will be created."
 msgstr ""
+"Parameter \"IOPorts\" ist keine Struktur. Es werden keine I/O Ports erzeugt."
 
 #: src/util/io/PortBase.cpp:210
 msgid ""
 "Properties section \"IOPorts\" does not exist. No I/O ports will be created."
 msgstr ""
+"Konfigurationssektion \"IOPorts\" existiert nicht. Es werden keine I/O Ports "
+"erzeugt."
 
 #: src/util/io/PortBase.cpp:220
 msgid "{0}: Cannot find IO port \"{1}\""
-msgstr ""
+msgstr "{0}: Kann I/O Port \"{1}\" nicht finden."
 
 #: src/util/io/PortBase.cpp:243
+#, fuzzy
+#| msgid "Port {0} of type {1}: Opened device \"{2}\""
 msgid "Port {0} of type {1}: Opened port device \"{2}\""
-msgstr ""
+msgstr "Port {0} von Typ {1}: Öffnete Gerät \"{2}\"."
 
 #: src/util/io/PortBase.cpp:255
 msgid "Port {0} of type {1}: Cannot open device \"{2}\""
-msgstr ""
+msgstr "Port {0} von Typ {1}: Kann Gerät \"{2}\" nicht öffnen."
 
 #: src/util/io/PortBase.cpp:256
 msgid "Port {0} of type {1}: Cannot open device \"{2}\". errno = {3}: {4}"
 msgstr ""
+"Port {0} von Typ {1}: Kann Gerät \"{2}\" nicht öffnen. errno = {3}: {4}"
 
 #: src/util/io/PortBase.cpp:268
 msgid "Port {0} of type {1}: Opened device \"{2}\""
-msgstr ""
+msgstr "Port {0} von Typ {1}: Öffnete Gerät \"{2}\"."
 
 #: src/util/io/PortBase.cpp:279
 msgid "Port {0} of type {1}: Closed device \"{2}\""
+msgstr "Port {0} von Typ {1}: Gerät \"{2}\" ist geschlossen."
+
+#: src/util/io/DatagramPort.cpp:94 src/util/io/DatagramPort.cpp:150
+msgid "Port \"{0}\" of type \"{1}\": {4} error {2}: {3}"
+msgstr "Port \"{0}\" von Typ \"{1}\": {4} Fehler {2}: {3}"
+
+#: src/util/io/DatagramPort.cpp:106
+msgid ""
+"Port \"{0} of type \"{1}\": Buffer too small for the datagram. Buffer length "
+"= {2}, datagram length = {3}."
 msgstr ""
+"Port \"{0} von Typ \"{1}\": Puffer ist zu klein für das Datagramm. "
+"Pufferlänge = {2}, Datagramm Länge = {3}."
+
+#: src/util/io/I2CPort.cpp:107
+msgid ""
+"Error opening device \"{0}\". Cannot retrieve I2C capabilites. errno = {1} : "
+"{2}"
+msgstr ""
+"Error beim Öffnen von Gerät \"{0}\". Kann I2C Fähigkeiten nicht auslesen. "
+"errno = {1} : {2}"
+
+#: src/util/io/I2CPort.cpp:178 src/util/io/I2CPort.cpp:193
+#: src/util/io/I2CPort.cpp:238 src/util/io/I2CPort.cpp:264
+#: src/util/io/I2CPort.cpp:293 src/util/io/I2CPort.cpp:323
+#: src/util/io/I2CPort.cpp:372 src/util/io/I2CPort.cpp:388
+#: src/util/io/I2CPort.cpp:441 src/util/io/I2CPort.cpp:457
+#: src/util/io/I2CPort.cpp:504 src/util/io/I2CPort.cpp:555
+#: src/util/io/I2CPort.cpp:572 src/util/io/I2CPort.cpp:624
+msgid "{0}: {1} error for device \"{2}\". errno = {3}: {4}"
+msgstr "{0}: {1} Fehler für Gerät \"{2}\". errno = {3}: {4}"
+
+#: src/util/io/I2CPort.cpp:204 src/util/io/I2CPort.cpp:333
+#: src/util/io/I2CPort.cpp:401 src/util/io/I2CPort.cpp:470
+#: src/util/io/I2CPort.cpp:515 src/util/io/I2CPort.cpp:584
+msgid "{0}, device \"{1}\": Neither SMBus nor direct I2C is supported."
+msgstr "{0}, Gerät \"{1}\": Neither SMBus nor direct I2C is supported."
+
+#: src/util/io/I2CPort.cpp:253
+msgid ""
+"{0} for device \"{1}\": Why the hell do you want to send 0 (ZERO!) bytes to "
+"I2C device 0x{2:#04X}"
+msgstr ""
+"{0} für Gerät \"{1}\": Warum zur Hölle willst Du 0 (Null!) Bytes an I2C "
+"device 0x{2:#04X} schicken?"
+
+#: src/util/io/I2CPort.cpp:636
+msgid "{0}, device \"{1}\": Direct I2C is not supported."
+msgstr "{0}, Gerät \"{1}\": Direktes I2C wird nicht unterstützt."
+
+#: src/util/io/I2CPort.cpp:652
+msgid ""
+"I2CPort::check10BitAddr: Error using 10-bit I2C address {0:#04X} is not "
+"supported for device \"{1}\""
+msgstr ""
+"I2CPort::check10BitAddr: Fehler, 10-Bit I2CAdresse {0:#04X} wird für Gerät "
+"\"{1}\" nicht unterstützt."
+
+#: src/util/io/SerialPort.cpp:223
+msgid "Device {1} of port \"{0}\" is not a tty/serial line device"
+msgstr "Gerät {1} von Port \"{0}\" ist kein tty/serielles Gerät"
+
+#: src/util/io/SerialPort.cpp:234 src/util/io/SerialPort.cpp:412
+msgid ""
+"Cannot retrieve tty attributes for port \"{0}\", device {1}. tcgetattr error "
+"= {2}: {3}"
+msgstr ""
+"Kann tty Attribute von Port \"{0}\", Gerät {1} nicht lesen. tcgetattr Fehler "
+"= {2}: {3}"
+
+#: src/util/io/SerialPort.cpp:400
+msgid ""
+"Cannot set tty attributes for port \"{0}\", device {1}. tcsetattr error = "
+"{2}: {3}"
+msgstr ""
+"Kann tty Attribute von Port \"{0}\", Gerät {1} nicht schreiben. tcsetattr "
+"Fehler = {2}: {3}"
+
+#: src/util/io/SerialPort.cpp:444
+msgid "Error configuring port \"{0}\": Baud rate \"{1}\" is not numeric"
+msgstr ""
+"Fehler bei Konfiguration von Port \"{0}\": Baudrate \"{1}\" ist nicht "
+"numerisch."
+
+#: src/util/io/SerialPort.cpp:468
+msgid ""
+"Error configuring port \"{0}\": Number data bits \"{1}\" must be 7 or 8."
+msgstr ""
+"Fehler bei Konfiguration von Port \"{0}\": Anzahl Datenbits \"{1}\" muss 7 "
+"oder 8 sein."
+
+#: src/util/io/SerialPort.cpp:479
+msgid "Error configuring port \"{0}\": Number data bits \"{1}\" is not numeric"
+msgstr ""
+"Fehler bei Konfiguration von Port \"{0}\": Anzahl Datenbits \"{1}\" ist "
+"nicht numerisch."
+
+#: src/util/io/SerialPort.cpp:503
+msgid "Error configuring port \"{0}\": Parity value \"{1}\" is invalid"
+msgstr ""
+"Fehler bei Konfiguration von Port \"{0}\": Parität \"{1}\" ist ein "
+"ungültiger Wert."
+
+#: src/util/io/SerialPort.cpp:532
+msgid ""
+"Error configuring port \"{0}\": Number stop bits \"{1}\" must be 1 or 2."
+msgstr ""
+"Fehler bei Konfiguration von Port \"{0}\": Anzahl Stopbits \"{1}\" muss 1 "
+"oder 2 sein."
+
+#: src/util/io/SerialPort.cpp:545
+msgid "Error configuring port \"{0}\": Number stop bits \"{1}\" is not numeric"
+msgstr ""
+"Fehler bei Konfiguration von Port \"{0}\": Anzahl Datenbits \"{1}\" ist "
+"nicht numerisch."
+
+#: src/util/io/SerialPort.cpp:574
+msgid "Error configuring port \"{0}\": Handshake \"{1}\" is invalid."
+msgstr ""
+"Fehler bei Konfiguration von Port \"{0}\": Handshake \"{1}\" ist ein "
+"ungültiger Wert."
+
+#: src/util/io/SerialPort.cpp:618
+msgid "Error configuring port \"{0}\": Speed value \"{1}\" is invalid."
+msgstr ""
+"Fehler bei Konfiguration von Port \"{0}\": Schnittstellengeschwindigkeit "
+"\"{1}\" ist ein ungültiger Wert."
+
+#~ msgid "Port {0} of type {1} is open."
+#~ msgstr "Port {0} von Typ {1} ist geöffnet."
