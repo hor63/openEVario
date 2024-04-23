@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openEVario 0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/hor63/openEVario/issues\n"
-"POT-Creation-Date: 2024-04-24 01:10+0200\n"
+"POT-Creation-Date: 2024-04-24 01:15+0200\n"
 "PO-Revision-Date: 2024-04-09 16:05+0200\n"
 "Last-Translator: Kai Horstmann <horstmannkai@hotmail.com>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
@@ -436,7 +436,7 @@ msgstr "Parameter für Port „{0}“ ist keine Struktur."
 
 #: src/util/io/PortBase.cpp:171
 msgid "Port \"{0}\" was successfully created and configured."
-msgstr "Port \"{0}\" wurde erfolgreich eryeugt und konfiguriert."
+msgstr "Port \"{0}\" wurde erfolgreich erzeugt und konfiguriert."
 
 #: src/util/io/PortBase.cpp:172
 msgid "  deviceName = \"{0}\"."
@@ -453,9 +453,7 @@ msgstr ""
 "{3}"
 
 #: src/util/io/PortBase.cpp:201
-#, fuzzy
-#| msgid "Exception when configuring port \"{0}\": {1}"
-msgid "Exception when configuring port \"{0)\" : {1}"
+msgid "Exception when configuring port \"{0}\": {1}"
 msgstr "Exception bei Konfiguration von Port \"{0)\": {1}"
 
 #: src/util/io/PortBase.cpp:207
@@ -475,10 +473,8 @@ msgid "{0}: Cannot find IO port \"{1}\""
 msgstr "{0}: Kann I/O Port \"{1}\" nicht finden."
 
 #: src/util/io/PortBase.cpp:243
-#, fuzzy
-#| msgid "Port {0} of type {1}: Opened device \"{2}\""
-msgid "Port {0} of type {1}: Opened port device \"{2}\""
-msgstr "Port {0} von Typ {1}: Öffnete Gerät \"{2}\"."
+msgid "Port {0} of type {1} is open."
+msgstr "Port {0} von Typ {1} ist offen."
 
 #: src/util/io/PortBase.cpp:255
 msgid "Port {0} of type {1}: Cannot open device \"{2}\""
@@ -622,6 +618,3 @@ msgid "Error configuring port \"{0}\": Speed value \"{1}\" is invalid."
 msgstr ""
 "Fehler bei Konfiguration von Port \"{0}\": Schnittstellengeschwindigkeit "
 "\"{1}\" ist ein ungültiger Wert."
-
-#~ msgid "Port {0} of type {1} is open."
-#~ msgstr "Port {0} von Typ {1} ist geöffnet."

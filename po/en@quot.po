@@ -29,8 +29,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openEVario 0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/hor63/openEVario/issues\n"
-"POT-Creation-Date: 2024-04-24 01:10+0200\n"
-"PO-Revision-Date: 2024-04-24 01:10+0200\n"
+"POT-Creation-Date: 2024-04-24 01:15+0200\n"
+"PO-Revision-Date: 2024-04-24 01:15+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: en@quot\n"
@@ -450,8 +450,8 @@ msgid "Exception when configuring port \"{0)\" in source {1} at line {2}: {3}"
 msgstr "Exception when configuring port “{0)” in source {1} at line {2}: {3}"
 
 #: src/util/io/PortBase.cpp:201
-msgid "Exception when configuring port \"{0)\" : {1}"
-msgstr "Exception when configuring port “{0)” : {1}"
+msgid "Exception when configuring port \"{0}\": {1}"
+msgstr "Exception when configuring port “{0}”: {1}"
 
 #: src/util/io/PortBase.cpp:207
 msgid "Property \"IOPorts\" is not a structure. No I/O ports will be created."
@@ -468,8 +468,8 @@ msgid "{0}: Cannot find IO port \"{1}\""
 msgstr "{0}: Cannot find IO port “{1}”"
 
 #: src/util/io/PortBase.cpp:243
-msgid "Port {0} of type {1}: Opened port device \"{2}\""
-msgstr "Port {0} of type {1}: Opened port device “{2}”"
+msgid "Port {0} of type {1} is open."
+msgstr "Port {0} of type {1} is open."
 
 #: src/util/io/PortBase.cpp:255
 msgid "Port {0} of type {1}: Cannot open device \"{2}\""

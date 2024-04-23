@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openEVario 0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/hor63/openEVario/issues\n"
-"POT-Creation-Date: 2024-04-24 01:10+0200\n"
+"POT-Creation-Date: 2024-04-24 01:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -365,7 +365,7 @@ msgid "Exception when configuring port \"{0)\" in source {1} at line {2}: {3}"
 msgstr ""
 
 #: src/util/io/PortBase.cpp:201
-msgid "Exception when configuring port \"{0)\" : {1}"
+msgid "Exception when configuring port \"{0}\": {1}"
 msgstr ""
 
 #: src/util/io/PortBase.cpp:207
@@ -382,7 +382,7 @@ msgid "{0}: Cannot find IO port \"{1}\""
 msgstr ""
 
 #: src/util/io/PortBase.cpp:243
-msgid "Port {0} of type {1}: Opened port device \"{2}\""
+msgid "Port {0} of type {1} is open."
 msgstr ""
 
 #: src/util/io/PortBase.cpp:255
