@@ -29,6 +29,8 @@
 #include <sstream>
 #include <cstring>
 
+#include "fmt/format.h"
+
 #include "util/io/StreamPort.h"
 
 #if defined HAVE_LOG4CXX_H
@@ -84,21 +86,20 @@ ssize_t StreamPort::read(uint8_t* buffer,size_t bufLen) {
 				ret = 0;
 				break;
 			default:
-				std::ostringstream str;
-
-				str << "Port" << getPortName() << ':' << getPortType() << ": Read error " << err << ":" << strerror(err);
-				LOG4CXX_ERROR (logger,str.str());
-				throw GliderVarioPortReadException(__FILE__,__LINE__,str.str().c_str(),err);
+				auto str = fmt::format(_("Port \"{0}\" of type \"{1}\": {4} error {2}: {3}"),
+						getPortName(),getPortType(),err, strerror(err),"read()");
+				LOG4CXX_ERROR (logger,str);
+				throw GliderVarioPortReadException(__FILE__,__LINE__,str.c_str(),err);
 			}
 		} else if (ret == 0) {
 			// End-of-file condition
-			std::ostringstream str;
+			auto str = fmt::format(_("Port {0} of type {1}: End of file condition upon read. Closing the port."),
+					getPortName(),getPortType());
+			LOG4CXX_ERROR (logger,str);
 
 			close();
 
-			str << "Port" << getPortName() << ':' << getPortType() << ": End of file condition upon read";
-			LOG4CXX_ERROR (logger,str.str());
-			throw GliderVarioPortReadEndOfFileException(__FILE__,__LINE__,str.str().c_str());
+			throw GliderVarioPortReadEndOfFileException(__FILE__,__LINE__,str.c_str());
 		}
 
 	} while (err == EINTR);
@@ -134,11 +135,10 @@ ssize_t StreamPort::write(uint8_t *buffer, size_t bufLen) {
 				ret = 0;
 				break;
 			default:
-				std::ostringstream str;
-
-				str << "Port" << getPortName() << ':' << getPortType() << ": Write error " << err << ":" << strerror(err);
-				LOG4CXX_ERROR (logger,str.str());
-				throw GliderVarioPortWriteException(__FILE__,__LINE__,str.str().c_str(),err);
+				auto str = fmt::format(_("Port \"{0}\" of type \"{1}\": {4} error {2}: {3}"),
+						getPortName(),getPortType(),err, strerror(err),"write()");
+				LOG4CXX_ERROR (logger,str);
+				throw GliderVarioPortWriteException(__FILE__,__LINE__,str.c_str(),err);
 			}
 		} else if (ret == 0) {
 			// End-of-file condition or undefined condition

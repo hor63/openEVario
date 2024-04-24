@@ -6,3 +6,4 @@ src/util/io/PortBase.cpp
 src/util/io/DatagramPort.cpp
 src/util/io/I2CPort.cpp
 src/util/io/SerialPort.cpp
+src/util/io/StreamPort.cpp

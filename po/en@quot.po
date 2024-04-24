@@ -29,8 +29,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openEVario 0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/hor63/openEVario/issues\n"
-"POT-Creation-Date: 2024-04-24 13:08+0200\n"
-"PO-Revision-Date: 2024-04-24 13:08+0200\n"
+"POT-Creation-Date: 2024-04-24 20:42+0200\n"
+"PO-Revision-Date: 2024-04-24 20:42+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: en@quot\n"
@@ -488,6 +488,7 @@ msgid "Port {0} of type {1}: Closed device \"{2}\""
 msgstr "Port {0} of type {1}: Closed device “{2}”"
 
 #: src/util/io/DatagramPort.cpp:94 src/util/io/DatagramPort.cpp:150
+#: src/util/io/StreamPort.cpp:89 src/util/io/StreamPort.cpp:138
 msgid "Port \"{0}\" of type \"{1}\": {4} error {2}: {3}"
 msgstr "Port “{0}” of type “{1}”: {4} error {2}: {3}"
 
@@ -597,3 +598,9 @@ msgstr "Error configuring port “{0}”: Handshake “{1}” is invalid."
 #: src/util/io/SerialPort.cpp:618
 msgid "Error configuring port \"{0}\": Speed value \"{1}\" is invalid."
 msgstr "Error configuring port “{0}”: Speed value “{1}” is invalid."
+
+#: src/util/io/StreamPort.cpp:96
+msgid ""
+"Port {0} of type {1}: End of file condition upon read. Closing the port."
+msgstr ""
+"Port {0} of type {1}: End of file condition upon read. Closing the port."
