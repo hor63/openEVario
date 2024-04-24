@@ -29,8 +29,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openEVario 0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/hor63/openEVario/issues\n"
-"POT-Creation-Date: 2024-04-24 01:15+0200\n"
-"PO-Revision-Date: 2024-04-24 01:15+0200\n"
+"POT-Creation-Date: 2024-04-24 13:08+0200\n"
+"PO-Revision-Date: 2024-04-24 13:08+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: en@quot\n"
@@ -499,49 +499,50 @@ msgstr ""
 "Port “{0} of type ”{1}\": Buffer too small for the datagram. Buffer length = "
 "{2}, datagram length = {3}."
 
-#: src/util/io/I2CPort.cpp:107
+#: src/util/io/I2CPort.cpp:108
 msgid ""
-"Error opening device \"{0}\". Cannot retrieve I2C capabilites. errno = {1} : "
-"{2}"
+"Error opening port \"{0}\". Cannot retrieve I2C capabilites of device {1}. "
+"errno = {2} : {3}"
 msgstr ""
-"Error opening device “{0}”. Cannot retrieve I2C capabilites. errno = {1} : "
-"{2}"
+"Error opening port “{0}”. Cannot retrieve I2C capabilites of device {1}. "
+"errno = {2} : {3}"
 
-#: src/util/io/I2CPort.cpp:178 src/util/io/I2CPort.cpp:193
-#: src/util/io/I2CPort.cpp:238 src/util/io/I2CPort.cpp:264
-#: src/util/io/I2CPort.cpp:293 src/util/io/I2CPort.cpp:323
-#: src/util/io/I2CPort.cpp:372 src/util/io/I2CPort.cpp:388
-#: src/util/io/I2CPort.cpp:441 src/util/io/I2CPort.cpp:457
-#: src/util/io/I2CPort.cpp:504 src/util/io/I2CPort.cpp:555
-#: src/util/io/I2CPort.cpp:572 src/util/io/I2CPort.cpp:624
-msgid "{0}: {1} error for device \"{2}\". errno = {3}: {4}"
-msgstr "{0}: {1} error for device “{2}”. errno = {3}: {4}"
+#: src/util/io/I2CPort.cpp:179 src/util/io/I2CPort.cpp:194
+#: src/util/io/I2CPort.cpp:239 src/util/io/I2CPort.cpp:265
+#: src/util/io/I2CPort.cpp:292 src/util/io/I2CPort.cpp:320
+#: src/util/io/I2CPort.cpp:369 src/util/io/I2CPort.cpp:385
+#: src/util/io/I2CPort.cpp:438 src/util/io/I2CPort.cpp:454
+#: src/util/io/I2CPort.cpp:501 src/util/io/I2CPort.cpp:552
+#: src/util/io/I2CPort.cpp:569 src/util/io/I2CPort.cpp:621
+msgid "{0}: {1} error for device {3} of port \"{2}\". errno = {4}: {5}"
+msgstr "{0}: {1} error for device {3} of port “{2}”. errno = {4}: {5}"
 
-#: src/util/io/I2CPort.cpp:204 src/util/io/I2CPort.cpp:333
-#: src/util/io/I2CPort.cpp:401 src/util/io/I2CPort.cpp:470
-#: src/util/io/I2CPort.cpp:515 src/util/io/I2CPort.cpp:584
-msgid "{0}, device \"{1}\": Neither SMBus nor direct I2C is supported."
-msgstr "{0}, device “{1}”: Neither SMBus nor direct I2C is supported."
+#: src/util/io/I2CPort.cpp:205 src/util/io/I2CPort.cpp:276
+#: src/util/io/I2CPort.cpp:304 src/util/io/I2CPort.cpp:330
+#: src/util/io/I2CPort.cpp:398 src/util/io/I2CPort.cpp:467
+#: src/util/io/I2CPort.cpp:512 src/util/io/I2CPort.cpp:581
+msgid "{0}, port \"{1}\": Neither SMBus nor direct I2C is supported."
+msgstr "{0}, port “{1}”: Neither SMBus nor direct I2C is supported."
 
-#: src/util/io/I2CPort.cpp:253
+#: src/util/io/I2CPort.cpp:254
 msgid ""
-"{0} for device \"{1}\": Why the hell do you want to send 0 (ZERO!) bytes to "
+"{0} for port \"{1}\": Why the hell do you want to send 0 (ZERO!) bytes to "
 "I2C device 0x{2:#04X}"
 msgstr ""
-"{0} for device “{1}”: Why the hell do you want to send 0 (ZERO!) bytes to "
-"I2C device 0x{2:#04X}"
+"{0} for port “{1}”: Why the hell do you want to send 0 (ZERO!) bytes to I2C "
+"device 0x{2:#04X}"
 
-#: src/util/io/I2CPort.cpp:636
-msgid "{0}, device \"{1}\": Direct I2C is not supported."
-msgstr "{0}, device “{1}”: Direct I2C is not supported."
+#: src/util/io/I2CPort.cpp:633
+msgid "{0}, port \"{1}\": Direct I2C is not supported."
+msgstr "{0}, port “{1}”: Direct I2C is not supported."
 
-#: src/util/io/I2CPort.cpp:652
+#: src/util/io/I2CPort.cpp:649
 msgid ""
 "I2CPort::check10BitAddr: Error using 10-bit I2C address {0:#04X} is not "
-"supported for device \"{1}\""
+"supported for port \"{1}\""
 msgstr ""
 "I2CPort::check10BitAddr: Error using 10-bit I2C address {0:#04X} is not "
-"supported for device “{1}”"
+"supported for port “{1}”"
 
 #: src/util/io/SerialPort.cpp:223
 msgid "Device {1} of port \"{0}\" is not a tty/serial line device"

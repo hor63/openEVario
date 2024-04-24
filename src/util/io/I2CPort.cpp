@@ -104,8 +104,9 @@ void I2CPort::openInternal() {
 	if (rc != 0) {
 		auto errN = errno;
 
-		auto str = fmt::format(_("Error opening device \"{0}\". Cannot retrieve I2C capabilites. errno = {1} : {2}"),
-				getDeviceName(),errN,::strerror(errN));
+		auto str = fmt::format(_(
+				"Error opening port \"{0}\". Cannot retrieve I2C capabilites of device {1}. errno = {2} : {3}"),
+				getPortName(),getDeviceName(),errN,::strerror(errN));
 
 		LOG4CXX_ERROR(logger,str);
 
@@ -175,8 +176,8 @@ void I2CPort::writeByte(uint16_t devAddr, uint8_t data) {
 		if (rc < 0) {
 			auto errN = errno;
 
-			auto str = fmt::format(_( "{0}: {1} error for device \"{2}\". errno = {3}: {4}"),
-					__PRETTY_FUNCTION__, "ioctl-I2C_RDWR",getDeviceName(),errN,::strerror(errN));
+			auto str = fmt::format(_( "{0}: {1} error for device {3} of port \"{2}\". errno = {4}: {5}"),
+					__PRETTY_FUNCTION__, "ioctl-I2C_RDWR",getPortName(),getDeviceName(),errN,::strerror(errN));
 
 			LOG4CXX_ERROR(logger,str);
 			throw GliderVarioPortIOException (__FILE__, __LINE__, str.c_str(),errN);
@@ -190,8 +191,8 @@ void I2CPort::writeByte(uint16_t devAddr, uint8_t data) {
 		if (rc < 0) {
 			auto errN = -rc;
 
-			auto str = fmt::format(_( "{0}: {1} error for device \"{2}\". errno = {3}: {4}"),
-					__PRETTY_FUNCTION__, "i2c_smbus_write_byte",getDeviceName(),errN,::strerror(errN));
+			auto str = fmt::format(_( "{0}: {1} error for device {3} of port \"{2}\". errno = {4}: {5}"),
+					__PRETTY_FUNCTION__, "i2c_smbus_write_byte",getPortName(),getDeviceName(),errN,::strerror(errN));
 
 			LOG4CXX_ERROR(logger,str);
 			throw GliderVarioPortIOException (__FILE__, __LINE__, str.c_str(),errN);
@@ -201,8 +202,8 @@ void I2CPort::writeByte(uint16_t devAddr, uint8_t data) {
 				<< " with i2c_smbus_write_byte to " << getDeviceName());
 
 	} else {
-		auto str = fmt::format(_("{0}, device \"{1}\": Neither SMBus nor direct I2C is supported."),
-				__PRETTY_FUNCTION__,getDeviceName());
+		auto str = fmt::format(_("{0}, port \"{1}\": Neither SMBus nor direct I2C is supported."),
+				__PRETTY_FUNCTION__,getPortName());
 
 		LOG4CXX_ERROR(logger,str);
 		throw GliderVarioPortException (__FILE__, __LINE__, str.c_str());
@@ -235,8 +236,8 @@ void I2CPort::writeBlock(uint16_t devAddr, uint8_t *data, uint16_t dataLen) {
 		if (rc < 0) {
 			auto errN = errno;
 
-			auto str = fmt::format(_( "{0}: {1} error for device \"{2}\". errno = {3}: {4}"),
-					__PRETTY_FUNCTION__, "ioctl-I2C_RDWR",getDeviceName(),errN,::strerror(errN));
+			auto str = fmt::format(_( "{0}: {1} error for device {3} of port \"{2}\". errno = {4}: {5}"),
+					__PRETTY_FUNCTION__, "ioctl-I2C_RDWR",getPortName(),getDeviceName(),errN,::strerror(errN));
 
 			LOG4CXX_ERROR(logger,str);
 			throw GliderVarioPortIOException (__FILE__, __LINE__, str.c_str(),errN);
@@ -250,8 +251,8 @@ void I2CPort::writeBlock(uint16_t devAddr, uint8_t *data, uint16_t dataLen) {
 		switch (dataLen) {
 		case 0:
 			LOG4CXX_WARN(logger,fmt::format(_(
-					"{0} for device \"{1}\": Why the hell do you want to send 0 (ZERO!) bytes to I2C device 0x{2:#04X}"),
-					__PRETTY_FUNCTION__,getDeviceName(), devAddr));
+					"{0} for port \"{1}\": Why the hell do you want to send 0 (ZERO!) bytes to I2C device 0x{2:#04X}"),
+					__PRETTY_FUNCTION__,getPortName(), devAddr));
 			break;
 		case 1:
 
@@ -261,8 +262,8 @@ void I2CPort::writeBlock(uint16_t devAddr, uint8_t *data, uint16_t dataLen) {
 				if (rc < 0) {
 					auto errN = -rc;
 
-					auto str = fmt::format(_( "{0}: {1} error for device \"{2}\". errno = {3}: {4}"),
-							__PRETTY_FUNCTION__, "i2c_smbus_write_byte",getDeviceName(),errN,::strerror(errN));
+					auto str = fmt::format(_( "{0}: {1} error for device {3} of port \"{2}\". errno = {4}: {5}"),
+							__PRETTY_FUNCTION__, "i2c_smbus_write_byte",getPortName(),getDeviceName(),errN,::strerror(errN));
 
 					LOG4CXX_ERROR(logger,str);
 					throw GliderVarioPortIOException (__FILE__, __LINE__, str.c_str(),errN);
@@ -272,13 +273,11 @@ void I2CPort::writeBlock(uint16_t devAddr, uint8_t *data, uint16_t dataLen) {
 						<< " with i2c_smbus_write_byte to " << getDeviceName());
 
 			} else {
-				std::ostringstream str;
+				auto str = fmt::format(_("{0}, port \"{1}\": Neither SMBus nor direct I2C is supported."),
+						__PRETTY_FUNCTION__,getPortName());
 
-				str << __FUNCTION__ << " " << getDeviceName()
-								<< ": Neither SMBus nor direct I2C is supported.";
-				GliderVarioPortException e (__FILE__, __LINE__, str.str().c_str());
-				LOG4CXX_ERROR(logger,str.str());
-				throw e;
+				LOG4CXX_ERROR(logger,str);
+				throw GliderVarioPortException (__FILE__, __LINE__, str.c_str());
 			}
 
 			break;
@@ -290,8 +289,8 @@ void I2CPort::writeBlock(uint16_t devAddr, uint8_t *data, uint16_t dataLen) {
 				if (rc < 0) {
 					auto errN = -rc;
 
-					auto str = fmt::format(_( "{0}: {1} error for device \"{2}\". errno = {3}: {4}"),
-							__PRETTY_FUNCTION__, "i2c_smbus_write_byte_data",getDeviceName(),errN,::strerror(errN));
+					auto str = fmt::format(_( "{0}: {1} error for device {3} of port \"{2}\". errno = {4}: {5}"),
+							__PRETTY_FUNCTION__, "i2c_smbus_write_byte_data",getPortName(),getDeviceName(),errN,::strerror(errN));
 
 					LOG4CXX_ERROR(logger,str);
 					throw GliderVarioPortIOException (__FILE__, __LINE__, str.c_str(),errN);
@@ -302,13 +301,11 @@ void I2CPort::writeBlock(uint16_t devAddr, uint8_t *data, uint16_t dataLen) {
 						<< " with i2c_smbus_write_byte_data to " << getDeviceName());
 
 			} else {
-				std::ostringstream str;
+				auto str = fmt::format(_("{0}, port \"{1}\": Neither SMBus nor direct I2C is supported."),
+						__PRETTY_FUNCTION__,getPortName());
 
-				str << __FUNCTION__ << " " << getDeviceName()
-								<< ": Neither SMBus nor direct I2C is supported.";
-				GliderVarioPortException e (__FILE__, __LINE__, str.str().c_str());
-				LOG4CXX_ERROR(logger,str.str());
-				throw e;
+				LOG4CXX_ERROR(logger,str);
+				throw GliderVarioPortException (__FILE__, __LINE__, str.c_str());
 			}
 
 			break;
@@ -320,8 +317,8 @@ void I2CPort::writeBlock(uint16_t devAddr, uint8_t *data, uint16_t dataLen) {
 				if (rc < 0) {
 					auto errN = -rc;
 
-					auto str = fmt::format(_( "{0}: {1} error for device \"{2}\". errno = {3}: {4}"),
-							__PRETTY_FUNCTION__, "i2c_smbus_write_i2c_block_data",getDeviceName(),errN,::strerror(errN));
+					auto str = fmt::format(_( "{0}: {1} error for device {3} of port \"{2}\". errno = {4}: {5}"),
+							__PRETTY_FUNCTION__, "i2c_smbus_write_i2c_block_data",getPortName(),getDeviceName(),errN,::strerror(errN));
 
 					LOG4CXX_ERROR(logger,str);
 					throw GliderVarioPortIOException (__FILE__, __LINE__, str.c_str(),errN);
@@ -330,8 +327,8 @@ void I2CPort::writeBlock(uint16_t devAddr, uint8_t *data, uint16_t dataLen) {
 						<< " bytes with i2c_smbus_write_i2c_block_data to " << getDeviceName());
 
 			} else {
-				auto str = fmt::format(_("{0}, device \"{1}\": Neither SMBus nor direct I2C is supported."),
-						__PRETTY_FUNCTION__,getDeviceName());
+				auto str = fmt::format(_("{0}, port \"{1}\": Neither SMBus nor direct I2C is supported."),
+						__PRETTY_FUNCTION__,getPortName());
 
 				LOG4CXX_ERROR(logger,str);
 				throw GliderVarioPortException (__FILE__, __LINE__, str.c_str());
@@ -369,8 +366,8 @@ uint8_t I2CPort::readByte(uint16_t devAddr) {
 		if (rc < 0) {
 			auto errN = errno;
 
-			auto str = fmt::format(_( "{0}: {1} error for device \"{2}\". errno = {3}: {4}"),
-					__PRETTY_FUNCTION__, "ioctl-I2C_RDWR",getDeviceName(),errN,::strerror(errN));
+			auto str = fmt::format(_( "{0}: {1} error for device {3} of port \"{2}\". errno = {4}: {5}"),
+					__PRETTY_FUNCTION__, "ioctl-I2C_RDWR",getPortName(),getDeviceName(),errN,::strerror(errN));
 
 			LOG4CXX_ERROR(logger,str);
 			throw GliderVarioPortIOException (__FILE__, __LINE__, str.c_str(),errN);
@@ -385,8 +382,8 @@ uint8_t I2CPort::readByte(uint16_t devAddr) {
 		if (rc < 0) {
 			auto errN = -rc;
 
-			auto str = fmt::format(_( "{0}: {1} error for device \"{2}\". errno = {3}: {4}"),
-					__PRETTY_FUNCTION__, "i2c_smbus_read_byte",getDeviceName(),errN,::strerror(errN));
+			auto str = fmt::format(_( "{0}: {1} error for device {3} of port \"{2}\". errno = {4}: {5}"),
+					__PRETTY_FUNCTION__, "i2c_smbus_read_byte",getPortName(),getDeviceName(),errN,::strerror(errN));
 
 			LOG4CXX_ERROR(logger,str);
 			throw GliderVarioPortIOException (__FILE__, __LINE__, str.c_str(),errN);
@@ -398,8 +395,8 @@ uint8_t I2CPort::readByte(uint16_t devAddr) {
 				<< " with i2c_smbus_read_byte from " << getDeviceName());
 
 	} else {
-		auto str = fmt::format(_("{0}, device \"{1}\": Neither SMBus nor direct I2C is supported."),
-				__PRETTY_FUNCTION__,getDeviceName());
+		auto str = fmt::format(_("{0}, port \"{1}\": Neither SMBus nor direct I2C is supported."),
+				__PRETTY_FUNCTION__,getPortName());
 
 		LOG4CXX_ERROR(logger,str);
 		throw GliderVarioPortException (__FILE__, __LINE__, str.c_str());
@@ -438,8 +435,8 @@ uint8_t I2CPort::readByteAtRegAddrByte(uint16_t devAddr, uint8_t regAddr) {
 		if (rc < 0) {
 			auto errN = errno;
 
-			auto str = fmt::format(_( "{0}: {1} error for device \"{2}\". errno = {3}: {4}"),
-					__PRETTY_FUNCTION__, "ioctl-I2C_RDWR",getDeviceName(),errN,::strerror(errN));
+			auto str = fmt::format(_( "{0}: {1} error for device {3} of port \"{2}\". errno = {4}: {5}"),
+					__PRETTY_FUNCTION__, "ioctl-I2C_RDWR",getPortName(),getDeviceName(),errN,::strerror(errN));
 
 			LOG4CXX_ERROR(logger,str);
 			throw GliderVarioPortIOException (__FILE__, __LINE__, str.c_str(),errN);
@@ -454,8 +451,8 @@ uint8_t I2CPort::readByteAtRegAddrByte(uint16_t devAddr, uint8_t regAddr) {
 		if (rc < 0) {
 			auto errN = -rc;
 
-			auto str = fmt::format(_( "{0}: {1} error for device \"{2}\". errno = {3}: {4}"),
-					__PRETTY_FUNCTION__, "i2c_smbus_read_byte_data",getDeviceName(),errN,::strerror(errN));
+			auto str = fmt::format(_( "{0}: {1} error for device {3} of port \"{2}\". errno = {4}: {5}"),
+					__PRETTY_FUNCTION__, "i2c_smbus_read_byte_data",getPortName(),getDeviceName(),errN,::strerror(errN));
 
 			LOG4CXX_ERROR(logger,str);
 			throw GliderVarioPortIOException (__FILE__, __LINE__, str.c_str(),errN);
@@ -467,8 +464,8 @@ uint8_t I2CPort::readByteAtRegAddrByte(uint16_t devAddr, uint8_t regAddr) {
 				<< " with i2c_smbus_read_byte_data from register 0x" << uint32_t(regAddr) << std::dec << " from " << getDeviceName());
 
 	} else {
-		auto str = fmt::format(_("{0}, device \"{1}\": Neither SMBus nor direct I2C is supported."),
-				__PRETTY_FUNCTION__,getDeviceName());
+		auto str = fmt::format(_("{0}, port \"{1}\": Neither SMBus nor direct I2C is supported."),
+				__PRETTY_FUNCTION__,getPortName());
 
 		LOG4CXX_ERROR(logger,str);
 		throw GliderVarioPortException (__FILE__, __LINE__, str.c_str());
@@ -501,8 +498,8 @@ void I2CPort::readBlock(uint16_t devAddr, uint8_t *data, uint16_t dataLen) {
 		if (rc < 0) {
 			auto errN = errno;
 
-			auto str = fmt::format(_( "{0}: {1} error for device \"{2}\". errno = {3}: {4}"),
-					__PRETTY_FUNCTION__, "ioctl-I2C_RDWR",getDeviceName(),errN,::strerror(errN));
+			auto str = fmt::format(_( "{0}: {1} error for device {3} of port \"{2}\". errno = {4}: {5}"),
+					__PRETTY_FUNCTION__, "ioctl-I2C_RDWR",getPortName(),getDeviceName(),errN,::strerror(errN));
 
 			LOG4CXX_ERROR(logger,str);
 			throw GliderVarioPortIOException (__FILE__, __LINE__, str.c_str(),errN);
@@ -512,8 +509,8 @@ void I2CPort::readBlock(uint16_t devAddr, uint8_t *data, uint16_t dataLen) {
 				<< " bytes with ioctl from " << getDeviceName());
 
 	} else {
-		auto str = fmt::format(_("{0}, device \"{1}\": Neither SMBus nor direct I2C is supported."),
-				__PRETTY_FUNCTION__,getDeviceName());
+		auto str = fmt::format(_("{0}, port \"{1}\": Neither SMBus nor direct I2C is supported."),
+				__PRETTY_FUNCTION__,getPortName());
 
 		LOG4CXX_ERROR(logger,str);
 		throw GliderVarioPortException (__FILE__, __LINE__, str.c_str());
@@ -552,8 +549,8 @@ void I2CPort::readBlockAtRegAddrByte(
 		if (rc < 0) {
 			auto errN = errno;
 
-			auto str = fmt::format(_( "{0}: {1} error for device \"{2}\". errno = {3}: {4}"),
-					__PRETTY_FUNCTION__, "ioctl-I2C_RDWR",getDeviceName(),errN,::strerror(errN));
+			auto str = fmt::format(_( "{0}: {1} error for device {3} of port \"{2}\". errno = {4}: {5}"),
+					__PRETTY_FUNCTION__, "ioctl-I2C_RDWR",getPortName(),getDeviceName(),errN,::strerror(errN));
 
 			LOG4CXX_ERROR(logger,str);
 			throw GliderVarioPortIOException (__FILE__, __LINE__, str.c_str(),errN);
@@ -569,8 +566,8 @@ void I2CPort::readBlockAtRegAddrByte(
 		if (rc < 0) {
 			auto errN = -rc;
 
-			auto str = fmt::format(_( "{0}: {1} error for device \"{2}\". errno = {3}: {4}"),
-					__PRETTY_FUNCTION__, "i2c_smbus_read_i2c_block_data",getDeviceName(),errN,::strerror(errN));
+			auto str = fmt::format(_( "{0}: {1} error for device {3} of port \"{2}\". errno = {4}: {5}"),
+					__PRETTY_FUNCTION__, "i2c_smbus_read_i2c_block_data",getPortName(),getDeviceName(),errN,::strerror(errN));
 
 			LOG4CXX_ERROR(logger,str);
 			throw GliderVarioPortIOException (__FILE__, __LINE__, str.c_str(),errN);
@@ -581,8 +578,8 @@ void I2CPort::readBlockAtRegAddrByte(
 				<< std::hex << uint32_t(regAddr) << std::dec << " from " << getDeviceName());
 
 	} else {
-		auto str = fmt::format(_("{0}, device \"{1}\": Neither SMBus nor direct I2C is supported."),
-				__PRETTY_FUNCTION__,getDeviceName());
+		auto str = fmt::format(_("{0}, port \"{1}\": Neither SMBus nor direct I2C is supported."),
+				__PRETTY_FUNCTION__,getPortName());
 
 		LOG4CXX_ERROR(logger,str);
 		throw GliderVarioPortException (__FILE__, __LINE__, str.c_str());
@@ -621,8 +618,8 @@ void I2CPort::writeReadBlock(uint16_t devAddr, uint8_t *writeData,
 		if (rc < 0) {
 			auto errN = errno;
 
-			auto str = fmt::format(_( "{0}: {1} error for device \"{2}\". errno = {3}: {4}"),
-					__PRETTY_FUNCTION__, "ioctl-I2C_RDWR",getDeviceName(),errN,::strerror(errN));
+			auto str = fmt::format(_( "{0}: {1} error for device {3} of port \"{2}\". errno = {4}: {5}"),
+					__PRETTY_FUNCTION__, "ioctl-I2C_RDWR",getPortName(),getDeviceName(),errN,::strerror(errN));
 
 			LOG4CXX_ERROR(logger,str);
 			throw GliderVarioPortIOException (__FILE__, __LINE__, str.c_str(),errN);
@@ -633,8 +630,8 @@ void I2CPort::writeReadBlock(uint16_t devAddr, uint8_t *writeData,
 				<< " bytes with ioctl to and from " << getDeviceName());
 
 	} else {
-		auto str = fmt::format(_("{0}, device \"{1}\": Direct I2C is not supported."),
-				__PRETTY_FUNCTION__,getDeviceName());
+		auto str = fmt::format(_("{0}, port \"{1}\": Direct I2C is not supported."),
+				__PRETTY_FUNCTION__,getPortName());
 
 		LOG4CXX_ERROR(logger,str);
 		throw GliderVarioPortException (__FILE__, __LINE__, str.c_str());
@@ -649,8 +646,8 @@ bool I2CPort::check10BitAddr(uint16_t devAddr) {
 		if (!allow10BitAddress) {
 
 			auto str = fmt::format(_(
-					"I2CPort::check10BitAddr: Error using 10-bit I2C address {0:#04X} is not supported for device \"{1}\""),
-					devAddr,getDeviceName());
+					"I2CPort::check10BitAddr: Error using 10-bit I2C address {0:#04X} is not supported for port \"{1}\""),
+					devAddr,getPortName());
 
 			LOG4CXX_ERROR(logger,str);
 			throw GliderVarioPortI2C10BitAddrException (__FILE__, __LINE__, str.c_str(), devAddr);
