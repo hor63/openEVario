@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openEVario 0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/hor63/openEVario/issues\n"
-"POT-Creation-Date: 2024-04-25 22:58+0200\n"
+"POT-Creation-Date: 2024-04-26 00:46+0200\n"
 "PO-Revision-Date: 2024-04-09 16:05+0200\n"
 "Last-Translator: Kai Horstmann <horstmannkai@hotmail.com>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
@@ -495,6 +495,7 @@ msgstr "Port {0} von Typ {1}: Gerät \"{2}\" ist geschlossen."
 
 #: src/util/io/DatagramPort.cpp:94 src/util/io/DatagramPort.cpp:150
 #: src/util/io/StreamPort.cpp:89 src/util/io/StreamPort.cpp:138
+#: src/util/io/UDPPort.cpp:351
 msgid "Port \"{0}\" of type \"{1}\": {4} error {2}: {3}"
 msgstr "Port \"{0}\" von Typ \"{1}\": {4} Fehler {2}: {3}"
 
@@ -652,7 +653,8 @@ msgstr ""
 "{0}: Fehler beim Auflösen von Hostadresse \"{1}\" und/oder TCP port \"{2}\" "
 "für I/O port \"{3}\": getaddrinfo() lieferte 0 aber *_pai ist NULL."
 
-#: src/util/io/TCPPort.cpp:205
+#: src/util/io/TCPPort.cpp:205 src/util/io/UDPPort.cpp:225
+#: src/util/io/UDPPort.cpp:277
 msgid "{0}: Error creating a {1} socket for port \"{2}\". errno = {3}: {4}"
 msgstr ""
 "{0}: Fehler beim Erzeugen eines {1} Socket für I/O Port \"{2}\". errno = "
@@ -673,3 +675,47 @@ msgstr "Port \"{0}\" ist mit Host {1} auf TCP port {2} verbunden."
 #: src/util/io/TCPPort.cpp:244 src/util/io/TCPPort.cpp:253
 msgid "Open I/O port \"{0}\": setsockopt {1} error: errno = {2} : {3}"
 msgstr "Öffnen von I/O port \"{0}\": setsockopt {1} Fehler: errno = {2} : {3}"
+
+#: src/util/io/UDPPort.cpp:153
+msgid ""
+"Configuration error for port {0}: Both peer host and peer port must be "
+"defined or none."
+msgstr ""
+
+#: src/util/io/UDPPort.cpp:159 src/util/io/UDPPort.cpp:297
+msgid ""
+"{0}: I/O port {1} error: neither a local nor a remote port and/or host "
+"address were defined."
+msgstr ""
+
+#: src/util/io/UDPPort.cpp:209
+msgid ""
+"{0}: Port {1}: getaddrinfo() error for local host {2}, local UDP port {3} = "
+"{4} : {5}"
+msgstr ""
+"{0}: Port \"{1}\": getaddrinfo() Fehler für lokale Hostadresse {2}, lokalen "
+"UDP Port {3} = {4} : {5}"
+
+#: src/util/io/UDPPort.cpp:239
+msgid ""
+"{0}: Port {1}: bind() error for local host {2}, UDP port {3} = {4} : {5}"
+msgstr ""
+"{0}: Port \"{1}\": bind() Fehler für lokale Hostadresse {2}, lokalen UDP "
+"Port {3} = {4} : {5}"
+
+#: src/util/io/UDPPort.cpp:259
+msgid ""
+"{0}: Port {1}: getaddrinfo() error for peer host {2}, UDP port {3} = {4} : "
+"{5}"
+msgstr ""
+"{0}: Port \"{1}\": getaddrinfo() Fehler für Zielhostadresse {2}, Ziel-UDP "
+"Port {3} = {4} : {5}"
+
+#: src/util/io/UDPPort.cpp:322
+msgid ""
+"{0}: For I/O port {1} no peer port and/or address are defined. I do not know "
+"where to send data to. Closing the Port."
+msgstr ""
+"{0}: Für I/O Port {1} wurden keine Zieladresse und/oder Zielportnummer "
+"definiert. Ich weiß nicht, wo ich die Daten hinschicken soll. Ich schließe "
+"den Port."
