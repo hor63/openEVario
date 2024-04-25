@@ -52,6 +52,8 @@
 
 #include <sstream>
 
+#include "fmt/format.h"
+
 #include "util/io/TCPPort.h"
 
 #if defined HAVE_LOG4CXX_H
@@ -107,18 +109,28 @@ void TCPPort::configurePort(
 		const Properties4CXX::Properties &globalConfiguration,
 		const Properties4CXX::Properties &portConfiguration) {
 
+std::string currPropertyName;
 
-	auto prop = portConfiguration.searchProperty(hostPropertyName);
-	tcpAddr = prop->getStringValue();
+	try {
 
-	LOG4CXX_DEBUG(logger,"Configure port " << getPortName()
-			<< ": host = \"" << tcpAddr << '\"');
+		currPropertyName = hostPropertyName;
+		auto prop = portConfiguration.searchProperty(currPropertyName);
+		tcpAddr = prop->getStringValue();
 
-	prop = portConfiguration.searchProperty(portPropertyName);
-	tcpPort = prop->getStringValue();
+		LOG4CXX_DEBUG(logger,"Configure port " << getPortName()
+				<< ": host = \"" << tcpAddr << '\"');
 
-	LOG4CXX_DEBUG(logger,"Configure port " << getPortName()
-			<< ": port = \"" << tcpPort << '\"');
+		currPropertyName = portPropertyName;
+		prop = portConfiguration.searchProperty(currPropertyName);
+		tcpPort = prop->getStringValue();
+
+		LOG4CXX_DEBUG(logger,"Configure port " << getPortName()
+				<< ": port = \"" << tcpPort << '\"');
+	} catch (Properties4CXX::ExceptionPropertyNotFound const &e) {
+		auto str = fmt::format(_(
+				"Error configuring port \"(0)\" of type {1}: Mandatory property {3} is missing."),
+				getPortName(),getPortType(),currPropertyName);
+	}
 
 }
 
@@ -154,12 +166,14 @@ void TCPPort::openInternal() {
 
 			if (sock == -1) {
 				rc = errno;
-				LOG4CXX_ERROR(logger,"Open port " << getPortName()
-						<< ": socket() error: " << rc << '=' << strerror(rc));
+				auto str = fmt::format(_(
+						"{0}: Error creating a {1} socket for port \"{2}\". errno = {3}: {4}"),
+						__PRETTY_FUNCTION__,"TCP", getPortName(), rc, strerror(rc));
+				LOG4CXX_ERROR(logger,str);
 				throw GliderVarioPortOpenException (
 						__FILE__,
 						__LINE__,
-						"Error in socket()",
+						str.c_str(),
 						rc);
 			}
 
@@ -167,14 +181,16 @@ void TCPPort::openInternal() {
 				rc = ::connect(sock,ad->ai_addr,ad->ai_addrlen);
 				if (rc == -1) {
 					rc = errno;
-					LOG4CXX_ERROR(logger,"Open port " << getPortName()
-							<< ": connect() error: " << rc << '=' << strerror(rc));
+					auto str = fmt::format(_(
+							"{0}: Error connect TCP socket to host \"{1}\" on TCP port \"{2}\" for I/O port \"{3}\". errno = {4}: {5}"),
+							__PRETTY_FUNCTION__, tcpAddr, tcpPort, getPortName(), rc, strerror(rc));
+					LOG4CXX_ERROR(logger,str);
 					::close (sock);
 					sock = -1;
 					throw GliderVarioPortOpenException (
 							__FILE__,
 							__LINE__,
-							"Error in connect()",
+							str.c_str(),
 							rc);
 				}
 			}
@@ -185,14 +201,15 @@ void TCPPort::openInternal() {
 			ad = ad->ai_next;
 		}
 	} else {
-		std::ostringstream ostr;
-		ostr << "getaddrinfo() error: " << gai_strerror(rc);
-		LOG4CXX_ERROR(logger,"Open port " << getPortName()
-				<< ostr.str());
+		auto str = fmt::format(_(
+				"{0}: Error resolving host \"{1}\" and/or TCP port \"{2}\" for I/O port \"{3}\". Error code = {4}: {5}"),
+				__PRETTY_FUNCTION__, tcpAddr, tcpPort, getPortName(), rc, gai_strerror(rc));
+
+		LOG4CXX_ERROR(logger,str);
 		throw GliderVarioPortOpenException (
 				__FILE__,
 				__LINE__,
-				ostr.str().c_str(),
+				str.c_str(),
 				rc);
 	}
 
@@ -200,14 +217,21 @@ void TCPPort::openInternal() {
 		::freeaddrinfo(addr);
 	}
 
+	{
+		DeviceHandleAccess devAcc(*this);
+		devAcc.deviceHandle = sock;
+	}
+
+	LOG4CXX_INFO(logger,fmt::format(_("Port \"{0}\": Connected to host {1} on TCP port {2}.")));
+
 	if (sock != -1) {
 		int flag = 1;
 #if TCP_NODELAY
 		rc = ::setsockopt(sock,IPPROTO_TCP,TCP_NODELAY,&flag, sizeof(flag));
 		if (rc == -1) {
 			rc = errno;
-			LOG4CXX_WARN(logger,"Open port " << getPortName()
-					<< ": setsockopt TCP_NODELAY error:" << strerror(rc));
+			LOG4CXX_WARN(logger,fmt::format(_("Open I/O port \"{0}\": setsockopt {1} error: errno = {2} : {3}"),
+					getPortName(),"TCP_NODELAY",rc,strerror(rc)));
 		}
 #endif // #if TCP_NODELAY
 #if TCP_QUICKACK
@@ -215,19 +239,12 @@ void TCPPort::openInternal() {
 		rc = ::setsockopt(sock,IPPROTO_TCP,TCP_QUICKACK,&flag, sizeof(flag));
 		if (rc == -1) {
 			rc = errno;
-			LOG4CXX_WARN(logger,"Open port " << getPortName()
-					<< ": setsockopt TCP_QUICKACK error:" << strerror(rc));
+			LOG4CXX_WARN(logger,fmt::format(_("Open I/O port \"{0}\": setsockopt {1} error: errno = {2} : {3}"),
+					getPortName(),"TCP_QUICKACK",rc,strerror(rc)));
 		}
 #endif // #if TCP_QUICKACK
 
 	}
-
-	{
-		DeviceHandleAccess devAcc(*this);
-		devAcc.deviceHandle = sock;
-	}
-
-	LOG4CXX_INFO(logger,"Open port " << getPortName() << ": Connected to host");
 
 
 }
