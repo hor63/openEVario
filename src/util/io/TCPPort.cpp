@@ -177,8 +177,8 @@ void TCPPort::openInternal() {
 				__PRETTY_FUNCTION__, tcpAddr, tcpPort, getPortName(), rc, gai_strerror(rc));
 		} else {
 			str = fmt::format(_(
-				"{0}: Error resolving host \"{1}\" and/or TCP port \"{2}\" for I/O port \"{3}\". "
-				"getaddrinfo() returned is 0 but *_pai is NULL."
+				"{0}: Error resolving host \"{1}\" and/or TCP port \"{2}\" for I/O port \"{3}\": "
+				"getaddrinfo() returned 0 but *_pai is NULL."
 					),
 				__PRETTY_FUNCTION__, tcpAddr, tcpPort, getPortName());
 		}

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openEVario 0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/hor63/openEVario/issues\n"
-"POT-Creation-Date: 2024-04-24 20:42+0200\n"
+"POT-Creation-Date: 2024-04-25 22:58+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -504,4 +504,40 @@ msgstr ""
 #: src/util/io/StreamPort.cpp:96
 msgid ""
 "Port {0} of type {1}: End of file condition upon read. Closing the port."
+msgstr ""
+
+#: src/util/io/TCPPort.cpp:131
+msgid ""
+"Error configuring port \"(0)\" of type {1}: Mandatory property {3} is "
+"missing."
+msgstr ""
+
+#: src/util/io/TCPPort.cpp:176
+msgid ""
+"{0}: Error resolving host \"{1}\" and/or TCP port \"{2}\" for I/O port "
+"\"{3}\". Error code = {4}: {5}"
+msgstr ""
+
+#: src/util/io/TCPPort.cpp:180
+msgid ""
+"{0}: Error resolving host \"{1}\" and/or TCP port \"{2}\" for I/O port "
+"\"{3}\": getaddrinfo() returned 0 but *_pai is NULL."
+msgstr ""
+
+#: src/util/io/TCPPort.cpp:205
+msgid "{0}: Error creating a {1} socket for port \"{2}\". errno = {3}: {4}"
+msgstr ""
+
+#: src/util/io/TCPPort.cpp:219
+msgid ""
+"{0}: Error connect TCP socket to host \"{1}\" on TCP port \"{2}\" for I/O "
+"port \"{3}\". errno = {4}: {5}"
+msgstr ""
+
+#: src/util/io/TCPPort.cpp:237
+msgid "Port \"{0}\": Connected to host {1} on TCP port {2}."
+msgstr ""
+
+#: src/util/io/TCPPort.cpp:244 src/util/io/TCPPort.cpp:253
+msgid "Open I/O port \"{0}\": setsockopt {1} error: errno = {2} : {3}"
 msgstr ""
