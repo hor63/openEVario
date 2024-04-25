@@ -52,6 +52,8 @@
 
 #include <sstream>
 
+#include "fmt/format.h"
+
 #include "util/io/UDPPort.h"
 
 #if defined HAVE_LOG4CXX_H
@@ -89,7 +91,7 @@ UDPPort::UDPPort(char const* portName)
 
 UDPPort::~UDPPort() {
 
-	if (peerAd != NULL) {
+	if (peerAd != nullptr) {
 		::freeaddrinfo(peerAd);
 	}
 
@@ -134,7 +136,7 @@ void UDPPort::configurePort(
 			LOG4CXX_DEBUG(logger,"Configure port " << getPortName()
 					<< ": peerAddr = \"" << peerAddr << '\"');
 	} catch (...) {
-		// An undefined
+		// An undefined local address means I am listening on all network adapters.
 		localAddr = "0.0.0.0";
 	}
 
@@ -146,112 +148,145 @@ void UDPPort::configurePort(
 					<< ": peerAddr = \"" << peerAddr << '\"');
 	} catch (...) {}
 
+	// Some sanity checks upfront to avoid later confusion and strange error messages.
+	if ((peerPortDefined && !peerAddrDefined) || (!peerPortDefined && peerAddrDefined)) {
+		auto str = fmt::format(_("Configuration error for port {0}: Both peer host and peer port must be defined or none."));
+		LOG4CXX_ERROR (logger,str);
+		throw GliderVarioPortConfigException (__FILE__,__LINE__, str.c_str());
+	}
+
+	if (!peerPortDefined && !localPortDefined ){
+		auto str = fmt::format(_("{0}: I/O port {1} error: neither a local nor a remote port and/or host address were defined."),
+				__PRETTY_FUNCTION__,getPortName());
+		LOG4CXX_ERROR(logger,str);
+		throw GliderVarioPortConfigException (
+				__FILE__,
+				__LINE__,
+				str.c_str());
+	}
 
 }
+
+/** \brief Manages the dynamically allocated memory from getaddrinfo
+ *
+ * Use an object of this struct to release the dynamically allocated memory
+ * in all circumstances, including the numerous cases when an exception is thrown.
+ */
+struct AddrInfoManagerUDP final {
+	struct addrinfo addrHint;
+	struct addrinfo *localAd = nullptr;
+
+	AddrInfoManagerUDP () {
+		::memset (&addrHint,0,sizeof(addrHint));
+	}
+
+	~AddrInfoManagerUDP () {
+		if (localAd != nullptr) {
+			::freeaddrinfo(localAd);
+		}
+	}
+};
 
 void UDPPort::openInternal() {
 
 	int sock = -1;
 	int rc = 0;
-	struct addrinfo addrHint;
-
-	::memset (&addrHint,0,sizeof(addrHint));
+	AddrInfoManagerUDP addrMgr;
 
 	// Allow IP V4 as well as IP V6; Do not insist on IP V4
-	// addrHint.ai_family = AF_INET;
+	// addrMgr.addrHint.ai_family = AF_INET;
 
 	// But insist on UDP; do not allow TCP
-	addrHint.ai_socktype = SOCK_DGRAM;
+	addrMgr.addrHint.ai_socktype = SOCK_DGRAM;
 
 	// If the local address is undefined it defaults to the wildcard address "0.0.0.0"
 	if (localPortDefined) {
-		struct addrinfo *localAd = nullptr;
 
-		rc = ::getaddrinfo(localAddr.c_str(),localPort.c_str(),&addrHint,&localAd);
+		rc = ::getaddrinfo(localAddr.c_str(),localPort.c_str(),&addrMgr.addrHint,&addrMgr.localAd);
 
-		if (rc == 0) {
-			auto sockType = localAd->ai_socktype;
-
-			if (!isBlocking()) {
-				sockType |= SOCK_NONBLOCK;
-			}
-
-			sock = ::socket(localAd->ai_family,sockType,localAd->ai_protocol);
-
-			if (sock == -1) {
-				rc = errno;
-				::freeaddrinfo(localAd);
-				LOG4CXX_ERROR(logger,"Open port " << getPortName()
-						<< ": socket() error: " << rc << '=' << strerror(rc));
-				throw GliderVarioPortOpenException (
-						__FILE__,
-						__LINE__,
-						"Error in socket()",
-						rc);
-			}
-
-			rc = ::bind(sock,localAd->ai_addr,localAd->ai_addrlen);
-			if (rc == -1) {
-				rc = errno;
-				LOG4CXX_ERROR(logger,"Open port " << getPortName()
-						<< ": bind() local address error: " << rc << '=' << strerror(rc));
-				::close (sock);
-				sock = -1;
-			} else {
-				socketBound = true;
-			}
-
-		} else { // if (rc == 0)
-			std::ostringstream ostr;
-			ostr << "getaddrinfo() local address error: " << gai_strerror(rc);
-			LOG4CXX_ERROR(logger,"Open port " << getPortName()
-					<< ostr.str());
-		} // if (rc == 0)
-
-		if (localAd != NULL) {
-			::freeaddrinfo(localAd);
+		if (rc != 0) {
+			auto str = fmt::format(_(
+					"{0}: Port {1}: getaddrinfo() error for local host {2}, local UDP port {3} = {4} : {5}"),
+					__PRETTY_FUNCTION__,getPortName(),localAddr,localPort,rc,gai_strerror(rc));
+			LOG4CXX_ERROR(logger,str);
+			throw GliderVarioPortOpenException (__FILE__, __LINE__, str.c_str());
 		}
+
+		auto sockType = addrMgr.localAd->ai_socktype;
+
+		if (!isBlocking()) {
+			sockType |= SOCK_NONBLOCK;
+		}
+
+		sock = ::socket(addrMgr.localAd->ai_family,sockType,addrMgr.localAd->ai_protocol);
+
+		if (sock == -1) {
+			rc = errno;
+			auto str = fmt::format(_("{0}: Error creating a {1} socket for port \"{2}\". errno = {3}: {4}"),
+					__PRETTY_FUNCTION__,"UDP",getPortName(),rc,strerror(rc));
+			LOG4CXX_ERROR(logger,str);
+			throw GliderVarioPortOpenException (
+					__FILE__,
+					__LINE__,
+					str.c_str(),
+					rc);
+		}
+
+		rc = ::bind(sock,addrMgr.localAd->ai_addr,addrMgr.localAd->ai_addrlen);
+		if (rc == -1) {
+			rc = errno;
+			auto str = fmt::format(_(
+					"{0}: Port {1}: bind() error for local host {2}, UDP port {3} = {4} : {5}"),
+					__PRETTY_FUNCTION__,getPortName(),localAddr,localPort,rc,strerror(rc));
+			::close (sock);
+			sock = -1;
+			LOG4CXX_ERROR(logger,str);
+			throw GliderVarioPortOpenException (__FILE__, __LINE__, str.c_str(),rc);
+		} else {
+			socketBound = true;
+		}
+
+
 	} // if (localPortDefined)
 
 	// For the peer address I need the IP address and the port.
 	if (peerPortDefined && peerAddrDefined) {
 
-		rc = ::getaddrinfo(peerAddr.c_str(),peerPort.c_str(),&addrHint,&peerAd);
+		rc = ::getaddrinfo(peerAddr.c_str(),peerPort.c_str(),&addrMgr.addrHint,&peerAd);
 
-		if (rc == 0) {
+		if (rc != 0) {
+			auto str = fmt::format(_(
+					"{0}: Port {1}: getaddrinfo() error for peer host {2}, UDP port {3} = {4} : {5}"),
+					__PRETTY_FUNCTION__,getPortName(),peerAddr,peerPort,rc,gai_strerror(rc));
+			LOG4CXX_ERROR(logger,str);
+			throw GliderVarioPortOpenException (__FILE__, __LINE__, str.c_str());
+		}
 
-			// If the socket has not yet been created do it now.
+		// If the socket has not yet been created do it now.
+		if (sock == -1) {
+			auto sockType = peerAd->ai_socktype;
+
+			if (!isBlocking()) {
+				sockType |= SOCK_NONBLOCK;
+			}
+
+			sock = ::socket(peerAd->ai_family,sockType,peerAd->ai_protocol);
+
 			if (sock == -1) {
-				auto sockType = peerAd->ai_socktype;
+				rc = errno;
+				auto str = fmt::format(_("{0}: Error creating a {1} socket for port \"{2}\". errno = {3}: {4}"),
+						__PRETTY_FUNCTION__,"UDP",getPortName(),rc,strerror(rc));
+				LOG4CXX_ERROR(logger,str);
+				throw GliderVarioPortOpenException (
+						__FILE__,
+						__LINE__,
+						str.c_str(),
+						rc);
+			}
+		} // if (sock == -1)
 
-				if (!isBlocking()) {
-					sockType |= SOCK_NONBLOCK;
-				}
+		socketConnected = true;
 
-				sock = ::socket(peerAd->ai_family,sockType,peerAd->ai_protocol);
-
-				if (sock == -1) {
-					rc = errno;
-					::freeaddrinfo(peerAd);
-					peerAd = nullptr;
-					LOG4CXX_ERROR(logger,"Open port " << getPortName()
-							<< ": socket() error: " << rc << '=' << strerror(rc));
-					throw GliderVarioPortOpenException (
-							__FILE__,
-							__LINE__,
-							"Error in socket()",
-							rc);
-				}
-			} // if (sock == -1)
-
-			socketConnected = true;
-
-		} else { // if (rc == 0)
-			std::ostringstream ostr;
-			ostr << "getaddrinfo() peer address error: " << gai_strerror(rc);
-			LOG4CXX_ERROR(logger,"Open port " << getPortName()
-					<< ostr.str());
-		} // if (rc == 0)
 
 	} // if (peerPortDefined && peerAddrDefined)
 
@@ -259,12 +294,13 @@ void UDPPort::openInternal() {
 		DeviceHandleAccess devAcc(*this);
 		devAcc.deviceHandle = sock;
 	} else {
+		auto str = fmt::format(_("{0}: I/O port {1} error: neither a local nor a remote port and/or host address were defined."),
+				__PRETTY_FUNCTION__,getPortName());
+		LOG4CXX_ERROR(logger,str);
 		throw GliderVarioPortOpenException (
 				__FILE__,
 				__LINE__,
-				"Error: Could neither bind local address nor connect destination address to socket",
-				rc);
-
+				str.c_str());
 	}
 
 	LOG4CXX_INFO(logger,"Open port " << getPortName() << " successful");
@@ -280,6 +316,15 @@ ssize_t UDPPort::send(uint8_t *buffer, size_t bufLen) {
 
 	if (!isBlocking()) {
 		flags |= MSG_DONTWAIT;
+	}
+
+	if (!peerPortDefined) {
+		auto str = fmt::format(_("{0}: For I/O port {1} no peer port and/or address are defined. "
+				"I do not know where to send data to. Closing the Port."),
+				__PRETTY_FUNCTION__,getPortName());
+		close();
+		LOG4CXX_ERROR(logger,str);
+		throw GliderVarioPortWriteException(__FILE__,__LINE__,str.c_str());
 	}
 
 	do {
@@ -303,11 +348,10 @@ ssize_t UDPPort::send(uint8_t *buffer, size_t bufLen) {
 				ret = 0;
 				break;
 			default:
-				std::ostringstream str;
-
-				str << "Port" << getPortName() << ':' << getPortType() << ": sendto error " << err << ":" << strerror(err);
-				LOG4CXX_ERROR (logger,str.str());
-				throw GliderVarioPortWriteException(__FILE__,__LINE__,str.str().c_str(),err);
+				auto str = fmt::format(_("Port \"{0}\" of type \"{1}\": {4} error {2}: {3}"),
+						getPortName(), getPortType(), err, strerror(err),"sendto()");
+				LOG4CXX_ERROR (logger,str);
+				throw GliderVarioPortWriteException(__FILE__,__LINE__,str.c_str(),err);
 			}
 		}
 
