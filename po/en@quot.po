@@ -29,8 +29,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openEVario 0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/hor63/openEVario/issues\n"
-"POT-Creation-Date: 2024-04-26 11:08+0200\n"
-"PO-Revision-Date: 2024-04-26 11:08+0200\n"
+"POT-Creation-Date: 2024-04-26 12:56+0200\n"
+"PO-Revision-Date: 2024-04-26 12:56+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: en@quot\n"
@@ -416,6 +416,10 @@ msgstr "{0} with portName={1}, portType={2}"
 msgid "Port \"{0}\" is defined more than once"
 msgstr "Port “{0}” is defined more than once"
 
+#: src/util/io/PortBase.cpp:125
+msgid "Loading port \"{0}\""
+msgstr "Loading port “{0}”"
+
 #: src/util/io/PortBase.cpp:137
 msgid "Type \"{0}\" of port \"{1}\" does not exist."
 msgstr "Type “{0}” of port “{1}” does not exist."
@@ -687,6 +691,10 @@ msgid ""
 msgstr ""
 "{0}: Port {1}: getaddrinfo() error for peer host {2}, UDP port {3} = {4} : "
 "{5}"
+
+#: src/util/io/UDPPort.cpp:307
+msgid "{0}: Port \"{1}\" opened successful"
+msgstr "{0}: Port “{1}” opened successful"
 
 #: src/util/io/UDPPort.cpp:323
 msgid ""

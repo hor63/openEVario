@@ -304,7 +304,7 @@ void UDPPort::openInternal() {
 				str.c_str());
 	}
 
-	LOG4CXX_INFO(logger,"Open port " << getPortName() << " successful");
+	LOG4CXX_INFO(logger,fmt::format(_("{0}: Port \"{1}\" opened successful"),__PRETTY_FUNCTION__,getPortName()));
 
 
 }

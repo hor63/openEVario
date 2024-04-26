@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openEVario 0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/hor63/openEVario/issues\n"
-"POT-Creation-Date: 2024-04-26 11:08+0200\n"
+"POT-Creation-Date: 2024-04-26 12:56+0200\n"
 "PO-Revision-Date: 2024-04-09 16:05+0200\n"
 "Last-Translator: Kai Horstmann <horstmannkai@hotmail.com>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
@@ -417,6 +417,10 @@ msgstr "{0} mit Portname={1}, Porttyp={2}"
 msgid "Port \"{0}\" is defined more than once"
 msgstr "Port \"{0}\" wurde mehr als einmal definiert."
 
+#: src/util/io/PortBase.cpp:125
+msgid "Loading port \"{0}\""
+msgstr "Lade Port „{0}“"
+
 #: src/util/io/PortBase.cpp:137
 msgid "Type \"{0}\" of port \"{1}\" does not exist."
 msgstr "Typ „{0}“ für Port „{1}“ existiert nicht."
@@ -447,7 +451,6 @@ msgid "  blocking = {0}"
 msgstr "  blockierend = {0}"
 
 #: src/util/io/PortBase.cpp:196
-#, fuzzy
 msgid "Exception when configuring port \"{0}\" in source {1} at line {2}: {3}"
 msgstr ""
 "Exception bei Konfiguration von Port \"{0}\" in Quelldatei {1} in Zeile {2}: "
@@ -711,6 +714,10 @@ msgid ""
 msgstr ""
 "{0}: Port \"{1}\": getaddrinfo() Fehler für Zielhostadresse {2}, Ziel-UDP "
 "Port {3} = {4} : {5}"
+
+#: src/util/io/UDPPort.cpp:307
+msgid "{0}: Port \"{1}\" opened successful"
+msgstr "{0}: Port \"{1}\" wurde erfolgreich geöffnet."
 
 #: src/util/io/UDPPort.cpp:323
 msgid ""

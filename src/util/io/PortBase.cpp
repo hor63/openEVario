@@ -89,7 +89,7 @@ void PortBase::addPortType (const char* portType, PortConstructor portConstruct)
 #endif /* HAVE_LOG4CXX_H */
 
 	LOG4CXX_INFO(logger,__PRETTY_FUNCTION__
-			<< "(portType=" << portType);
+			<< "(portType = " << portType);
 
 	auto rc = typeMap.emplace(portType,portConstruct);
 	if (!rc.second) {
@@ -122,7 +122,7 @@ void PortBase::loadSinglePort (
 		std::string const &portName) {
 
 	PortBase* newPort = nullptr;
-	LOG4CXX_INFO(logger,"Loading port '" << portProperty.getPropertyName() << '\'');
+	LOG4CXX_INFO(logger,fmt::format(_("Loading port \"{0}\""),portProperty.getPropertyName()));
 
 	if (portProperty.isStruct()) {
 		Properties4CXX::Properties const &portStruct = portProperty.getPropertiesStructure();
