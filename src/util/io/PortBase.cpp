@@ -193,7 +193,7 @@ void PortBase::loadPorts(Properties4CXX::Properties const &properties) {
 					loadSinglePort(properties,portProp,portName);
 				} catch (GliderVarioPortConfigException const& e) {
 					LOG4CXX_ERROR (logger, fmt::format(_(
-							"Exception when configuring port \"{0)\" in source {1} at line {2}: {3}"),
+							"Exception when configuring port \"{0}\" in source {1} at line {2}: {3}"),
 							portPropIter->second->getPropertyName(),e.getSource(), e.getLine(), e.getDescription()));
 				}
 				catch (std::exception const& e) {

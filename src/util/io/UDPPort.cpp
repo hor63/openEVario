@@ -150,7 +150,8 @@ void UDPPort::configurePort(
 
 	// Some sanity checks upfront to avoid later confusion and strange error messages.
 	if ((peerPortDefined && !peerAddrDefined) || (!peerPortDefined && peerAddrDefined)) {
-		auto str = fmt::format(_("Configuration error for port {0}: Both peer host and peer port must be defined or none."));
+		auto str = fmt::format(_("Configuration error for port {0}: Both peer host and peer port must be defined or none."),
+				getPortName());
 		LOG4CXX_ERROR (logger,str);
 		throw GliderVarioPortConfigException (__FILE__,__LINE__, str.c_str());
 	}

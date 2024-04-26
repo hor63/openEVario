@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openEVario 0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/hor63/openEVario/issues\n"
-"POT-Creation-Date: 2024-04-26 00:46+0200\n"
+"POT-Creation-Date: 2024-04-26 11:08+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -361,7 +361,7 @@ msgid "  blocking = {0}"
 msgstr ""
 
 #: src/util/io/PortBase.cpp:196
-msgid "Exception when configuring port \"{0)\" in source {1} at line {2}: {3}"
+msgid "Exception when configuring port \"{0}\" in source {1} at line {2}: {3}"
 msgstr ""
 
 #: src/util/io/PortBase.cpp:201
@@ -403,7 +403,7 @@ msgstr ""
 
 #: src/util/io/DatagramPort.cpp:94 src/util/io/DatagramPort.cpp:150
 #: src/util/io/StreamPort.cpp:89 src/util/io/StreamPort.cpp:138
-#: src/util/io/UDPPort.cpp:351
+#: src/util/io/UDPPort.cpp:352
 msgid "Port \"{0}\" of type \"{1}\": {4} error {2}: {3}"
 msgstr ""
 
@@ -525,8 +525,8 @@ msgid ""
 "\"{3}\": getaddrinfo() returned 0 but *_pai is NULL."
 msgstr ""
 
-#: src/util/io/TCPPort.cpp:205 src/util/io/UDPPort.cpp:225
-#: src/util/io/UDPPort.cpp:277
+#: src/util/io/TCPPort.cpp:205 src/util/io/UDPPort.cpp:226
+#: src/util/io/UDPPort.cpp:278
 msgid "{0}: Error creating a {1} socket for port \"{2}\". errno = {3}: {4}"
 msgstr ""
 
@@ -550,30 +550,30 @@ msgid ""
 "defined or none."
 msgstr ""
 
-#: src/util/io/UDPPort.cpp:159 src/util/io/UDPPort.cpp:297
+#: src/util/io/UDPPort.cpp:160 src/util/io/UDPPort.cpp:298
 msgid ""
 "{0}: I/O port {1} error: neither a local nor a remote port and/or host "
 "address were defined."
 msgstr ""
 
-#: src/util/io/UDPPort.cpp:209
+#: src/util/io/UDPPort.cpp:210
 msgid ""
 "{0}: Port {1}: getaddrinfo() error for local host {2}, local UDP port {3} = "
 "{4} : {5}"
 msgstr ""
 
-#: src/util/io/UDPPort.cpp:239
+#: src/util/io/UDPPort.cpp:240
 msgid ""
 "{0}: Port {1}: bind() error for local host {2}, UDP port {3} = {4} : {5}"
 msgstr ""
 
-#: src/util/io/UDPPort.cpp:259
+#: src/util/io/UDPPort.cpp:260
 msgid ""
 "{0}: Port {1}: getaddrinfo() error for peer host {2}, UDP port {3} = {4} : "
 "{5}"
 msgstr ""
 
-#: src/util/io/UDPPort.cpp:322
+#: src/util/io/UDPPort.cpp:323
 msgid ""
 "{0}: For I/O port {1} no peer port and/or address are defined. I do not know "
 "where to send data to. Closing the Port."
