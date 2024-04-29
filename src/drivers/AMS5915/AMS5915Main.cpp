@@ -27,6 +27,8 @@
 #  include "config.h"
 #endif
 
+#include "fmt/format.h"
+
 #include "kalman/GliderVarioStatus.h"
 #include "AMS5915Lib.h"
 #include "AMS5915Driver.h"
@@ -58,7 +60,7 @@ void OEV_DRIVER_PUBLIC driverLibInit(void) {
 	initLogger();
 #endif
 
-	LOG4CXX_INFO(logger,"Initialize the AMS5915 driver library");
+	LOG4CXX_INFO(logger,fmt::format(_("Initialize the {0} driver library"),"AMS5915"));
 
 	initialized = true;
 
@@ -69,7 +71,7 @@ openEV::drivers::GliderVarioDriverLibBasePtr OEV_DRIVER_PUBLIC getDriverLib() {
 
 	driverLibInit();
 
-	LOG4CXX_INFO(logger,"AMS5915: getDriverLib");
+	LOG4CXX_INFO(logger,"AMS5915: getDriverLib()");
 
 	return &AMS5915Lib::theOneAndOnly;
 }

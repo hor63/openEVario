@@ -27,6 +27,8 @@
 #  include "config.h"
 #endif
 
+#include "fmt/format.h"
+
 #include "kalman/GliderVarioStatus.h"
 #include "TE-MEAS-AbsPressureLib.h"
 #include "TE-MEAS-AbsPressureDriver.h"
@@ -59,6 +61,7 @@ void OEV_DRIVER_PUBLIC driverLibInit(void) {
 #endif
 
 	LOG4CXX_INFO(logger,"Initialize the TE_MEAS_AbsPressure driver library");
+	LOG4CXX_INFO(logger,fmt::format(_("Initialize the {0} driver library"),"TE_MEAS_AbsPressure"));
 
 	initialized = true;
 
@@ -69,7 +72,7 @@ openEV::drivers::GliderVarioDriverLibBasePtr OEV_DRIVER_PUBLIC getDriverLib() {
 
 	driverLibInit();
 
-	LOG4CXX_INFO(logger,"TE_MEAS_AbsPressure: getDriverLib");
+	LOG4CXX_INFO(logger,"TE_MEAS_AbsPressure: getDriverLib()");
 
 	return &TE_MEAS_AbsPressureLib::theOneAndOnly;
 }

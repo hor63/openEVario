@@ -28,6 +28,8 @@
 #  include "config.h"
 #endif
 
+#include "fmt/format.h"
+
 #include "kalman/GliderVarioStatus.h"
 #include "simulDriver.h"
 #include "drivers/sensorDriver.h"
@@ -48,7 +50,7 @@ void OEV_DRIVER_PUBLIC driverLibInit(void) {
 
 	initLogger();
 
-	LOG4CXX_INFO(logger,"Initialize the simulation driver");
+	LOG4CXX_INFO(logger,fmt::format(_("Initialize the {0} driver library"),"Simulation"));
 
 }
 
@@ -56,7 +58,7 @@ GliderVarioDriverLibBasePtr OEV_DRIVER_PUBLIC getDriverLib() {
 
 	initLogger();
 
-	LOG4CXX_INFO(logger,"getDriverLib");
+	LOG4CXX_INFO(logger,"Simulation: getDriverLib()");
 
 	return 0;
 }

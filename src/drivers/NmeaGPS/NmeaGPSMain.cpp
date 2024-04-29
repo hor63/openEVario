@@ -27,6 +27,8 @@
 #  include "config.h"
 #endif
 
+#include "fmt/format.h"
+
 #include "kalman/GliderVarioStatus.h"
 #include "NmeaGPSLib.h"
 #include "NmeaGPSDriver.h"
@@ -58,7 +60,7 @@ void OEV_DRIVER_PUBLIC driverLibInit(void) {
 	initLogger();
 #endif
 
-	LOG4CXX_INFO(logger,"Initialize the NmeaGPS driver library");
+	LOG4CXX_INFO(logger,fmt::format(_("Initialize the {0} driver library"),"NmeaGPS"));
 
 	initialized = true;
 
@@ -69,7 +71,7 @@ openEV::drivers::GliderVarioDriverLibBasePtr OEV_DRIVER_PUBLIC getDriverLib() {
 
 	driverLibInit();
 
-	LOG4CXX_INFO(logger,"NmeaGPS: getDriverLib");
+	LOG4CXX_INFO(logger,"NmeaGPS: getDriverLib()");
 
 	return &NmeaGPSLib::theOneAndOnly;
 }

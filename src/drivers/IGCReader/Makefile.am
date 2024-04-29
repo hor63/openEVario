@@ -23,7 +23,7 @@ openEVIGCReader_la_SOURCES=IGCReaderMain.cpp IGCReaderLib.cpp IGCReaderDriver.cp
 openEVIGCReader_la_LDFLAGS=$(LD_NO_UNDEFINED_OPT) $(MAIN_LDFLAGS) $(LOG4CXX_LDFLAGS) -module
 openEVIGCReader_la_LIBADD = ../../main/libopenEVMain.la ../../kalman/libopenEVKalman.la ../../util/libopenEVUtil.la $(LOG4CXX_LIBS) $(MAIN_LIBS) $(PTHREAD_LIBS)
 
-AM_CXXFLAGS = -I../../.. -I$(top_srcdir)/src -isystem $(top_srcdir)/3rdParty/eigen \
+AM_CXXFLAGS = -I../../.. -I$(top_srcdir)/src -isystem $(top_srcdir)/3rdParty/eigen -I$(top_srcdir)/3rdParty/fmt/include \
 	$(LOG4CXX_CXXFLAGS) \
 	$(PTHREAD_CFLAGS) \
 	$(DLL_VISIBLE_CFLAGS) \

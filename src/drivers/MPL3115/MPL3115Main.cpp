@@ -27,6 +27,8 @@
 #  include "config.h"
 #endif
 
+#include "fmt/format.h"
+
 #include "kalman/GliderVarioStatus.h"
 #include "MPL3115Lib.h"
 #include "MPL3115Driver.h"
@@ -58,7 +60,7 @@ void OEV_DRIVER_PUBLIC driverLibInit(void) {
 	initLogger();
 #endif
 
-	LOG4CXX_INFO(logger,"Initialize the MPL3115 driver library");
+	LOG4CXX_INFO(logger,fmt::format(_("Initialize the {0} driver library"),"MPL3115"));
 
 	initialized = true;
 
@@ -69,7 +71,7 @@ openEV::drivers::GliderVarioDriverLibBasePtr OEV_DRIVER_PUBLIC getDriverLib() {
 
 	driverLibInit();
 
-	LOG4CXX_INFO(logger,"MPL3115: getDriverLib");
+	LOG4CXX_INFO(logger,"MPL3115: getDriverLib()");
 
 	return &MPL3115Lib::theOneAndOnly;
 }

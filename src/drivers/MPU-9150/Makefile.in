@@ -445,10 +445,7 @@ openEVMPU_9150_la_SOURCES = MPU-9150Main.cpp MPU-9150Lib.cpp MPU-9150Driver.cpp
 openEVMPU_9150_la_LDFLAGS = $(LD_NO_UNDEFINED_OPT) $(MAIN_LDFLAGS) $(LOG4CXX_LDFLAGS) -module
 openEVMPU_9150_la_LIBADD = ../../main/libopenEVMain.la ../../kalman/libopenEVKalman.la ../../util/libopenEVUtil.la $(LOG4CXX_LIBS) $(MAIN_LIBS) $(PTHREAD_LIBS)
 AM_CXXFLAGS = -I../../.. -I$(top_srcdir)/src -isystem $(top_srcdir)/3rdParty/eigen -I$(top_srcdir)/3rdParty/horOvIp-I2C-Bridge \
-	$(LOG4CXX_CXXFLAGS) \
-	$(PTHREAD_CFLAGS) \
-	$(DLL_VISIBLE_CFLAGS) \
-	-DBUILDING_OEV_DRIVER=1
+	-I$(top_srcdir)/3rdParty/fmt/include
 
 libopenEVMPU_9150_la_CXXFLAGS = $(AM_CXXFLAGS) -DBUILDING_OEV_DRIVER=1
 all: all-am
@@ -781,6 +778,10 @@ uninstall-am: uninstall-pkglibLTLIBRARIES
 
 .PRECIOUS: Makefile
 
+	$(LOG4CXX_CXXFLAGS) \
+	$(PTHREAD_CFLAGS) \
+	$(DLL_VISIBLE_CFLAGS) \
+	-DBUILDING_OEV_DRIVER=1
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -27,6 +27,8 @@
 #  include "config.h"
 #endif
 
+#include "fmt/format.h"
+
 #include "kalman/GliderVarioStatus.h"
 #include "BMXSensorBoardLib.h"
 #include "BMXSensorBoardDriver.h"
@@ -58,7 +60,7 @@ void OEV_DRIVER_PUBLIC driverLibInit(void) {
 	initLogger();
 #endif
 
-	LOG4CXX_INFO(logger,"Initialize the BMXSensorBoard driver library");
+	LOG4CXX_INFO(logger,fmt::format(_("Initialize the {0} driver library"),"BMXSensorBoard"));
 
 	initialized = true;
 
@@ -69,7 +71,7 @@ openEV::drivers::GliderVarioDriverLibBasePtr OEV_DRIVER_PUBLIC getDriverLib() {
 
 	driverLibInit();
 
-	LOG4CXX_INFO(logger,"BMXSensorBoard: getDriverLib");
+	LOG4CXX_INFO(logger,"BMXSensorBoard: getDriverLib()");
 
 	return &BMXSensorBoardLib::theOneAndOnly;
 }
