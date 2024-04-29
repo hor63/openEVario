@@ -31,6 +31,8 @@
 #include <chrono>
 #include <thread>
 
+#include "fmt/format.h"
+
 #include "AMS5915Driver.h"
 #include "kalman/GliderVarioTransitionMatrix.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
@@ -81,34 +83,35 @@ void AMS5915Driver::applyCalibrationData(){
 
 void AMS5915Driver::readConfiguration (Properties4CXX::Properties const &configuration) {
 
-	LOG4CXX_INFO(logger, __FUNCTION__ << " Device" << instanceName << " read configuraion");
+	LOG4CXX_INFO(logger, fmt::format (_("{0}: for driver instance \"{1}\""),
+			__PRETTY_FUNCTION__, instanceName));
 
-	{
+		std::string propertyName;
 
-		try {
-			auto configPMin = configuration.searchProperty("pMin");
-			pMin = configPMin->getDoubleValue();
-		} catch (const std::exception & e) {
-			std::ostringstream str;
-			str << "Could not read configuration \"pMin\" for device \"" << instanceName
-					<< "\" because: "
-					<< e.what();
-			LOG4CXX_ERROR(logger, str.str());
-			throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
-		}
+	try {
+		propertyName = "pMin";
+		auto configPMin = configuration.searchProperty(propertyName);
+		pMin = configPMin->getDoubleValue();
 
-		try {
-			auto configPMax = configuration.searchProperty("pMax");
-			pMax = configPMax->getDoubleValue();
-		} catch (const std::exception & e) {
-			std::ostringstream str;
-			str << "Could not read configuration \"pMax\" for driver \"" << driverName
-					<< "\" because: "
-					<< e.what();
-			LOG4CXX_ERROR(logger, str.str());
-			throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
-		}
+		propertyName = "pMax";
+		auto configPMax = configuration.searchProperty(propertyName);
+		pMax = configPMax->getDoubleValue();
 
+		propertyName = "i2cAddress";
+		i2cAddress = (long long)(configuration.getPropertyValue(
+				propertyName,
+				(long long)(i2cAddress)));
+
+		propertyName = "useTemperatureSensor";
+		useTemperatureSensor = configuration.getPropertyValue(
+				propertyName,
+				useTemperatureSensor);
+	} catch (std::exception const &e) {
+		auto str = fmt::format(_(
+				"Could not read property \"{0}\" for device instance \"{1}\" because: {2}"),
+				propertyName,instanceName,e.what());
+		LOG4CXX_ERROR(logger, str);
+		throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.c_str());
 	}
 
     pressureRange = fabs(pMax - pMin);
@@ -116,22 +119,7 @@ void AMS5915Driver::readConfiguration (Properties4CXX::Properties const &configu
 	// Expected static error is assessed by the full measurement range.
 	pressureErrorStatic = pressureErrorStaticFactor * pressureRange;
 
-	try {
-		i2cAddress = (long long)(configuration.getPropertyValue(
-					std::string("i2cAddress"),
-					(long long)(i2cAddress)));
-		useTemperatureSensor = configuration.getPropertyValue(
-				std::string("useTemperatureSensor"),
-				useTemperatureSensor);
-	} catch (std::exception const &e) {
-		std::ostringstream str;
-		str << "Error reading the configuration for driver \"" << driverName
-				<< "\": " << e.what();
-		LOG4CXX_ERROR(logger, str.str());
-		throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
-	}
-
-    LOG4CXX_INFO(logger,"Driver" << driverName << " data>");
+    LOG4CXX_INFO(logger,fmt::format(_("Driver instance \"{0}\" data: "),instanceName));
     LOG4CXX_INFO(logger,"	pMin (mBar) = " << pMin);
     LOG4CXX_INFO(logger,"	pMax (mBar)= " << pMax);
     LOG4CXX_INFO(logger,"	pressureRange (mBar) = " << pressureRange);
@@ -143,7 +131,7 @@ void AMS5915Driver::readConfiguration (Properties4CXX::Properties const &configu
 	LOG4CXX_INFO(logger,"	errorTimeout = " << ((errorTimeout.count() * decltype(errorTimeout)::period::num) / decltype(errorTimeout)::period::den));
 	LOG4CXX_INFO(logger,"	errorMaxNumRetries = " << errorMaxNumRetries);
 	if(calibrationDataParameters) {
-		LOG4CXX_INFO(logger,"	Calibration data file name = " << calibrationDataFileName);
+		LOG4CXX_INFO(logger,fmt::format(_("	Calibration data file name = {0}"), calibrationDataFileName));
 	}
 
 }
@@ -153,8 +141,8 @@ void AMS5915Driver::driverThreadFunction() {
 	int numRetries = 0;
 
 	if (ioPort == nullptr) {
-		LOG4CXX_ERROR (logger,"No valid I/O port for driver " << getDriverName()
-				<< ". The driver is not operable");
+		LOG4CXX_ERROR (logger,fmt::format(_(
+				"No valid I/O port for driver instance \"{0}\". The driver is not operable"),instanceName));
 	} else {
 		while (!getStopDriverThread() && ( errorMaxNumRetries == 0 || numRetries <= errorMaxNumRetries)) {
 			try {
@@ -164,8 +152,7 @@ void AMS5915Driver::driverThreadFunction() {
 				ioPort->close();
 			} catch (std::exception const& e) {
 				numRetries ++;
-				LOG4CXX_ERROR(logger,"Error in main loop of driver \"" << getDriverName()
-						<< "\":" << e.what());
+				LOG4CXX_ERROR(logger,fmt::format(_("Error in the main loop of driver instance \"{0}\": "),instanceName,e.what()));
 				ioPort->close();
 
 				std::this_thread::sleep_for(errorTimeout);
