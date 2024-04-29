@@ -81,7 +81,7 @@ static DriverBase* getNewTE_MEAS_AbsPressureInstance (
 TE_MEAS_AbsPressureLib::TE_MEAS_AbsPressureLib()
 	: DriverLibBase{
 		TE_MEAS_AbsPressureDriverLibName.c_str(),
-		"Absolute atmospheric pressure sensors from TE Connectivity MEAS"}
+		_("Absolute atmospheric pressure sensors from TE Connectivity MEAS")}
 {
 
 }

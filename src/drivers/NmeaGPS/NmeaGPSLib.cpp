@@ -55,7 +55,7 @@ static DriverBase* getNewNmeaGPSInstance (
 NmeaGPSLib::NmeaGPSLib()
 	: DriverLibBase{
 		NmeaGPSDriverLibName.c_str(),
-		"NmeaGPS driver for satellite navigation devices emitting NMEA 0813 sentences on serial ports or Bluetooth"}
+		_("NmeaGPS driver for satellite navigation devices emitting NMEA 0813 sentences on serial ports or Bluetooth")}
 {
 
 

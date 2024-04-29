@@ -55,7 +55,7 @@ static DriverBase* getNewMPL3115Instance (
 MPL3115Lib::MPL3115Lib()
 	: DriverLibBase{
 		MPL3115DriverLibName.c_str(),
-		"Absolute atmospheric pressure sensors MPL3115"}
+		_("Absolute atmospheric pressure sensors MPL3115")}
 {
 
 

@@ -55,7 +55,7 @@ static DriverBase* getNewMS4515Instance (
 MS4515Lib::MS4515Lib()
 	: DriverLibBase{
 		MS4515DriverLibName.c_str(),
-		"Absolute atmospheric pressure sensors MS4515"}
+		_("Absolute atmospheric pressure sensors MS4515")}
 {
 
 

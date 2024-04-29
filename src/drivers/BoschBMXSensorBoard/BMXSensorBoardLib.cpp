@@ -55,7 +55,7 @@ static DriverBase* getNewBMXSensorBoardInstance (
 BMXSensorBoardLib::BMXSensorBoardLib()
 	: DriverLibBase{
 		BMXSensorBoardDriverLibName.c_str(),
-		"Driver library for Bosch BMX IMUs on the horImuBoard sensor board"}
+		_("Driver library for Bosch BMX IMUs on the horImuBoard sensor board")}
 {
 
 

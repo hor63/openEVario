@@ -53,7 +53,8 @@ static DriverBase* getNewIGCReaderInstance (
 }
 
 IGCReaderLib::IGCReaderLib()
-	: DriverLibBase{igcReaderDriverLibName.c_str(),"Driver library for simulation and test drivers based on IGC file recordings"}
+	: DriverLibBase{igcReaderDriverLibName.c_str(),
+	_("Driver library for simulation and test drivers based on IGC file recordings")}
 {
 
 

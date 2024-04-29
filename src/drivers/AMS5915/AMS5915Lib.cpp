@@ -55,7 +55,7 @@ static DriverBase* getNewAMS5915Instance (
 AMS5915Lib::AMS5915Lib()
 	: DriverLibBase{
 		AMS5915DriverLibName.c_str(),
-		"Differential and gage pressure Amsys sensors AMS5915"}
+		_("Differential and gage pressure Amsys sensors AMS5915")}
 {
 
 

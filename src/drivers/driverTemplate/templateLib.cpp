@@ -55,7 +55,7 @@ static DriverBase* getNewtemplateInstance (
 templateLib::templateLib()
 	: GliderVarioDriverLibBase{
 		templateDriverLibName.c_str(),
-		"template for new driver library"}
+		_("Template for a new driver library")}
 {
 
 
