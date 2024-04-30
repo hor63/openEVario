@@ -29,6 +29,8 @@
 
 #include <fstream>
 
+#include "fmt/format.h"
+
 #include "drivers/IGCReader/IGCReaderDriver.h"
 #include "kalman/GliderVarioTransitionMatrix.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
@@ -208,13 +210,12 @@ void IGCReaderDriver::openIGCFile() {
 	if (!igcFile.is_open()) {
 		igcFile.open(igcFileName.c_str(),std::ios_base::in|std::ios_base::binary);
 		if (!igcFile) {
-			std::ostringstream os;
-			os << "Cannot open IGC file " << igcFileName;
-			LOG4CXX_ERROR(logger,os.str());
-			throw (GliderVarioDriverLoadException(__FILE__,__LINE__,os.str().c_str()));
+			auto str = fmt::format(_("Cannot open IGC file \"{0}.\""), igcFileName);
+			LOG4CXX_ERROR(logger,str);
+			throw (GliderVarioDriverLoadException(__FILE__,__LINE__,str.c_str()));
 		}
 
-		LOG4CXX_INFO(logger,"Opened IGC file \""<< igcFileName << "\" successfully");
+		LOG4CXX_INFO(logger,fmt::format(_("Opened IGC file \"{0}\"."),igcFileName));
 	}
 
 }
@@ -225,7 +226,7 @@ void IGCReaderDriver::closeIGCFile() {
 		igcFile.close();
 	}
 
-	LOG4CXX_INFO(logger,"Closed IGC file \""<< igcFileName << "\".");
+	LOG4CXX_INFO(logger,fmt::format(_("Closed IGC file \"{0}\"."),igcFileName));
 
 }
 
