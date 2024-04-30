@@ -30,6 +30,8 @@
 #include <fstream>
 #include <chrono>
 
+#include "fmt/format.h"
+
 #include "Properties4CXX/Property.h"
 
 #include "BMXSensorBoardDriver.h"
@@ -70,7 +72,8 @@ BMXSensorBoardDriver::~BMXSensorBoardDriver() {
 
 void BMXSensorBoardDriver::readConfiguration (Properties4CXX::Properties const &configuration) {
 
-	LOG4CXX_INFO(logger, __FUNCTION__ << " Device" << instanceName << " read configuraion");
+	LOG4CXX_INFO(logger, fmt::format (_("{0}: for driver instance \"{1}\""),
+			__PRETTY_FUNCTION__, instanceName));
 
 }
 
@@ -85,8 +88,8 @@ void BMXSensorBoardDriver::driverThreadFunction() {
 	int numRetries = 0;
 
 	if (ioPort == nullptr) {
-		LOG4CXX_ERROR (logger,"No valid I/O port for driver " << getDriverName()
-				<< ". The driver is not operable");
+		LOG4CXX_ERROR (logger,fmt::format(_(
+				"No valid I/O port for driver instance \"{0}\". The driver is not operable"),instanceName));
 	} else {
 		while (!getStopDriverThread() && ( errorMaxNumRetries == 0 || numRetries <= errorMaxNumRetries)) {
 			try {
@@ -96,8 +99,7 @@ void BMXSensorBoardDriver::driverThreadFunction() {
 				ioPort->close();
 			} catch (std::exception const& e) {
 				numRetries ++;
-				LOG4CXX_ERROR(logger,"Error in main loop of driver \"" << getDriverName()
-						<< "\":" << e.what());
+				LOG4CXX_ERROR(logger,fmt::format(_("Error in the main loop of driver instance \"{0}\": "),instanceName,e.what()));
 				ioPort->close();
 
 				std::this_thread::sleep_for(errorTimeout);
@@ -187,7 +189,7 @@ void BMXSensorBoardDriver::processingMainLoop () {
 						}
 					} else {
 						LOG4CXX_ERROR(logger,
-								"CRC error of received magnetometer trim data message");
+								_("CRC error of received magnetometer trim data message"));
 						// Send a request to send the trim data again
 						struct BMX160RecvData sendMsg;
 
@@ -281,7 +283,7 @@ void BMXSensorBoardDriver::processingMainLoop () {
 						LOG4CXX_DEBUG(logger,"accZ (g) = " << currSensorData.accelZ);
 					} else { // if (crc == msgCrc)
 						LOG4CXX_ERROR(logger,
-								"CRC error of received acc/gyr/mag sensor data message");
+								_("CRC error of received acc/gyr/mag sensor data message"));
 					} // if (crc == msgCrc)
 				} else { // if (bmxData.header.length == ...
 					LOG4CXX_ERROR(logger,
@@ -322,7 +324,7 @@ void BMXSensorBoardDriver::processingMainLoop () {
 						LOG4CXX_DEBUG(logger,"accZ (g) = " << currSensorData.accelZ);
 					} else { // if (crc == msgCrc)
 						LOG4CXX_ERROR(logger,
-								"CRC error of received acc/gyr sensor data message");
+								_("CRC error of received acc/gyr sensor data message"));
 					} // if (crc == msgCrc) {
 				} else { // if (bmxData.header.length == ...
 					LOG4CXX_ERROR(logger,
@@ -331,7 +333,7 @@ void BMXSensorBoardDriver::processingMainLoop () {
 				} // if (bmxData.header.length == ...
 				break;
 			default:
-				LOG4CXX_ERROR (logger,"Unknown union code " << (int)bmxData.header.unionCode);
+				LOG4CXX_ERROR (logger,__PRETTY_FUNCTION__ << ": Unknown union code " << (int)bmxData.header.unionCode);
 
 				break;
 			} // switch (bmxData.header.unionCode)
