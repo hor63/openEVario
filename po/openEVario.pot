@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openEVario 0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/hor63/openEVario/issues\n"
-"POT-Creation-Date: 2024-04-26 12:56+0200\n"
+"POT-Creation-Date: 2024-04-30 11:17+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -585,4 +585,80 @@ msgstr ""
 msgid ""
 "{0}: For I/O port {1} no peer port and/or address are defined. I do not know "
 "where to send data to. Closing the Port."
+msgstr ""
+
+#: src/drivers/AMS5915/AMS5915Driver.cpp:86
+msgid "{0}: for driver instance \"{1}\""
+msgstr ""
+
+#: src/drivers/AMS5915/AMS5915Driver.cpp:111
+msgid ""
+"Could not read property \"{0}\" for device instance \"{1}\" because: {2}"
+msgstr ""
+
+#: src/drivers/AMS5915/AMS5915Driver.cpp:122
+msgid "Driver instance \"{0}\" data: "
+msgstr ""
+
+#: src/drivers/AMS5915/AMS5915Driver.cpp:134
+msgid "\tCalibration data file name = {0}"
+msgstr ""
+
+#: src/drivers/AMS5915/AMS5915Driver.cpp:145
+msgid ""
+"No valid I/O port for driver instance \"{0}\". The driver is not operable"
+msgstr ""
+
+#: src/drivers/AMS5915/AMS5915Driver.cpp:155
+msgid "Error in the main loop of driver instance \"{0}\": "
+msgstr ""
+
+#: src/drivers/AMS5915/AMS5915Lib.cpp:58
+msgid "Differential and gage pressure Amsys sensors AMS5915"
+msgstr ""
+
+#: src/drivers/AMS5915/AMS5915Main.cpp:63
+#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardMain.cpp:63
+#: src/drivers/IGCReader/IGCReaderMain.cpp:59
+#: src/drivers/MPL3115/MPL3115Main.cpp:63
+#: src/drivers/MPU-9150/MPU-9150Main.cpp:63
+#: src/drivers/MS4515/MS4515Main.cpp:63 src/drivers/NmeaGPS/NmeaGPSMain.cpp:63
+#: src/drivers/simul/simulMain.cpp:53
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureMain.cpp:64
+msgid "Initialize the {0} driver library"
+msgstr ""
+
+#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardLib.cpp:58
+msgid "Driver library for Bosch BMX IMUs on the horImuBoard sensor board"
+msgstr ""
+
+#: src/drivers/driverTemplate/templateLib.cpp:58
+msgid "Template for a new driver library"
+msgstr ""
+
+#: src/drivers/IGCReader/IGCReaderLib.cpp:57
+msgid ""
+"Driver library for simulation and test drivers based on IGC file recordings"
+msgstr ""
+
+#: src/drivers/MPL3115/MPL3115Lib.cpp:58
+msgid "Absolute atmospheric pressure sensors MPL3115"
+msgstr ""
+
+#: src/drivers/MPU-9150/MPU-9150Lib.cpp:58
+msgid "Driver library for TDK/Invensense MPU-9150 IMU"
+msgstr ""
+
+#: src/drivers/MS4515/MS4515Lib.cpp:58
+msgid "Absolute atmospheric pressure sensors MS4515"
+msgstr ""
+
+#: src/drivers/NmeaGPS/NmeaGPSLib.cpp:58
+msgid ""
+"NmeaGPS driver for satellite navigation devices emitting NMEA 0813 sentences "
+"on serial ports or Bluetooth"
+msgstr ""
+
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureLib.cpp:84
+msgid "Absolute atmospheric pressure sensors from TE Connectivity MEAS"
 msgstr ""
