@@ -86,7 +86,7 @@ void AMS5915Driver::readConfiguration (Properties4CXX::Properties const &configu
 	LOG4CXX_INFO(logger, fmt::format (_("{0}: for driver instance \"{1}\""),
 			__PRETTY_FUNCTION__, instanceName));
 
-		std::string propertyName;
+	std::string propertyName;
 
 	try {
 		propertyName = "pMin";
@@ -152,7 +152,8 @@ void AMS5915Driver::driverThreadFunction() {
 				ioPort->close();
 			} catch (std::exception const& e) {
 				numRetries ++;
-				LOG4CXX_ERROR(logger,fmt::format(_("Error in the main loop of driver instance \"{0}\": "),instanceName,e.what()));
+				LOG4CXX_ERROR(logger,fmt::format(_("Error in the main loop of driver instance \"{0}\": "),
+						instanceName,e.what()));
 				ioPort->close();
 
 				std::this_thread::sleep_for(errorTimeout);

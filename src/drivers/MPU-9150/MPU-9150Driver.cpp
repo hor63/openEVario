@@ -30,6 +30,8 @@
 #include <fstream>
 #include <chrono>
 
+#include <fmt/format.h>
+
 #include "Properties4CXX/Property.h"
 
 #include "MPU-9150Driver.h"
@@ -73,12 +75,25 @@ void MPU9150Driver::driverInit(GliderVarioMainPriv &varioMain) {
 
 void MPU9150Driver::readConfiguration (Properties4CXX::Properties const &configuration) {
 
-	LOG4CXX_INFO(logger, __FUNCTION__ << " Device" << instanceName << " read configuraion");
+	LOG4CXX_INFO(logger, fmt::format (_("{0}: for driver instance \"{1}\""),
+			__PRETTY_FUNCTION__, instanceName));
 
+	std::string propertyName;
 
-	i2cAddress = static_cast<long long>(configuration.getPropertyValue(
-	    		std::string("i2cAddress"),
+	try {
+		propertyName = "i2cAddress";
+		i2cAddress = static_cast<long long>(configuration.getPropertyValue(
+				propertyName,
 				static_cast<long long>(i2cAddress)));
+	} catch (std::exception const &e) {
+			auto str = fmt::format(_(
+					"Could not read property \"{0}\" for device instance \"{1}\" because: {2}"),
+					propertyName,instanceName,e.what());
+			LOG4CXX_ERROR(logger, str);
+			throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.c_str());
+		}
+
+	LOG4CXX_INFO(logger,"	i2cAddress = 0x" << std::hex <<  uint32_t(i2cAddress) << std::dec);
 
 
 }
@@ -185,12 +200,17 @@ void MPU9150Driver::setupMPU9150() {
 	buf[0] = ioPort->readByteAtRegAddrByte(i2cAddress, REG_9150_WHO_AM_I);
 
 	// Who am I is the I2C adress (ignoring bit 0 which can be set with pin AD0 (Pin 9))
-	if ((i2cAddress & ~1) == buf[0]) {
-		LOG4CXX_INFO(logger,"WHO AM I contains expected 0x" << std::hex << uint32_t(buf[0]) << std::dec);
+	if ((i2cAddress & ~1U) == buf[0]) {
+		LOG4CXX_INFO(logger,fmt::format(_(
+				"{0}: WHO AM I contains expected {1:#04X}."),
+				__PRETTY_FUNCTION__,static_cast<uint32_t>(buf[0])));
 	} else {
-		LOG4CXX_WARN(logger,"WHO AM I contains unexpected 0x" << std::hex << uint32_t(buf[0])
-				<< ". Expected was 0x" << (i2cAddress & ~1)
-				<< std::dec);
+		auto str = fmt::format(_(
+				"{0}: WHO AM I value is not {1:#04X}, but {2:#04X}. The device is obviously not a {3} sensor."),
+				__PRETTY_FUNCTION__,static_cast<uint32_t>(i2cAddress) & ~1U,static_cast<uint32_t>(buf[0]),
+				"MPU9150");
+		LOG4CXX_ERROR(logger,str);
+		throw GliderVarioExceptionBase(__FILE__,__LINE__,str.c_str());
 	}
 
 	// Disable Gyro self-test, and set the full-scale range to +-250deg/sec
@@ -263,9 +283,9 @@ void MPU9150Driver::setupAK8975Mag() {
 
 	buf[0] = readByteAux (AK8975_I2CAddr,REG_AK8975_WIA);
 	buf[1] = readByteAux (AK8975_I2CAddr,REG_AK8975_INFO);
-	LOG4CXX_INFO(logger,"AK8975 via Aux: WhoAmI = 0x" << std::hex << uint16_t(buf[0])
-			<< ", Info = 0x" << uint16_t(buf[1])
-			<< std::dec);
+	LOG4CXX_INFO(logger,fmt::format(_(
+			"{0}: WHO AM I contains expected {1:#04X}."),
+			__PRETTY_FUNCTION__,static_cast<uint32_t>(buf[0])));
 
 	// Enable prom read mode
 	writeByteAux(AK8975_I2CAddr,REG_AK8975_CNTL,AK8975_PROM_READ);
@@ -347,8 +367,8 @@ void MPU9150Driver::driverThreadFunction() {
 	int numRetries = 0;
 
 	if (ioPort == nullptr) {
-		LOG4CXX_ERROR (logger,"No valid I/O port for driver " << getDriverName()
-				<< ". The driver is not operable");
+		LOG4CXX_ERROR (logger,fmt::format(_(
+				"No valid I/O port for driver instance \"{0}\". The driver is not operable"),instanceName));
 	} else {
 		while (!getStopDriverThread() && ( errorMaxNumRetries == 0 || numRetries <= errorMaxNumRetries)) {
 			try {
@@ -359,8 +379,8 @@ void MPU9150Driver::driverThreadFunction() {
 				ioPort->close();
 			} catch (std::exception const& e) {
 				numRetries ++;
-				LOG4CXX_ERROR(logger,"Error in main loop of driver \"" << getDriverName()
-						<< "\":" << e.what());
+				LOG4CXX_ERROR(logger,fmt::format(_("Error in the main loop of driver instance \"{0}\": "),
+						instanceName,e.what()));
 				ioPort->close();
 
 				std::this_thread::sleep_for(errorTimeout);
