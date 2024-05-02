@@ -28,6 +28,8 @@
 
 #include <fstream>
 
+#include "fmt/format.h"
+
 #include "NmeaGPSDriver.h"
 #include "NMEA0813Protocol.h"
 
@@ -54,7 +56,6 @@ NMEA0813Protocol::NMEA0813Protocol(NMEASet& set)
 }
 
 NMEA0813Protocol::~NMEA0813Protocol() {
-	// TODO Auto-generated destructor stub
 }
 
 void NMEA0813Protocol::processSensorData(const uint8_t *data, uint32_t dataLen) {
@@ -67,7 +68,9 @@ void NMEA0813Protocol::processSensorData(const uint8_t *data, uint32_t dataLen) 
 			// Mark the start of collecting sentence data into the current message
 
 			if (currSentenceActive) {
-				LOG4CXX_WARN(logger,"processSensorData: Received sentence start. Discarding " << currSentence.bufLen << " bytes.");
+				LOG4CXX_WARN(logger,fmt::format(_(
+						"{0}: Received unexpected sentence start. Discarding {1} bytes."),
+						__PRETTY_FUNCTION__, currSentence.bufLen));
 			}
 
 			currSentenceActive = true;
@@ -96,7 +99,9 @@ void NMEA0813Protocol::processSensorData(const uint8_t *data, uint32_t dataLen) 
 						i++;
 						continue;
 					} else {
-						LOG4CXX_WARN(logger,"processSensorData: Too short sentence or CR missing. Discarding " << currSentence.bufLen << " bytes.");
+						LOG4CXX_WARN(logger,fmt::format(_(
+								"{0}: Too short sentence received, or CR character is missing. Discarding {1} bytes."),
+								__PRETTY_FUNCTION__, currSentence.bufLen));
 						currSentenceActive = false;
 						i++;
 						continue;
@@ -109,9 +114,9 @@ void NMEA0813Protocol::processSensorData(const uint8_t *data, uint32_t dataLen) 
 				if ((data[i] < 0x20 || data[i] > 0x7E) && data[i] != '\r') {
 					// This is not a printable ASCII character or CR character, and not allowed.
 					// Discard the received data and wait for the next sentence start
-					LOG4CXX_WARN(logger,"processSensorData: Received illegal character data[" << i << "] = 0X"
-							<< std::hex << int(data[i]) << std::dec
-							<< ". Discarding " << currSentence.bufLen << " bytes.");
+					LOG4CXX_WARN(logger,fmt::format(_(
+							"{0}: Received illegal character {1:#04X}. Discarding current sentence with {2} bytes."),
+							__PRETTY_FUNCTION__,static_cast<uint32_t>(data[i]),currSentence.bufLen));
 					currSentenceActive = false;
 					i++;
 					continue;
@@ -123,7 +128,9 @@ void NMEA0813Protocol::processSensorData(const uint8_t *data, uint32_t dataLen) 
 					// the buffer overflows.
 					// This means I missed somehow the end of the previous sentence.
 					// Discard the received data and wait for the next sentence start
-					LOG4CXX_WARN(logger,"processSensorData: currSentence buffer overflow. Discard " << currSentence.bufLen << " bytes.");
+					LOG4CXX_WARN(logger,fmt::format(_(
+							"{0}: Current sentence buffer overflow (> {2} characters). Discard {1} bytes."),
+							__PRETTY_FUNCTION__,currSentence.bufLen,NMEASentence::maxLenSentence));
 					currSentenceActive = false;
 					i++;
 					continue;
@@ -157,7 +164,12 @@ void NMEA0813Protocol::parseSentence() {
 					isxdigit(currSentence.buf[i + 2]) &&
 					currSentence.buf[i + 3] == 0) {
 				auto msgChkSum = strtoul((char const*)(&currSentence.buf[i + 1]),nullptr,16);
-				if (msgChkSum == checksum){
+				if (msgChkSum != checksum){
+					LOG4CXX_WARN(logger,fmt::format(_(
+							"{0}: Checksum in the sentence {1:#04X} is unequal to the calculated checksum {2:#04X}. Discard sentence."),
+							__PRETTY_FUNCTION__,msgChkSum,static_cast<uint32_t>(checksum)));
+					return;
+				} else {
 					LOG4CXX_DEBUG(logger, "Checksum \"" << &currSentence.buf[i + 1] << "\" matches.");
 				}
 			} else {
@@ -183,8 +195,10 @@ void NMEA0813Protocol::parseSentence() {
 			currSentence.fields[currSentence.numFields] = &currSentence.buf[i+1];
 			currSentence.numFields++;
 			} else {
-				LOG4CXX_WARN(logger,"NMEA: Number fields " << currSentence.numFields << " << exceeds the field pointer array."
-						<< " Remainder of message is: \"" << &currSentence.buf[i+1] << "\"");
+				LOG4CXX_WARN(logger,fmt::format(_(
+						"{0}: Number of fields in the sentence exceeds the maximum {1} fields. Discard sentence."),
+						__PRETTY_FUNCTION__,NMEASentence::maxNumFields));
+				return;
 			}
 		}
 
