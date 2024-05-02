@@ -31,6 +31,8 @@
 #include <chrono>
 #include <thread>
 
+#include <fmt/format.h>
+
 #include "MPL3115Driver.h"
 #include "kalman/GliderVarioTransitionMatrix.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
@@ -73,7 +75,8 @@ void MPL3115Driver::driverInit(GliderVarioMainPriv &varioMain) {
 
 void MPL3115Driver::readConfiguration (Properties4CXX::Properties const &configuration) {
 
-	LOG4CXX_INFO(logger, __FUNCTION__ << " Device" << instanceName << " read configuraion");
+	LOG4CXX_INFO(logger, fmt::format (_("{0}: for driver instance \"{1}\""),
+			__PRETTY_FUNCTION__, instanceName));
 
 	LOG4CXX_INFO(logger,"	portName = " << portName);
 	LOG4CXX_INFO(logger,"	i2cAddress = 0x" << std::hex <<  uint32_t(i2cAddress) << std::dec);
@@ -143,8 +146,9 @@ void MPL3115Driver::initializeStatus(
 		}
 
 	} else {
-		LOG4CXX_WARN(logger,__FUNCTION__ << "Could not obtain " << NumInitValues
-				<< " valid measurements in a row for 20 seconds. Cannot initialize the Kalman filter state.");
+		LOG4CXX_WARN(logger, fmt::format(_(
+				"{0}: Could not obtain {1} valid measurements in a row for 20 seconds. Cannot initialize the Kalman filter state."),
+				__PRETTY_FUNCTION__,NumInitValues));
 	}
 
 
@@ -162,8 +166,8 @@ void MPL3115Driver::driverThreadFunction() {
 	int numRetries = 0;
 
 	if (ioPort == nullptr) {
-		LOG4CXX_ERROR (logger,"No valid I/O port for driver " << getDriverName()
-				<< ". The driver is not operable");
+		LOG4CXX_ERROR (logger,fmt::format(_(
+				"No valid I/O port for driver instance \"{0}\". The driver is not operable"),instanceName));
 	} else {
 		while (!getStopDriverThread() && ( errorMaxNumRetries == 0 || numRetries <= errorMaxNumRetries)) {
 			try {
@@ -173,8 +177,8 @@ void MPL3115Driver::driverThreadFunction() {
 				ioPort->close();
 			} catch (std::exception const& e) {
 				numRetries ++;
-				LOG4CXX_ERROR(logger,"Error in main loop of driver \"" << getDriverName()
-						<< "\":" << e.what());
+				LOG4CXX_ERROR(logger,fmt::format(_("Error in the main loop of driver instance \"{0}\": "),
+						instanceName,e.what()));
 				ioPort->close();
 
 				std::this_thread::sleep_for(errorTimeout);
@@ -215,12 +219,17 @@ void MPL3115Driver::setupMPL3115() {
 	uint8_t ctrl1AddrVal[2];
 	uint8_t ptDataCfgAddrVal[2];
 	uint8_t whoAmI = ioPort->readByteAtRegAddrByte(i2cAddress, MPL3115_WHO_AM_I);
-	if (whoAmI != MPL3115WhoAmIValue) {
-		std::ostringstream str;
-		str << __FUNCTION__ << ": Who am I value is not 0x" << std::hex << uint32_t(MPL3115WhoAmIValue)
-				<< ", but 0x" << std::hex << uint32_t(whoAmI) << std::dec;
-		LOG4CXX_ERROR(logger,str.str());
-		throw GliderVarioExceptionBase(__FILE__,__LINE__,str.str().c_str());
+	if (whoAmI == MPL3115WhoAmIValue) {
+		LOG4CXX_INFO(logger,fmt::format(_(
+				"{0}: WHO AM I contains expected {1:#04X}."),
+				__PRETTY_FUNCTION__,static_cast<uint32_t>(whoAmI)));
+	} else {
+		auto str = fmt::format(_(
+				"{0}: Who am I value is not {1:#04X}, but {2:#04X}. The device is obviously not a {3} sensor."),
+				__PRETTY_FUNCTION__,static_cast<uint32_t>(MPL3115WhoAmIValue),static_cast<uint32_t>(whoAmI),
+				"MPL3115");
+		LOG4CXX_ERROR(logger,str);
+		throw GliderVarioExceptionBase(__FILE__,__LINE__,str.c_str());
 	}
 	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Who am I value is as expected 0x" << std::hex << uint32_t(whoAmI) << std::dec);
 
