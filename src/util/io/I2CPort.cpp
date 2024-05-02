@@ -251,7 +251,7 @@ void I2CPort::writeBlock(uint16_t devAddr, uint8_t *data, uint16_t dataLen) {
 		switch (dataLen) {
 		case 0:
 			LOG4CXX_WARN(logger,fmt::format(_(
-					"{0} for port \"{1}\": Why the hell do you want to send 0 (ZERO!) bytes to I2C device 0x{2:#04X}"),
+					"{0} for port \"{1}\": Why the hell do you want to send 0 (ZERO!) bytes to I2C device {2:#04X}"),
 					__PRETTY_FUNCTION__,getPortName(), devAddr));
 			break;
 		case 1:
