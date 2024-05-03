@@ -28,6 +28,8 @@
 
 #include <sstream>
 
+#include <fmt/format.h>
+
 #include "NMEA0813Protocol.h"
 #include "NMEASet.h"
 #include "NmeaGPSDriver.h"
@@ -107,10 +109,10 @@ double NMEASet::strToD (uint8_t const *str) {
 	// Check if I reached the end of the string. Else there is invalid trailing stuff
 	// This is not allowed for this function.
 	if (*lStr != 0) {
-		std::ostringstream s;
-		s << "strToD: String \"" << str << "\" is not a valid double value";
-		LOG4CXX_WARN(logger,s.str());
-		throw NMEASetParseException(__FILE__,__LINE__,s.str().c_str());
+		auto st = fmt::format(_("NMEASet::strToD: String \"{0}\" is not a valid double value."),
+				reinterpret_cast<char const*>(str));
+		LOG4CXX_WARN(logger,st);
+		throw NMEASetParseException(__FILE__,__LINE__,st.c_str());
 	}
 
 	LOG4CXX_TRACE (logger,"strToD: String \"" << str << "\" converted to " << (rc * sign));
@@ -152,19 +154,22 @@ double NMEASet::nmeaCoordToD(uint8_t const * str) {
 	}
 
 	if (*lStr == 0) {
-		std::ostringstream s;
-		s << "nmeaCoordToD: String \"" << str << "\" does not contain a decimal '.'";
-		LOG4CXX_WARN(logger,s.str());
-		throw NMEASetParseException(__FILE__,__LINE__,s.str().c_str());
+		auto st = fmt::format(_("{0}: String \"{1}\" does not contain a decimal separator '.'."),
+				__PRETTY_FUNCTION__,
+				reinterpret_cast<char const*>(str));
+		LOG4CXX_WARN(logger,st);
+		throw NMEASetParseException(__FILE__,__LINE__,st.c_str());
 	}
 
 	// Where is the dot in the String?
 	i = lStr - str;
 	if (i < 3) {
-		std::ostringstream s;
-		s << "nmeaCoordToD: String \"" << str << "\" does not have space for degrees '.'";
-		LOG4CXX_WARN(logger,s.str());
-		throw NMEASetParseException(__FILE__,__LINE__,s.str().c_str());
+		auto st = fmt::format(_(
+				"{0}: String \"{1}\" does have less than 3 digits left of '.'. There is no space for degrees"),
+				__PRETTY_FUNCTION__,
+				reinterpret_cast<char const*>(str));
+		LOG4CXX_WARN(logger,st);
+		throw NMEASetParseException(__FILE__,__LINE__,st.c_str());
 	}
 
 	// Get the degrees
@@ -189,20 +194,24 @@ uint32_t NMEASet::NMEATimeStampToMS(uint8_t const *timestampStr) {
 		lStr ++;
 	} else {
 		// Not a digit. This is therefore not a valid timestamp string
-		std::ostringstream str;
-		str << "NMEASet::NMEATimeStampToMS: \"" << timestampStr << "\" is not a valid NMEA timestamp string.";
-		LOG4CXX_WARN(logger,str.str());
-		throw NMEASetParseException(__FILE__,__LINE__,str.str().c_str());
+		auto st = fmt::format(_(
+				"{0}: String \"{1}\" is not a valid NMEA timestamp string."),
+				__PRETTY_FUNCTION__,
+				reinterpret_cast<char const*>(timestampStr));
+		LOG4CXX_WARN(logger,st);
+		throw NMEASetParseException(__FILE__,__LINE__,st.c_str());
 	}
 	if (isDigit(*lStr)) {
 		rc += (*lStr - '0') * (1000*3600);
 		lStr ++;
 	} else {
 		// Not a digit. This is therefore not a valid timestamp string
-		std::ostringstream str;
-		str << "NMEASet::NMEATimeStampToMS: \"" << timestampStr << "\" is not a valid NMEA timestamp string.";
-		LOG4CXX_WARN(logger,str.str());
-		throw NMEASetParseException(__FILE__,__LINE__,str.str().c_str());
+		auto st = fmt::format(_(
+				"{0}: String \"{1}\" is not a valid NMEA timestamp string."),
+				__PRETTY_FUNCTION__,
+				reinterpret_cast<char const*>(timestampStr));
+		LOG4CXX_WARN(logger,st);
+		throw NMEASetParseException(__FILE__,__LINE__,st.c_str());
 	}
 
 
@@ -212,20 +221,24 @@ uint32_t NMEASet::NMEATimeStampToMS(uint8_t const *timestampStr) {
 		lStr ++;
 	} else {
 		// Not a digit. This is therefore not a valid timestamp string
-		std::ostringstream str;
-		str << "NMEASet::NMEATimeStampToMS: \"" << timestampStr << "\" is not a valid NMEA timestamp string.";
-		LOG4CXX_WARN(logger,str.str());
-		throw NMEASetParseException(__FILE__,__LINE__,str.str().c_str());
+		auto st = fmt::format(_(
+				"{0}: String \"{1}\" is not a valid NMEA timestamp string."),
+				__PRETTY_FUNCTION__,
+				reinterpret_cast<char const*>(timestampStr));
+		LOG4CXX_WARN(logger,st);
+		throw NMEASetParseException(__FILE__,__LINE__,st.c_str());
 	}
 	if (isDigit(*lStr)) {
 		rc += (*lStr - '0') * (1000*60);
 		lStr ++;
 	} else {
 		// Not a digit. This is therefore not a valid timestamp string
-		std::ostringstream str;
-		str << "NMEASet::NMEATimeStampToMS: \"" << timestampStr << "\" is not a valid NMEA timestamp string.";
-		LOG4CXX_WARN(logger,str.str());
-		throw NMEASetParseException(__FILE__,__LINE__,str.str().c_str());
+		auto st = fmt::format(_(
+				"{0}: String \"{1}\" is not a valid NMEA timestamp string."),
+				__PRETTY_FUNCTION__,
+				reinterpret_cast<char const*>(timestampStr));
+		LOG4CXX_WARN(logger,st);
+		throw NMEASetParseException(__FILE__,__LINE__,st.c_str());
 	}
 
 	// Next two characters are seconds
@@ -234,20 +247,24 @@ uint32_t NMEASet::NMEATimeStampToMS(uint8_t const *timestampStr) {
 		lStr ++;
 	} else {
 		// Not a digit. This is therefore not a valid timestamp string
-		std::ostringstream str;
-		str << "NMEASet::NMEATimeStampToMS: \"" << timestampStr << "\" is not a valid NMEA timestamp string.";
-		LOG4CXX_WARN(logger,str.str());
-		throw NMEASetParseException(__FILE__,__LINE__,str.str().c_str());
+		auto st = fmt::format(_(
+				"{0}: String \"{1}\" is not a valid NMEA timestamp string."),
+				__PRETTY_FUNCTION__,
+				reinterpret_cast<char const*>(timestampStr));
+		LOG4CXX_WARN(logger,st);
+		throw NMEASetParseException(__FILE__,__LINE__,st.c_str());
 	}
 	if (isDigit(*lStr)) {
 		rc += (*lStr - '0') * (1000);
 		lStr ++;
 	} else {
 		// Not a digit. This is therefore not a valid timestamp string
-		std::ostringstream str;
-		str << "NMEASet::NMEATimeStampToMS: \"" << timestampStr << "\" is not a valid NMEA timestamp string.";
-		LOG4CXX_WARN(logger,str.str());
-		throw NMEASetParseException(__FILE__,__LINE__,str.str().c_str());
+		auto st = fmt::format(_(
+				"{0}: String \"{1}\" is not a valid NMEA timestamp string."),
+				__PRETTY_FUNCTION__,
+				reinterpret_cast<char const*>(timestampStr));
+		LOG4CXX_WARN(logger,st);
+		throw NMEASetParseException(__FILE__,__LINE__,st.c_str());
 	}
 
 	if (*lStr == '.') {
@@ -375,7 +392,9 @@ void NMEASet::processSentenceTeachIn(
 
 	}
 	catch (NMEASetParseException const& e) {
-		LOG4CXX_WARN(logger,"processSentenceTeachIn: Sentence " << newSentence.sentenceTypeString << " failed. Reason: " << e.what());
+		LOG4CXX_WARN(logger,fmt::format(_(
+				"{0}: Sentence  \"{1}\" failed. Reason: {2}"),
+				__PRETTY_FUNCTION__,reinterpret_cast<char const*>(newSentence.sentenceTypeString),e.what()));
 	}
 
 	if (useLocRecord) {
@@ -534,7 +553,9 @@ void NMEASet::determineNMEASet(CommonCycleList& commonCycles) {
 	}
 
 	if (usedCommonSequence->commonRecordItems.size() < 3) {
-		LOG4CXX_WARN(logger,"determineNMEASet: Could not find a common sequence shared by at least 3 cycles. Go by individual cycle analysis.");
+		LOG4CXX_WARN(logger,fmt::format(_(
+				"{0}: Could not find a common sequence shared by at least 3 cycles. Go by individual cycle analysis."),
+				__PRETTY_FUNCTION__));
 	} else {
 		// Use a teach-in record to collect which flags have been set so far by NMEA sentences.
 		TeachInRecord collectiveFlags;
@@ -665,8 +686,12 @@ uint32_t NMEASet::getNewSentenceTimestampMS(NMEASentence const& newSentence) {
 	default:
 		// Why am I here? Un-supported sentence types should have been thrown out by the caller,
 		// i.e. NMEA0813Protocol::parseSentence()
-		LOG4CXX_WARN(logger,"NMEASet::processSentenceOperation: Un-supported sentence type " << newSentence.sentenceType
-				<< " from talker/type" << newSentence.talkerID << '/' << newSentence.sentenceTypeString << " is discarded.");
+		LOG4CXX_WARN(logger,fmt::format(_(
+				"{0}: Un-supported sentence type {1} from talker/type {2}/{3} is discarded."),
+				__PRETTY_FUNCTION__,
+				NMEASentence::NMEASentenceTypeHelperObj.getString(newSentence.sentenceType),
+				reinterpret_cast<char const*>(newSentence.talkerID),
+				reinterpret_cast<char const*>(newSentence.sentenceTypeString)));
 	}
 
 	if (timestampString != nullptr) {
@@ -756,7 +781,9 @@ void NMEASet::processSentenceOperation(
 
 	}
 	catch (NMEASetParseException const& e) {
-		LOG4CXX_WARN(logger,"processSentenceTeachIn: Sentence " << newSentence.sentenceTypeString << " failed. Reason: " << e.what());
+		LOG4CXX_WARN(logger,fmt::format(_(
+				"{0}: Sentence \"{1}\" failed. Reason: {2}"),
+				__PRETTY_FUNCTION__,reinterpret_cast<char const*>(newSentence.sentenceTypeString),e.what()));
 		return;
 	}
 
@@ -765,7 +792,10 @@ void NMEASet::processSentenceOperation(
 void NMEASet::extractDataFromSentence(NMEASentence const& newSentence) {
 
 	if (currGnssRecord.recordProcessed) {
-		LOG4CXX_WARN(logger,"extractDataFromSentence called for a processed GNSS record again.! Sentence type = " << newSentence.sentenceType);
+		LOG4CXX_WARN(logger,fmt::format(_(
+				"{0} called for a processed GNSS record again! Sentence type = {1}"),
+				__PRETTY_FUNCTION__,
+				NMEASentence::NMEASentenceTypeHelperObj.getString(newSentence.sentenceType)));
 		return;
 	}
 
@@ -974,9 +1004,11 @@ void NMEASet::extractCoordinatesFromSentence(
 			break;
 
 		default:
-			std::ostringstream s;
-			s << "extractCoordinatesFromSentence: Invalid East-West indicator in " << newSentence.sentenceTypeString << " sentence = " << newSentence.fields[ewIndex];
-			throw NMEASetParseException(__FILE__,__LINE__,s.str().c_str());
+			auto s = fmt::format(_(
+					"{0}: Invalid East-West indicator \"{1}\" in sentence \"{2}\""),
+					__PRETTY_FUNCTION__,reinterpret_cast<char const*>(newSentence.fields[ewIndex]),
+					reinterpret_cast<char const*>(newSentence.sentenceTypeString));
+			throw NMEASetParseException(__FILE__,__LINE__,s.c_str());
 		}
 		longitude *= nmeaCoordToD(newSentence.fields[lonIndex]);
 
@@ -990,9 +1022,11 @@ void NMEASet::extractCoordinatesFromSentence(
 			break;
 
 		default:
-			std::ostringstream s;
-			s << "extractCoordinatesFromSentence: Invalid North-South indicator in " << newSentence.sentenceTypeString << " sentence = " << newSentence.fields[nsIndex];
-			throw NMEASetParseException(__FILE__,__LINE__,s.str().c_str());
+			auto s = fmt::format(_(
+					"{0}: Invalid North-South indicator \"{1}\" in sentence \"{2}\""),
+					__PRETTY_FUNCTION__,reinterpret_cast<char const*>(newSentence.fields[nsIndex]),
+					reinterpret_cast<char const*>(newSentence.sentenceTypeString));
+			throw NMEASetParseException(__FILE__,__LINE__,s.c_str());
 		}
 		latitude *= nmeaCoordToD(newSentence.fields[latIndex]);
 

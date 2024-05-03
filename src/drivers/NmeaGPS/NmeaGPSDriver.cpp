@@ -27,6 +27,8 @@
 #  include "config.h"
 #endif
 
+#include <fmt/format.h>
+
 #include <fstream>
 
 #include "NmeaGPSDriver.h"
@@ -72,26 +74,43 @@ void NmeaGPSDriver::driverInit(GliderVarioMainPriv &varioMain) {
 
 void NmeaGPSDriver::readConfiguration (Properties4CXX::Properties const &configuration) {
 
-	LOG4CXX_INFO(logger,"Device" << instanceName << " read configuraion");
+	LOG4CXX_INFO(logger, fmt::format (_("{0}: for driver instance \"{1}\""),
+			__PRETTY_FUNCTION__, instanceName));
 
-    CEP = configuration.getPropertyValue(
-    		std::string("CEP"),
-			double (CEP));
-    altStdDev = configuration.getPropertyValue(
-    		std::string("altitudeStdDev"),
-			CEP*1.5);
-    maxStdDeviationPositionInitialization = configuration.getPropertyValue(
-    		std::string("maxStdDeviationPositionInitialization"),
-			double (maxStdDeviationPositionInitialization));
-    maxStdDeviationAltitudeInitialization = configuration.getPropertyValue(
-    		std::string("maxStdDeviationAltitudeInitialization"),
-			double (maxStdDeviationAltitudeInitialization));
-	maxStdDeviationPositionUpdate = configuration.getPropertyValue(
-			std::string("maxStdDeviationPositionUpdate"),
-			double (maxStdDeviationPositionUpdate));
-	maxStdDeviationAltitudeUpdate = configuration.getPropertyValue(
-			std::string("maxStdDeviationAltitudeUpdate"),
-			double (maxStdDeviationAltitudeUpdate));
+	std::string propertyName;
+
+	try {
+		propertyName = "CEP";
+		CEP = configuration.getPropertyValue(
+				propertyName,
+				double (CEP));
+		propertyName = "altitudeStdDev";
+		altStdDev = configuration.getPropertyValue(
+				propertyName,
+				CEP*1.5);
+		propertyName = "maxStdDeviationPositionInitialization";
+		maxStdDeviationPositionInitialization = configuration.getPropertyValue(
+				propertyName,
+				double (maxStdDeviationPositionInitialization));
+		propertyName = "maxStdDeviationAltitudeInitialization";
+		maxStdDeviationAltitudeInitialization = configuration.getPropertyValue(
+				propertyName,
+				double (maxStdDeviationAltitudeInitialization));
+		propertyName = "maxStdDeviationPositionUpdate";
+		maxStdDeviationPositionUpdate = configuration.getPropertyValue(
+				propertyName,
+				double (maxStdDeviationPositionUpdate));
+		propertyName = "maxStdDeviationAltitudeUpdate";
+		maxStdDeviationAltitudeUpdate = configuration.getPropertyValue(
+				propertyName,
+				double (maxStdDeviationAltitudeUpdate));
+	} catch (std::exception const &e) {
+		auto str = fmt::format(_(
+				"Could not read property \"{0}\" for device instance \"{1}\" because: {2}"),
+				propertyName,instanceName,e.what());
+		LOG4CXX_ERROR(logger, str);
+		throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.c_str());
+	}
 
 	LOG4CXX_INFO(logger,"	errorTimeout = " << ((errorTimeout.count() * decltype(errorTimeout)::period::num) / decltype(errorTimeout)::period::den));
 	LOG4CXX_INFO(logger,"	errorMaxNumRetries = " << errorMaxNumRetries);
@@ -124,8 +143,8 @@ void NmeaGPSDriver::driverThreadFunction() {
 	int numRetries = 0;
 
 	if (ioPort == nullptr) {
-		LOG4CXX_ERROR (logger,"No valid I/O port for driver " << getDriverName()
-				<< ". The driver is not operable");
+		LOG4CXX_ERROR (logger,fmt::format(_(
+				"No valid I/O port for driver instance \"{0}\". The driver is not operable"),instanceName));
 	} else {
 		while (!getStopDriverThread() && ( errorMaxNumRetries == 0 || numRetries <= errorMaxNumRetries)) {
 			try {
@@ -135,8 +154,8 @@ void NmeaGPSDriver::driverThreadFunction() {
 				ioPort->close();
 			} catch (std::exception const& e) {
 				numRetries ++;
-				LOG4CXX_ERROR(logger,"Error in main loop of driver \"" << getDriverName()
-						<< "\":" << e.what());
+				LOG4CXX_ERROR(logger,fmt::format(_("Error in the main loop of driver instance \"{0}\": "),
+						instanceName,e.what()));
 				ioPort->close();
 
 				std::this_thread::sleep_for(errorTimeout);
