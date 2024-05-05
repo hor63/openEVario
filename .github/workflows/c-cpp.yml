@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Ubuntu packages
-      run: sudo apt-get install autoconf-archive liblog4cxx-dev libi2c-dev gettext
+      run: sudo apt-get install autoconf-archive autopoint liblog4cxx-dev libi2c-dev gettext
     - name: Pull submodules
       run: git submodule update --init --recursive
     - name: autoreconf
