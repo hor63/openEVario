@@ -9,6 +9,8 @@
 #  include "config.h"
 #endif
 
+#include "fmt/format.h"
+
 #include "kalman/GliderVarioTransitionMatrix.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
 
@@ -143,8 +145,8 @@ void DifferentialPressureSensorBase::initializeStatus(
 		varioStatus.getErrorCovariance_P().coeffRef(varioStatus.STATUS_IND_TAS,varioStatus.STATUS_IND_TAS) = 9.0f;
 
 	} else {
-		LOG4CXX_WARN(logger,__FUNCTION__ << "Could not obtain " << NumInitValues
-				<< " valid measurements in a row for 20 seconds. Cannot initialize the Kalman filter state.");
+		LOG4CXX_WARN(logger, fmt::format(_("{0}: Could not obtain {1} valid measurements in a row for 20 seconds. Cannot initialize the Kalman filter state."),
+						__FUNCTION__,NumInitValues));
 
 	}
 

@@ -143,13 +143,13 @@ ssize_t StreamPort::write(uint8_t *buffer, size_t bufLen) {
 		} else if (ret == 0) {
 			// End-of-file condition or undefined condition
 			err = errno;
-			std::ostringstream str;
 
 			close();
 
-			str << "Port" << getPortName() << ':' << getPortType() << ": Write returned 0. Error = " << err << ":" << strerror(err);
-			LOG4CXX_ERROR (logger,str.str());
-			throw GliderVarioPortReadEndOfFileException(__FILE__,__LINE__,str.str().c_str());
+			auto str = fmt::format(_("Port \"{0}\" of type \"{1}\": {4} error {2}: {3}"),
+					getPortName(),getPortType(),err, strerror(err),"write()");
+			LOG4CXX_ERROR (logger,str);
+			throw GliderVarioPortReadEndOfFileException(__FILE__,__LINE__,str.c_str());
 		}
 
 	} while (err == EINTR);

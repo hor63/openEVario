@@ -95,11 +95,9 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
 		auto sensorTypeConfig =  configuration.searchProperty(propertyName);
 
 		if (sensorTypeConfig->isList() || sensorTypeConfig->isStruct()) {
-			std::ostringstream str;
 
-			str << "Property is a struct or a string list but not a plain string.";
-
-			throw GliderVarioFatalConfigException(__FILE__,__LINE__,str.str().c_str());
+			throw GliderVarioFatalConfigException(__FILE__,__LINE__,
+					_("Property is a struct or a list."));
 		}
 
 		// Be generous. Accept lowercase letter 'a' as valid sensor type too.

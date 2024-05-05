@@ -173,8 +173,10 @@ void NMEA0813Protocol::parseSentence() {
 					LOG4CXX_DEBUG(logger, "Checksum \"" << &currSentence.buf[i + 1] << "\" matches.");
 				}
 			} else {
-				LOG4CXX_WARN(logger,"Read invalid checksum section \""
-						<< &currSentence.buf[i] << "\". Discard sentence.");
+				LOG4CXX_WARN(logger,fmt::format(_(
+						"{0}: Checksum section contains non-numeric characters \"{1}\". Discard sentence."),
+						__PRETTY_FUNCTION__,
+						reinterpret_cast<char const*>(&currSentence.buf[i])));
 				return;
 			}
 			// End of story in any case.
