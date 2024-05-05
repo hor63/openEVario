@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openEVario 0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/hor63/openEVario/issues\n"
-"POT-Creation-Date: 2024-04-30 11:17+0200\n"
+"POT-Creation-Date: 2024-05-05 19:39+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -407,7 +407,7 @@ msgstr ""
 
 #: src/util/io/DatagramPort.cpp:94 src/util/io/DatagramPort.cpp:150
 #: src/util/io/StreamPort.cpp:89 src/util/io/StreamPort.cpp:138
-#: src/util/io/UDPPort.cpp:352
+#: src/util/io/StreamPort.cpp:149 src/util/io/UDPPort.cpp:352
 msgid "Port \"{0}\" of type \"{1}\": {4} error {2}: {3}"
 msgstr ""
 
@@ -443,7 +443,7 @@ msgstr ""
 #: src/util/io/I2CPort.cpp:254
 msgid ""
 "{0} for port \"{1}\": Why the hell do you want to send 0 (ZERO!) bytes to "
-"I2C device 0x{2:#04X}"
+"I2C device {2:#04X}"
 msgstr ""
 
 #: src/util/io/I2CPort.cpp:633
@@ -588,10 +588,18 @@ msgid ""
 msgstr ""
 
 #: src/drivers/AMS5915/AMS5915Driver.cpp:86
+#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardDriver.cpp:75
+#: src/drivers/MPL3115/MPL3115Driver.cpp:78
+#: src/drivers/MPU-9150/MPU-9150Driver.cpp:78
+#: src/drivers/MS4515/MS4515Driver.cpp:243
+#: src/drivers/NmeaGPS/NmeaGPSDriver.cpp:77
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:78
 msgid "{0}: for driver instance \"{1}\""
 msgstr ""
 
 #: src/drivers/AMS5915/AMS5915Driver.cpp:111
+#: src/drivers/MPU-9150/MPU-9150Driver.cpp:90
+#: src/drivers/NmeaGPS/NmeaGPSDriver.cpp:109
 msgid ""
 "Could not read property \"{0}\" for device instance \"{1}\" because: {2}"
 msgstr ""
@@ -601,16 +609,29 @@ msgid "Driver instance \"{0}\" data: "
 msgstr ""
 
 #: src/drivers/AMS5915/AMS5915Driver.cpp:134
+#: src/drivers/MS4515/MS4515Driver.cpp:256
 msgid "\tCalibration data file name = {0}"
 msgstr ""
 
 #: src/drivers/AMS5915/AMS5915Driver.cpp:145
+#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardDriver.cpp:92
+#: src/drivers/MPL3115/MPL3115Driver.cpp:170
+#: src/drivers/MPU-9150/MPU-9150Driver.cpp:371
+#: src/drivers/MS4515/MS4515Driver.cpp:270
+#: src/drivers/NmeaGPS/NmeaGPSDriver.cpp:147
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:177
 msgid ""
 "No valid I/O port for driver instance \"{0}\". The driver is not operable"
 msgstr ""
 
 #: src/drivers/AMS5915/AMS5915Driver.cpp:155
-msgid "Error in the main loop of driver instance \"{0}\": "
+#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardDriver.cpp:102
+#: src/drivers/MPL3115/MPL3115Driver.cpp:180
+#: src/drivers/MPU-9150/MPU-9150Driver.cpp:382
+#: src/drivers/MS4515/MS4515Driver.cpp:280
+#: src/drivers/NmeaGPS/NmeaGPSDriver.cpp:157
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:198
+msgid "Error in the main loop of driver instance \"{0}\": {1}"
 msgstr ""
 
 #: src/drivers/AMS5915/AMS5915Lib.cpp:58
@@ -619,6 +640,7 @@ msgstr ""
 
 #: src/drivers/AMS5915/AMS5915Main.cpp:63
 #: src/drivers/BoschBMXSensorBoard/BMXSensorBoardMain.cpp:63
+#: src/drivers/driverTemplate/templateMain.cpp:63
 #: src/drivers/IGCReader/IGCReaderMain.cpp:59
 #: src/drivers/MPL3115/MPL3115Main.cpp:63
 #: src/drivers/MPU-9150/MPU-9150Main.cpp:63
@@ -626,6 +648,18 @@ msgstr ""
 #: src/drivers/simul/simulMain.cpp:53
 #: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureMain.cpp:64
 msgid "Initialize the {0} driver library"
+msgstr ""
+
+#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardDriver.cpp:192
+msgid "CRC error of received magnetometer trim data message"
+msgstr ""
+
+#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardDriver.cpp:286
+msgid "CRC error of received acc/gyr/mag sensor data message"
+msgstr ""
+
+#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardDriver.cpp:327
+msgid "CRC error of received acc/gyr sensor data message"
 msgstr ""
 
 #: src/drivers/BoschBMXSensorBoard/BMXSensorBoardLib.cpp:58
@@ -636,9 +670,41 @@ msgstr ""
 msgid "Template for a new driver library"
 msgstr ""
 
+#: src/drivers/IGCReader/IGCReaderDriver.cpp:213
+msgid "Cannot open IGC file \"{0}\"."
+msgstr ""
+
+#: src/drivers/IGCReader/IGCReaderDriver.cpp:218
+msgid "Opened IGC file \"{0}\"."
+msgstr ""
+
+#: src/drivers/IGCReader/IGCReaderDriver.cpp:229
+msgid "Closed IGC file \"{0}\"."
+msgstr ""
+
 #: src/drivers/IGCReader/IGCReaderLib.cpp:57
 msgid ""
 "Driver library for simulation and test drivers based on IGC file recordings"
+msgstr ""
+
+#: src/drivers/MPL3115/MPL3115Driver.cpp:150
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:151
+msgid ""
+"{0}: Could not obtain {1} valid measurements in a row for 20 seconds. Cannot "
+"initialize the Kalman filter state."
+msgstr ""
+
+#: src/drivers/MPL3115/MPL3115Driver.cpp:224
+#: src/drivers/MPU-9150/MPU-9150Driver.cpp:205
+#: src/drivers/MPU-9150/MPU-9150Driver.cpp:287
+msgid "{0}: WHO AM I contains expected {1:#04X}."
+msgstr ""
+
+#: src/drivers/MPL3115/MPL3115Driver.cpp:228
+#: src/drivers/MPU-9150/MPU-9150Driver.cpp:209
+msgid ""
+"{0}: WHO AM I value is not {1:#04X}, but {2:#04X}. The device is obviously "
+"not a {3} sensor."
 msgstr ""
 
 #: src/drivers/MPL3115/MPL3115Lib.cpp:58
@@ -649,14 +715,140 @@ msgstr ""
 msgid "Driver library for TDK/Invensense MPU-9150 IMU"
 msgstr ""
 
+#: src/drivers/MS4515/MS4515Driver.cpp:100
+msgid "Property is a struct or a list."
+msgstr ""
+
+#: src/drivers/MS4515/MS4515Driver.cpp:115
+msgid "Value {0} is invalid. Valid values are 'A' or 'B'."
+msgstr ""
+
+#: src/drivers/MS4515/MS4515Driver.cpp:139
+#: src/drivers/MS4515/MS4515Driver.cpp:183
+msgid ""
+"Both properties \"{0}\" and \"{1}\" are defined. Only one of these two is "
+"allowed."
+msgstr ""
+
+#: src/drivers/MS4515/MS4515Driver.cpp:149
+#: src/drivers/MS4515/MS4515Driver.cpp:193
+msgid "Neither configurations \"{0}\" and \"{1}\" are defined."
+msgstr ""
+
+#: src/drivers/MS4515/MS4515Driver.cpp:209
+msgid ""
+"{0}: Read configuration property {1} for driver instance \"{2}\" failed: {3}"
+msgstr ""
+
 #: src/drivers/MS4515/MS4515Lib.cpp:58
 msgid "Absolute atmospheric pressure sensors MS4515"
+msgstr ""
+
+#: src/drivers/NmeaGPS/NMEA0813Protocol.cpp:72
+msgid "{0}: Received unexpected sentence start. Discarding {1} bytes."
+msgstr ""
+
+#: src/drivers/NmeaGPS/NMEA0813Protocol.cpp:103
+msgid ""
+"{0}: Too short sentence received, or CR character is missing. Discarding {1} "
+"bytes."
+msgstr ""
+
+#: src/drivers/NmeaGPS/NMEA0813Protocol.cpp:118
+msgid ""
+"{0}: Received illegal character {1:#04X}. Discarding current sentence with "
+"{2} bytes."
+msgstr ""
+
+#: src/drivers/NmeaGPS/NMEA0813Protocol.cpp:132
+msgid ""
+"{0}: Current sentence buffer overflow (> {2} characters). Discard {1} bytes."
+msgstr ""
+
+#: src/drivers/NmeaGPS/NMEA0813Protocol.cpp:169
+msgid ""
+"{0}: Checksum in the sentence {1:#04X} is unequal to the calculated checksum "
+"{2:#04X}. Discard sentence."
+msgstr ""
+
+#: src/drivers/NmeaGPS/NMEA0813Protocol.cpp:177
+msgid ""
+"{0}: Checksum section contains non-numeric characters \"{1}\". Discard "
+"sentence."
+msgstr ""
+
+#: src/drivers/NmeaGPS/NMEA0813Protocol.cpp:201
+msgid ""
+"{0}: Number of fields in the sentence exceeds the maximum {1} fields. "
+"Discard sentence."
 msgstr ""
 
 #: src/drivers/NmeaGPS/NmeaGPSLib.cpp:58
 msgid ""
 "NmeaGPS driver for satellite navigation devices emitting NMEA 0813 sentences "
 "on serial ports or Bluetooth"
+msgstr ""
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:112
+msgid "NMEASet::strToD: String \"{0}\" is not a valid double value."
+msgstr ""
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:157
+msgid "{0}: String \"{1}\" does not contain a decimal separator '.'."
+msgstr ""
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:168
+msgid ""
+"{0}: String \"{1}\" does have less than 3 digits left of '.'. There is no "
+"space for degrees"
+msgstr ""
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:198 src/drivers/NmeaGPS/NMEASet.cpp:210
+#: src/drivers/NmeaGPS/NMEASet.cpp:225 src/drivers/NmeaGPS/NMEASet.cpp:237
+#: src/drivers/NmeaGPS/NMEASet.cpp:251 src/drivers/NmeaGPS/NMEASet.cpp:263
+msgid "{0}: String \"{1}\" is not a valid NMEA timestamp string."
+msgstr ""
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:396 src/drivers/NmeaGPS/NMEASet.cpp:785
+msgid "{0}: Sentence \"{1}\" failed. Reason: {2}"
+msgstr ""
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:557
+msgid ""
+"{0}: Could not find a common sequence shared by at least 3 cycles. Go by "
+"individual cycle analysis."
+msgstr ""
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:690
+msgid ""
+"{0}: Un-supported sentence type {1} from talker/type {2}/{3} is discarded."
+msgstr ""
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:796
+msgid "{0} called for a processed GNSS record again! Sentence type = {1}"
+msgstr ""
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:1008
+msgid "{0}: Invalid East-West indicator \"{1}\" in sentence \"{2}\""
+msgstr ""
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:1026
+msgid "{0}: Invalid North-South indicator \"{1}\" in sentence \"{2}\""
+msgstr ""
+
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:192
+msgid "CRC error of driver instance \"{0}\". Stop processing."
+msgstr ""
+
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:335
+msgid "{0}: Pressure = {1} mBar is outside the expected range!"
+msgstr ""
+
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:471
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:527
+msgid ""
+"{0}: Driver instance {1} has a PROM CRC mismatch. CRC in the PROM is {2:"
+"#04X}; calculated CRC is {3:#04X}."
 msgstr ""
 
 #: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureLib.cpp:84
