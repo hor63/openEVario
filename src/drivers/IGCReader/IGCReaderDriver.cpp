@@ -210,7 +210,7 @@ void IGCReaderDriver::openIGCFile() {
 	if (!igcFile.is_open()) {
 		igcFile.open(igcFileName.c_str(),std::ios_base::in|std::ios_base::binary);
 		if (!igcFile) {
-			auto str = fmt::format(_("Cannot open IGC file \"{0}.\""), igcFileName);
+			auto str = fmt::format(_("Cannot open IGC file \"{0}\"."), igcFileName);
 			LOG4CXX_ERROR(logger,str);
 			throw (GliderVarioDriverLoadException(__FILE__,__LINE__,str.c_str()));
 		}

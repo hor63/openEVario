@@ -177,7 +177,7 @@ void MPL3115Driver::driverThreadFunction() {
 				ioPort->close();
 			} catch (std::exception const& e) {
 				numRetries ++;
-				LOG4CXX_ERROR(logger,fmt::format(_("Error in the main loop of driver instance \"{0}\": "),
+				LOG4CXX_ERROR(logger,fmt::format(_("Error in the main loop of driver instance \"{0}\": {1}"),
 						instanceName,e.what()));
 				ioPort->close();
 
@@ -225,7 +225,7 @@ void MPL3115Driver::setupMPL3115() {
 				__PRETTY_FUNCTION__,static_cast<uint32_t>(whoAmI)));
 	} else {
 		auto str = fmt::format(_(
-				"{0}: Who am I value is not {1:#04X}, but {2:#04X}. The device is obviously not a {3} sensor."),
+				"{0}: WHO AM I value is not {1:#04X}, but {2:#04X}. The device is obviously not a {3} sensor."),
 				__PRETTY_FUNCTION__,static_cast<uint32_t>(MPL3115WhoAmIValue),static_cast<uint32_t>(whoAmI),
 				"MPL3115");
 		LOG4CXX_ERROR(logger,str);
