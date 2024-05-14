@@ -31,6 +31,8 @@
 #include <chrono>
 #include <thread>
 
+#include <fmt/format.h>
+
 #include "TE-MEAS-AbsPressureDriver.h"
 #include "kalman/GliderVarioTransitionMatrix.h"
 #include "kalman/GliderVarioMeasurementUpdater.h"
@@ -73,7 +75,8 @@ void TE_MEAS_AbsPressureDriver::driverInit(GliderVarioMainPriv &varioMain) {
 
 void TE_MEAS_AbsPressureDriver::readConfiguration (Properties4CXX::Properties const &configuration) {
 
-	LOG4CXX_INFO(logger, __FUNCTION__ << " Device" << instanceName << " read configuraion");
+	LOG4CXX_INFO(logger, fmt::format (_("{0}: for driver instance \"{1}\""),
+			__PRETTY_FUNCTION__, instanceName));
 
 	LOG4CXX_INFO(logger,"	portName = " << portName);
 	LOG4CXX_INFO(logger,"	i2cAddress = 0x" << std::hex <<  uint32_t(i2cAddress) << std::dec);
@@ -144,8 +147,9 @@ void TE_MEAS_AbsPressureDriver::initializeStatus(
 		}
 
 	} else {
-		LOG4CXX_WARN(logger,__FUNCTION__ << "Could not obtain " << NumInitValues
-				<< " valid measurements in a row for 20 seconds. Cannot initialize the Kalman filter state.");
+		LOG4CXX_WARN(logger, fmt::format(_(
+				"{0}: Could not obtain {1} valid measurements in a row for 20 seconds. Cannot initialize the Kalman filter state."),
+				__PRETTY_FUNCTION__,NumInitValues));
 	}
 
 
@@ -169,8 +173,8 @@ void TE_MEAS_AbsPressureDriver::driverThreadFunction() {
 			ioPort == nullptr
 #endif
 			) {
-		LOG4CXX_ERROR (logger,"No valid I/O port for driver " << getDriverName()
-				<< ". The driver is not operable");
+		LOG4CXX_ERROR (logger,fmt::format(_(
+				"No valid I/O port for driver instance \"{0}\". The driver is not operable"),instanceName));
 	} else {
 		while (!getStopDriverThread() && ( errorMaxNumRetries == 0 || numRetries <= errorMaxNumRetries)) {
 			try {
@@ -184,14 +188,15 @@ void TE_MEAS_AbsPressureDriver::driverThreadFunction() {
 #endif
 			}
 			catch (TE_MEAS_AbsPressureCRCErrorException const & e1) {
-				LOG4CXX_FATAL(logger,"CRC error Error of driver \"" << getDriverName()
-						<< "\". Stop processing. Reason: " << e1.what());
+				LOG4CXX_FATAL(logger,fmt::format(_(
+						"CRC error of driver instance \"{0}\". Stop processing."),
+						instanceName));
 				return;
 			}
 			catch (std::exception const& e) {
 				numRetries ++;
-				LOG4CXX_ERROR(logger,"Error in main loop of driver \"" << getDriverName()
-						<< "\":" << e.what());
+				LOG4CXX_ERROR(logger,fmt::format(_("Error in the main loop of driver instance \"{0}\": {1}"),
+						instanceName,e.what()));
 #if !TE_MEAS_ABS_PRESSURE_TEST_MODE
 				ioPort->close();
 #endif
@@ -326,9 +331,11 @@ void TE_MEAS_AbsPressureDriver::readoutPressure() {
 			}
 
 		} else { // if (pressureVal >= 500.0f && pressureVal <= 1500.0f) {
-			LOG4CXX_WARN(logger,__FUNCTION__ << ": Pressure = " << pressureVal << " mBar is outside the expected range!");
+			LOG4CXX_WARN(logger, fmt::format(_(
+					"{0}: Pressure = {1} mBar is outside the expected range!"),
+					__PRETTY_FUNCTION__,pressureVal));
 			// and if you are out of the operational range re-start initialization data collection.
-			// More likely the sensor is screwed you you connected the static system to a pump or the oxygen system :D
+			// More likely the sensor is screwed or you connected the static system to a pump or the oxygen system :D
 			numValidInitValues = 0;
 		}
 
@@ -460,16 +467,17 @@ void EightPinDriver::verifyCRC() {
 
 	// ... and start of my stuff
 	if (crcStored != nRem) {
-		std::ostringstream str;
-		str << "Driver " << getDriverName() << ": CRC mismatch: CRC in the PROM = 0x" << std::hex << crcStored
-				<< "; calculated CRC = 0x" << nRem;
+		auto str = fmt::format(_(
+				"{0}: Driver instance {1} has a PROM CRC mismatch. CRC in the PROM is {2:#04X}; calculated CRC is {3:#04X}."),
+				__PRETTY_FUNCTION__,instanceName,crcStored,nRem);
 		if (checkCRC) {
-			throw TE_MEAS_AbsPressureCRCErrorException (__FILE__, __LINE__, str.str().c_str());
+			LOG4CXX_ERROR(logger,str);
+			throw TE_MEAS_AbsPressureCRCErrorException (__FILE__, __LINE__, str.c_str());
 		} else {
-			LOG4CXX_WARN(logger,__FUNCTION__ << str.str());
+			LOG4CXX_WARN(logger,str);
 		}
 	} else {
-		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Calculated CRC value " << nRem << " is equal to the CRC in the PROM. CRC check successful.");
+		LOG4CXX_DEBUG(logger,__PRETTY_FUNCTION__ << ": Calculated CRC value " << nRem << " is equal to the CRC in the PROM. CRC check successful.");
 	}
 }
 
@@ -515,13 +523,14 @@ void FourPinDriver::verifyCRC() {
 
 	// ... and start of my stuff
 	if (crcStored != nRem) {
-		std::ostringstream str;
-		str << "Driver " << getDriverName() << ": CRC mismatch: CRC in the PROM = 0x" << std::hex << crcStored
-				<< "; calculated CRC = 0x" << nRem;
+		auto str = fmt::format(_(
+				"{0}: Driver instance {1} has a PROM CRC mismatch. CRC in the PROM is {2:#04X}; calculated CRC is {3:#04X}."),
+				__PRETTY_FUNCTION__,instanceName,crcStored,nRem);
 		if (checkCRC) {
-			throw TE_MEAS_AbsPressureCRCErrorException (__FILE__, __LINE__, str.str().c_str());
+			LOG4CXX_ERROR(logger,str);
+			throw TE_MEAS_AbsPressureCRCErrorException (__FILE__, __LINE__, str.c_str());
 		} else {
-			LOG4CXX_WARN(logger,__FUNCTION__ << str.str());
+			LOG4CXX_WARN(logger,str);
 		}
 	} else {
 		LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Calculated CRC value " << nRem << " is equal to the CRC in the PROM. CRC check successful.");

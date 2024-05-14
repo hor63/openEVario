@@ -154,7 +154,7 @@ void NmeaGPSDriver::driverThreadFunction() {
 				ioPort->close();
 			} catch (std::exception const& e) {
 				numRetries ++;
-				LOG4CXX_ERROR(logger,fmt::format(_("Error in the main loop of driver instance \"{0}\": "),
+				LOG4CXX_ERROR(logger,fmt::format(_("Error in the main loop of driver instance \"{0}\": {1}"),
 						instanceName,e.what()));
 				ioPort->close();
 

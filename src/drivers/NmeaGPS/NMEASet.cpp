@@ -393,7 +393,7 @@ void NMEASet::processSentenceTeachIn(
 	}
 	catch (NMEASetParseException const& e) {
 		LOG4CXX_WARN(logger,fmt::format(_(
-				"{0}: Sentence  \"{1}\" failed. Reason: {2}"),
+				"{0}: Sentence \"{1}\" failed. Reason: {2}"),
 				__PRETTY_FUNCTION__,reinterpret_cast<char const*>(newSentence.sentenceTypeString),e.what()));
 	}
 

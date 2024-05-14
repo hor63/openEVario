@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openEVario 0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/hor63/openEVario/issues\n"
-"POT-Creation-Date: 2024-04-30 11:17+0200\n"
+"POT-Creation-Date: 2024-05-05 19:39+0200\n"
 "PO-Revision-Date: 2024-04-09 16:05+0200\n"
 "Last-Translator: Kai Horstmann <horstmannkai@hotmail.com>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
@@ -198,7 +198,7 @@ msgstr ""
 
 #: src/main/GliderVarioDriverList.cpp:65
 msgid "Adding new driver \"{0}\": {1}"
-msgstr "Füge neuen Treiber „{0}“ hinzu; Beschreibung: {1}"
+msgstr "Füge neuen Treiber „{0}“ hinzu. Beschreibung: {1}"
 
 #: src/main/GliderVarioDriverList.cpp:79 src/main/GliderVarioDriverList.cpp:134
 msgid "Error searching mandatory configuration parameter \"{0}\": {1}"
@@ -313,21 +313,20 @@ msgstr "Gerät „{0}“ kann nicht initialisiert werden wegen: {1}"
 #: src/main/driverBase/DriverBase.cpp:82
 msgid "Uncaught exception in driver/instance \"{0}\"/\"{1}\". Message = {2}"
 msgstr ""
-"Nicht gefangene Exception in Treiber/Instanz \"{0}\"/\"{1}\". Fehlermeldung "
-"= {2}"
+"Nicht gefangene Exception in Treiber/Instanz „{0}“/„{1}“. Fehlermeldung = {2}"
 
 #: src/main/driverBase/DriverBase.cpp:87
 msgid ""
 "Uncaught exception from unknown class/type in driver/instance \"{0}\"/\"{1}\""
 msgstr ""
-"Nicht gefangene Exception unbekannten Typs in Treiber/Instanz \"{0}\"/\"{1}\""
+"Nicht gefangene Exception unbekannten Typs in Treiber/Instanz „{0}“/„{1}“"
 
 #: src/main/driverBase/DriverBase.cpp:92
 msgid ""
 "Driver/instance \"{0}\"/\"{1}\" left the driver thread function. The "
 "instance is now defunct."
 msgstr ""
-"Treiber/Instanz \"{0}\"/\"{1}\" verließ die Thread-Schleife. Die Instanz ist "
+"Treiber/Instanz  „{0}“/„{1}“ verließ die Thread-Schleife. Die Instanz ist "
 "außer Betrieb."
 
 #: src/main/driverBase/DriverBase.cpp:170
@@ -335,12 +334,12 @@ msgid ""
 "Cannot open calibration update file \"{0}\" for driver instance \"{1}\". "
 "Error: {2}"
 msgstr ""
-"Kann Datei mit aktualisierten Kalibierdaten \"{0}\" für Treiberinstanz {1} "
+"Kann Datei mit aktualisierten Kalibierdaten „{0}“ für Treiberinstanz „{1}“ "
 "nicht öffnen. Fehler ist: {2}"
 
 #: src/main/driverBase/DriverBase.cpp:177
 msgid "Error in {0} for driver instance \"{1}\". Error = {2}"
-msgstr "Fehler in {0} für Treiberinstanz \"{1}\". Fehler = {2}"
+msgstr "Fehler in {0} für Treiberinstanz „{1}“. Fehler = {2}"
 
 #: src/main/driverBase/DriverBase.cpp:179
 #: src/main/driverBase/DriverBase.cpp:185
@@ -356,9 +355,8 @@ msgid ""
 "Cannot apply calibration data from file \"{0}\" to device \"{1}\".Driver "
 "\"{2}\" does not implement reading of calibration data."
 msgstr ""
-"Kann Kalibrierdaten aus Datei \"{0}\" nicht für Treiberinstanz \"{1}\" "
-"anwenden. Treiber \"{2}\" implementiert implement nicht das Lesen von "
-"Kalibrierdaten."
+"Kann Kalibrierdaten aus Datei „{0}“ nicht für Treiberinstanz „{1}“ anwenden. "
+"Treiber „{2}“ implementiert implement nicht das Lesen von Kalibrierdaten."
 
 #: src/main/driverBase/DriverBase.cpp:202
 msgid ""
@@ -366,48 +364,47 @@ msgid ""
 "calibration data file \"{1}\". Driver \"{2}\" does not implement reading of "
 "calibration data."
 msgstr ""
-"Kann keine Kalibierdaten aus Treiberinstanz \"{0}\" auslesen, um sie in "
-"Kalibierdatendatei \"{1}\" zu schreiben. Treiber \"{2}\" implementiert nicht "
-"das Lesen von Kalibrierdaten oder hat gar keine."
+"Kann keine Kalibierdaten aus Treiberinstanz „{0}“ auslesen, um sie in "
+"Kalibierdatendatei „{1}“ zu schreiben. Treiber „{2}“ implementiert nicht das "
+"Lesen von Kalibrierdaten oder hat gar keine."
 
 #: src/main/driverBase/DriverBase.cpp:235
 msgid "Read from calibration data file \"{0}\""
-msgstr "Lese aus Kalibrierdatendatei \"{0}\""
+msgstr "Lese aus Kalibrierdatendatei „{0}“"
 
 #: src/main/driverBase/DriverBase.cpp:246
 msgid "Cannot read calibration data from file \"{0}\". Trying alternative {1}"
 msgstr ""
-"Kann keine Kalibrierdaten aus Datei \"{0}\" lesen. Versuche Alternative "
-"Datei {1}."
+"Kann keine Kalibrierdaten aus Datei „{0}“ lesen. Versuche Alternative Datei "
+"{1}."
 
 #: src/main/driverBase/DriverBase.cpp:251
 msgid "Read from alternative calibration data file \"{0}\""
-msgstr "Lese von alternativer Kalibrierdatendatei \"{0}\""
+msgstr "Lese von alternativer Kalibrierdatendatei „{0}“"
 
 #: src/main/driverBase/DriverBase.cpp:260
 msgid ""
 "Device instance \"{0}\": Error reading calibration data from file \"{1}\": "
 "{2}"
 msgstr ""
-"Treiberinstanz \"{0}\": Fehler bein Lesen der Kalibierdaten aus Datei "
-"\"{1}\" ist: "
+"Treiberinstanz „{0}“: Fehler bein Lesen der Kalibierdaten aus Datei „{1}“ "
+"ist: {2}"
 
 #: src/main/driverBase/DriverBase.cpp:263
 msgid "Device instance \"{0}\": Using builtin default calibration data"
-msgstr "Treiberinstanz \"{0}\": Benutze eingebaute Standard-Kalibierdaten"
+msgstr "Treiberinstanz „{0}“: Benutze eingebaute Standard-Kalibierdaten"
 
 #: src/main/driverBase/DriverBase.cpp:332
 msgid "Error reading configuration of device instance \"{0}\": {1}"
-msgstr ""
-"Fehler beim Lesen der Konfiguration von Treiberinstanz \"{0}\" ist: {1}"
+msgstr "Fehler beim Lesen der Konfiguration von Treiberinstanz „{0}“ ist: {1}"
 
 #: src/main/driverBase/DriverBase.cpp:339
 msgid "Common parameters of driver instance \"{0}\":"
-msgstr "Allgemeine Parameter von Treiberinstanz \"{0}\":"
+msgstr "Allgemeine Parameter von Treiberinstanz „{0}“:"
 
 #: src/util/io/PortBase.cpp:96
 msgid "Port type \"{0}\" is defined more than once"
-msgstr "Porttyp \"{0}\" wurde mehr als einmal definiert."
+msgstr "Porttyp „{0}“ wurde mehr als einmal definiert."
 
 #: src/util/io/PortBase.cpp:108
 msgid "{0} with portName={1}, portType={2}"
@@ -415,11 +412,11 @@ msgstr "{0} mit Portname={1}, Porttyp={2}"
 
 #: src/util/io/PortBase.cpp:113
 msgid "Port \"{0}\" is defined more than once"
-msgstr "Port \"{0}\" wurde mehr als einmal definiert."
+msgstr "Port „{0}“ wurde mehr als einmal definiert."
 
 #: src/util/io/PortBase.cpp:125
 msgid "Loading port \"{0}\""
-msgstr "Lade Port „{0}“"
+msgstr "Lade Port  „{0}“"
 
 #: src/util/io/PortBase.cpp:137
 msgid "Type \"{0}\" of port \"{1}\" does not exist."
@@ -432,7 +429,7 @@ msgstr "  Kann Port „{0}“ nicht erzeugen."
 
 #: src/util/io/PortBase.cpp:146
 msgid "Port \"{0}\" has no \"type\" property."
-msgstr "Port \"{0}\" hat keinen \"type\" Parameter."
+msgstr "Port „{0}“ hat keinen „type“ Parameter."
 
 #: src/util/io/PortBase.cpp:150
 msgid "Port configuration property \"{0}\" is not a structure."
@@ -440,11 +437,11 @@ msgstr "Parameter für Port „{0}“ ist keine Struktur."
 
 #: src/util/io/PortBase.cpp:171
 msgid "Port \"{0}\" was successfully created and configured."
-msgstr "Port \"{0}\" wurde erfolgreich erzeugt und konfiguriert."
+msgstr "Port „{0}“ wurde erfolgreich erzeugt und konfiguriert."
 
 #: src/util/io/PortBase.cpp:172
 msgid "  deviceName = \"{0}\"."
-msgstr "  Gerätename = \"{0}\"."
+msgstr "  Gerätename = „{0}“."
 
 #: src/util/io/PortBase.cpp:173
 msgid "  blocking = {0}"
@@ -453,28 +450,28 @@ msgstr "  blockierend = {0}"
 #: src/util/io/PortBase.cpp:196
 msgid "Exception when configuring port \"{0}\" in source {1} at line {2}: {3}"
 msgstr ""
-"Exception bei Konfiguration von Port \"{0}\" in Quelldatei {1} in Zeile {2}: "
+"Exception bei Konfiguration von Port „{0}“ in Quelldatei {1} in Zeile {2}: "
 "{3}"
 
 #: src/util/io/PortBase.cpp:201
 msgid "Exception when configuring port \"{0}\": {1}"
-msgstr "Exception bei Konfiguration von Port \"{0)\": {1}"
+msgstr "Exception bei Konfiguration von Port „{0)“: {1}"
 
 #: src/util/io/PortBase.cpp:207
 msgid "Property \"IOPorts\" is not a structure. No I/O ports will be created."
 msgstr ""
-"Parameter \"IOPorts\" ist keine Struktur. Es werden keine I/O Ports erzeugt."
+"Parameter „IOPorts“ ist keine Struktur. Es werden keine I/O Ports erzeugt."
 
 #: src/util/io/PortBase.cpp:210
 msgid ""
 "Properties section \"IOPorts\" does not exist. No I/O ports will be created."
 msgstr ""
-"Konfigurationssektion \"IOPorts\" existiert nicht. Es werden keine I/O Ports "
+"Konfigurationssektion „IOPorts“ existiert nicht. Es werden keine I/O Ports "
 "erzeugt."
 
 #: src/util/io/PortBase.cpp:220
 msgid "{0}: Cannot find IO port \"{1}\""
-msgstr "{0}: Kann I/O Port \"{1}\" nicht finden."
+msgstr "{0}: Kann I/O Port „{1}“ nicht finden."
 
 #: src/util/io/PortBase.cpp:243
 msgid "Port {0} of type {1} is open."
@@ -482,42 +479,41 @@ msgstr "Port {0} von Typ {1} ist offen."
 
 #: src/util/io/PortBase.cpp:255
 msgid "Port {0} of type {1}: Cannot open device \"{2}\""
-msgstr "Port {0} von Typ {1}: Kann Gerät \"{2}\" nicht öffnen."
+msgstr "Port {0} von Typ {1}: Kann Gerät „{2}“ nicht öffnen."
 
 #: src/util/io/PortBase.cpp:256
 msgid "Port {0} of type {1}: Cannot open device \"{2}\". errno = {3}: {4}"
-msgstr ""
-"Port {0} von Typ {1}: Kann Gerät \"{2}\" nicht öffnen. errno = {3}: {4}"
+msgstr "Port {0} von Typ {1}: Kann Gerät „{2}“ nicht öffnen. errno = {3}: {4}"
 
 #: src/util/io/PortBase.cpp:268
 msgid "Port {0} of type {1}: Opened device \"{2}\""
-msgstr "Port {0} von Typ {1}: Öffnete Gerät \"{2}\"."
+msgstr "Port {0} von Typ {1}: Öffnete Gerät „{2}“."
 
 #: src/util/io/PortBase.cpp:279
 msgid "Port {0} of type {1}: Closed device \"{2}\""
-msgstr "Port {0} von Typ {1}: Gerät \"{2}\" ist geschlossen."
+msgstr "Port {0} von Typ {1}: Gerät „{2}“ ist geschlossen."
 
 #: src/util/io/DatagramPort.cpp:94 src/util/io/DatagramPort.cpp:150
 #: src/util/io/StreamPort.cpp:89 src/util/io/StreamPort.cpp:138
-#: src/util/io/UDPPort.cpp:352
+#: src/util/io/StreamPort.cpp:149 src/util/io/UDPPort.cpp:352
 msgid "Port \"{0}\" of type \"{1}\": {4} error {2}: {3}"
-msgstr "Port \"{0}\" von Typ \"{1}\": {4} Fehler {2}: {3}"
+msgstr "Port „{0}“ von Typ „{1}“: {4} Fehler {2}: {3}"
 
 #: src/util/io/DatagramPort.cpp:106
 msgid ""
 "Port \"{0} of type \"{1}\": Buffer too small for the datagram. Buffer length "
 "= {2}, datagram length = {3}."
 msgstr ""
-"Port \"{0} von Typ \"{1}\": Puffer ist zu klein für das Datagramm. "
-"Pufferlänge = {2}, Datagramm Länge = {3}."
+"Port „{0} von Typ „{1}“: Puffer ist zu klein für das Datagramm. Pufferlänge "
+"= {2}, Datagramm Länge = {3}."
 
 #: src/util/io/I2CPort.cpp:108
 msgid ""
 "Error opening port \"{0}\". Cannot retrieve I2C capabilites of device {1}. "
 "errno = {2} : {3}"
 msgstr ""
-"Error beim Öffnen von Port \"{0}\". Kann I2C Fähigkeiten nicht auslesen. "
-"errno = {1} : {2}"
+"Error beim Öffnen von Port „{0}“. Kann I2C Fähigkeiten nicht auslesen. errno "
+"= {1} : {2}"
 
 #: src/util/io/I2CPort.cpp:179 src/util/io/I2CPort.cpp:194
 #: src/util/io/I2CPort.cpp:239 src/util/io/I2CPort.cpp:265
@@ -527,26 +523,26 @@ msgstr ""
 #: src/util/io/I2CPort.cpp:501 src/util/io/I2CPort.cpp:552
 #: src/util/io/I2CPort.cpp:569 src/util/io/I2CPort.cpp:621
 msgid "{0}: {1} error for device {3} of port \"{2}\". errno = {4}: {5}"
-msgstr "{0}: {1} Fehler für Gerät {3} von Port \"{2}\". errno = {4}: {5}"
+msgstr "{0}: {1} Fehler für Gerät {3} von Port „{2}“. errno = {4}: {5}"
 
 #: src/util/io/I2CPort.cpp:205 src/util/io/I2CPort.cpp:276
 #: src/util/io/I2CPort.cpp:304 src/util/io/I2CPort.cpp:330
 #: src/util/io/I2CPort.cpp:398 src/util/io/I2CPort.cpp:467
 #: src/util/io/I2CPort.cpp:512 src/util/io/I2CPort.cpp:581
 msgid "{0}, port \"{1}\": Neither SMBus nor direct I2C is supported."
-msgstr "{0}, Port \"{1}\": Weder SMBus noch direktes I2C werden unterstützt."
+msgstr "{0}, Port „{1}“: Weder SMBus noch direktes I2C werden unterstützt."
 
 #: src/util/io/I2CPort.cpp:254
 msgid ""
 "{0} for port \"{1}\": Why the hell do you want to send 0 (ZERO!) bytes to "
-"I2C device 0x{2:#04X}"
+"I2C device {2:#04X}"
 msgstr ""
-"{0} für Port \"{1}\": Warum zur Hölle willst Du 0 (Null!) Bytes an I2C "
-"device 0x{2:#04X} schicken?"
+"{0} für Port „{1}“: Warum zur Hölle willst Du 0 (Null!) Bytes an I2C device "
+"0x{2:#04X} schicken?"
 
 #: src/util/io/I2CPort.cpp:633
 msgid "{0}, port \"{1}\": Direct I2C is not supported."
-msgstr "{0}, Port \"{1}\": Direktes I2C wird nicht unterstützt."
+msgstr "{0}, Port „{1}“: Direktes I2C wird nicht unterstützt."
 
 #: src/util/io/I2CPort.cpp:649
 msgid ""
@@ -554,83 +550,82 @@ msgid ""
 "supported for port \"{1}\""
 msgstr ""
 "I2CPort::check10BitAddr: Fehler, 10-Bit I2CAdresse {0:#04X} wird für Port "
-"\"{1}\" nicht unterstützt."
+"„{1}“ nicht unterstützt."
 
 #: src/util/io/SerialPort.cpp:223
 msgid "Device {1} of port \"{0}\" is not a tty/serial line device"
-msgstr "Gerät {1} von Port \"{0}\" ist kein tty/serielles Gerät"
+msgstr "Gerät {1} von Port „{0}“ ist kein tty/serielles Gerät"
 
 #: src/util/io/SerialPort.cpp:234 src/util/io/SerialPort.cpp:412
 msgid ""
 "Cannot retrieve tty attributes for port \"{0}\", device {1}. tcgetattr error "
 "= {2}: {3}"
 msgstr ""
-"Kann tty Attribute von Port \"{0}\", Gerät {1} nicht lesen. tcgetattr Fehler "
-"= {2}: {3}"
+"Kann tty Attribute von Port „{0}“, Gerät {1} nicht lesen. tcgetattr Fehler = "
+"{2}: {3}"
 
 #: src/util/io/SerialPort.cpp:400
 msgid ""
 "Cannot set tty attributes for port \"{0}\", device {1}. tcsetattr error = "
 "{2}: {3}"
 msgstr ""
-"Kann tty Attribute von Port \"{0}\", Gerät {1} nicht schreiben. tcsetattr "
+"Kann tty Attribute von Port „{0}“, Gerät {1} nicht schreiben. tcsetattr "
 "Fehler = {2}: {3}"
 
 #: src/util/io/SerialPort.cpp:444
 msgid "Error configuring port \"{0}\": Baud rate \"{1}\" is not numeric"
 msgstr ""
-"Fehler bei Konfiguration von Port \"{0}\": Baudrate \"{1}\" ist nicht "
-"numerisch."
+"Fehler bei Konfiguration von Port „{0}“: Baudrate „{1}“ ist nicht numerisch."
 
 #: src/util/io/SerialPort.cpp:468
 msgid ""
 "Error configuring port \"{0}\": Number data bits \"{1}\" must be 7 or 8."
 msgstr ""
-"Fehler bei Konfiguration von Port \"{0}\": Anzahl Datenbits \"{1}\" muss 7 "
-"oder 8 sein."
+"Fehler bei Konfiguration von Port „{0}“: Anzahl Datenbits „{1}“ muss 7 oder "
+"8 sein."
 
 #: src/util/io/SerialPort.cpp:479
 msgid "Error configuring port \"{0}\": Number data bits \"{1}\" is not numeric"
 msgstr ""
-"Fehler bei Konfiguration von Port \"{0}\": Anzahl Datenbits \"{1}\" ist "
-"nicht numerisch."
+"Fehler bei Konfiguration von Port „{0}“: Anzahl Datenbits „{1}“ ist nicht "
+"numerisch."
 
 #: src/util/io/SerialPort.cpp:503
 msgid "Error configuring port \"{0}\": Parity value \"{1}\" is invalid"
 msgstr ""
-"Fehler bei Konfiguration von Port \"{0}\": Parität \"{1}\" ist ein "
-"ungültiger Wert."
+"Fehler bei Konfiguration von Port „{0}“: Parität „{1}“ ist ein ungültiger "
+"Wert."
 
 #: src/util/io/SerialPort.cpp:532
 msgid ""
 "Error configuring port \"{0}\": Number stop bits \"{1}\" must be 1 or 2."
 msgstr ""
-"Fehler bei Konfiguration von Port \"{0}\": Anzahl Stopbits \"{1}\" muss 1 "
-"oder 2 sein."
+"Fehler bei Konfiguration von Port „{0}“: Anzahl Stopbits „{1}“ muss 1 oder 2 "
+"sein."
 
 #: src/util/io/SerialPort.cpp:545
 msgid "Error configuring port \"{0}\": Number stop bits \"{1}\" is not numeric"
 msgstr ""
-"Fehler bei Konfiguration von Port \"{0}\": Anzahl Datenbits \"{1}\" ist "
-"nicht numerisch."
+"Fehler bei Konfiguration von Port „{0}“: Anzahl Datenbits „{1}“ ist nicht "
+"numerisch."
 
 #: src/util/io/SerialPort.cpp:574
 msgid "Error configuring port \"{0}\": Handshake \"{1}\" is invalid."
 msgstr ""
-"Fehler bei Konfiguration von Port \"{0}\": Handshake \"{1}\" ist ein "
-"ungültiger Wert."
+"Fehler bei Konfiguration von Port „{0}“: Handshake „{1}“ ist ein ungültiger "
+"Wert."
 
 #: src/util/io/SerialPort.cpp:618
 msgid "Error configuring port \"{0}\": Speed value \"{1}\" is invalid."
 msgstr ""
-"Fehler bei Konfiguration von Port \"{0}\": Schnittstellengeschwindigkeit "
-"\"{1}\" ist ein ungültiger Wert."
+"Fehler bei Konfiguration von Port „{0}“: Schnittstellengeschwindigkeit „{1}“ "
+"ist ein ungültiger Wert."
 
 #: src/util/io/StreamPort.cpp:96
 msgid ""
 "Port {0} of type {1}: End of file condition upon read. Closing the port."
 msgstr ""
-"Port {0} of type {1}: \"End of file\" (EOF) Bedingung trat beim Lesen auf. "
+"Port {0} of type {1}: „End of file“ (EOF) Bedingung trat beim Lesen auf. "
 "Schließe den Port."
 
 #: src/util/io/TCPPort.cpp:131
@@ -638,7 +633,7 @@ msgid ""
 "Error configuring port \"(0)\" of type {1}: Mandatory property {3} is "
 "missing."
 msgstr ""
-"Fehler bei der Konfiguration von Port \"(0)\" von Typ {1}: Pflichtparameter "
+"Fehler bei der Konfiguration von Port „(0)“ von Typ {1}: Pflichtparameter "
 "{3} fehlt."
 
 #: src/util/io/TCPPort.cpp:176
@@ -646,39 +641,39 @@ msgid ""
 "{0}: Error resolving host \"{1}\" and/or TCP port \"{2}\" for I/O port "
 "\"{3}\". Error code = {4}: {5}"
 msgstr ""
-"{0}: Fehler beim Auflösen von Hostadresse \"{1}\" und/oder TCP port \"{2}\" "
-"für I/O port \"{3}\". Fehlercode = {4}: {5}"
+"{0}: Fehler beim Auflösen von Hostadresse „{1}“ und/oder TCP port „{2}“ für "
+"I/O port „{3}“. Fehlercode = {4}: {5}"
 
 #: src/util/io/TCPPort.cpp:180
 msgid ""
 "{0}: Error resolving host \"{1}\" and/or TCP port \"{2}\" for I/O port "
 "\"{3}\": getaddrinfo() returned 0 but *_pai is NULL."
 msgstr ""
-"{0}: Fehler beim Auflösen von Hostadresse \"{1}\" und/oder TCP port \"{2}\" "
-"für I/O port \"{3}\": getaddrinfo() lieferte 0 aber *_pai ist NULL."
+"{0}: Fehler beim Auflösen von Hostadresse „{1}“ und/oder TCP port „{2}“ für "
+"I/O port „{3}“: getaddrinfo() lieferte 0 aber *_pai ist NULL."
 
 #: src/util/io/TCPPort.cpp:205 src/util/io/UDPPort.cpp:226
 #: src/util/io/UDPPort.cpp:278
 msgid "{0}: Error creating a {1} socket for port \"{2}\". errno = {3}: {4}"
 msgstr ""
-"{0}: Fehler beim Erzeugen eines {1} Socket für I/O Port \"{2}\". errno = "
-"{3}: {4}"
+"{0}: Fehler beim Erzeugen eines {1} Socket für I/O Port „{2}“. errno = {3}: "
+"{4}"
 
 #: src/util/io/TCPPort.cpp:219
 msgid ""
 "{0}: Error connect TCP socket to host \"{1}\" on TCP port \"{2}\" for I/O "
 "port \"{3}\". errno = {4}: {5}"
 msgstr ""
-"{0}: Fehler bei \"connect\" eines TCP Sockets zu Host \"{1}\" auf TCP port "
-"\"{2}\" für I/O port \"{3}\". errno = {4}: {5}"
+"{0}: Fehler beim Verbinden eines TCP Sockets zu Host „{1}“ auf TCP port "
+"„{2}“ für I/O port „{3}“. errno = {4}: {5}"
 
 #: src/util/io/TCPPort.cpp:237
 msgid "Port \"{0}\": Connected to host {1} on TCP port {2}."
-msgstr "Port \"{0}\" ist mit Host {1} auf TCP port {2} verbunden."
+msgstr "Port „{0}“ ist mit Host {1} auf TCP port {2} verbunden."
 
 #: src/util/io/TCPPort.cpp:244 src/util/io/TCPPort.cpp:253
 msgid "Open I/O port \"{0}\": setsockopt {1} error: errno = {2} : {3}"
-msgstr "Öffnen von I/O port \"{0}\": setsockopt {1} Fehler: errno = {2} : {3}"
+msgstr "Öffnen von I/O port „{0}“: setsockopt {1} Fehler: errno = {2} : {3}"
 
 #: src/util/io/UDPPort.cpp:153
 msgid ""
@@ -697,27 +692,27 @@ msgid ""
 "{0}: Port {1}: getaddrinfo() error for local host {2}, local UDP port {3} = "
 "{4} : {5}"
 msgstr ""
-"{0}: Port \"{1}\": getaddrinfo() Fehler für lokale Hostadresse {2}, lokalen "
+"{0}: Port „{1}“: getaddrinfo() Fehler für lokale Hostadresse {2}, lokalen "
 "UDP Port {3} = {4} : {5}"
 
 #: src/util/io/UDPPort.cpp:240
 msgid ""
 "{0}: Port {1}: bind() error for local host {2}, UDP port {3} = {4} : {5}"
 msgstr ""
-"{0}: Port \"{1}\": bind() Fehler für lokale Hostadresse {2}, lokalen UDP "
-"Port {3} = {4} : {5}"
+"{0}: Port „{1}“: bind() Fehler für lokale Hostadresse {2}, lokalen UDP Port "
+"{3} = {4} : {5}"
 
 #: src/util/io/UDPPort.cpp:260
 msgid ""
 "{0}: Port {1}: getaddrinfo() error for peer host {2}, UDP port {3} = {4} : "
 "{5}"
 msgstr ""
-"{0}: Port \"{1}\": getaddrinfo() Fehler für Zielhostadresse {2}, Ziel-UDP "
-"Port {3} = {4} : {5}"
+"{0}: Port „{1}“: getaddrinfo() Fehler für Zielhostadresse {2}, Ziel-UDP Port "
+"{3} = {4} : {5}"
 
 #: src/util/io/UDPPort.cpp:307
 msgid "{0}: Port \"{1}\" opened successful"
-msgstr "{0}: Port \"{1}\" wurde erfolgreich geöffnet."
+msgstr "{0}: Port „{1}“ wurde erfolgreich geöffnet."
 
 #: src/util/io/UDPPort.cpp:323
 msgid ""
@@ -729,50 +724,61 @@ msgstr ""
 "den Port."
 
 #: src/drivers/AMS5915/AMS5915Driver.cpp:86
-#, fuzzy
-#| msgid "Loading driver instance \"{0}\""
+#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardDriver.cpp:75
+#: src/drivers/MPL3115/MPL3115Driver.cpp:78
+#: src/drivers/MPU-9150/MPU-9150Driver.cpp:78
+#: src/drivers/MS4515/MS4515Driver.cpp:243
+#: src/drivers/NmeaGPS/NmeaGPSDriver.cpp:77
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:78
 msgid "{0}: for driver instance \"{1}\""
-msgstr "Lade Treiberinstanz „{0}“"
+msgstr "{0}:Lade Treiberinstanz „{1}“"
 
 #: src/drivers/AMS5915/AMS5915Driver.cpp:111
-#, fuzzy
-#| msgid "Could not find property for driver instance \"{0}\""
+#: src/drivers/MPU-9150/MPU-9150Driver.cpp:90
+#: src/drivers/NmeaGPS/NmeaGPSDriver.cpp:109
 msgid ""
 "Could not read property \"{0}\" for device instance \"{1}\" because: {2}"
-msgstr "Kann Parametersatz für Treiberinstanz „{0}“ nicht finden."
+msgstr "Kann Parameter „{0}“ für Treiberinstanz „{1}“ nicht lesen. Grund: {2}."
 
 #: src/drivers/AMS5915/AMS5915Driver.cpp:122
-#, fuzzy
-#| msgid "Loading driver instance \"{0}\""
 msgid "Driver instance \"{0}\" data: "
-msgstr "Lade Treiberinstanz „{0}“"
+msgstr "Treiberinstanz „{0}“ Daten: "
 
 #: src/drivers/AMS5915/AMS5915Driver.cpp:134
-#, fuzzy
-#| msgid "Read from calibration data file \"{0}\""
+#: src/drivers/MS4515/MS4515Driver.cpp:256
 msgid "\tCalibration data file name = {0}"
-msgstr "Lese aus Kalibrierdatendatei \"{0}\""
+msgstr "\tName der Kalibrierdatendatei = „{0}“"
 
 #: src/drivers/AMS5915/AMS5915Driver.cpp:145
-#, fuzzy
-#| msgid "Property for driver instance \"{0}\" is not a structure"
+#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardDriver.cpp:92
+#: src/drivers/MPL3115/MPL3115Driver.cpp:170
+#: src/drivers/MPU-9150/MPU-9150Driver.cpp:371
+#: src/drivers/MS4515/MS4515Driver.cpp:270
+#: src/drivers/NmeaGPS/NmeaGPSDriver.cpp:147
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:177
 msgid ""
 "No valid I/O port for driver instance \"{0}\". The driver is not operable"
-msgstr "Parameter für Treiberinstanz „{0}“ ist keine Struktur."
+msgstr ""
+"Kein gültiger I/O Port existiert für Treiberinstanz „{0}“. Der Treiber ist "
+"nicht betriebsbereit."
 
 #: src/drivers/AMS5915/AMS5915Driver.cpp:155
-#, fuzzy
-#| msgid "Error reading configuration of device instance \"{0}\": {1}"
-msgid "Error in the main loop of driver instance \"{0}\": "
-msgstr ""
-"Fehler beim Lesen der Konfiguration von Treiberinstanz \"{0}\" ist: {1}"
+#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardDriver.cpp:102
+#: src/drivers/MPL3115/MPL3115Driver.cpp:180
+#: src/drivers/MPU-9150/MPU-9150Driver.cpp:382
+#: src/drivers/MS4515/MS4515Driver.cpp:280
+#: src/drivers/NmeaGPS/NmeaGPSDriver.cpp:157
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:198
+msgid "Error in the main loop of driver instance \"{0}\": {1}"
+msgstr "Fehler in der Hauptschleife von Treiberinstanz „{0}“: {1}"
 
 #: src/drivers/AMS5915/AMS5915Lib.cpp:58
 msgid "Differential and gage pressure Amsys sensors AMS5915"
-msgstr ""
+msgstr "Amsys AMS5915 Differenz- und Absolutdruck-Sensoren"
 
 #: src/drivers/AMS5915/AMS5915Main.cpp:63
 #: src/drivers/BoschBMXSensorBoard/BMXSensorBoardMain.cpp:63
+#: src/drivers/driverTemplate/templateMain.cpp:63
 #: src/drivers/IGCReader/IGCReaderMain.cpp:59
 #: src/drivers/MPL3115/MPL3115Main.cpp:63
 #: src/drivers/MPU-9150/MPU-9150Main.cpp:63
@@ -780,39 +786,242 @@ msgstr ""
 #: src/drivers/simul/simulMain.cpp:53
 #: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureMain.cpp:64
 msgid "Initialize the {0} driver library"
-msgstr ""
+msgstr "Initialisiere die {0} Treiberbibliothek."
+
+#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardDriver.cpp:192
+msgid "CRC error of received magnetometer trim data message"
+msgstr "CRC Fehler in der Magnetometer Kalibrierdaten Nachricht."
+
+#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardDriver.cpp:286
+msgid "CRC error of received acc/gyr/mag sensor data message"
+msgstr "CRC Fehler in der acc/gyr/mag Sensordaten Nachricht"
+
+#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardDriver.cpp:327
+msgid "CRC error of received acc/gyr sensor data message"
+msgstr "CRC Fehler in der acc/gyr Sensordaten Nachricht"
 
 #: src/drivers/BoschBMXSensorBoard/BMXSensorBoardLib.cpp:58
 msgid "Driver library for Bosch BMX IMUs on the horImuBoard sensor board"
-msgstr ""
+msgstr "Treiberbibliothek für Bosch BMX IMUs"
 
 #: src/drivers/driverTemplate/templateLib.cpp:58
 msgid "Template for a new driver library"
-msgstr ""
+msgstr "Muster für eine neue Treiberbibliothek"
+
+#: src/drivers/IGCReader/IGCReaderDriver.cpp:213
+msgid "Cannot open IGC file \"{0}\"."
+msgstr "Kann IGC Datei „{0}“ nicht öffnen."
+
+#: src/drivers/IGCReader/IGCReaderDriver.cpp:218
+msgid "Opened IGC file \"{0}\"."
+msgstr "IGC Datei „{0}“ ist offen."
+
+#: src/drivers/IGCReader/IGCReaderDriver.cpp:229
+msgid "Closed IGC file \"{0}\"."
+msgstr "IGC Datei „{0}“ ist geschlossen."
 
 #: src/drivers/IGCReader/IGCReaderLib.cpp:57
 msgid ""
 "Driver library for simulation and test drivers based on IGC file recordings"
 msgstr ""
+"Treiberbibliothek für Tests und Simulationen basierend auf Aufzeichnungen "
+"aus IGC-Dateien"
+
+#: src/drivers/MPL3115/MPL3115Driver.cpp:150
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:151
+msgid ""
+"{0}: Could not obtain {1} valid measurements in a row for 20 seconds. Cannot "
+"initialize the Kalman filter state."
+msgstr ""
+"{0}: Ich konnte keine {0} gültigen Messwerte in einer Reihe innerhalb von 20 "
+"Sekunden empfangen.  Ich kann den Kalman Fiter status nicht initialisieren."
+
+#: src/drivers/MPL3115/MPL3115Driver.cpp:224
+#: src/drivers/MPU-9150/MPU-9150Driver.cpp:205
+#: src/drivers/MPU-9150/MPU-9150Driver.cpp:287
+msgid "{0}: WHO AM I contains expected {1:#04X}."
+msgstr "{0}: WHO AM I ist der erwartete Wert {1:#04X}."
+
+#: src/drivers/MPL3115/MPL3115Driver.cpp:228
+#: src/drivers/MPU-9150/MPU-9150Driver.cpp:209
+msgid ""
+"{0}: WHO AM I value is not {1:#04X}, but {2:#04X}. The device is obviously "
+"not a {3} sensor."
+msgstr ""
+"{0}: Der WHO AM I Wert ist nicht der erwartete {1:#04X}, sondern {2:#04X}. "
+"Das Gerät ist offenbar kein {3} Sensor."
 
 #: src/drivers/MPL3115/MPL3115Lib.cpp:58
 msgid "Absolute atmospheric pressure sensors MPL3115"
-msgstr ""
+msgstr "MPL3115 Sensoren für absoluten Atmosphärendruck"
 
 #: src/drivers/MPU-9150/MPU-9150Lib.cpp:58
 msgid "Driver library for TDK/Invensense MPU-9150 IMU"
+msgstr "Treiberbibliothek für TDK/Invensense MPU-9150 IMUs"
+
+#: src/drivers/MS4515/MS4515Driver.cpp:100
+msgid "Property is a struct or a list."
+msgstr "Parameter ist eine Struktur oder eine Liste."
+
+#: src/drivers/MS4515/MS4515Driver.cpp:115
+msgid "Value {0} is invalid. Valid values are 'A' or 'B'."
+msgstr "Wert {0} ist ungültig. Gültige Werte sind 'A' oder 'B'."
+
+#: src/drivers/MS4515/MS4515Driver.cpp:139
+#: src/drivers/MS4515/MS4515Driver.cpp:183
+msgid ""
+"Both properties \"{0}\" and \"{1}\" are defined. Only one of these two is "
+"allowed."
 msgstr ""
+"Beide Parameter „{0}“ und „{1}“ wurden definiert. Nur einer der beiden "
+"Parameter ist erlaubt."
+
+#: src/drivers/MS4515/MS4515Driver.cpp:149
+#: src/drivers/MS4515/MS4515Driver.cpp:193
+msgid "Neither configurations \"{0}\" and \"{1}\" are defined."
+msgstr "Keiner der beiden möglichen Parameter „{0}“ and „{1}“ wurden definiert"
+
+#: src/drivers/MS4515/MS4515Driver.cpp:209
+msgid ""
+"{0}: Read configuration property {1} for driver instance \"{2}\" failed: {3}"
+msgstr ""
+"{0}: Fehler beim Lesen Lesen von Parameter {1} für Treiberinstanz „{2}“ ist: "
+"{3}"
 
 #: src/drivers/MS4515/MS4515Lib.cpp:58
 msgid "Absolute atmospheric pressure sensors MS4515"
+msgstr "MS4515 Sensoren für absoluten Atmosphärendruck"
+
+#: src/drivers/NmeaGPS/NMEA0813Protocol.cpp:72
+msgid "{0}: Received unexpected sentence start. Discarding {1} bytes."
 msgstr ""
+"{0}: Empfing unerwarteten Start einer neuen Nachricht. Verwerfe {1} Bytes."
+
+#: src/drivers/NmeaGPS/NMEA0813Protocol.cpp:103
+msgid ""
+"{0}: Too short sentence received, or CR character is missing. Discarding {1} "
+"bytes."
+msgstr ""
+"{0}: Empfing unvollständige Nachricht oder das CR fehlt. Verwerfe {1} Bytes."
+
+#: src/drivers/NmeaGPS/NMEA0813Protocol.cpp:118
+msgid ""
+"{0}: Received illegal character {1:#04X}. Discarding current sentence with "
+"{2} bytes."
+msgstr ""
+"{0}: Empfing ungültiges Zeichen {1:#04X}. Verwerfe Nachricht mit {2} Bytes."
+
+#: src/drivers/NmeaGPS/NMEA0813Protocol.cpp:132
+msgid ""
+"{0}: Current sentence buffer overflow (> {2} characters). Discard {1} bytes."
+msgstr ""
+"{0}: Überlauf des Nachrichtenpuffers (> {2} Zeichen). Verwerfe {1} Bytes."
+
+#: src/drivers/NmeaGPS/NMEA0813Protocol.cpp:169
+msgid ""
+"{0}: Checksum in the sentence {1:#04X} is unequal to the calculated checksum "
+"{2:#04X}. Discard sentence."
+msgstr ""
+"{0}: Prüfsumme in der Nachricht {1:#04X} ist ungleich der berechneten "
+"Prüfsumme {2:#04X}. Verwerfe die Nachricht."
+
+#: src/drivers/NmeaGPS/NMEA0813Protocol.cpp:177
+msgid ""
+"{0}: Checksum section contains non-numeric characters \"{1}\". Discard "
+"sentence."
+msgstr ""
+"{0}: Die Prüfsumme „{1}“ enthält nicht-numerische Zeichen. Verwerfe die "
+"Nachricht."
+
+#: src/drivers/NmeaGPS/NMEA0813Protocol.cpp:201
+msgid ""
+"{0}: Number of fields in the sentence exceeds the maximum {1} fields. "
+"Discard sentence."
+msgstr ""
+"{0}: Anzahl der Felder überschreitet die maximale Anzahl {1}. Verwerfe die "
+"Nachricht."
 
 #: src/drivers/NmeaGPS/NmeaGPSLib.cpp:58
 msgid ""
 "NmeaGPS driver for satellite navigation devices emitting NMEA 0813 sentences "
 "on serial ports or Bluetooth"
 msgstr ""
+"NmeaGPS Treiber für Empfänger von Navigationssatteliten, die NMEA 0813 "
+"produzieren."
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:112
+msgid "NMEASet::strToD: String \"{0}\" is not a valid double value."
+msgstr "NMEASet::strToD: String „{0}“ ist kein gültiger double float-Wert."
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:157
+msgid "{0}: String \"{1}\" does not contain a decimal separator '.'."
+msgstr "{0}: String „{1}“ enthält keinen Dezimaltrenner '.'."
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:168
+msgid ""
+"{0}: String \"{1}\" does have less than 3 digits left of '.'. There is no "
+"space for degrees"
+msgstr ""
+"{0}: String „{1}“ enthält weniger als 3 Ziffern links vom Dezimaltrenner "
+"'.'. Damit ist kein Platz für den Grad-Wert."
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:198 src/drivers/NmeaGPS/NMEASet.cpp:210
+#: src/drivers/NmeaGPS/NMEASet.cpp:225 src/drivers/NmeaGPS/NMEASet.cpp:237
+#: src/drivers/NmeaGPS/NMEASet.cpp:251 src/drivers/NmeaGPS/NMEASet.cpp:263
+msgid "{0}: String \"{1}\" is not a valid NMEA timestamp string."
+msgstr "{0}: String „{1}“ ist kein gültiger NMEA Zeitstempel."
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:396 src/drivers/NmeaGPS/NMEASet.cpp:785
+msgid "{0}: Sentence \"{1}\" failed. Reason: {2}"
+msgstr "{0}: Nachricht „{1}“ ist fehlerhaft: {2}"
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:557
+msgid ""
+"{0}: Could not find a common sequence shared by at least 3 cycles. Go by "
+"individual cycle analysis."
+msgstr ""
+"{0}: Konnte keine identische Sequenz von Nachrichten innerhalb von 3 Zyklen "
+"finden.  Wechsle zu individualler Analyse pro Zyklus."
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:690
+msgid ""
+"{0}: Un-supported sentence type {1} from talker/type {2}/{3} is discarded."
+msgstr ""
+"{0}: Nachricht von nicht unterstütztem Nachrichtentyp {1} von Sender/Typ {2}/"
+"{3} wird verworfen."
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:796
+msgid "{0} called for a processed GNSS record again! Sentence type = {1}"
+msgstr ""
+"{0} wurde für einen bereits bearbeitete Nachricht aufgerufen! Nachrichtentyp "
+"ist {1}."
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:1008
+msgid "{0}: Invalid East-West indicator \"{1}\" in sentence \"{2}\""
+msgstr "{0}: Ungültiger Ost-West Anzeiger „{1}“ in Nachricht „{2}“."
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:1026
+msgid "{0}: Invalid North-South indicator \"{1}\" in sentence \"{2}\""
+msgstr "{0}: Ungültiger Nord-Süd Anzeiger „{1}“ in Nachricht „{2}“."
+
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:192
+msgid "CRC error of driver instance \"{0}\". Stop processing."
+msgstr ""
+"CRC-Fehler in Treiberinstanz „{0}“. Weitere Verarbeitung wird angehalten."
+
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:335
+msgid "{0}: Pressure = {1} mBar is outside the expected range!"
+msgstr "{0}: Druck = {1} mBar ist außerhalb der Betriebsgrenze."
+
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:471
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:527
+msgid ""
+"{0}: Driver instance {1} has a PROM CRC mismatch. CRC in the PROM is {2:"
+"#04X}; calculated CRC is {3:#04X}."
+msgstr ""
+"{0}: Treiberinstanz {1} hat einen PROM CRC Fehler. CRC im PROM ist {2:#04X}; "
+"berechneter CRC-Wert ist {3:#04X}."
 
 #: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureLib.cpp:84
 msgid "Absolute atmospheric pressure sensors from TE Connectivity MEAS"
-msgstr ""
+msgstr "TE Connectivity MEAS Sensoren für absoluten Atmosphärendruck"
