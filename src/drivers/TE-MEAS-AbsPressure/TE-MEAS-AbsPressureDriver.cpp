@@ -184,7 +184,7 @@ void TE_MEAS_AbsPressureDriver::driverThreadFunction() {
 				numRetries = 0;
 				processingMainLoop ();
 #if !TE_MEAS_ABS_PRESSURE_TEST_MODE
-				ioPort->close();
+				// ioPort->close();
 #endif
 			}
 			catch (TE_MEAS_AbsPressureCRCErrorException const & e1) {
@@ -198,7 +198,7 @@ void TE_MEAS_AbsPressureDriver::driverThreadFunction() {
 				LOG4CXX_ERROR(logger,fmt::format(_("Error in the main loop of driver instance \"{0}\": {1}"),
 						instanceName,e.what()));
 #if !TE_MEAS_ABS_PRESSURE_TEST_MODE
-				ioPort->close();
+				//ioPort->close();
 #endif
 
 				std::this_thread::sleep_for(errorTimeout);

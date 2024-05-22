@@ -174,12 +174,12 @@ void MPL3115Driver::driverThreadFunction() {
 				ioPort->open();
 				numRetries = 0;
 				processingMainLoop ();
-				ioPort->close();
+				// ioPort->close();
 			} catch (std::exception const& e) {
 				numRetries ++;
 				LOG4CXX_ERROR(logger,fmt::format(_("Error in the main loop of driver instance \"{0}\": {1}"),
 						instanceName,e.what()));
-				ioPort->close();
+				// ioPort->close();
 
 				std::this_thread::sleep_for(errorTimeout);
 			}
