@@ -238,6 +238,9 @@ void PortBase::open() {
 		openInternal();
 
 		status = OPEN;
+		numSameErrorOccurred = 0;
+		lastErrno = 0;
+
 	}
 
 	LOG4CXX_INFO(logger,fmt::format(_("Port {0} of type {1} is open." ),portName, portType));
@@ -251,15 +254,18 @@ void PortBase::openInternal() {
 	if (deviceHandle == -1) {
 		int err = errno;
 
+
 		auto str = fmt::format(_("Port {0} of type {1}: Cannot open device \"{2}\""),portName, portType, deviceName);
 		LOG4CXX_ERROR(logger,fmt::format(_("Port {0} of type {1}: Cannot open device \"{2}\". errno = {3}: {4}"),
 				portName, portType, deviceName, err, strerror(err)));
 
+		setErrno(err);
+
 		if (err == ENOENT) {
-			status = ERR_NO_DEVICE;
+			status = (status == ERR_IO_PERM) ? ERR_IO_PERM : ERR_NO_DEVICE;
 			throw GliderVarioPortDeviceDontExistException (__FILE__,__LINE__,str.c_str(),err);
 		} else {
-			status = ERR_IO_TEMP;
+			status = (status == ERR_IO_PERM) ? ERR_IO_PERM : ERR_IO_TEMP;
 			throw GliderVarioPortOpenException (__FILE__,__LINE__,str.c_str(),err);
 		}
 
@@ -286,11 +292,23 @@ void PortBase::closeInternal() noexcept {
 	deviceHandle = 0;
 }
 
-void PortBase::recoverError() {
-	close();
-	open();
-}
+void PortBase::setErrno(int errn) {
 
+	if (errn == lastErrno) {
+		numSameErrorOccurred ++;
+	} else {
+		// Reset the counter.
+		numSameErrorOccurred = 0;
+	}
+	lastErrno = errn;
+
+	if (numSameErrorOccurred >= maxNumSameErrorOccurred && status != ERR_IO_PERM) {
+		status = ERR_IO_PERM;
+		LOG4CXX_ERROR(logger,fmt::format(_(
+				"I/O Port {0}: Error code {1} has been set {2} times. The status is being set to permanent error."),
+				portName,errn,numSameErrorOccurred));
+	}
+}
 
 
 } /* namespace io */

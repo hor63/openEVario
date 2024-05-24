@@ -244,13 +244,6 @@ public:
 	 */
 	void close() noexcept;
 
-	/** \brief Tries to recover the status of the port in case of an error.
-	 *
-	 * The actions taken depend on the operational status of the port.
-	 * Default action is to close(), and ignore any exceptions, and then open() again.
-	 */
-	virtual void recoverError();
-
     /** \brief Configure the port with the configuration settings
      *
      * Each driver implementation must override this method since it is completely implementation dependent.
@@ -291,6 +284,46 @@ private:
 	 * This object is employed by class \ref DeviceHandleAccess to synchronize concurrent access to #deviceHandle.
 	 */
 	std::recursive_mutex devHandleMutex;
+
+	/** Remember the last errno (or equivalent) value of the previous failed \ref open() attempt
+	 *
+	 * This value is used to compare the recent error code from \ref setErrno() to increment \ref numSameErrorOccurred
+	 * when they are equal.
+	 *
+	 * It is being reset to 0 upon a successfull \ref open() call
+	 *
+	 * \see setErrno()
+	 * \see open()
+	 * \see openInternal()
+	 */
+	int lastErrno = 0;
+
+	/** Indicates how often a failed open() call encountered the same error code
+	 *
+	 * When an \ref openInternal() fails it calls \ref setErrno() before it throws an exception.
+	 *
+	 * When \p numSameErrorOccurred is equal or greater than \ref maxNumSameErrorOccurred \ref status is being
+	 * set to \ref ERR_IO_PERM assuming the error is not recoverable.
+	 *
+	 * It is being reset to 0 upon a successfull \ref open() call
+	 *
+	 * \see lastErrno
+	 * \see setErrno()
+	 * \see open()
+	 * \see openInternal()
+	 * \see maxNumSameErrorOccurred
+	 */
+	uint32_t numSameErrorOccurred = 0;
+
+	/** Max. number of open() attempts with the same error code before the the I/O port is declared permamently inoperable
+	 *
+	 * Default = 3
+	 * A value 0 indicates that the number of repeated identical \ref open() failures will not ignored.
+	 * The value is configurable with a configuration property "maxNumSameErrorOccurred".
+	 *
+	 * \see numSameErrorOccurred
+	 */
+	uint32_t maxNumSameErrorOccurred = 3;
 
 	/** \brief Read the configuration and create one port defined in a node under the structure "IOPorts"
 	 *
@@ -357,6 +390,14 @@ protected:
 	 */
 	virtual void closeInternal() noexcept;
 
+	/** \brief Store the system error when the port cannot be opened.
+	 *
+	 * Store the error code in
+	 *
+	 * @param errn system error code (errno or equivalent) from opening system calls
+	 */
+	void setErrno(int errn);
+
 	/** \brief Flags for system call open(2)
 	 *
 	 * Default is O_RDWR
@@ -371,60 +412,6 @@ protected:
 	 * Possible values \see StatusEnum
 	 */
 	StatusEnum status = CLOSED;
-
-	/** The recent errno (or equivalent) value of the current failed \ref open() attempt
-	 *
-	 * This value is set by \ref openInternal() before it throws an exception.
-	 *
-	 * It is being reset to 0 upon a successfull \ref open() call
-	 *
-	 * \see lastErrno
-	 * \see open()
-	 * \see openInternal()
-	 */
-	int currentErrno = 0;
-
-	/** Remember the last errno (or equivalent) value of the previous failed \ref open() attempt
-	 *
-	 * This value is used to compare the recent \ref currentErrno to increment \ref numSameErrorOccurred
-	 * when they are equal.
-	 *
-	 * It is being reset to 0 upon a successfull \ref open() call
-	 *
-	 * \see currentErrno
-	 * \see numSameErrorOccurred
-	 * \see open()
-	 * \see openInternal()
-	 */
-	int lastErrno = 0;
-
-	/** Indicates how often a failed open() call encountered the same error code
-	 *
-	 * When an \ref openInternal() fails it sets \ref currentErrno before it throws an excepion.
-	 * \ref open() increments this value when it catches and re-throws the exception from \ref openInternal().
-	 *
-	 * When \p numSameErrorOccurred is equal or greater than \ref maxNumSameErrorOccurred \ref status is being
-	 * set to \ref ERR_IO_PERM assuming the error is not recoverable.
-	 *
-	 * It is being reset to 0 upon a successfull \ref open() call
-	 *
-	 * \see currentErrno
-	 * \see lastErrno
-	 * \see open()
-	 * \see openInternal()
-	 * \see maxNumSameErrorOccurred
-	 */
-	uint32_t numSameErrorOccurred = 0;
-
-	/** Max. number of open() attempts with the same error code before the the I/O port is declared permamently inoperable
-	 *
-	 * Default = 3
-	 * A value 0 indicates that the number of repeated identical \ref open() failures will not ignored.
-	 * The value is configurable with a configuration property "maxNumSameErrorOccurred".
-	 *
-	 * \see numSameErrorOccurred
-	 */
-	uint32_t maxNumSameErrorOccurred = 3;
 
 	/** \brief Is this port a stream port?
 	 *
