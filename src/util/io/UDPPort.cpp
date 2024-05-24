@@ -205,11 +205,16 @@ void UDPPort::openInternal() {
 
 		rc = ::getaddrinfo(localAddr.c_str(),localPort.c_str(),&addrMgr.addrHint,&addrMgr.localAd);
 
+
 		if (rc != 0) {
 			auto str = fmt::format(_(
 					"{0}: Port {1}: getaddrinfo() error for local host {2}, local UDP port {3} = {4} : {5}"),
 					__PRETTY_FUNCTION__,getPortName(),localAddr,localPort,rc,gai_strerror(rc));
 			LOG4CXX_ERROR(logger,str);
+
+			status = ERR_IO_PERM;
+			setErrno(rc);
+
 			throw GliderVarioPortOpenException (__FILE__, __LINE__, str.c_str());
 		}
 
@@ -226,6 +231,10 @@ void UDPPort::openInternal() {
 			auto str = fmt::format(_("{0}: Error creating a {1} socket for port \"{2}\". errno = {3}: {4}"),
 					__PRETTY_FUNCTION__,"UDP",getPortName(),rc,strerror(rc));
 			LOG4CXX_ERROR(logger,str);
+
+			setErrno(rc);
+			status = (status == ERR_IO_PERM) ? ERR_IO_PERM : ERR_IO_TEMP;
+
 			throw GliderVarioPortOpenException (
 					__FILE__,
 					__LINE__,
@@ -242,6 +251,10 @@ void UDPPort::openInternal() {
 			::close (sock);
 			sock = -1;
 			LOG4CXX_ERROR(logger,str);
+
+			setErrno(rc);
+			status = (status == ERR_IO_PERM) ? ERR_IO_PERM : ERR_IO_TEMP;
+
 			throw GliderVarioPortOpenException (__FILE__, __LINE__, str.c_str(),rc);
 		} else {
 			socketBound = true;
@@ -256,10 +269,19 @@ void UDPPort::openInternal() {
 		rc = ::getaddrinfo(peerAddr.c_str(),peerPort.c_str(),&addrMgr.addrHint,&peerAd);
 
 		if (rc != 0) {
+			if (peerAd != nullptr) {
+				::freeaddrinfo(peerAd);
+				peerAd = nullptr;
+			}
+
 			auto str = fmt::format(_(
 					"{0}: Port {1}: getaddrinfo() error for peer host {2}, UDP port {3} = {4} : {5}"),
 					__PRETTY_FUNCTION__,getPortName(),peerAddr,peerPort,rc,gai_strerror(rc));
 			LOG4CXX_ERROR(logger,str);
+
+			status = ERR_IO_PERM;
+			setErrno(rc);
+
 			throw GliderVarioPortOpenException (__FILE__, __LINE__, str.c_str());
 		}
 
@@ -275,9 +297,19 @@ void UDPPort::openInternal() {
 
 			if (sock == -1) {
 				rc = errno;
+
+				if (peerAd != nullptr) {
+					::freeaddrinfo(peerAd);
+					peerAd = nullptr;
+				}
+
 				auto str = fmt::format(_("{0}: Error creating a {1} socket for port \"{2}\". errno = {3}: {4}"),
 						__PRETTY_FUNCTION__,"UDP",getPortName(),rc,strerror(rc));
 				LOG4CXX_ERROR(logger,str);
+
+				setErrno(rc);
+				status = (status == ERR_IO_PERM) ? ERR_IO_PERM : ERR_IO_TEMP;
+
 				throw GliderVarioPortOpenException (
 						__FILE__,
 						__LINE__,
@@ -295,6 +327,13 @@ void UDPPort::openInternal() {
 		DeviceHandleAccess devAcc(*this);
 		devAcc.deviceHandle = sock;
 	} else {
+		if (peerAd != nullptr) {
+			::freeaddrinfo(peerAd);
+			peerAd = nullptr;
+		}
+
+		status = ERR_IO_PERM;
+
 		auto str = fmt::format(_("{0}: I/O port {1} error: neither a local nor a remote port and/or host address were defined."),
 				__PRETTY_FUNCTION__,getPortName());
 		LOG4CXX_ERROR(logger,str);
