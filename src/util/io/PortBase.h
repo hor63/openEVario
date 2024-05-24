@@ -372,6 +372,60 @@ protected:
 	 */
 	StatusEnum status = CLOSED;
 
+	/** The recent errno (or equivalent) value of the current failed \ref open() attempt
+	 *
+	 * This value is set by \ref openInternal() before it throws an exception.
+	 *
+	 * It is being reset to 0 upon a successfull \ref open() call
+	 *
+	 * \see lastErrno
+	 * \see open()
+	 * \see openInternal()
+	 */
+	int currentErrno = 0;
+
+	/** Remember the last errno (or equivalent) value of the previous failed \ref open() attempt
+	 *
+	 * This value is used to compare the recent \ref currentErrno to increment \ref numSameErrorOccurred
+	 * when they are equal.
+	 *
+	 * It is being reset to 0 upon a successfull \ref open() call
+	 *
+	 * \see currentErrno
+	 * \see numSameErrorOccurred
+	 * \see open()
+	 * \see openInternal()
+	 */
+	int lastErrno = 0;
+
+	/** Indicates how often a failed open() call encountered the same error code
+	 *
+	 * When an \ref openInternal() fails it sets \ref currentErrno before it throws an excepion.
+	 * \ref open() increments this value when it catches and re-throws the exception from \ref openInternal().
+	 *
+	 * When \p numSameErrorOccurred is equal or greater than \ref maxNumSameErrorOccurred \ref status is being
+	 * set to \ref ERR_IO_PERM assuming the error is not recoverable.
+	 *
+	 * It is being reset to 0 upon a successfull \ref open() call
+	 *
+	 * \see currentErrno
+	 * \see lastErrno
+	 * \see open()
+	 * \see openInternal()
+	 * \see maxNumSameErrorOccurred
+	 */
+	uint32_t numSameErrorOccurred = 0;
+
+	/** Max. number of open() attempts with the same error code before the the I/O port is declared permamently inoperable
+	 *
+	 * Default = 3
+	 * A value 0 indicates that the number of repeated identical \ref open() failures will not ignored.
+	 * The value is configurable with a configuration property "maxNumSameErrorOccurred".
+	 *
+	 * \see numSameErrorOccurred
+	 */
+	uint32_t maxNumSameErrorOccurred = 3;
+
 	/** \brief Is this port a stream port?
 	 *
 	 * By default \p streamPort is false.
