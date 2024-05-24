@@ -227,26 +227,21 @@ PortBase* PortBase::getPortByName(std::string const & portName) {
 }
 
 void PortBase::open() {
-	devHandleMutex.lock();
+	DeviceHandleAccess devLock(*this);
 
-	if (status != CLOSED) {
+	if (status != CLOSED && status != OPEN) {
 		this->close();
 	}
 
 	if (status == CLOSED) {
 
-		try {
 		openInternal();
-		} catch (std::exception const &c) {
-			devHandleMutex.unlock();
-			throw;
-		}
+
 		status = OPEN;
 	}
 
 	LOG4CXX_INFO(logger,fmt::format(_("Port {0} of type {1} is open." ),portName, portType));
 
-	devHandleMutex.unlock();
 }
 
 void PortBase::openInternal() {
@@ -275,14 +270,13 @@ void PortBase::openInternal() {
 }
 
 void PortBase::close() noexcept {
-	devHandleMutex.lock();
+	DeviceHandleAccess devLock(*this);
 
 	closeInternal();
 	status = CLOSED;
 
 	LOG4CXX_INFO(logger,fmt::format(_("Port {0} of type {1}: Closed device \"{2}\""),portName, portType, deviceName));
 
-	devHandleMutex.unlock();
 }
 
 void PortBase::closeInternal() noexcept {
