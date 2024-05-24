@@ -229,6 +229,10 @@ PortBase* PortBase::getPortByName(std::string const & portName) {
 void PortBase::open() {
 	devHandleMutex.lock();
 
+	if (status != CLOSED) {
+		this->close();
+	}
+
 	if (status == CLOSED) {
 
 		try {
