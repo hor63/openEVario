@@ -302,7 +302,7 @@ void PortBase::setErrno(int errn) {
 	}
 	lastErrno = errn;
 
-	if (numSameErrorOccurred >= maxNumSameErrorOccurred && status != ERR_IO_PERM) {
+	if (maxNumSameErrorOccurred != 0 && numSameErrorOccurred >= maxNumSameErrorOccurred && status != ERR_IO_PERM) {
 		status = ERR_IO_PERM;
 		LOG4CXX_ERROR(logger,fmt::format(_(
 				"I/O Port {0}: Error code {1} has been set {2} times. The status is being set to permanent error."),
