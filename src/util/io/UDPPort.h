@@ -49,7 +49,7 @@ public:
 	 *
 	 * It turns out that ::send cannot be used for an UDP socket under Linux.
 	 * ::bind and ::connect on the UDP socket seem to be mutually exclusive.
-	 * Therefore I am calling ::bind only on the stocket,
+	 * Therefore I am calling ::bind only on the socket,
 	 * storing the destination address in this class, and use ::sendto instead as implementing call.
 	 *
 	 * Like all I/O operations access to the device handle is synchronized with an object of class \ref PortBase::DeviceHandleAccess

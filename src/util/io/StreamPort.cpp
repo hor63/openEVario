@@ -66,6 +66,13 @@ ssize_t StreamPort::read(uint8_t* buffer,size_t bufLen) {
 	int err;
 	DeviceHandleAccess devHandleAccess (*this);
 
+	if (status != OPEN) {
+		LOG4CXX_ERROR(logger, fmt::format(_("{0} called for I/O port {1}. Status is not OPEN but {2}."),
+				__PRETTY_FUNCTION__,getPortName(),StatusEnumHelperObj.getString(status)));
+
+		throw GliderVarioPortNotOpenException(__FILE__,__LINE__);
+	}
+
 	do {
 		err = 0;
 
@@ -113,6 +120,13 @@ ssize_t StreamPort::write(uint8_t *buffer, size_t bufLen) {
 	ssize_t ret;
 	int err;
 	DeviceHandleAccess devHandleAccess (*this);
+
+	if (status != OPEN) {
+		LOG4CXX_ERROR(logger, fmt::format(_("{0} called for I/O port {1}. Status is not OPEN but {2}."),
+				__PRETTY_FUNCTION__,getPortName(),StatusEnumHelperObj.getString(status)));
+
+		throw GliderVarioPortNotOpenException(__FILE__,__LINE__);
+	}
 
 	do {
 		err = 0;

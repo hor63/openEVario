@@ -29,8 +29,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openEVario 0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/hor63/openEVario/issues\n"
-"POT-Creation-Date: 2024-05-05 19:39+0200\n"
-"PO-Revision-Date: 2024-05-05 19:39+0200\n"
+"POT-Creation-Date: 2024-05-27 16:02+0200\n"
+"PO-Revision-Date: 2024-05-27 16:02+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: en@quot\n"
@@ -471,33 +471,50 @@ msgstr ""
 msgid "{0}: Cannot find IO port \"{1}\""
 msgstr "{0}: Cannot find IO port “{1}”"
 
-#: src/util/io/PortBase.cpp:243
+#: src/util/io/PortBase.cpp:246
 msgid "Port {0} of type {1} is open."
 msgstr "Port {0} of type {1} is open."
 
-#: src/util/io/PortBase.cpp:255
+#: src/util/io/PortBase.cpp:258
 msgid "Port {0} of type {1}: Cannot open device \"{2}\""
 msgstr "Port {0} of type {1}: Cannot open device “{2}”"
 
-#: src/util/io/PortBase.cpp:256
+#: src/util/io/PortBase.cpp:259
 msgid "Port {0} of type {1}: Cannot open device \"{2}\". errno = {3}: {4}"
 msgstr "Port {0} of type {1}: Cannot open device “{2}”. errno = {3}: {4}"
 
-#: src/util/io/PortBase.cpp:268
+#: src/util/io/PortBase.cpp:273
 msgid "Port {0} of type {1}: Opened device \"{2}\""
 msgstr "Port {0} of type {1}: Opened device “{2}”"
 
-#: src/util/io/PortBase.cpp:279
+#: src/util/io/PortBase.cpp:284
 msgid "Port {0} of type {1}: Closed device \"{2}\""
 msgstr "Port {0} of type {1}: Closed device “{2}”"
 
-#: src/util/io/DatagramPort.cpp:94 src/util/io/DatagramPort.cpp:150
-#: src/util/io/StreamPort.cpp:89 src/util/io/StreamPort.cpp:138
-#: src/util/io/StreamPort.cpp:149 src/util/io/UDPPort.cpp:352
+#: src/util/io/PortBase.cpp:308
+msgid ""
+"I/O Port {0}: Error code {1} has been set {2} times. The status is being set "
+"to permanent error."
+msgstr ""
+"I/O Port {0}: Error code {1} has been set {2} times. The status is being set "
+"to permanent error."
+
+#: src/util/io/DatagramPort.cpp:69 src/util/io/DatagramPort.cpp:133
+#: src/util/io/I2CPort.cpp:161 src/util/io/I2CPort.cpp:228
+#: src/util/io/I2CPort.cpp:365 src/util/io/I2CPort.cpp:437
+#: src/util/io/I2CPort.cpp:512 src/util/io/I2CPort.cpp:564
+#: src/util/io/I2CPort.cpp:640 src/util/io/StreamPort.cpp:70
+#: src/util/io/StreamPort.cpp:125 src/util/io/UDPPort.cpp:348
+msgid "{0} called for I/O port {1}. Status is not OPEN but {2}."
+msgstr "{0} called for I/O port {1}. Status is not OPEN but {2}."
+
+#: src/util/io/DatagramPort.cpp:101 src/util/io/DatagramPort.cpp:164
+#: src/util/io/StreamPort.cpp:96 src/util/io/StreamPort.cpp:152
+#: src/util/io/StreamPort.cpp:163 src/util/io/UDPPort.cpp:388
 msgid "Port \"{0}\" of type \"{1}\": {4} error {2}: {3}"
 msgstr "Port “{0}” of type “{1}”: {4} error {2}: {3}"
 
-#: src/util/io/DatagramPort.cpp:106
+#: src/util/io/DatagramPort.cpp:113
 msgid ""
 "Port \"{0} of type \"{1}\": Buffer too small for the datagram. Buffer length "
 "= {2}, datagram length = {3}."
@@ -513,24 +530,24 @@ msgstr ""
 "Error opening port “{0}”. Cannot retrieve I2C capabilites of device {1}. "
 "errno = {2} : {3}"
 
-#: src/util/io/I2CPort.cpp:179 src/util/io/I2CPort.cpp:194
-#: src/util/io/I2CPort.cpp:239 src/util/io/I2CPort.cpp:265
-#: src/util/io/I2CPort.cpp:292 src/util/io/I2CPort.cpp:320
-#: src/util/io/I2CPort.cpp:369 src/util/io/I2CPort.cpp:385
-#: src/util/io/I2CPort.cpp:438 src/util/io/I2CPort.cpp:454
-#: src/util/io/I2CPort.cpp:501 src/util/io/I2CPort.cpp:552
-#: src/util/io/I2CPort.cpp:569 src/util/io/I2CPort.cpp:621
+#: src/util/io/I2CPort.cpp:187 src/util/io/I2CPort.cpp:202
+#: src/util/io/I2CPort.cpp:254 src/util/io/I2CPort.cpp:280
+#: src/util/io/I2CPort.cpp:307 src/util/io/I2CPort.cpp:335
+#: src/util/io/I2CPort.cpp:391 src/util/io/I2CPort.cpp:407
+#: src/util/io/I2CPort.cpp:467 src/util/io/I2CPort.cpp:483
+#: src/util/io/I2CPort.cpp:537 src/util/io/I2CPort.cpp:595
+#: src/util/io/I2CPort.cpp:612 src/util/io/I2CPort.cpp:671
 msgid "{0}: {1} error for device {3} of port \"{2}\". errno = {4}: {5}"
 msgstr "{0}: {1} error for device {3} of port “{2}”. errno = {4}: {5}"
 
-#: src/util/io/I2CPort.cpp:205 src/util/io/I2CPort.cpp:276
-#: src/util/io/I2CPort.cpp:304 src/util/io/I2CPort.cpp:330
-#: src/util/io/I2CPort.cpp:398 src/util/io/I2CPort.cpp:467
-#: src/util/io/I2CPort.cpp:512 src/util/io/I2CPort.cpp:581
+#: src/util/io/I2CPort.cpp:213 src/util/io/I2CPort.cpp:291
+#: src/util/io/I2CPort.cpp:319 src/util/io/I2CPort.cpp:345
+#: src/util/io/I2CPort.cpp:420 src/util/io/I2CPort.cpp:496
+#: src/util/io/I2CPort.cpp:548 src/util/io/I2CPort.cpp:624
 msgid "{0}, port \"{1}\": Neither SMBus nor direct I2C is supported."
 msgstr "{0}, port “{1}”: Neither SMBus nor direct I2C is supported."
 
-#: src/util/io/I2CPort.cpp:254
+#: src/util/io/I2CPort.cpp:269
 msgid ""
 "{0} for port \"{1}\": Why the hell do you want to send 0 (ZERO!) bytes to "
 "I2C device {2:#04X}"
@@ -538,11 +555,11 @@ msgstr ""
 "{0} for port “{1}”: Why the hell do you want to send 0 (ZERO!) bytes to I2C "
 "device {2:#04X}"
 
-#: src/util/io/I2CPort.cpp:633
+#: src/util/io/I2CPort.cpp:683
 msgid "{0}, port \"{1}\": Direct I2C is not supported."
 msgstr "{0}, port “{1}”: Direct I2C is not supported."
 
-#: src/util/io/I2CPort.cpp:649
+#: src/util/io/I2CPort.cpp:699
 msgid ""
 "I2CPort::check10BitAddr: Error using 10-bit I2C address {0:#04X} is not "
 "supported for port \"{1}\""
@@ -604,7 +621,7 @@ msgstr "Error configuring port “{0}”: Handshake “{1}” is invalid."
 msgid "Error configuring port \"{0}\": Speed value \"{1}\" is invalid."
 msgstr "Error configuring port “{0}”: Speed value “{1}” is invalid."
 
-#: src/util/io/StreamPort.cpp:96
+#: src/util/io/StreamPort.cpp:103
 msgid ""
 "Port {0} of type {1}: End of file condition upon read. Closing the port."
 msgstr ""
@@ -617,7 +634,7 @@ msgid ""
 msgstr ""
 "Error configuring port “(0)” of type {1}: Mandatory property {3} is missing."
 
-#: src/util/io/TCPPort.cpp:176
+#: src/util/io/TCPPort.cpp:179
 msgid ""
 "{0}: Error resolving host \"{1}\" and/or TCP port \"{2}\" for I/O port "
 "\"{3}\". Error code = {4}: {5}"
@@ -625,7 +642,7 @@ msgstr ""
 "{0}: Error resolving host “{1}” and/or TCP port “{2}” for I/O port “{3}”. "
 "Error code = {4}: {5}"
 
-#: src/util/io/TCPPort.cpp:180
+#: src/util/io/TCPPort.cpp:186
 msgid ""
 "{0}: Error resolving host \"{1}\" and/or TCP port \"{2}\" for I/O port "
 "\"{3}\": getaddrinfo() returned 0 but *_pai is NULL."
@@ -633,12 +650,12 @@ msgstr ""
 "{0}: Error resolving host “{1}” and/or TCP port “{2}” for I/O port “{3}”: "
 "getaddrinfo() returned 0 but *_pai is NULL."
 
-#: src/util/io/TCPPort.cpp:205 src/util/io/UDPPort.cpp:226
-#: src/util/io/UDPPort.cpp:278
+#: src/util/io/TCPPort.cpp:214 src/util/io/UDPPort.cpp:231
+#: src/util/io/UDPPort.cpp:301
 msgid "{0}: Error creating a {1} socket for port \"{2}\". errno = {3}: {4}"
 msgstr "{0}: Error creating a {1} socket for port “{2}”. errno = {3}: {4}"
 
-#: src/util/io/TCPPort.cpp:219
+#: src/util/io/TCPPort.cpp:231
 msgid ""
 "{0}: Error connect TCP socket to host \"{1}\" on TCP port \"{2}\" for I/O "
 "port \"{3}\". errno = {4}: {5}"
@@ -646,11 +663,11 @@ msgstr ""
 "{0}: Error connect TCP socket to host “{1}” on TCP port “{2}” for I/O port "
 "“{3}”. errno = {4}: {5}"
 
-#: src/util/io/TCPPort.cpp:237
+#: src/util/io/TCPPort.cpp:249
 msgid "Port \"{0}\": Connected to host {1} on TCP port {2}."
 msgstr "Port “{0}”: Connected to host {1} on TCP port {2}."
 
-#: src/util/io/TCPPort.cpp:244 src/util/io/TCPPort.cpp:253
+#: src/util/io/TCPPort.cpp:256 src/util/io/TCPPort.cpp:265
 msgid "Open I/O port \"{0}\": setsockopt {1} error: errno = {2} : {3}"
 msgstr "Open I/O port “{0}”: setsockopt {1} error: errno = {2} : {3}"
 
@@ -662,7 +679,7 @@ msgstr ""
 "Configuration error for port {0}: Both peer host and peer port must be "
 "defined or none."
 
-#: src/util/io/UDPPort.cpp:160 src/util/io/UDPPort.cpp:298
+#: src/util/io/UDPPort.cpp:160 src/util/io/UDPPort.cpp:328
 msgid ""
 "{0}: I/O port {1} error: neither a local nor a remote port and/or host "
 "address were defined."
@@ -670,7 +687,7 @@ msgstr ""
 "{0}: I/O port {1} error: neither a local nor a remote port and/or host "
 "address were defined."
 
-#: src/util/io/UDPPort.cpp:210
+#: src/util/io/UDPPort.cpp:211
 msgid ""
 "{0}: Port {1}: getaddrinfo() error for local host {2}, local UDP port {3} = "
 "{4} : {5}"
@@ -678,13 +695,13 @@ msgstr ""
 "{0}: Port {1}: getaddrinfo() error for local host {2}, local UDP port {3} = "
 "{4} : {5}"
 
-#: src/util/io/UDPPort.cpp:240
+#: src/util/io/UDPPort.cpp:249
 msgid ""
 "{0}: Port {1}: bind() error for local host {2}, UDP port {3} = {4} : {5}"
 msgstr ""
 "{0}: Port {1}: bind() error for local host {2}, UDP port {3} = {4} : {5}"
 
-#: src/util/io/UDPPort.cpp:260
+#: src/util/io/UDPPort.cpp:278
 msgid ""
 "{0}: Port {1}: getaddrinfo() error for peer host {2}, UDP port {3} = {4} : "
 "{5}"
@@ -692,11 +709,11 @@ msgstr ""
 "{0}: Port {1}: getaddrinfo() error for peer host {2}, UDP port {3} = {4} : "
 "{5}"
 
-#: src/util/io/UDPPort.cpp:307
+#: src/util/io/UDPPort.cpp:337
 msgid "{0}: Port \"{1}\" opened successful"
 msgstr "{0}: Port “{1}” opened successful"
 
-#: src/util/io/UDPPort.cpp:323
+#: src/util/io/UDPPort.cpp:359
 msgid ""
 "{0}: For I/O port {1} no peer port and/or address are defined. I do not know "
 "where to send data to. Closing the Port."

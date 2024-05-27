@@ -344,6 +344,13 @@ ssize_t UDPPort::send(uint8_t *buffer, size_t bufLen) {
 	DeviceHandleAccess devHandleAccess (*this);
 	int flags = 0;
 
+	if (status != OPEN) {
+		LOG4CXX_ERROR(logger, fmt::format(_("{0} called for I/O port {1}. Status is not OPEN but {2}."),
+				__PRETTY_FUNCTION__,getPortName(),StatusEnumHelperObj.getString(status)));
+
+		throw GliderVarioPortNotOpenException(__FILE__,__LINE__);
+	}
+
 	if (!isBlocking()) {
 		flags |= MSG_DONTWAIT;
 	}

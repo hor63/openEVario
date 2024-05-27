@@ -113,6 +113,7 @@ void I2CPort::openInternal() {
 		this->close();
 
 		status = ERR_IO_PERM;
+		setErrno (errno);
 
 		throw GliderVarioPortOpenException (__FILE__, __LINE__,  str.c_str(),errN);
 	}
@@ -155,6 +156,13 @@ void I2CPort::writeByte(uint16_t devAddr, uint8_t data) {
 	DeviceHandleAccess devLock(*this);
 	int rc = 0;
 	bool is10BitAddr (check10BitAddr(devAddr));
+
+	if (status != OPEN) {
+		LOG4CXX_ERROR(logger, fmt::format(_("{0} called for I/O port {1}. Status is not OPEN but {2}."),
+				__PRETTY_FUNCTION__,getPortName(),StatusEnumHelperObj.getString(status)));
+
+		throw GliderVarioPortNotOpenException(__FILE__,__LINE__);
+	}
 
 	// Actually prefer direct I2C ioctl: smbus calls are just a wrapper around SMBUS ioctls,
 	// and in most real I2C drivers these are again wrappers around raw I2C calls.
@@ -215,6 +223,13 @@ void I2CPort::writeBlock(uint16_t devAddr, uint8_t *data, uint16_t dataLen) {
 	DeviceHandleAccess devLock(*this);
 	int rc = 0;
 	bool is10BitAddr (check10BitAddr(devAddr));
+
+	if (status != OPEN) {
+		LOG4CXX_ERROR(logger, fmt::format(_("{0} called for I/O port {1}. Status is not OPEN but {2}."),
+				__PRETTY_FUNCTION__,getPortName(),StatusEnumHelperObj.getString(status)));
+
+		throw GliderVarioPortNotOpenException(__FILE__,__LINE__);
+	}
 
 	// Actually prefer direct I2C ioctl: smbus calls are just a wrapper around SMBUS ioctls,
 	// and in most real I2C drivers these are again wrappers around raw I2C calls.
@@ -346,6 +361,13 @@ uint8_t I2CPort::readByte(uint16_t devAddr) {
 	int rc = 0;
 	bool is10BitAddr (check10BitAddr(devAddr));
 
+	if (status != OPEN) {
+		LOG4CXX_ERROR(logger, fmt::format(_("{0} called for I/O port {1}. Status is not OPEN but {2}."),
+				__PRETTY_FUNCTION__,getPortName(),StatusEnumHelperObj.getString(status)));
+
+		throw GliderVarioPortNotOpenException(__FILE__,__LINE__);
+	}
+
 	// Actually prefer direct I2C ioctl: smbus calls are just a wrapper around SMBUS ioctls,
 	// and in most real I2C drivers these are again wrappers around raw I2C calls.
 	if (useRawI2C) {
@@ -410,6 +432,13 @@ uint8_t I2CPort::readByteAtRegAddrByte(uint16_t devAddr, uint8_t regAddr) {
 	DeviceHandleAccess devLock(*this);
 	int rc = 0;
 	bool is10BitAddr (check10BitAddr(devAddr));
+
+	if (status != OPEN) {
+		LOG4CXX_ERROR(logger, fmt::format(_("{0} called for I/O port {1}. Status is not OPEN but {2}."),
+				__PRETTY_FUNCTION__,getPortName(),StatusEnumHelperObj.getString(status)));
+
+		throw GliderVarioPortNotOpenException(__FILE__,__LINE__);
+	}
 
 	// Actually prefer direct I2C ioctl: smbus calls are just a wrapper around SMBUS ioctls,
 	// and in most real I2C drivers these are again wrappers around raw I2C calls.
@@ -479,6 +508,13 @@ void I2CPort::readBlock(uint16_t devAddr, uint8_t *data, uint16_t dataLen) {
 	int rc = 0;
 	bool is10BitAddr (check10BitAddr(devAddr));
 
+	if (status != OPEN) {
+		LOG4CXX_ERROR(logger, fmt::format(_("{0} called for I/O port {1}. Status is not OPEN but {2}."),
+				__PRETTY_FUNCTION__,getPortName(),StatusEnumHelperObj.getString(status)));
+
+		throw GliderVarioPortNotOpenException(__FILE__,__LINE__);
+	}
+
 	// Only the direct I2C ioctl supports reading a plain block at once without addressing a register.
 	if (useRawI2C) {
 		struct i2c_msg msg;
@@ -523,6 +559,13 @@ void I2CPort::readBlockAtRegAddrByte(
 	DeviceHandleAccess devLock(*this);
 	int rc = 0;
 	bool is10BitAddr (check10BitAddr(devAddr));
+
+	if (status != OPEN) {
+		LOG4CXX_ERROR(logger, fmt::format(_("{0} called for I/O port {1}. Status is not OPEN but {2}."),
+				__PRETTY_FUNCTION__,getPortName(),StatusEnumHelperObj.getString(status)));
+
+		throw GliderVarioPortNotOpenException(__FILE__,__LINE__);
+	}
 
 	// Actually prefer direct I2C ioctl: smbus calls are just a wrapper around SMBUS ioctls,
 	// and in most real I2C drivers these are again wrappers around raw I2C calls.
@@ -592,6 +635,13 @@ void I2CPort::writeReadBlock(uint16_t devAddr, uint8_t *writeData,
 	DeviceHandleAccess devLock(*this);
 	int rc = 0;
 	bool is10BitAddr (check10BitAddr(devAddr));
+
+	if (status != OPEN) {
+		LOG4CXX_ERROR(logger, fmt::format(_("{0} called for I/O port {1}. Status is not OPEN but {2}."),
+				__PRETTY_FUNCTION__,getPortName(),StatusEnumHelperObj.getString(status)));
+
+		throw GliderVarioPortNotOpenException(__FILE__,__LINE__);
+	}
 
 	// Writing and reading blocks of arbitrary length in one transfer only works for raw I2C.
 	// SMBus does not support that.
