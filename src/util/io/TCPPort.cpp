@@ -172,10 +172,16 @@ void TCPPort::openInternal() {
 		std::string str;
 
 		if (rc != 0) {
+			status = ERR_IO_PERM;
+			setErrno(rc);
+
 			str = fmt::format(_(
 				"{0}: Error resolving host \"{1}\" and/or TCP port \"{2}\" for I/O port \"{3}\". Error code = {4}: {5}"),
 				__PRETTY_FUNCTION__, tcpAddr, tcpPort, getPortName(), rc, gai_strerror(rc));
 		} else {
+			setErrno(rc);
+			status = (status == ERR_IO_PERM) ? ERR_IO_PERM : ERR_IO_TEMP;
+
 			str = fmt::format(_(
 				"{0}: Error resolving host \"{1}\" and/or TCP port \"{2}\" for I/O port \"{3}\": "
 				"getaddrinfo() returned 0 but *_pai is NULL."
@@ -201,6 +207,9 @@ void TCPPort::openInternal() {
 
 	if (sock == -1) {
 		rc = errno;
+		setErrno(rc);
+		status = (status == ERR_IO_PERM) ? ERR_IO_PERM : ERR_IO_TEMP;
+
 		auto str = fmt::format(_(
 				"{0}: Error creating a {1} socket for port \"{2}\". errno = {3}: {4}"),
 				__PRETTY_FUNCTION__,"TCP", getPortName(), rc, strerror(rc));
@@ -215,6 +224,9 @@ void TCPPort::openInternal() {
 	rc = ::connect(sock,addrMgr.addr->ai_addr,addrMgr.addr->ai_addrlen);
 	if (rc == -1) {
 		rc = errno;
+		setErrno(rc);
+		status = (status == ERR_IO_PERM) ? ERR_IO_PERM : ERR_IO_TEMP;
+
 		auto str = fmt::format(_(
 				"{0}: Error connect TCP socket to host \"{1}\" on TCP port \"{2}\" for I/O port \"{3}\". errno = {4}: {5}"),
 				__PRETTY_FUNCTION__, tcpAddr, tcpPort, getPortName(), rc, strerror(rc));
