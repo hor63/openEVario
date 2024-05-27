@@ -183,9 +183,9 @@ struct AddrInfoManagerUDP final {
 
 	~AddrInfoManagerUDP () {
 		if (localAd != nullptr) {
-			::freeaddrinfo(localAd);
+				::freeaddrinfo(localAd);
+			}
 		}
-	}
 };
 
 void UDPPort::openInternal() {
@@ -266,14 +266,14 @@ void UDPPort::openInternal() {
 	// For the peer address I need the IP address and the port.
 	if (peerPortDefined && peerAddrDefined) {
 
+		// Prevent a memory leak
+		if (peerAd != nullptr) {
+			::freeaddrinfo(peerAd);
+			peerAd = nullptr;
+		}
 		rc = ::getaddrinfo(peerAddr.c_str(),peerPort.c_str(),&addrMgr.addrHint,&peerAd);
 
 		if (rc != 0) {
-			if (peerAd != nullptr) {
-				::freeaddrinfo(peerAd);
-				peerAd = nullptr;
-			}
-
 			auto str = fmt::format(_(
 					"{0}: Port {1}: getaddrinfo() error for peer host {2}, UDP port {3} = {4} : {5}"),
 					__PRETTY_FUNCTION__,getPortName(),peerAddr,peerPort,rc,gai_strerror(rc));
@@ -297,11 +297,6 @@ void UDPPort::openInternal() {
 
 			if (sock == -1) {
 				rc = errno;
-
-				if (peerAd != nullptr) {
-					::freeaddrinfo(peerAd);
-					peerAd = nullptr;
-				}
 
 				auto str = fmt::format(_("{0}: Error creating a {1} socket for port \"{2}\". errno = {3}: {4}"),
 						__PRETTY_FUNCTION__,"UDP",getPortName(),rc,strerror(rc));
@@ -327,10 +322,6 @@ void UDPPort::openInternal() {
 		DeviceHandleAccess devAcc(*this);
 		devAcc.deviceHandle = sock;
 	} else {
-		if (peerAd != nullptr) {
-			::freeaddrinfo(peerAd);
-			peerAd = nullptr;
-		}
 
 		status = ERR_IO_PERM;
 
@@ -344,7 +335,6 @@ void UDPPort::openInternal() {
 	}
 
 	LOG4CXX_INFO(logger,fmt::format(_("{0}: Port \"{1}\" opened successful"),__PRETTY_FUNCTION__,getPortName()));
-
 
 }
 
