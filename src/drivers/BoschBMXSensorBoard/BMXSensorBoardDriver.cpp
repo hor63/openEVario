@@ -83,31 +83,6 @@ void BMXSensorBoardDriver::driverInit(GliderVarioMainPriv &varioMain) {
 	IMUBase::driverInit(varioMain);
 }
 
-void BMXSensorBoardDriver::driverThreadFunction() {
-
-	int numRetries = 0;
-
-	if (ioPort == nullptr) {
-		LOG4CXX_ERROR (logger,fmt::format(_(
-				"No valid I/O port for driver instance \"{0}\". The driver is not operable"),instanceName));
-	} else {
-		while (!getStopDriverThread() && ( errorMaxNumRetries == 0 || numRetries <= errorMaxNumRetries)) {
-			try {
-				ioPort->open();
-				numRetries = 0;
-				processingMainLoop ();
-				ioPort->close();
-			} catch (std::exception const& e) {
-				numRetries ++;
-				LOG4CXX_ERROR(logger,fmt::format(_("Error in the main loop of driver instance \"{0}\": {1}"),instanceName,e.what()));
-				ioPort->close();
-
-				std::this_thread::sleep_for(errorTimeout);
-			}
-		}
-	}
-}
-
 void BMXSensorBoardDriver::processingMainLoop () {
 
 	/** \brief Factor to divide the raw accelerometer values by to get the actual g value.
@@ -437,5 +412,10 @@ float BMXSensorBoardDriver::compensate_z(int16_t mag_data_z, uint16_t data_rhall
 
 	return retval;
 }
+
+io::PortBase* BMXSensorBoardDriver::getIoPortPtr() {
+	return ioPort;
+}
+
 
 } // namespace openEV

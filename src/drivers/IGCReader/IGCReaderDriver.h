@@ -92,8 +92,6 @@ public:
 
     virtual void run() override;
 
-    virtual void updateKalmanStatus (GliderVarioStatus &varioStatus) override;
-
 protected:
 
     /** \brief Length of the line buffer.
@@ -159,7 +157,7 @@ protected:
      * \see GliderVarioDriverBase::driverThreadFunction
      *
      */
-    void driverThreadFunction() override;
+    virtual void driverThreadFunction() override;
 
 
     /** \brief Opens the IGC file if it has not been opened before
@@ -206,6 +204,8 @@ protected:
      */
     void findFirstValidRecord();
 
+    virtual io::PortBase* getIoPortPtr() override;
+    virtual void processingMainLoop () override;
 };
 
 } /* namespace openEV */

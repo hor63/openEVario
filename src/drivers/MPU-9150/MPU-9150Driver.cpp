@@ -362,34 +362,9 @@ void MPU9150Driver::setupAK8975Mag() {
 
 }
 
-void MPU9150Driver::driverThreadFunction() {
-
-	int numRetries = 0;
-
-	if (ioPort == nullptr) {
-		LOG4CXX_ERROR (logger,fmt::format(_(
-				"No valid I/O port for driver instance \"{0}\". The driver is not operable"),instanceName));
-	} else {
-		while (!getStopDriverThread() && ( errorMaxNumRetries == 0 || numRetries <= errorMaxNumRetries)) {
-			try {
-				ioPort->open();
-				numRetries = 0;
-				setupMPU9150();
-				processingMainLoop ();
-				// ioPort->close();
-			} catch (std::exception const& e) {
-				numRetries ++;
-				LOG4CXX_ERROR(logger,fmt::format(_("Error in the main loop of driver instance \"{0}\": {1}"),
-						instanceName,e.what()));
-				// ioPort->close();
-
-				std::this_thread::sleep_for(errorTimeout);
-			}
-		}
-	}
-}
-
 void MPU9150Driver::processingMainLoop () {
+
+	setupMPU9150();
 
 	auto nextStartConversion = OEVClock::now();
 
@@ -516,6 +491,10 @@ void MPU9150Driver::processingMainLoop () {
 		std::this_thread::sleep_until(nextStartConversion);
 
 	}
+}
+
+io::PortBase* MPU9150Driver::getIoPortPtr() {
+	return ioPort;
 }
 
 } // namespace openEV

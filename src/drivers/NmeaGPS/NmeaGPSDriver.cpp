@@ -132,39 +132,6 @@ void NmeaGPSDriver::initializeStatus(
 
 }
 
-void NmeaGPSDriver::updateKalmanStatus (GliderVarioStatus &varioStatus) {
-
-	// Nothing to do here
-
-}
-
-
-void NmeaGPSDriver::driverThreadFunction() {
-	int numRetries = 0;
-
-	if (ioPort == nullptr) {
-		LOG4CXX_ERROR (logger,fmt::format(_(
-				"No valid I/O port for driver instance \"{0}\". The driver is not operable"),instanceName));
-	} else {
-		while (!getStopDriverThread() && ( errorMaxNumRetries == 0 || numRetries <= errorMaxNumRetries)) {
-			try {
-				ioPort->open();
-				numRetries = 0;
-				processingMainLoop ();
-				ioPort->close();
-			} catch (std::exception const& e) {
-				numRetries ++;
-				LOG4CXX_ERROR(logger,fmt::format(_("Error in the main loop of driver instance \"{0}\": {1}"),
-						instanceName,e.what()));
-				ioPort->close();
-
-				std::this_thread::sleep_for(errorTimeout);
-			}
-		}
-	}
-
-}
-
 void NmeaGPSDriver::processingMainLoop () {
 
 	uint8_t buf [NMEASentence::maxLenSentence];
@@ -187,4 +154,9 @@ void NmeaGPSDriver::processingMainLoop () {
 
 	}
 }
+
+io::PortBase* NmeaGPSDriver::getIoPortPtr() {
+	return ioPort;
+}
+
 } /* namespace openEV */

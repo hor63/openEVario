@@ -78,19 +78,13 @@ public:
 
 protected:
 
-
-    /** \brief The main worker thread of this driver
-     *
-     * \see GliderVarioDriverBase::driverThreadFunction()
-     *
-     */
-    virtual void driverThreadFunction() override;
-
     /** \brief The main loop of the driver after the port was opened
      *
      * Read data from the sensor, process them, and update the Kalman filter.
      */
-    virtual void processingMainLoop ();
+    virtual void processingMainLoop () override;
+
+    virtual io::PortBase* getIoPortPtr() override;
 
 private:
 

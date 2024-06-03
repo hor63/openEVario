@@ -261,32 +261,6 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
 
 }
 
-void MS4515Driver::driverThreadFunction() {
-
-	int numRetries = 0;
-
-	if (ioPort == nullptr) {
-		LOG4CXX_ERROR (logger,fmt::format(_(
-				"No valid I/O port for driver instance \"{0}\". The driver is not operable"),instanceName));
-	} else {
-		while (!getStopDriverThread() && ( errorMaxNumRetries == 0 || numRetries <= errorMaxNumRetries)) {
-			try {
-				ioPort->open();
-				numRetries = 0;
-				processingMainLoop ();
-				// ioPort->close();
-			} catch (std::exception const& e) {
-				numRetries ++;
-				LOG4CXX_ERROR(logger,fmt::format(_("Error in the main loop of driver instance \"{0}\": {1}"),
-						instanceName,e.what()));
-				// ioPort->close();
-
-				std::this_thread::sleep_for(errorTimeout);
-			}
-		}
-	}
-}
-
 void MS4515Driver::processingMainLoop() {
 
     using namespace std::chrono_literals;

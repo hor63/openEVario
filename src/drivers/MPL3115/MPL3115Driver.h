@@ -77,27 +77,13 @@ public:
 			GliderVarioMeasurementVector &measurements,
 			GliderVarioMainPriv &varioMain) override;
 
-    /** \brief Callback to update the Kalman filter status based on received data.
-     *
-     * \see GliderVarioDriverBase::updateKalmanStatus()
-     */
-    virtual void updateKalmanStatus (GliderVarioStatus &varioStatus) override;
-
 protected:
-
-
-    /** \brief The main worker thread of this driver
-     *
-     * \see GliderVarioDriverBase::driverThreadFunction()
-     *
-     */
-    virtual void driverThreadFunction() override;
 
     /** \brief The inner main loop of the driver after the port was opened
      *
      * Read data from the sensor, process them, and update the Kalman filter.
      */
-    virtual void processingMainLoop ();
+    virtual void processingMainLoop () override;
 
     /** \brief Initialize the sensor
      *
@@ -128,6 +114,8 @@ protected:
     		GliderVarioMeasurementVector &measurements,
     		GliderVarioMainPriv &varioMain,
 			FloatType avgPressure);
+
+    virtual io::PortBase* getIoPortPtr() override;
 
 private:
 

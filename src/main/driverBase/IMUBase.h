@@ -71,12 +71,6 @@ public:
 			GliderVarioMeasurementVector &measurements,
 			GliderVarioMainPriv &varioMain) override;
 
-    /** \brief Callback to update the Kalman filter status based on received data.
-     *
-     * \see GliderVarioDriverBase::updateKalmanStatus()
-     */
-    virtual void updateKalmanStatus (GliderVarioStatus &varioStatus) override;
-
 protected:
 
     /// \brief Is the status initialization done

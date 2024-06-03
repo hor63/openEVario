@@ -155,13 +155,7 @@ void TE_MEAS_AbsPressureDriver::initializeStatus(
 
 }
 
-void TE_MEAS_AbsPressureDriver::updateKalmanStatus (GliderVarioStatus &varioStatus) {
-
-	// Nothing to do here
-
-}
-
-
+#if TE_MEAS_ABS_PRESSURE_TEST_MODE
 void TE_MEAS_AbsPressureDriver::driverThreadFunction() {
 
 	int numRetries = 0;
@@ -206,6 +200,7 @@ void TE_MEAS_AbsPressureDriver::driverThreadFunction() {
 		}
 	}
 }
+#endif // #if TE_MEAS_ABS_PRESSURE_TEST_MODE
 
 void TE_MEAS_AbsPressureDriver::processingMainLoop() {
 
@@ -423,6 +418,10 @@ void TE_MEAS_AbsPressureDriver::initQFF(
 			<< systemNoiseCov.coeff(GliderVarioStatus::STATUS_IND_QFF,GliderVarioStatus::STATUS_IND_QFF)
 			<< " / " << baseIntervalSec << "s");
 
+}
+
+io::PortBase* TE_MEAS_AbsPressureDriver::getIoPortPtr() {
+	return ioPort;
 }
 
 EightPinDriver::~EightPinDriver() {

@@ -196,12 +196,6 @@ public:
      */
     void readCalibrationData ();
 
-    /** \brief todo Don't know if I really need this...
-     *
-     * @param varioStatus The current Kalman status to update
-     */
-    virtual void updateKalmanStatus (GliderVarioStatus &varioStatus) = 0;
-
     // Interface with default implementations by the base class
 
     /** \brief Startup the driver thread
@@ -575,13 +569,21 @@ protected:
      * Data acquisition should start immediately to be ready for answering \ref initializeStatus() ASAP.
      *
      */
-    virtual void driverThreadFunction() = 0;
+    virtual void driverThreadFunction();
 
     /** \brief Static function required for std::thread implementation.
      *
      * @param tis Pointer to the object to which the thread belongs
      */
     static void driverThreadEntry (DriverBase* tis);
+
+    /** \brief The inner main loop of the driver after the port was opened
+     *
+     * Read data from the sensor, process them, and update the Kalman filter.
+     * This method must be overridden by the specific driver implementation.
+     *
+     */
+    virtual void processingMainLoop () = 0;
 
     /** \brief Driver specific function to apply calibration data to the driver instance
      *
@@ -599,6 +601,14 @@ protected:
      * The base class method does nothing. It must be overridden in a driver class.
      */
     virtual void fillCalibrationDataParameters ();
+
+    /* \brief Get the pointer to the associated I/O port
+     *
+     * I/O Ports are declared with a more specific type in derived classes.
+     * From there I can retrieve the pointer for use in \ref driverThreadFunction().
+     *
+     */
+    virtual io::PortBase* getIoPortPtr() = 0;
 
 }; // class GliderVarioDriverBase
 

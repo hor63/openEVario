@@ -92,12 +92,6 @@ public:
      */
     virtual void resume() override;
 
-    /** \brief Callback to update the Kalman filter status based on received data.
-     *
-     * \see GliderVarioDriverBase::updateKalmanStatus()
-     */
-    virtual void updateKalmanStatus (GliderVarioStatus &varioStatus) override;
-
 protected:
 
 
