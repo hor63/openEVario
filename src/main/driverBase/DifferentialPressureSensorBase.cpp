@@ -46,7 +46,7 @@ void DifferentialPressureSensorBase::driverInit(GliderVarioMainPriv &varioMain) 
 
 	this->varioMain = &varioMain;
 
-	ioPort = getIoPort<decltype(ioPort)>(logger);
+	ioPort = DriverBase::getIoPort<decltype(ioPort)>(logger);
 
 	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Loaded port with name " << portName
 			<< ". Pointer = " << static_cast<void*>(ioPort));
@@ -158,12 +158,6 @@ void DifferentialPressureSensorBase::initializeStatus(
 
 }
 
-void DifferentialPressureSensorBase::updateKalmanStatus (GliderVarioStatus &varioStatus) {
-
-	// Nothing to do here
-
-}
-
 void DifferentialPressureSensorBase::fillCalibrationDataParameters () {
 
 	calibrationData.pressureBias = pressureBias;
@@ -184,6 +178,10 @@ void DifferentialPressureSensorBase::applyCalibrationData(){
 
 	LOG4CXX_DEBUG (logger, __PRETTY_FUNCTION__ << " Set calibration data for device \"" << instanceName << "\": \n"
 			<< "\tpressureBias		 = " << calibrationData.pressureBias << "\n");
+}
+
+io::PortBase* DifferentialPressureSensorBase::getIoPortPtr() {
+	return ioPort;
 }
 
 } /* namespace drivers */

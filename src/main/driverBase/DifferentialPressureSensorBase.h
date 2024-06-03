@@ -53,12 +53,6 @@ public:
      */
     virtual void driverInit(GliderVarioMainPriv &varioMain) override;
 
-    /** \brief Callback to update the Kalman filter status based on received data.
-     *
-     * \see GliderVarioDriverBase::updateKalmanStatus()
-     */
-    virtual void updateKalmanStatus (GliderVarioStatus &varioStatus) override;
-
     /** \brief Initialize the Kalman filter status from initial sensor measurements
      *
      * \see GliderVarioDriverBase::initializeStatus()
@@ -156,6 +150,8 @@ protected:
      * \see DriverBase::applyCalibrationData()
      */
     virtual void applyCalibrationData() override;
+
+    virtual io::PortBase* getIoPortPtr() override;
 
 private:
 };

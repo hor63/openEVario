@@ -377,10 +377,6 @@ void IMUBase::initializeStatus(
 
 }
 
-void IMUBase::updateKalmanStatus (GliderVarioStatus &varioStatus) {
-
-}
-
 void IMUBase::updateKalman(SensorData &currSensorData) {
 	if (getIsKalmanUpdateRunning()) {
 		GliderVarioMainPriv::LockedCurrentStatus currStatus(*varioMain);

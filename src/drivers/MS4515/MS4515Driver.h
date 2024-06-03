@@ -97,18 +97,11 @@ protected:
      */
     virtual void applyCalibrationData() override;
 
-    /** \brief The main worker thread of this driver
-     *
-     * \see GliderVarioDriverBase::driverThreadFunction()
-     *
-     */
-    virtual void driverThreadFunction() override;
-
     /** \brief The inner main loop of the driver after the port was opened
      *
      * Read data from the sensor, process them, and update the Kalman filter.
      */
-    virtual void processingMainLoop ();
+    virtual void processingMainLoop () override;
 
     /** \brief Read out the sensor data
      *

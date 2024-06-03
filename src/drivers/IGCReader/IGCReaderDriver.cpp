@@ -201,10 +201,6 @@ void IGCReaderDriver::run() {
 	}
 }
 
-void IGCReaderDriver::updateKalmanStatus (GliderVarioStatus &varioStatus) {
-
-}
-
 void IGCReaderDriver::openIGCFile() {
 
 	if (!igcFile.is_open()) {
@@ -423,6 +419,16 @@ void IGCReaderDriver::findFirstValidRecord() {
 		}
 	}
 
+}
+
+io::PortBase* IGCReaderDriver::getIoPortPtr() {
+	// This class does not have a PortBase based I/O port.
+	// But I am also overriding driverThreadFunction() with an empty shell.
+	return nullptr;
+}
+
+void IGCReaderDriver::processingMainLoop() {
+	// Just to satisfy the pure virtual method in DriverBase.
 }
 
 } /* namespace openEV */

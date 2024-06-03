@@ -226,8 +226,19 @@ public:
 	 * It handles the status handling, and locking the mutex.
 	 * If needed it calls the device specific openInternal().
 	 *
+	 * If the port \ref status is already \ref OPEN the functions returns immediately without action.
+	 * If the port \ref status is not \ref CLOSED (i.e. any error status) the function calls \ref close() before trying to re-open the port.
+	 *
+	 * The last error code \ref lastErrno and error counter \ref numSameErrorOccurred are reset when the function succeeds.
+	 * Upon success the status is set \ref OPEN.
+	 * If an error occurs \ref openinternal() calls \ref setErrno() to set \ref lastErrno and increment \ref numSameErrorOccurred,
+	 * and check if \ref maxNumSameErrorOccurred is exceeded.
+	 * The \ref status is set accordingly to a non- \ref OPEN status.
+	 *
 	 * @throws GliderVarioPortOpenException
 	 * @throws GliderVarioPortDontExistException
+	 * \see \ref openInternal()
+	 * \see \ref close()
 	 */
 	void open();
 
@@ -235,8 +246,10 @@ public:
 	 *
 	 * Tries to close the port if it was open before.
 	 * When the port was not open before no action is taken.
-	 * Regardless of the previous #status is reset in any case to CLOSED.
+	 * Regardless of the previous \ref status is reset in any case to \ref CLOSED.
 	 * No exception is thrown in any case. This function is also a cleanup.
+	 *
+	 * The last error code \ref lastErrno and error counter \ref numSameErrorOccurred are not being reset here.
 	 *
 	 * This is the public wrapper function.
 	 * It handles the status handling, and locking the mutex.

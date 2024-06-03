@@ -102,13 +102,6 @@ void templateDriver::resume() {
 
 }
 
-void templateDriver::updateKalmanStatus (GliderVarioStatus &varioStatus) {
-
-	/// todo fill me
-
-}
-
-
 void templateDriver::driverThreadFunction() {
 
 	/// todo fill me
