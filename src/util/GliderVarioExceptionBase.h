@@ -158,7 +158,7 @@ public:
 			char const *source,
 			int line,
 			char const *description,
-			int errNo = -1);
+			int errNo /*= -1*/);
 
 	/** \brief Return the system error code causing this exception.
 	 *
@@ -264,7 +264,7 @@ public:
 			char const *source,
 			int line,
 			char const *description,
-			int errNo = -1)
+			int errNo /*= -1*/)
 		:GliderVarioPortIOException {source,line,description,errNo}
 	{}
 
@@ -277,7 +277,7 @@ public:
 			char const *source,
 			int line,
 			char const *description,
-			int errNo = -1)
+			int errNo /*= -1*/)
 		:GliderVarioPortIOException {source,line,description,errNo}
 	{}
 
@@ -302,7 +302,7 @@ public:
 			char const *source,
 			int line,
 			char const *description,
-			int errNo = -1)
+			int errNo /*= -1*/)
 		:GliderVarioPortIOException {source,line,description,errNo}
 	{}
 
@@ -327,7 +327,7 @@ public:
 			char const *source,
 			int line,
 			char const *description,
-			int errNo = -1)
+			int errNo /*= -1*/)
 		:GliderVarioPortIOException {source,line,description,errNo}
 	{}
 

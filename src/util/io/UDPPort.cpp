@@ -215,7 +215,7 @@ void UDPPort::openInternal() {
 			status = ERR_IO_PERM;
 			setErrno(rc);
 
-			throw GliderVarioPortOpenException (__FILE__, __LINE__, str.c_str());
+			throw GliderVarioPortOpenException (__FILE__, __LINE__, str.c_str(),rc);
 		}
 
 		auto sockType = addrMgr.localAd->ai_socktype;
@@ -282,7 +282,7 @@ void UDPPort::openInternal() {
 			status = ERR_IO_PERM;
 			setErrno(rc);
 
-			throw GliderVarioPortOpenException (__FILE__, __LINE__, str.c_str());
+			throw GliderVarioPortOpenException (__FILE__, __LINE__, str.c_str(),rc);
 		}
 
 		// If the socket has not yet been created do it now.
@@ -331,7 +331,7 @@ void UDPPort::openInternal() {
 		throw GliderVarioPortOpenException (
 				__FILE__,
 				__LINE__,
-				str.c_str());
+				str.c_str(),rc);
 	}
 
 	LOG4CXX_INFO(logger,fmt::format(_("{0}: Port \"{1}\" opened successful"),__PRETTY_FUNCTION__,getPortName()));
@@ -361,7 +361,7 @@ ssize_t UDPPort::send(uint8_t *buffer, size_t bufLen) {
 				__PRETTY_FUNCTION__,getPortName());
 		close();
 		LOG4CXX_ERROR(logger,str);
-		throw GliderVarioPortWriteException(__FILE__,__LINE__,str.c_str());
+		throw GliderVarioPortWriteException(__FILE__,__LINE__,str.c_str(),-1);
 	}
 
 	do {
