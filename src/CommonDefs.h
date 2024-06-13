@@ -48,6 +48,68 @@
 #define _(str) dgettext(PACKAGE,str)
 #define N_(str1,str2,N) dngettext(PACKAGE,str1,str2,N)
 
+/**
+ * Define OV_DLL_IMPORT, OV_DLL_EXPORT, and OV_DLL_LOCAL for Windows and Linux (ELF) ports of gcc and non-gcc compilers
+ *
+ * The macro definitions are highly inspired from the [GCC Wiki: Visibility](https://gcc.gnu.org/wiki/Visibility)
+ */
+#if defined _WIN32 || defined __CYGWIN__
+    #ifdef __GNUC__
+      #define OV_DLL_EXPORT __attribute__ ((dllexport))
+      #define OV_DLL_IMPORT __attribute__ ((dllimport))
+    #else
+      #define OV_DLL_EXPORT __declspec(dllexport) // Note: actually gcc seems to also supports this syntax.
+      #define OV_DLL_IMPORT __declspec(dllimport) // Note: actually gcc seems to also supports this syntax.
+    #endif
+    #ifdef __GNUC__
+    #else
+    #endif
+  #define OV_DLL_LOCAL
+#else
+  #if __GNUC__ >= 4
+    #define OV_DLL_EXPORT __attribute__ ((visibility ("default")))
+    #define OV_DLL_LOCAL  __attribute__ ((visibility ("hidden")))
+  #else
+    #define OV_DLL_EXPORT
+    #define OV_DLL_LOCAL
+  #endif
+  #define OV_DLL_IMPORT
+#endif
+
+#if defined (BUILDING_OEV_KALMAN)
+  #define OEV_PUBLIC OV_DLL_EXPORT
+  #define OEV_LOCAL  OV_DLL_LOCAL
+#else /* BUILDING_OEV_KALMAN */
+  #define OEV_PUBLIC OV_DLL_IMPORT
+  #define OEV_LOCAL  OV_DLL_LOCAL
+#endif /* BUILDING_OEV_KALMAN */
+
+
+#if defined (BUILDING_OEV_UTILS)
+  #define OEV_UTILS_PUBLIC OV_DLL_EXPORT
+  #define OEV_UTILS_LOCAL  OV_DLL_LOCAL
+#else /* BUILDING_OEV_UTILS */
+  #define OEV_UTILS_PUBLIC OV_DLL_IMPORT
+  #define OEV_UTILS_LOCAL  OV_DLL_LOCAL
+#endif /* BUILDING_OEV_UTILS */
+
+#if defined (BUILDING_OEV_DRIVER)
+  #define OEV_DRIVER_PUBLIC OV_DLL_EXPORT
+  #define OEV_DRIVER_LOCAL  OV_DLL_LOCAL
+#else /* BUILDING_OEV_UTILS */
+  #define OEV_DRIVER_PUBLIC OV_DLL_IMPORT
+  #define OEV_DRIVER_LOCAL  OV_DLL_LOCAL
+#endif /* BUILDING_OEV_UTILS */
+
+
+#if defined (BUILDING_OEV_MAIN)
+  #define OEV_MAIN_PUBLIC OV_DLL_EXPORT
+  #define OEV_MAIN_LOCAL  OV_DLL_LOCAL
+#else /* BUILDING_OEV_UTILS */
+  #define OEV_MAIN_PUBLIC OV_DLL_IMPORT
+  #define OEV_MAIN_LOCAL  OV_DLL_LOCAL
+#endif /* BUILDING_OEV_UTILS */
+
 namespace openEV {
 
 	/**
