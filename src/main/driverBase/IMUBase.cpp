@@ -11,13 +11,7 @@ namespace openEV {
 namespace drivers {
 
 
-IMUBase::IMUBase(
-		char const *driverName,
-		char const *description,
-		char const *instanceName,
-		DriverLibBase &driverLib
-		)
-: DriverBase {driverName,description,instanceName,driverLib}
+IMUBase::IMUBase()
 {
 	for (int i = 0; i < SIZE_SENSOR_DATA_ARRAY; ++i) {
 		sensorDataArr[i].accelDataValid = false;

@@ -19,18 +19,7 @@
 namespace openEV {
 namespace drivers {
 
-DifferentialPressureSensorBase::DifferentialPressureSensorBase (
-	    char const *driverName,
-		char const *description,
-		char const *instanceName,
-		DriverLibBase &driverLib
-		)
-		:DriverBase (
-			    driverName,
-				description,
-				instanceName,
-				driverLib
-				) {
+DifferentialPressureSensorBase::DifferentialPressureSensorBase () {
 
 	setSensorCapability(DYNAMIC_PRESSURE);
 

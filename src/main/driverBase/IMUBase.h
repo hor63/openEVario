@@ -18,7 +18,7 @@
 namespace openEV {
 namespace drivers {
 
-class OEV_MAIN_PUBLIC IMUBase: public DriverBase {
+class OEV_MAIN_PUBLIC IMUBase: public virtual DriverBase {
 public:
 
     /** \brief Structure holding one set of sensor data
@@ -44,12 +44,9 @@ public:
 		float magZ; ///< \brief Magnetic field strength along the Z axis in uT.
     };
 
-    IMUBase(
-			char const *driverName,
-			char const *description,
-			char const *instanceName,
-			DriverLibBase &driverLib
-			);
+    /// This class is virtually derived from DriverBase. The constructor of DriverBase must be called explicitly.
+    /// Therefore the constructor here can be w/o parameters.
+    IMUBase();
 	virtual ~IMUBase();
 
     /// \brief Size of the array \ref sensorDataArr

@@ -50,7 +50,7 @@ BMXSensorBoardDriver::BMXSensorBoardDriver(
 		char const *description,
 		char const *instanceName
 		)
-: IMUBase {driverName,description,instanceName,BMXSensorBoardLib::theOneAndOnly}
+: DriverBase {driverName,description,instanceName,BMXSensorBoardLib::theOneAndOnly}
 {
 
 #if defined HAVE_LOG4CXX_H

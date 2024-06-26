@@ -46,7 +46,7 @@ MPU9150Driver::MPU9150Driver(
 		char const *description,
 		char const *instanceName
 		)
-: IMUBase {driverName,description,instanceName,MPU9150Lib::theOneAndOnly}
+: DriverBase {driverName,description,instanceName,MPU9150Lib::theOneAndOnly}
 {
 
 #if defined HAVE_LOG4CXX_H

@@ -15,7 +15,7 @@
 namespace openEV {
 namespace drivers {
 
-class OEV_MAIN_PUBLIC DifferentialPressureSensorBase: public DriverBase {
+class OEV_MAIN_PUBLIC DifferentialPressureSensorBase: public virtual DriverBase {
 public:
 
     /** \brief Dynamic part of the expected error of the sensor as factor of the measurement range.
@@ -39,12 +39,9 @@ public:
 
     static constexpr char const * const pressureBiasCalibrationName = "pressureBias";
 
-	DifferentialPressureSensorBase (
-		    char const *driverName,
-			char const *description,
-			char const *instanceName,
-			DriverLibBase &driverLib
-			);
+    /// This class is virtually derived from DriverBase. The constructor of DriverBase must be called explicitly.
+    /// Therefore the constructor here can be w/o parameters.
+	DifferentialPressureSensorBase ();
 	virtual ~DifferentialPressureSensorBase();
 
     /** \brief Initialize the driver

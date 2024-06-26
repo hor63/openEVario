@@ -44,7 +44,7 @@ MS4515Driver::MS4515Driver(
 		char const *description,
 		char const *instanceName
 		)
-: DifferentialPressureSensorBase {driverName,description,instanceName,MS4515Lib::theOneAndOnly}
+: DriverBase {driverName,description,instanceName,MS4515Lib::theOneAndOnly}
 {
 #if defined HAVE_LOG4CXX_H
 	logger = log4cxx::Logger::getLogger("openEV.Drivers.MS4515");

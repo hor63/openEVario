@@ -44,7 +44,7 @@ AMS5915Driver::AMS5915Driver(
 		char const *description,
 		char const *instanceName
 		)
-: DifferentialPressureSensorBase {driverName,description,instanceName,AMS5915Lib::theOneAndOnly}
+: DriverBase {driverName,description,instanceName,AMS5915Lib::theOneAndOnly}
 {
 #if defined HAVE_LOG4CXX_H
 	logger = log4cxx::Logger::getLogger("openEV.Drivers.AMS5915");
