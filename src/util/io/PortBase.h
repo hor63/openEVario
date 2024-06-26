@@ -149,6 +149,12 @@ protected:
 
 public:
 
+	// delete all default constructors and copy and move operators
+	PortBase() = delete;
+	PortBase(PortBase const &) = delete;
+	PortBase(PortBase &&) = delete;
+	PortBase& operator = (PortBase const &) = delete;
+	PortBase& operator = (PortBase &&) = delete;
 
 	virtual ~PortBase();
 

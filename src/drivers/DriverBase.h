@@ -67,6 +67,13 @@ class OEV_MAIN_PUBLIC DriverBase {
 
 public:
 
+	// Only explicitly created objects are permitted. No copies, no moves are permitted.
+	DriverBase() = delete;
+	DriverBase(DriverBase const&) = delete;
+	DriverBase(DriverBase &&) = delete;
+	DriverBase& operator = (DriverBase const&) = delete;
+	DriverBase& operator = (DriverBase &&) = delete;
+
     DriverBase (
     	    char const *driverName,
 			char const *description,
