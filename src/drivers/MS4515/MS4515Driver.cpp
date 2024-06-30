@@ -261,25 +261,18 @@ void MS4515Driver::readConfiguration (Properties4CXX::Properties const &configur
 
 }
 
-void MS4515Driver::processingMainLoop() {
+void MS4515Driver::processOneMeasurementCycle() {
 
     using namespace std::chrono_literals;
 
-	auto nextStartConversion = OEVClock::now();
+	readoutMS4515();
 
-	while (!getStopDriverThread()) {
-
-		//std::this_thread::sleep_until(nextStartConversion + 60ms);
-
-		readoutMS4515();
-
-		// In case that you miss a cycle advance to the next cycle
-		auto now = OEVClock::now();
-		do {
-			nextStartConversion += updateCyle;
-		} while (nextStartConversion < now);
-		std::this_thread::sleep_until(nextStartConversion);
-}
+	// In case that you miss a cycle advance to the next cycle
+	auto now = OEVClock::now();
+	do {
+		nextStartConversion += updateCyle;
+	} while (nextStartConversion < now);
+	std::this_thread::sleep_until(nextStartConversion);
 
 }
 

@@ -2,6 +2,9 @@
 src/main/GliderVarioMainPriv.cpp
 src/main/GliderVarioDriverList.cpp
 src/main/driverBase/DriverBase.cpp
+src/main/driverBase/BusDeviceSensorBase.cpp
+src/main/driverBase/DifferentialPressureSensorBase.cpp
+src/main/driverBase/IMUBase.cpp
 src/util/io/PortBase.cpp
 src/util/io/DatagramPort.cpp
 src/util/io/I2CPort.cpp

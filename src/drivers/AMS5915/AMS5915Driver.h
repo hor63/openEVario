@@ -32,6 +32,7 @@
 
 #include "AMS5915Defs.h"
 #include "main/driverBase/DifferentialPressureSensorBase.h"
+#include "main/driverBase/BusDeviceSensorBase.h"
 #include "AMS5915Lib.h"
 
 namespace openEV::drivers::AMS5915 {
@@ -57,7 +58,7 @@ namespace openEV::drivers::AMS5915 {
  * \see [AMS5915 Datasheet](https://www.analog-micro.com/products/pressure-sensors/board-mount-pressure-sensors/ams5915/ams5915-datasheet.pdf)
  *
  */
-class AMS5915Driver  : public DifferentialPressureSensorBase {
+class AMS5915Driver  : public DifferentialPressureSensorBase, public BusDeviceSensorBase {
 public:
 
 	AMS5915Driver(
@@ -87,11 +88,11 @@ protected:
      */
     virtual void applyCalibrationData() override;
 
-    /** \brief The inner main loop of the driver after the port was opened
+    /** \brief Process one measurement cycle of the sensor.
      *
-     * Read data from the sensor, process them, and update the Kalman filter.
+     * \see \ref BusDeviceSensorBase::processOneMeasurementCycle()
      */
-    virtual void processingMainLoop () override;
+    virtual void processOneMeasurementCycle () override;
 
     /** \brief Read out the sensor data
      *
@@ -110,6 +111,9 @@ protected:
     FloatType convertRegisterPressureToMBar (uint16_t registerVal) const;
 
 private:
+
+    OEVClock::time_point nextStartConversion = OEVClock::now();
+
 };
 
 } /* namespace openEV */

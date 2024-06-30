@@ -35,6 +35,7 @@
 #include "CommonDefs.h"
 #include "util/io/I2CPort.h"
 #include "main/driverBase/IMUBase.h"
+#include "main/driverBase/BusDeviceSensorBase.h"
 #include "MPU-9150Defs.h"
 #include "MPU-9150Lib.h"
 
@@ -45,7 +46,7 @@ namespace openEV::drivers::TDK_MPU9150 {
  * This driver communicates with the sensor via I2C to obtain accelerometer, gyroscope, and magnetometer data.
  *
  */
-class MPU9150Driver : public IMUBase {
+class MPU9150Driver : public IMUBase, public BusDeviceSensorBase {
 public:
 
 	/** \brief Union of unsigned and signed 16-bit integers to map one to the other
@@ -130,7 +131,7 @@ protected:
      * and collect the measurement data via the aux. bus from the AK8975Mag
      * into the internal measurement registers of the MPU-9150.
      */
-    void setupMPU9150();
+    virtual void setupSensor() override;
 
     /** \brief Setup the AK8975 magnetometer.
      *
@@ -145,11 +146,11 @@ protected:
      */
     void setupAK8975Mag();
 
-    /** \brief The main loop of the driver after the port was opened
+    /** \brief Process one measurement cycle of the sensor.
      *
-     * Read data from the sensor, process them, and update the Kalman filter.
+     * \see \ref BusDeviceSensorBase::processOneMeasurementCycle()
      */
-    virtual void processingMainLoop () override;
+    virtual void processOneMeasurementCycle () override;
 
     virtual io::PortBase* getIoPortPtr() override;
 
@@ -179,6 +180,8 @@ private:
     FloatType accFactor = 1.0f / 8192.0f;
 
 	MeasurementData measurementData;
+
+	OEVClock::time_point nextStartConversion = OEVClock::now();
 
 
 };

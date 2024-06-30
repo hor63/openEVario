@@ -33,6 +33,7 @@
 #include "CommonDefs.h"
 #include "MS4515DO.h"
 #include "main/driverBase/DifferentialPressureSensorBase.h"
+#include "main/driverBase/BusDeviceSensorBase.h"
 #include "MS4515Lib.h"
 #include "util/io/I2CPort.h"
 
@@ -61,7 +62,7 @@ namespace openEV::drivers::MS4515 {
  * \see [Configuration, POR, and Power consumption](https://www.te.com/commerce/DocumentDelivery/DDEController?Action=showdoc&DocId=Specification+Or+Standard%7FConfiguration_POR_and_Power_Consumption%7FA3%7Fpdf%7FEnglish%7FENG_SS_Configuration_POR_and_Power_Consumption_A3.pdf%7FCAT-BLPS0001)
  *
  */
-class MS4515Driver  : public DifferentialPressureSensorBase {
+class MS4515Driver  : public DifferentialPressureSensorBase, public BusDeviceSensorBase {
 public:
 
 	enum SensorType {
@@ -97,11 +98,11 @@ protected:
      */
     virtual void applyCalibrationData() override;
 
-    /** \brief The inner main loop of the driver after the port was opened
+    /** \brief Process one measurement cycle of the sensor.
      *
-     * Read data from the sensor, process them, and update the Kalman filter.
+     * \see \ref BusDeviceSensorBase::processOneMeasurementCycle()
      */
-    virtual void processingMainLoop () override;
+    virtual void processOneMeasurementCycle () override;
 
     /** \brief Read out the sensor data
      *
@@ -153,6 +154,8 @@ private:
      * \see \ref convertRegisterPressureToMBar() what is it for and how it is calculated.
      */
     FloatType f2 = UnInitVal;
+
+	OEVClock::time_point nextStartConversion = OEVClock::now();
 
 };
 

@@ -175,7 +175,7 @@ void MPU9150Driver::writeByteAux (uint8_t slaveDevAddr, uint8_t regAddr, uint8_t
 
 }
 
-void MPU9150Driver::setupMPU9150() {
+void MPU9150Driver::setupSensor() {
 	using namespace std::literals::chrono_literals;
 	uint8_t buf[8] = {0};
 
@@ -362,135 +362,128 @@ void MPU9150Driver::setupAK8975Mag() {
 
 }
 
-void MPU9150Driver::processingMainLoop () {
+void MPU9150Driver::processOneMeasurementCycle () {
 
-	setupMPU9150();
+	SensorData &currSensorData = sensorDataArr[currSensorDataIndex];
+	uint8_t buf[6	// Accel
+				+ 2	// Temperature
+				+ 6	// Gyro
+				+ 8	// 8 bytes from Slave0
+				];
 
-	auto nextStartConversion = OEVClock::now();
+	// advance the index, and wrap it around if necessary
+	currSensorDataIndex++;
+	currSensorDataIndex &= SIZE_SENSOR_DATA_ARRAY - 1;
+	currSensorData.accelDataValid = false;
+	currSensorData.gyroDataValid = false;
+	currSensorData.magDataValid = false;
 
-	while (!getStopDriverThread()) {
-		SensorData &currSensorData = sensorDataArr[currSensorDataIndex];
-		uint8_t buf[6	// Accel
-					+ 2	// Temperature
-					+ 6	// Gyro
-					+ 8	// 8 bytes from Slave0
-					];
-
-		// advance the index, and wrap it around if necessary
-		currSensorDataIndex++;
-		currSensorDataIndex &= SIZE_SENSOR_DATA_ARRAY - 1;
-		currSensorData.accelDataValid = false;
-		currSensorData.gyroDataValid = false;
-		currSensorData.magDataValid = false;
-
-		for (;;) {
-			buf[0] = ioPort->readByteAtRegAddrByte(i2cAddress, REG_9150_INT_STATUS);
-			LOG4CXX_DEBUG(logger,"Interrupt status = 0x" << std::hex << uint16_t(buf[0]) << std::dec);
-			if ((buf[0] & DATA_RDY_INT) == DATA_RDY_INT) {
-				break;
-			}
-			// Re-start the clock, and re-start the cycle.
-			nextStartConversion = OEVClock::now();
+	for (;;) {
+		buf[0] = ioPort->readByteAtRegAddrByte(i2cAddress, REG_9150_INT_STATUS);
+		LOG4CXX_DEBUG(logger,"Interrupt status = 0x" << std::hex << uint16_t(buf[0]) << std::dec);
+		if ((buf[0] & DATA_RDY_INT) == DATA_RDY_INT) {
+			break;
 		}
-
-		ioPort->readBlockAtRegAddrByte(i2cAddress, REG_9150_ACCEL_XOUT_H, buf, sizeof(buf));
-
-		// Accel and gyro data are stored big-endian
-		measurementData.accelX.uintVal = (buf[0] << 8) | buf[1];
-		measurementData.accelY.uintVal = (buf[2] << 8) | buf[3];
-		measurementData.accelZ.uintVal = (buf[4] << 8) | buf[5];
-
-		measurementData.tempRaw.uintVal = (buf[6] << 8) | buf[7];
-
-		measurementData.gyroX.uintVal = (buf[8] << 8) | buf[9];
-		measurementData.gyroY.uintVal = (buf[10] << 8) | buf[11];
-		measurementData.gyroZ.uintVal = (buf[12] << 8) | buf[13];
-
-		measurementData.magStatus1 = buf[14];
-		// Mag data are stored little-endian,
-		// the magnetometer from another manufacturer slapped onto the primary die)
-		measurementData.magX.uintVal = (buf[16] << 8) | buf[15];
-		measurementData.magY.uintVal = (buf[18] << 8) | buf[17];
-		measurementData.magZ.uintVal = (buf[20] << 8) | buf[19];
-
-		measurementData.magStatus2 = buf[21];
-
-		// Convert the raw data, and write them into the sensor data structure.
-		currSensorData.accelDataValid = true;
-		currSensorData.accelX = FloatType(measurementData.accelX.intVal) * accFactor *
-				calibrationData.accelXFactor - calibrationData.accelXBias;
-		currSensorData.accelY = FloatType(measurementData.accelY.intVal) * accFactor *
-				calibrationData.accelYFactor - calibrationData.accelYBias;
-		currSensorData.accelZ = FloatType(measurementData.accelZ.intVal) * accFactor *
-				calibrationData.accelZFactor - calibrationData.accelZBias;
-
-		LOG4CXX_TRACE(logger,"Accel  data " << measurementData.accelX.intVal
-				<< ", " << measurementData.accelY.intVal
-				<< ", " << measurementData.accelZ.intVal
-				);
-		LOG4CXX_DEBUG(logger,"Accel  data in g = "
-				<< (FloatType(measurementData.accelX.intVal) * accFactor) << ", "
-				<< (FloatType(measurementData.accelY.intVal) * accFactor) << ", "
-				<< (FloatType(measurementData.accelZ.intVal) * accFactor)
-				);
-
-		currSensorData.gyroDataValid = true;
-		currSensorData.gyroX = FloatType(measurementData.gyroX.intVal) * gyrFactor
-				* calibrationData.gyrXFactor;
-		currSensorData.gyroY = FloatType(measurementData.gyroY.intVal) * gyrFactor
-				* calibrationData.gyrYFactor;
-		currSensorData.gyroZ = FloatType(measurementData.gyroZ.intVal) * gyrFactor
-				* calibrationData.gyrZFactor;
-
-		LOG4CXX_TRACE(logger,"Gyro   data " << measurementData.gyroX.intVal
-				<< ", " << measurementData.gyroY.intVal
-				<< ", " << measurementData.gyroZ.intVal
-				);
-		LOG4CXX_DEBUG(logger,"Gyro  data in deg/s = "
-				<< (FloatType(measurementData.gyroX.intVal) * gyrFactor) << ", "
-				<< (FloatType(measurementData.gyroY.intVal) * gyrFactor) << ", "
-				<< (FloatType(measurementData.gyroZ.intVal) * gyrFactor)
-				);
-
-		LOG4CXX_DEBUG(logger,"Magnet status1 = 0x" << std::hex << uint16_t(measurementData.magStatus1)
-				<< ", status2 = 0x" << std::hex << uint16_t(measurementData.magStatus2));
-		if ((measurementData.magStatus1 & AK8975_DRDY) && // data is ready
-				!(measurementData.magStatus2 & (AK8975_HOFL | AK8975_DERR))) { // And no overflow or data error
-			currSensorData.magDataValid = true;
-
-			// NOTE: The magnetometer X and Y axes are rotated by 90 degrees.
-			// Therefore I cannot compensate flipped axes by the factors, but I need to re-arrange programatically here.
-			currSensorData.magX = FloatType(measurementData.magY.intVal) * magFactorY
-					* calibrationData.magXFactor;
-			currSensorData.magY = FloatType(measurementData.magX.intVal) * magFactorX
-					* calibrationData.magYFactor;
-			currSensorData.magZ = FloatType(measurementData.magZ.intVal) * magFactorZ
-					* calibrationData.magZFactor;
-
-			// Also print the raw data with X and Y exchanged
-			LOG4CXX_TRACE(logger,"Magnet data " << measurementData.magY.intVal
-					<< ", " << measurementData.magX.intVal
-					<< ", " << measurementData.magZ.intVal
-					);
-			LOG4CXX_DEBUG(logger,"Magnet data in uT = "
-					<< currSensorData.magX << ", "
-					<< currSensorData.magY << ", "
-					<< currSensorData.magZ
-					);
-		}
-		LOG4CXX_DEBUG(logger,"Temperature raw " << measurementData.tempRaw.intVal << " = "
-				<< (FloatType(measurementData.tempRaw.intVal)/340.0f + 35.0f));
-
-		updateKalman(currSensorData);
-
-		// In case that you miss a cycle advance to the next cycle
-		auto now = OEVClock::now();
-		do {
-			nextStartConversion += updateCyle;
-		} while (nextStartConversion < now);
-		std::this_thread::sleep_until(nextStartConversion);
-
+		// Re-start the clock, and re-start the cycle.
+		nextStartConversion = OEVClock::now();
 	}
+
+	ioPort->readBlockAtRegAddrByte(i2cAddress, REG_9150_ACCEL_XOUT_H, buf, sizeof(buf));
+
+	// Accel and gyro data are stored big-endian
+	measurementData.accelX.uintVal = (buf[0] << 8) | buf[1];
+	measurementData.accelY.uintVal = (buf[2] << 8) | buf[3];
+	measurementData.accelZ.uintVal = (buf[4] << 8) | buf[5];
+
+	measurementData.tempRaw.uintVal = (buf[6] << 8) | buf[7];
+
+	measurementData.gyroX.uintVal = (buf[8] << 8) | buf[9];
+	measurementData.gyroY.uintVal = (buf[10] << 8) | buf[11];
+	measurementData.gyroZ.uintVal = (buf[12] << 8) | buf[13];
+
+	measurementData.magStatus1 = buf[14];
+	// Mag data are stored little-endian,
+	// the magnetometer from another manufacturer slapped onto the primary die)
+	measurementData.magX.uintVal = (buf[16] << 8) | buf[15];
+	measurementData.magY.uintVal = (buf[18] << 8) | buf[17];
+	measurementData.magZ.uintVal = (buf[20] << 8) | buf[19];
+
+	measurementData.magStatus2 = buf[21];
+
+	// Convert the raw data, and write them into the sensor data structure.
+	currSensorData.accelDataValid = true;
+	currSensorData.accelX = FloatType(measurementData.accelX.intVal) * accFactor *
+			calibrationData.accelXFactor - calibrationData.accelXBias;
+	currSensorData.accelY = FloatType(measurementData.accelY.intVal) * accFactor *
+			calibrationData.accelYFactor - calibrationData.accelYBias;
+	currSensorData.accelZ = FloatType(measurementData.accelZ.intVal) * accFactor *
+			calibrationData.accelZFactor - calibrationData.accelZBias;
+
+	LOG4CXX_TRACE(logger,"Accel  data " << measurementData.accelX.intVal
+			<< ", " << measurementData.accelY.intVal
+			<< ", " << measurementData.accelZ.intVal
+			);
+	LOG4CXX_DEBUG(logger,"Accel  data in g = "
+			<< (FloatType(measurementData.accelX.intVal) * accFactor) << ", "
+			<< (FloatType(measurementData.accelY.intVal) * accFactor) << ", "
+			<< (FloatType(measurementData.accelZ.intVal) * accFactor)
+			);
+
+	currSensorData.gyroDataValid = true;
+	currSensorData.gyroX = FloatType(measurementData.gyroX.intVal) * gyrFactor
+			* calibrationData.gyrXFactor;
+	currSensorData.gyroY = FloatType(measurementData.gyroY.intVal) * gyrFactor
+			* calibrationData.gyrYFactor;
+	currSensorData.gyroZ = FloatType(measurementData.gyroZ.intVal) * gyrFactor
+			* calibrationData.gyrZFactor;
+
+	LOG4CXX_TRACE(logger,"Gyro   data " << measurementData.gyroX.intVal
+			<< ", " << measurementData.gyroY.intVal
+			<< ", " << measurementData.gyroZ.intVal
+			);
+	LOG4CXX_DEBUG(logger,"Gyro  data in deg/s = "
+			<< (FloatType(measurementData.gyroX.intVal) * gyrFactor) << ", "
+			<< (FloatType(measurementData.gyroY.intVal) * gyrFactor) << ", "
+			<< (FloatType(measurementData.gyroZ.intVal) * gyrFactor)
+			);
+
+	LOG4CXX_DEBUG(logger,"Magnet status1 = 0x" << std::hex << uint16_t(measurementData.magStatus1)
+			<< ", status2 = 0x" << std::hex << uint16_t(measurementData.magStatus2));
+	if ((measurementData.magStatus1 & AK8975_DRDY) && // data is ready
+			!(measurementData.magStatus2 & (AK8975_HOFL | AK8975_DERR))) { // And no overflow or data error
+		currSensorData.magDataValid = true;
+
+		// NOTE: The magnetometer X and Y axes are rotated by 90 degrees.
+		// Therefore I cannot compensate flipped axes by the factors, but I need to re-arrange programatically here.
+		currSensorData.magX = FloatType(measurementData.magY.intVal) * magFactorY
+				* calibrationData.magXFactor;
+		currSensorData.magY = FloatType(measurementData.magX.intVal) * magFactorX
+				* calibrationData.magYFactor;
+		currSensorData.magZ = FloatType(measurementData.magZ.intVal) * magFactorZ
+				* calibrationData.magZFactor;
+
+		// Also print the raw data with X and Y exchanged
+		LOG4CXX_TRACE(logger,"Magnet data " << measurementData.magY.intVal
+				<< ", " << measurementData.magX.intVal
+				<< ", " << measurementData.magZ.intVal
+				);
+		LOG4CXX_DEBUG(logger,"Magnet data in uT = "
+				<< currSensorData.magX << ", "
+				<< currSensorData.magY << ", "
+				<< currSensorData.magZ
+				);
+	}
+	LOG4CXX_DEBUG(logger,"Temperature raw " << measurementData.tempRaw.intVal << " = "
+			<< (FloatType(measurementData.tempRaw.intVal)/340.0f + 35.0f));
+
+	updateKalman(currSensorData);
+
+	// In case that you miss a cycle advance to the next cycle
+	auto now = OEVClock::now();
+	do {
+		nextStartConversion += updateCyle;
+	} while (nextStartConversion < now);
+	std::this_thread::sleep_until(nextStartConversion);
 }
 
 io::PortBase* MPU9150Driver::getIoPortPtr() {

@@ -35,7 +35,7 @@ void DifferentialPressureSensorBase::driverInit(GliderVarioMainPriv &varioMain) 
 
 	this->varioMain = &varioMain;
 
-	ioPort = DriverBase::getIoPort<decltype(ioPort)>(logger);
+	ioPort = DriverBase::getIoPort<decltype(ioPort)>();
 
 	LOG4CXX_DEBUG(logger,__FUNCTION__ << ": Loaded port with name " << portName
 			<< ". Pointer = " << static_cast<void*>(ioPort));

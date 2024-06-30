@@ -31,7 +31,7 @@
 namespace openEV {
 namespace drivers {
 
-class BusDeviceSensorBase: public virtual DriverBase {
+class OEV_MAIN_PUBLIC BusDeviceSensorBase: public virtual DriverBase {
 public:
 	BusDeviceSensorBase();
 
@@ -45,7 +45,40 @@ protected:
      *
      * \see \ref DriverBase::driverThreadFunction()
      */
-virtual void driverThreadFunction() override;
+	virtual void driverThreadFunction() override;
+
+    /** \brief The inner main loop of the driver after the port was opened
+     *
+     * Generic method.
+     * Calls \ref setupSensor() once at the begining.
+     * Then calls \ref processOneMeasurementCycle() in a loop while \ref getStopDriverThread() returns \p false.
+     *
+     * This method handles I/O errors caused by the connected bus device
+     * and cancels the driver instance when the number of repetitive error is exceeded.
+     *
+     */
+    virtual void processingMainLoop ();
+
+    /** \brief Process one measurement cycle of the sensor.
+     *
+     * The method runs one measurement cycle of the sensor and updates the Kalman filter.
+     * When an I/O error occurs (or any other internal error) the method throws an appropriate exception.
+     * The caller takes care of default error handling.
+     *
+     * \see \ref processingMainLoop()
+     */
+    virtual void processOneMeasurementCycle() = 0;
+
+    /** \brief Setup and prepare the sensor for operations
+     *
+     * Called before cyclic acquisition of measurements from the sensor starts.
+     * Can be used by sensor classes to configure and activate the sensor.
+     *
+     * The default implementation here does nothing.
+     *
+     */
+    virtual void setupSensor();
+
 };
 
 } /* namespace drivers */

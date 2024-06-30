@@ -154,28 +154,21 @@ void MPL3115Driver::initializeStatus(
 
 }
 
-void MPL3115Driver::processingMainLoop() {
+void MPL3115Driver::processOneMeasurementCycle() {
     using namespace std::chrono_literals;
 
-	setupMPL3115();
+	startConversionMPL3155();
 
-	auto nextStartConversion = OEVClock::now();
+	std::this_thread::sleep_until(nextStartConversion + 60ms);
 
-	while (!getStopDriverThread()) {
+	readoutMPL3155();
 
-		startConversionMPL3155();
-
-		std::this_thread::sleep_until(nextStartConversion + 60ms);
-
-		readoutMPL3155();
-
-		// In case that you miss a cycle advance to the next cycle
-		auto now = OEVClock::now();
-		do {
-			nextStartConversion += updateCyle;
-		} while (nextStartConversion < now);
-		std::this_thread::sleep_until(nextStartConversion);
-	}
+	// In case that you miss a cycle advance to the next cycle
+	auto now = OEVClock::now();
+	do {
+		nextStartConversion += updateCyle;
+	} while (nextStartConversion < now);
+	std::this_thread::sleep_until(nextStartConversion);
 
 }
 

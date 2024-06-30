@@ -35,6 +35,7 @@
 
 #include "TE-MEAS-AbsPressureDefs.h"
 #include "drivers/DriverBase.h"
+#include "main/driverBase/BusDeviceSensorBase.h"
 #include "TE-MEAS-AbsPressureLib.h"
 #include "util/io/I2CPort.h"
 
@@ -92,14 +93,10 @@ public:
  *
  * \see [TE MEAS pressure sensor list](https://www.te.com/global-en/plp/meas/ZEvrl8.html?q=&n=135117%20540192%20540193%20540195%20540174%20540175%20540176%20664985%20664984&d=685834%20685838&type=products&samples=N&inStoreWithoutPL=false&instock=N)
  */
-class TE_MEAS_AbsPressureDriver : public DriverBase {
+class TE_MEAS_AbsPressureDriver : public BusDeviceSensorBase {
 public:
 
-	TE_MEAS_AbsPressureDriver(
-    	    char const *driverName,
-			char const *description,
-			char const *instanceName
-			);
+	TE_MEAS_AbsPressureDriver();
 	virtual ~TE_MEAS_AbsPressureDriver();
 
     /** \brief Initialize the driver
@@ -199,11 +196,11 @@ protected:
     virtual void driverThreadFunction() override;
 #endif // #if TE_MEAS_ABS_PRESSURE_TEST_MODE
 
-    /** \brief The inner main loop of the driver after the port was opened
+    /** \brief Process one measurement cycle of the sensor.
      *
-     * Read data from the sensor, process them, and update the Kalman filter.
+     * \see \ref BusDeviceSensorBase::processOneMeasurementCycle()
      */
-    virtual void processingMainLoop () override;
+    virtual void processOneMeasurementCycle () override;
 
     /** \brief Read the coeffcients from the PROM of the sensor
      *
@@ -211,7 +208,7 @@ protected:
      * \ref lenPromArray determines the length of the PROM array, and can be overwritten
      * by a derived class.
      */
-    virtual void setupSensor();
+    virtual void setupSensor() override;
 
     /** \brief Verify the CRC checksum stored in the PROM with the calculated one.
      *
@@ -294,6 +291,11 @@ protected:
     virtual void testGetTemperatureVal(uint8_t data[]) = 0;
     virtual void testGetPressureVal(uint8_t data[]) = 0;
 #endif
+
+private:
+
+    OEVClock::time_point nextStartConversion = OEVClock::now();
+
 }; // class TE_MEAS_AbsPressureDriver
 
 /** \brief Intermediate class which implements the CRC check applicable to the 8-pin sensors.
@@ -304,12 +306,8 @@ protected:
 class EightPinDriver : public TE_MEAS_AbsPressureDriver{
 public:
 
-	EightPinDriver(
-    	    char const *driverName,
-			char const *description,
-			char const *instanceName
-			)
-	: TE_MEAS_AbsPressureDriver (driverName,description,instanceName)
+	EightPinDriver()
+	: TE_MEAS_AbsPressureDriver ()
 	{}
 
 	virtual ~EightPinDriver();
@@ -326,12 +324,8 @@ public:
 class FourPinDriver : public TE_MEAS_AbsPressureDriver{
 public:
 
-	FourPinDriver(
-    	    char const *driverName,
-			char const *description,
-			char const *instanceName
-			)
-	: TE_MEAS_AbsPressureDriver (driverName,description,instanceName)
+	FourPinDriver()
+	: TE_MEAS_AbsPressureDriver ()
 	{
 		// The PROM array of all the 4-pin sensors is only 7 words long.
 		// the 8th word is un-used, and will later be set 0.
@@ -352,7 +346,8 @@ public:
 			char const *description,
 			char const *instanceName
 			)
-	: EightPinDriver (driverName,description,instanceName)
+	: DriverBase {driverName,description,instanceName,TE_MEAS_AbsPressureLib::theOneAndOnly},
+	  EightPinDriver ()
 	{}
 
 	virtual ~MS5803Driver();
@@ -384,7 +379,8 @@ public:
 			char const *description,
 			char const *instanceName
 			)
-	: EightPinDriver (driverName,description,instanceName)
+	: DriverBase {driverName,description,instanceName,TE_MEAS_AbsPressureLib::theOneAndOnly},
+	  EightPinDriver ()
 	{}
 
 	virtual ~MS5607Driver();
@@ -416,7 +412,8 @@ public:
 			char const *description,
 			char const *instanceName
 			)
-	: EightPinDriver (driverName,description,instanceName)
+	: DriverBase {driverName,description,instanceName,TE_MEAS_AbsPressureLib::theOneAndOnly},
+	  EightPinDriver ()
 	{}
 
 	virtual ~MS5611Driver();
@@ -448,7 +445,8 @@ public:
 			char const *description,
 			char const *instanceName
 			)
-	: FourPinDriver (driverName,description,instanceName)
+	: DriverBase {driverName,description,instanceName,TE_MEAS_AbsPressureLib::theOneAndOnly},
+	  FourPinDriver ()
 	{}
 
 	virtual ~MS5637Driver();
@@ -480,7 +478,8 @@ public:
 			char const *description,
 			char const *instanceName
 			)
-	: FourPinDriver (driverName,description,instanceName)
+	: DriverBase {driverName,description,instanceName,TE_MEAS_AbsPressureLib::theOneAndOnly},
+	  FourPinDriver ()
 	{}
 
 	virtual ~MS5805Driver();
@@ -512,7 +511,8 @@ public:
 			char const *description,
 			char const *instanceName
 			)
-	: FourPinDriver (driverName,description,instanceName)
+	: DriverBase {driverName,description,instanceName,TE_MEAS_AbsPressureLib::theOneAndOnly},
+	  FourPinDriver ()
 	{}
 
 	virtual ~MS5837Driver();
@@ -544,7 +544,8 @@ public:
 			char const *description,
 			char const *instanceName
 			)
-	: FourPinDriver (driverName,description,instanceName)
+	: DriverBase {driverName,description,instanceName,TE_MEAS_AbsPressureLib::theOneAndOnly},
+	  FourPinDriver ()
 	{}
 
 	virtual ~MS5839_MS5840Driver();

@@ -39,12 +39,7 @@
 
 namespace openEV::drivers::TE_MEAS_AbsPressure {
 
-TE_MEAS_AbsPressureDriver::TE_MEAS_AbsPressureDriver(
-	    char const *driverName,
-		char const *description,
-		char const *instanceName
-		)
-: DriverBase {driverName,description,instanceName,TE_MEAS_AbsPressureLib::theOneAndOnly}
+TE_MEAS_AbsPressureDriver::TE_MEAS_AbsPressureDriver()
 {
 
 #if defined HAVE_LOG4CXX_H
@@ -69,7 +64,7 @@ void TE_MEAS_AbsPressureDriver::driverInit(GliderVarioMainPriv &varioMain) {
 
 	this->varioMain = &varioMain;
 
-	ioPort = getIoPort<decltype(ioPort)>(logger);
+	ioPort = getIoPort<decltype(ioPort)>();
 
 }
 
@@ -202,41 +197,28 @@ void TE_MEAS_AbsPressureDriver::driverThreadFunction() {
 }
 #endif // #if TE_MEAS_ABS_PRESSURE_TEST_MODE
 
-void TE_MEAS_AbsPressureDriver::processingMainLoop() {
+void TE_MEAS_AbsPressureDriver::processOneMeasurementCycle() {
 
     using namespace std::chrono_literals;
 
-	setupSensor();
+	startPressureConversion();
 
-	// read the temperature initially.
+	std::this_thread::sleep_for(10ms);
+
+	readoutPressure();
+
+	// read the temperature for the next cycle.
+	// Temperature changes are comparingly sedate due to the thermal inertia of the sensor.
 	startTemperatureConversion();
 	std::this_thread::sleep_for(5ms);
 	readoutTemperature();
 
-	auto nextStartConversion = OEVClock::now();
-
-	while (!getStopDriverThread()) {
-
-		startPressureConversion();
-
-		std::this_thread::sleep_for(10ms);
-
-		readoutPressure();
-
-		// read the temperature for the next cycle.
-		// Temperature changes are comparingly sedate due to the thermal inertia of the sensor.
-		startTemperatureConversion();
-		std::this_thread::sleep_for(5ms);
-		readoutTemperature();
-
-		// In case that you miss a cycle advance to the next cycle
-		auto now = OEVClock::now();
-		do {
-			nextStartConversion += updateCyle;
-		} while (nextStartConversion < now);
-		std::this_thread::sleep_until(nextStartConversion);
-	}
-
+	// In case that you miss a cycle advance to the next cycle
+	auto now = OEVClock::now();
+	do {
+		nextStartConversion += updateCyle;
+	} while (nextStartConversion < now);
+	std::this_thread::sleep_until(nextStartConversion);
 }
 
 /// Like in the AVR libraries
@@ -273,6 +255,13 @@ void TE_MEAS_AbsPressureDriver::setupSensor() {
 
 	// Verify that the PROM content is not corrupted.
 	verifyCRC();
+
+	// read the temperature once initially.
+	startTemperatureConversion();
+	std::this_thread::sleep_for(5ms);
+	readoutTemperature();
+
+
 
 }
 

@@ -33,6 +33,7 @@
 #include "CommonDefs.h"
 #include "MPL3115A2.h"
 #include "drivers/DriverBase.h"
+#include "main/driverBase/BusDeviceSensorBase.h"
 #include "MPL3115Lib.h"
 #include "util/io/I2CPort.h"
 
@@ -45,7 +46,7 @@ namespace openEV::drivers::MPL3115 {
  * \see [MPL3115A2 web site](https://www.nxp.com/products/sensors/pressure-sensors/barometric-pressure-15-to-150-kpa/20-to-110-kpa-absolute-digital-pressure-sensor:MPL3115A2)
  * \see [MPL3115A2 data sheet](https://www.nxp.com/docs/en/data-sheet/MPL3150A2.pdf)
  */
-class MPL3115Driver  : public DriverBase {
+class MPL3115Driver  : public BusDeviceSensorBase {
 public:
 
 	MPL3115Driver(
@@ -79,11 +80,11 @@ public:
 
 protected:
 
-    /** \brief The inner main loop of the driver after the port was opened
+    /** \brief Process one measurement cycle of the sensor.
      *
-     * Read data from the sensor, process them, and update the Kalman filter.
+     * \see \ref BusDeviceSensorBase::processOneMeasurementCycle()
      */
-    virtual void processingMainLoop () override;
+    virtual void processOneMeasurementCycle () override;
 
     /** \brief Initialize the sensor
      *
@@ -151,6 +152,8 @@ private:
 
     /// \brief Temperature in degrees C.
     FloatType temperatureVal = UnInitVal;
+
+    OEVClock::time_point nextStartConversion = OEVClock::now();
 
 };
 

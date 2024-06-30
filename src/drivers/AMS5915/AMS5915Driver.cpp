@@ -136,22 +136,16 @@ void AMS5915Driver::readConfiguration (Properties4CXX::Properties const &configu
 
 }
 
-void AMS5915Driver::processingMainLoop() {
-	auto nextStartConversion = OEVClock::now();
+void AMS5915Driver::processOneMeasurementCycle() {
 
-	while (!getStopDriverThread()) {
+	readoutAMS5915();
 
-		//std::this_thread::sleep_until(nextStartConversion + 60ms);
-
-		readoutAMS5915();
-
-		// In case that you miss a cycle advance to the next cycle
-		auto now = OEVClock::now();
-		do {
-			nextStartConversion += updateCyle;
-		} while (nextStartConversion < now);
-		std::this_thread::sleep_until(nextStartConversion);
-	}
+	// In case that you miss a cycle advance to the next cycle
+	auto now = OEVClock::now();
+	do {
+		nextStartConversion += updateCyle;
+	} while (nextStartConversion < now);
+	std::this_thread::sleep_until(nextStartConversion);
 
 }
 
