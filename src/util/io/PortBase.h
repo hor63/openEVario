@@ -237,7 +237,7 @@ public:
 	 *
 	 * The last error code \ref lastErrno and error counter \ref numSameErrorOccurred are reset when the function succeeds.
 	 * Upon success the status is set \ref OPEN.
-	 * If an error occurs \ref openinternal() calls \ref setErrno() to set \ref lastErrno and increment \ref numSameErrorOccurred,
+	 * If an error occurs \ref openInternal() calls \ref setErrno() to set \ref lastErrno and increment \ref numSameErrorOccurred,
 	 * and check if \ref maxNumSameErrorOccurred is exceeded.
 	 * The \ref status is set accordingly to a non- \ref OPEN status.
 	 *
