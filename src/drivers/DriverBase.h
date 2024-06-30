@@ -389,7 +389,7 @@ public:
      *   In any case where the result would be \p nullptr an exception is thrown.
      */
     template <typename t>
-    t getIoPort(log4cxx::LoggerPtr logger) {
+    t getIoPort() {
     	t port;
 
     	try {
@@ -567,7 +567,8 @@ protected:
 
     /** \brief The main worker thread of the sensor driver
      *
-     * Must be overridden by the driver implementation
+     *	Default implementation for sensors which use an exclusive port (e.g. sockets, serial ports)
+     *	Sensors which use shared ports (particularly I2C buses) should subclass \ref BusDeviceSensorBase.
      *
      * This function *must* regularly check if \ref stopDriverThread is set false, and then immediately exit.
      * This check must occur within a reasonable interval, typically < 1 sec
@@ -575,6 +576,7 @@ protected:
      * started.
      * Data acquisition should start immediately to be ready for answering \ref initializeStatus() ASAP.
      *
+     * \see \ref BusDeviceSensorBase::driverThreadFunction()
      */
     virtual void driverThreadFunction();
 

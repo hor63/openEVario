@@ -68,7 +68,7 @@ void NmeaGPSDriver::driverInit(GliderVarioMainPriv &varioMain) {
 
 	nmeaSet.setVarioMain(&varioMain);
 
-	ioPort = getIoPort<decltype(ioPort)>(logger);
+	ioPort = getIoPort<decltype(ioPort)>();
 
 }
 

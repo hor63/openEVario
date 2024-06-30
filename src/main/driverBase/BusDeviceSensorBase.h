@@ -36,6 +36,16 @@ public:
 	BusDeviceSensorBase();
 
 	virtual ~BusDeviceSensorBase();
+
+protected:
+
+    /** \brief The main worker thread of the sensor driver
+     *
+     *	Implementation of the function for shared ports, particularly I2C buses.
+     *
+     * \see \ref DriverBase::driverThreadFunction()
+     */
+virtual void driverThreadFunction() override;
 };
 
 } /* namespace drivers */

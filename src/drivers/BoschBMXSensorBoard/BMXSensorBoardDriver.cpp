@@ -78,7 +78,7 @@ void BMXSensorBoardDriver::readConfiguration (Properties4CXX::Properties const &
 }
 
 void BMXSensorBoardDriver::driverInit(GliderVarioMainPriv &varioMain) {
-	ioPort = getIoPort<decltype(ioPort)>(logger);
+	ioPort = getIoPort<decltype(ioPort)>();
 
 	IMUBase::driverInit(varioMain);
 }

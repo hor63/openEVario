@@ -68,7 +68,7 @@ MPU9150Driver::~MPU9150Driver() {
 }
 
 void MPU9150Driver::driverInit(GliderVarioMainPriv &varioMain) {
-	ioPort = getIoPort<decltype(ioPort)>(logger);
+	ioPort = getIoPort<decltype(ioPort)>();
 
 	IMUBase::driverInit(varioMain);
 }
