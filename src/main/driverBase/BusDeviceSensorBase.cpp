@@ -38,7 +38,6 @@ BusDeviceSensorBase::BusDeviceSensorBase() {
 }
 
 void BusDeviceSensorBase::driverThreadFunction() {
-	int numRetries = 0;
 
 	if (getIoPortPtr() == nullptr) {
 		LOG4CXX_ERROR (logger,fmt::format(_(
@@ -49,20 +48,24 @@ void BusDeviceSensorBase::driverThreadFunction() {
 				getIoPortPtr()->open();
 				numRetries = 0;
 				processingMainLoop ();
-				// ioPort->close();
+				// getIoPortPtr()->close();
 			} catch (std::exception const& e) {
 				numRetries ++;
 				LOG4CXX_ERROR(logger,fmt::format(_("Error in the main loop of driver instance \"{0}\": {1}"),
 						instanceName,e.what()));
 
-				// Do not close here: Particularly I2C ports are shared between multiple sensors.
-				// An error on one sensor does not mean that the I2C bus or communications to other sensors is disturbed.
-				// When this loop returns to the top ioPort->open() will call close() if necessary and try to re-open the port.
-				// When there was no issue with the port, i.e. it is OPEN then noting happens an communications just continues.
-				// ioPort->close();
+				getIoPortPtr()->close();
 
 				std::this_thread::sleep_for(errorTimeout);
 			}
+		}
+
+		if (getStopDriverThread()){
+			LOG4CXX_INFO(logger,fmt::format(_("Driver instance \"{0}\" terminates due to shutdown command."),
+				instanceName));
+		} else {
+			LOG4CXX_ERROR(logger,fmt::format(_("Driver instance \"{0}\" terminates because maximum number of successive error was exceeded."),
+				instanceName));
 		}
 	}
 }
@@ -72,11 +75,44 @@ void BusDeviceSensorBase::processingMainLoop() {
 	setupSensor();
 
 	while (!getStopDriverThread()) {
-		processOneMeasurementCycle();
+		try {
+			processOneMeasurementCycle();
+
+			numRetries = 0;
+			lastErrno = 0;
+		} catch (io::GliderVarioPortIOException const & e) {
+
+			if (e.getErrno() == ENXIO) {
+				// The target sensor is not reachable on the bus.
+				// This is not an issue of the bus device itself but the sensor may not be reachable on its address on the bus
+				// Therefore handle this issue here local to the sensor.
+				if (e.getErrno() == lastErrno) {
+					numRetries ++;
+				} else {
+					lastErrno = e.getErrno();
+					numRetries = 1;
+				}
+
+				LOG4CXX_ERROR(logger,fmt::format(_("Error in the main loop of driver instance \"{0}\": {1}"),
+						instanceName,e.what()));
+				if (errorMaxNumRetries > 0 && numRetries >= errorMaxNumRetries){
+					return;
+				}
+
+				std::this_thread::sleep_for(errorTimeout);
+
+			} else {
+				throw;
+			}
+
+		}
 	}
 }
 
 void BusDeviceSensorBase::setupSensor() {
+
+	// Do nothing here.
+	// This method can be overridden when needed by a sensor class.
 
 }
 

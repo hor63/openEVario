@@ -42,6 +42,13 @@ protected:
 	/// Used by most derived sensor classes to calculate the sleep time between cycles.
 	OEVClock::time_point nextStartConversion = OEVClock::now();
 
+	/// Number of attempts to read from the sensor with the same \ref lastErrno.
+	/// Is being reset to 0 when an processing cycle succeeds.
+	int32_t numRetries = 0;
+
+	/// Set to \p errno when an I/O operation fails.
+	/// Is being reset to 0 when an processing cycle succeeds.
+	int lastErrno = 0;
 
     /** \brief The main worker thread of the sensor driver
      *

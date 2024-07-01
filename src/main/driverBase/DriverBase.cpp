@@ -83,19 +83,23 @@ void DriverBase::driverThreadFunction() {
 				getIoPortPtr()->open();
 				numRetries = 0;
 				processingMainLoop ();
-				// ioPort->close();
+				getIoPortPtr()->close();
 			} catch (std::exception const& e) {
 				numRetries ++;
 				LOG4CXX_ERROR(logger,fmt::format(_("Error in the main loop of driver instance \"{0}\": {1}"),
 						instanceName,e.what()));
 
-				// Do not close here: Particularly I2C ports are shared between multiple sensors.
-				// An error on one sensor does not mean that the I2C bus or communications to other sensors is disturbed.
-				// When this loop returns to the top ioPort->open() will call close() if necessary and try to re-open the port.
-				// When there was no issue with the port, i.e. it is OPEN then noting happens an communications just continues.
-				// ioPort->close();
+				getIoPortPtr()->close();
 
 				std::this_thread::sleep_for(errorTimeout);
+			}
+
+			if (getStopDriverThread()){
+				LOG4CXX_INFO(logger,fmt::format(_("Driver instance \"{0}\" terminates due to shutdown command."),
+					instanceName));
+			} else {
+				LOG4CXX_ERROR(logger,fmt::format(_("Driver instance \"{0}\" terminates because maximum number of successive error was exceeded."),
+					instanceName));
 			}
 		}
 	}
@@ -117,10 +121,6 @@ void DriverBase::driverThreadEntry (DriverBase* tis) {
 				"Uncaught exception from unknown class/type in driver/instance \"{0}\"/\"{1}\""),
 				tis->driverName, tis->instanceName));
 	}
-
-	LOG4CXX_INFO(tis->logger,fmt::format (_(
-			"Driver/instance \"{0}\"/\"{1}\" left the driver thread function. The instance is now defunct."),
-			tis->driverName, tis->instanceName));
 
 	tis->isDriverThreadRunning = false;
 	tis->stopDriverThread = false;
