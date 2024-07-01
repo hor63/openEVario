@@ -110,10 +110,6 @@ protected:
      */
     FloatType convertRegisterPressureToMBar (uint16_t registerVal) const;
 
-private:
-
-    OEVClock::time_point nextStartConversion = OEVClock::now();
-
 };
 
 } /* namespace openEV */

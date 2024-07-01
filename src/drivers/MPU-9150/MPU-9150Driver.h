@@ -181,9 +181,6 @@ private:
 
 	MeasurementData measurementData;
 
-	OEVClock::time_point nextStartConversion = OEVClock::now();
-
-
 };
 
 } /* namespace openEV */

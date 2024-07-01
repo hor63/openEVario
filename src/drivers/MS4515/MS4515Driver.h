@@ -155,8 +155,6 @@ private:
      */
     FloatType f2 = UnInitVal;
 
-	OEVClock::time_point nextStartConversion = OEVClock::now();
-
 };
 
 } /* namespace openEV */

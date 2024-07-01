@@ -153,8 +153,6 @@ private:
     /// \brief Temperature in degrees C.
     FloatType temperatureVal = UnInitVal;
 
-    OEVClock::time_point nextStartConversion = OEVClock::now();
-
 };
 
 } /* namespace openEV */

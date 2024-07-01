@@ -292,10 +292,6 @@ protected:
     virtual void testGetPressureVal(uint8_t data[]) = 0;
 #endif
 
-private:
-
-    OEVClock::time_point nextStartConversion = OEVClock::now();
-
 }; // class TE_MEAS_AbsPressureDriver
 
 /** \brief Intermediate class which implements the CRC check applicable to the 8-pin sensors.

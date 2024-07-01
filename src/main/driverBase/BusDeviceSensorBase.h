@@ -39,6 +39,10 @@ public:
 
 protected:
 
+	/// Used by most derived sensor classes to calculate the sleep time between cycles.
+	OEVClock::time_point nextStartConversion = OEVClock::now();
+
+
     /** \brief The main worker thread of the sensor driver
      *
      *	Implementation of the function for shared ports, particularly I2C buses.
