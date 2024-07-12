@@ -29,8 +29,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openEVario 0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/hor63/openEVario/issues\n"
-"POT-Creation-Date: 2024-05-27 16:02+0200\n"
-"PO-Revision-Date: 2024-05-27 16:02+0200\n"
+"POT-Creation-Date: 2024-07-12 17:17+0200\n"
+"PO-Revision-Date: 2024-07-12 17:17+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: en@quot\n"
@@ -316,25 +316,46 @@ msgstr ""
 msgid "Failed to initialize device \"{0}\" because: {1}"
 msgstr "Failed to initialize device “{0}” because: {1}"
 
-#: src/main/driverBase/DriverBase.cpp:82
+#: src/main/driverBase/DriverBase.cpp:79
+#: src/main/driverBase/BusDeviceSensorBase.cpp:44
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:166
+msgid ""
+"No valid I/O port for driver instance \"{0}\". The driver is not operable"
+msgstr ""
+"No valid I/O port for driver instance “{0}”. The driver is not operable"
+
+#: src/main/driverBase/DriverBase.cpp:89
+#: src/main/driverBase/BusDeviceSensorBase.cpp:54
+#: src/main/driverBase/BusDeviceSensorBase.cpp:96
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:187
+msgid "Error in the main loop of driver instance \"{0}\": {1}"
+msgstr "Error in the main loop of driver instance “{0}”: {1}"
+
+#: src/main/driverBase/DriverBase.cpp:98
+#: src/main/driverBase/BusDeviceSensorBase.cpp:64
+msgid "Driver instance \"{0}\" terminates due to shutdown command."
+msgstr "Driver instance “{0}” terminates due to shutdown command."
+
+#: src/main/driverBase/DriverBase.cpp:101
+#: src/main/driverBase/BusDeviceSensorBase.cpp:67
+msgid ""
+"Driver instance \"{0}\" terminates because maximum number of successive "
+"error was exceeded."
+msgstr ""
+"Driver instance “{0}” terminates because maximum number of successive error "
+"was exceeded."
+
+#: src/main/driverBase/DriverBase.cpp:116
 msgid "Uncaught exception in driver/instance \"{0}\"/\"{1}\". Message = {2}"
 msgstr "Uncaught exception in driver/instance “{0}”/“{1}”. Message = {2}"
 
-#: src/main/driverBase/DriverBase.cpp:87
+#: src/main/driverBase/DriverBase.cpp:121
 msgid ""
 "Uncaught exception from unknown class/type in driver/instance \"{0}\"/\"{1}\""
 msgstr ""
 "Uncaught exception from unknown class/type in driver/instance “{0}”/“{1}”"
 
-#: src/main/driverBase/DriverBase.cpp:92
-msgid ""
-"Driver/instance \"{0}\"/\"{1}\" left the driver thread function. The "
-"instance is now defunct."
-msgstr ""
-"Driver/instance “{0}”/“{1}” left the driver thread function. The instance is "
-"now defunct."
-
-#: src/main/driverBase/DriverBase.cpp:170
+#: src/main/driverBase/DriverBase.cpp:200
 msgid ""
 "Cannot open calibration update file \"{0}\" for driver instance \"{1}\". "
 "Error: {2}"
@@ -342,20 +363,20 @@ msgstr ""
 "Cannot open calibration update file “{0}” for driver instance “{1}”. Error: "
 "{2}"
 
-#: src/main/driverBase/DriverBase.cpp:177
+#: src/main/driverBase/DriverBase.cpp:207
 msgid "Error in {0} for driver instance \"{1}\". Error = {2}"
 msgstr "Error in {0} for driver instance “{1}”. Error = {2}"
 
-#: src/main/driverBase/DriverBase.cpp:179
-#: src/main/driverBase/DriverBase.cpp:185
+#: src/main/driverBase/DriverBase.cpp:209
+#: src/main/driverBase/DriverBase.cpp:215
 msgid "Disable further calibration data updates."
 msgstr "Disable further calibration data updates."
 
-#: src/main/driverBase/DriverBase.cpp:184
+#: src/main/driverBase/DriverBase.cpp:214
 msgid "Error in {0} for driver instance {1}. Unknown exception."
 msgstr "Error in {0} for driver instance {1}. Unknown exception."
 
-#: src/main/driverBase/DriverBase.cpp:194
+#: src/main/driverBase/DriverBase.cpp:224
 msgid ""
 "Cannot apply calibration data from file \"{0}\" to device \"{1}\".Driver "
 "\"{2}\" does not implement reading of calibration data."
@@ -363,7 +384,7 @@ msgstr ""
 "Cannot apply calibration data from file “{0}” to device “{1}”.Driver “{2}” "
 "does not implement reading of calibration data."
 
-#: src/main/driverBase/DriverBase.cpp:202
+#: src/main/driverBase/DriverBase.cpp:232
 msgid ""
 "Cannot read calibration data from device \"{0}\" for writing to update "
 "calibration data file \"{1}\". Driver \"{2}\" does not implement reading of "
@@ -373,36 +394,46 @@ msgstr ""
 "calibration data file “{1}”. Driver “{2}” does not implement reading of "
 "calibration data."
 
-#: src/main/driverBase/DriverBase.cpp:235
+#: src/main/driverBase/DriverBase.cpp:265
 msgid "Read from calibration data file \"{0}\""
 msgstr "Read from calibration data file “{0}”"
 
-#: src/main/driverBase/DriverBase.cpp:246
+#: src/main/driverBase/DriverBase.cpp:276
 msgid "Cannot read calibration data from file \"{0}\". Trying alternative {1}"
 msgstr "Cannot read calibration data from file “{0}”. Trying alternative {1}"
 
-#: src/main/driverBase/DriverBase.cpp:251
+#: src/main/driverBase/DriverBase.cpp:281
 msgid "Read from alternative calibration data file \"{0}\""
 msgstr "Read from alternative calibration data file “{0}”"
 
-#: src/main/driverBase/DriverBase.cpp:260
+#: src/main/driverBase/DriverBase.cpp:290
 msgid ""
 "Device instance \"{0}\": Error reading calibration data from file \"{1}\": "
 "{2}"
 msgstr ""
 "Device instance “{0}”: Error reading calibration data from file “{1}”: {2}"
 
-#: src/main/driverBase/DriverBase.cpp:263
+#: src/main/driverBase/DriverBase.cpp:293
 msgid "Device instance \"{0}\": Using builtin default calibration data"
 msgstr "Device instance “{0}”: Using builtin default calibration data"
 
-#: src/main/driverBase/DriverBase.cpp:332
+#: src/main/driverBase/DriverBase.cpp:362
 msgid "Error reading configuration of device instance \"{0}\": {1}"
 msgstr "Error reading configuration of device instance “{0}”: {1}"
 
-#: src/main/driverBase/DriverBase.cpp:339
+#: src/main/driverBase/DriverBase.cpp:369
 msgid "Common parameters of driver instance \"{0}\":"
 msgstr "Common parameters of driver instance “{0}”:"
+
+#: src/main/driverBase/DifferentialPressureSensorBase.cpp:137
+#: src/drivers/MPL3115/MPL3115Driver.cpp:150
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:146
+msgid ""
+"{0}: Could not obtain {1} valid measurements in a row for 20 seconds. Cannot "
+"initialize the Kalman filter state."
+msgstr ""
+"{0}: Could not obtain {1} valid measurements in a row for 20 seconds. Cannot "
+"initialize the Kalman filter state."
 
 #: src/util/io/PortBase.cpp:96
 msgid "Port type \"{0}\" is defined more than once"
@@ -543,7 +574,7 @@ msgstr "{0}: {1} error for device {3} of port “{2}”. errno = {4}: {5}"
 #: src/util/io/I2CPort.cpp:213 src/util/io/I2CPort.cpp:291
 #: src/util/io/I2CPort.cpp:319 src/util/io/I2CPort.cpp:345
 #: src/util/io/I2CPort.cpp:420 src/util/io/I2CPort.cpp:496
-#: src/util/io/I2CPort.cpp:548 src/util/io/I2CPort.cpp:624
+#: src/util/io/I2CPort.cpp:624
 msgid "{0}, port \"{1}\": Neither SMBus nor direct I2C is supported."
 msgstr "{0}, port “{1}”: Neither SMBus nor direct I2C is supported."
 
@@ -555,7 +586,7 @@ msgstr ""
 "{0} for port “{1}”: Why the hell do you want to send 0 (ZERO!) bytes to I2C "
 "device {2:#04X}"
 
-#: src/util/io/I2CPort.cpp:683
+#: src/util/io/I2CPort.cpp:548 src/util/io/I2CPort.cpp:683
 msgid "{0}, port \"{1}\": Direct I2C is not supported."
 msgstr "{0}, port “{1}”: Direct I2C is not supported."
 
@@ -727,7 +758,7 @@ msgstr ""
 #: src/drivers/MPU-9150/MPU-9150Driver.cpp:78
 #: src/drivers/MS4515/MS4515Driver.cpp:243
 #: src/drivers/NmeaGPS/NmeaGPSDriver.cpp:77
-#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:78
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:73
 msgid "{0}: for driver instance \"{1}\""
 msgstr "{0}: for driver instance “{1}”"
 
@@ -747,28 +778,6 @@ msgstr "Driver instance “{0}” data: "
 msgid "\tCalibration data file name = {0}"
 msgstr "\tCalibration data file name = {0}"
 
-#: src/drivers/AMS5915/AMS5915Driver.cpp:145
-#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardDriver.cpp:92
-#: src/drivers/MPL3115/MPL3115Driver.cpp:170
-#: src/drivers/MPU-9150/MPU-9150Driver.cpp:371
-#: src/drivers/MS4515/MS4515Driver.cpp:270
-#: src/drivers/NmeaGPS/NmeaGPSDriver.cpp:147
-#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:177
-msgid ""
-"No valid I/O port for driver instance \"{0}\". The driver is not operable"
-msgstr ""
-"No valid I/O port for driver instance “{0}”. The driver is not operable"
-
-#: src/drivers/AMS5915/AMS5915Driver.cpp:155
-#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardDriver.cpp:102
-#: src/drivers/MPL3115/MPL3115Driver.cpp:180
-#: src/drivers/MPU-9150/MPU-9150Driver.cpp:382
-#: src/drivers/MS4515/MS4515Driver.cpp:280
-#: src/drivers/NmeaGPS/NmeaGPSDriver.cpp:157
-#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:198
-msgid "Error in the main loop of driver instance \"{0}\": {1}"
-msgstr "Error in the main loop of driver instance “{0}”: {1}"
-
 #: src/drivers/AMS5915/AMS5915Lib.cpp:58
 msgid "Differential and gage pressure Amsys sensors AMS5915"
 msgstr "Differential and gage pressure Amsys sensors AMS5915"
@@ -785,15 +794,15 @@ msgstr "Differential and gage pressure Amsys sensors AMS5915"
 msgid "Initialize the {0} driver library"
 msgstr "Initialize the {0} driver library"
 
-#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardDriver.cpp:192
+#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardDriver.cpp:167
 msgid "CRC error of received magnetometer trim data message"
 msgstr "CRC error of received magnetometer trim data message"
 
-#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardDriver.cpp:286
+#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardDriver.cpp:261
 msgid "CRC error of received acc/gyr/mag sensor data message"
 msgstr "CRC error of received acc/gyr/mag sensor data message"
 
-#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardDriver.cpp:327
+#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardDriver.cpp:302
 msgid "CRC error of received acc/gyr sensor data message"
 msgstr "CRC error of received acc/gyr sensor data message"
 
@@ -805,15 +814,15 @@ msgstr "Driver library for Bosch BMX IMUs on the horImuBoard sensor board"
 msgid "Template for a new driver library"
 msgstr "Template for a new driver library"
 
-#: src/drivers/IGCReader/IGCReaderDriver.cpp:213
+#: src/drivers/IGCReader/IGCReaderDriver.cpp:209
 msgid "Cannot open IGC file \"{0}\"."
 msgstr "Cannot open IGC file “{0}”."
 
-#: src/drivers/IGCReader/IGCReaderDriver.cpp:218
+#: src/drivers/IGCReader/IGCReaderDriver.cpp:214
 msgid "Opened IGC file \"{0}\"."
 msgstr "Opened IGC file “{0}”."
 
-#: src/drivers/IGCReader/IGCReaderDriver.cpp:229
+#: src/drivers/IGCReader/IGCReaderDriver.cpp:225
 msgid "Closed IGC file \"{0}\"."
 msgstr "Closed IGC file “{0}”."
 
@@ -823,22 +832,13 @@ msgid ""
 msgstr ""
 "Driver library for simulation and test drivers based on IGC file recordings"
 
-#: src/drivers/MPL3115/MPL3115Driver.cpp:150
-#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:151
-msgid ""
-"{0}: Could not obtain {1} valid measurements in a row for 20 seconds. Cannot "
-"initialize the Kalman filter state."
-msgstr ""
-"{0}: Could not obtain {1} valid measurements in a row for 20 seconds. Cannot "
-"initialize the Kalman filter state."
-
-#: src/drivers/MPL3115/MPL3115Driver.cpp:224
+#: src/drivers/MPL3115/MPL3115Driver.cpp:184
 #: src/drivers/MPU-9150/MPU-9150Driver.cpp:205
 #: src/drivers/MPU-9150/MPU-9150Driver.cpp:287
 msgid "{0}: WHO AM I contains expected {1:#04X}."
 msgstr "{0}: WHO AM I contains expected {1:#04X}."
 
-#: src/drivers/MPL3115/MPL3115Driver.cpp:228
+#: src/drivers/MPL3115/MPL3115Driver.cpp:188
 #: src/drivers/MPU-9150/MPU-9150Driver.cpp:209
 msgid ""
 "{0}: WHO AM I value is not {1:#04X}, but {2:#04X}. The device is obviously "
@@ -997,16 +997,16 @@ msgstr "{0}: Invalid East-West indicator “{1}” in sentence “{2}”"
 msgid "{0}: Invalid North-South indicator \"{1}\" in sentence \"{2}\""
 msgstr "{0}: Invalid North-South indicator “{1}” in sentence “{2}”"
 
-#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:192
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:181
 msgid "CRC error of driver instance \"{0}\". Stop processing."
 msgstr "CRC error of driver instance “{0}”. Stop processing."
 
-#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:335
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:319
 msgid "{0}: Pressure = {1} mBar is outside the expected range!"
 msgstr "{0}: Pressure = {1} mBar is outside the expected range!"
 
-#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:471
-#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:527
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:459
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:515
 msgid ""
 "{0}: Driver instance {1} has a PROM CRC mismatch. CRC in the PROM is {2:"
 "#04X}; calculated CRC is {3:#04X}."
