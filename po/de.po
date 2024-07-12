@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openEVario 0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/hor63/openEVario/issues\n"
-"POT-Creation-Date: 2024-07-12 17:17+0200\n"
+"POT-Creation-Date: 2024-07-12 18:22+0200\n"
 "PO-Revision-Date: 2024-04-09 16:05+0200\n"
 "Last-Translator: Kai Horstmann <horstmannkai@hotmail.com>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
@@ -18,6 +18,515 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/drivers/AMS5915/AMS5915Driver.cpp:86
+#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardDriver.cpp:75
+#: src/drivers/MPL3115/MPL3115Driver.cpp:78
+#: src/drivers/MPU-9150/MPU-9150Driver.cpp:78
+#: src/drivers/MS4515/MS4515Driver.cpp:243
+#: src/drivers/NmeaGPS/NmeaGPSDriver.cpp:77
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:73
+msgid "{0}: for driver instance \"{1}\""
+msgstr "{0}:Lade Treiberinstanz „{1}“"
+
+#: src/drivers/AMS5915/AMS5915Driver.cpp:111
+#: src/drivers/MPU-9150/MPU-9150Driver.cpp:90
+#: src/drivers/NmeaGPS/NmeaGPSDriver.cpp:109
+msgid ""
+"Could not read property \"{0}\" for device instance \"{1}\" because: {2}"
+msgstr "Kann Parameter „{0}“ für Treiberinstanz „{1}“ nicht lesen. Grund: {2}."
+
+#: src/drivers/AMS5915/AMS5915Driver.cpp:122
+msgid "Driver instance \"{0}\" data: "
+msgstr "Treiberinstanz „{0}“ Daten: "
+
+#: src/drivers/AMS5915/AMS5915Driver.cpp:134
+#: src/drivers/MS4515/MS4515Driver.cpp:256
+msgid "\tCalibration data file name = {0}"
+msgstr "\tName der Kalibrierdatendatei = „{0}“"
+
+#: src/drivers/AMS5915/AMS5915Lib.cpp:58
+msgid "Differential and gage pressure Amsys sensors AMS5915"
+msgstr "Amsys AMS5915 Differenz- und Absolutdruck-Sensoren"
+
+#: src/drivers/AMS5915/AMS5915Main.cpp:63
+#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardMain.cpp:63
+#: src/drivers/driverTemplate/templateMain.cpp:63
+#: src/drivers/IGCReader/IGCReaderMain.cpp:59
+#: src/drivers/MPL3115/MPL3115Main.cpp:63
+#: src/drivers/MPU-9150/MPU-9150Main.cpp:63
+#: src/drivers/MS4515/MS4515Main.cpp:63 src/drivers/NmeaGPS/NmeaGPSMain.cpp:63
+#: src/drivers/simul/simulMain.cpp:53
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureMain.cpp:64
+msgid "Initialize the {0} driver library"
+msgstr "Initialisiere die {0} Treiberbibliothek."
+
+#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardDriver.cpp:167
+msgid "CRC error of received magnetometer trim data message"
+msgstr "CRC Fehler in der Magnetometer Kalibrierdaten Nachricht."
+
+#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardDriver.cpp:261
+msgid "CRC error of received acc/gyr/mag sensor data message"
+msgstr "CRC Fehler in der acc/gyr/mag Sensordaten Nachricht"
+
+#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardDriver.cpp:302
+msgid "CRC error of received acc/gyr sensor data message"
+msgstr "CRC Fehler in der acc/gyr Sensordaten Nachricht"
+
+#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardLib.cpp:58
+msgid "Driver library for Bosch BMX IMUs on the horImuBoard sensor board"
+msgstr "Treiberbibliothek für Bosch BMX IMUs"
+
+#: src/drivers/driverTemplate/templateLib.cpp:58
+msgid "Template for a new driver library"
+msgstr "Muster für eine neue Treiberbibliothek"
+
+#: src/drivers/IGCReader/IGCReaderDriver.cpp:209
+msgid "Cannot open IGC file \"{0}\"."
+msgstr "Kann IGC Datei „{0}“ nicht öffnen."
+
+#: src/drivers/IGCReader/IGCReaderDriver.cpp:214
+msgid "Opened IGC file \"{0}\"."
+msgstr "IGC Datei „{0}“ ist offen."
+
+#: src/drivers/IGCReader/IGCReaderDriver.cpp:225
+msgid "Closed IGC file \"{0}\"."
+msgstr "IGC Datei „{0}“ ist geschlossen."
+
+#: src/drivers/IGCReader/IGCReaderLib.cpp:57
+msgid ""
+"Driver library for simulation and test drivers based on IGC file recordings"
+msgstr ""
+"Treiberbibliothek für Tests und Simulationen basierend auf Aufzeichnungen "
+"aus IGC-Dateien"
+
+#: src/drivers/MPL3115/MPL3115Driver.cpp:150
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:146
+#: src/main/driverBase/DifferentialPressureSensorBase.cpp:137
+msgid ""
+"{0}: Could not obtain {1} valid measurements in a row for 20 seconds. Cannot "
+"initialize the Kalman filter state."
+msgstr ""
+"{0}: Ich konnte keine {0} gültigen Messwerte in einer Reihe innerhalb von 20 "
+"Sekunden empfangen.  Ich kann den Kalman Fiter status nicht initialisieren."
+
+#: src/drivers/MPL3115/MPL3115Driver.cpp:184
+#: src/drivers/MPU-9150/MPU-9150Driver.cpp:205
+#: src/drivers/MPU-9150/MPU-9150Driver.cpp:287
+msgid "{0}: WHO AM I contains expected {1:#04X}."
+msgstr "{0}: WHO AM I ist der erwartete Wert {1:#04X}."
+
+#: src/drivers/MPL3115/MPL3115Driver.cpp:188
+#: src/drivers/MPU-9150/MPU-9150Driver.cpp:209
+msgid ""
+"{0}: WHO AM I value is not {1:#04X}, but {2:#04X}. The device is obviously "
+"not a {3} sensor."
+msgstr ""
+"{0}: Der WHO AM I Wert ist nicht der erwartete {1:#04X}, sondern {2:#04X}. "
+"Das Gerät ist offenbar kein {3} Sensor."
+
+#: src/drivers/MPL3115/MPL3115Lib.cpp:58
+msgid "Absolute atmospheric pressure sensors MPL3115"
+msgstr "MPL3115 Sensoren für absoluten Atmosphärendruck"
+
+#: src/drivers/MPU-9150/MPU-9150Lib.cpp:58
+msgid "Driver library for TDK/Invensense MPU-9150 IMU"
+msgstr "Treiberbibliothek für TDK/Invensense MPU-9150 IMUs"
+
+#: src/drivers/MS4515/MS4515Driver.cpp:100
+msgid "Property is a struct or a list."
+msgstr "Parameter ist eine Struktur oder eine Liste."
+
+#: src/drivers/MS4515/MS4515Driver.cpp:115
+msgid "Value {0} is invalid. Valid values are 'A' or 'B'."
+msgstr "Wert {0} ist ungültig. Gültige Werte sind 'A' oder 'B'."
+
+#: src/drivers/MS4515/MS4515Driver.cpp:139
+#: src/drivers/MS4515/MS4515Driver.cpp:183
+msgid ""
+"Both properties \"{0}\" and \"{1}\" are defined. Only one of these two is "
+"allowed."
+msgstr ""
+"Beide Parameter „{0}“ und „{1}“ wurden definiert. Nur einer der beiden "
+"Parameter ist erlaubt."
+
+#: src/drivers/MS4515/MS4515Driver.cpp:149
+#: src/drivers/MS4515/MS4515Driver.cpp:193
+msgid "Neither configurations \"{0}\" and \"{1}\" are defined."
+msgstr "Keiner der beiden möglichen Parameter „{0}“ and „{1}“ wurden definiert"
+
+#: src/drivers/MS4515/MS4515Driver.cpp:209
+msgid ""
+"{0}: Read configuration property {1} for driver instance \"{2}\" failed: {3}"
+msgstr ""
+"{0}: Fehler beim Lesen Lesen von Parameter {1} für Treiberinstanz „{2}“ ist: "
+"{3}"
+
+#: src/drivers/MS4515/MS4515Lib.cpp:58
+msgid "Absolute atmospheric pressure sensors MS4515"
+msgstr "MS4515 Sensoren für absoluten Atmosphärendruck"
+
+#: src/drivers/NmeaGPS/NMEA0813Protocol.cpp:72
+msgid "{0}: Received unexpected sentence start. Discarding {1} bytes."
+msgstr ""
+"{0}: Empfing unerwarteten Start einer neuen Nachricht. Verwerfe {1} Bytes."
+
+#: src/drivers/NmeaGPS/NMEA0813Protocol.cpp:103
+msgid ""
+"{0}: Too short sentence received, or CR character is missing. Discarding {1} "
+"bytes."
+msgstr ""
+"{0}: Empfing unvollständige Nachricht oder das CR fehlt. Verwerfe {1} Bytes."
+
+#: src/drivers/NmeaGPS/NMEA0813Protocol.cpp:118
+msgid ""
+"{0}: Received illegal character {1:#04X}. Discarding current sentence with "
+"{2} bytes."
+msgstr ""
+"{0}: Empfing ungültiges Zeichen {1:#04X}. Verwerfe Nachricht mit {2} Bytes."
+
+#: src/drivers/NmeaGPS/NMEA0813Protocol.cpp:132
+msgid ""
+"{0}: Current sentence buffer overflow (> {2} characters). Discard {1} bytes."
+msgstr ""
+"{0}: Überlauf des Nachrichtenpuffers (> {2} Zeichen). Verwerfe {1} Bytes."
+
+#: src/drivers/NmeaGPS/NMEA0813Protocol.cpp:169
+msgid ""
+"{0}: Checksum in the sentence {1:#04X} is unequal to the calculated checksum "
+"{2:#04X}. Discard sentence."
+msgstr ""
+"{0}: Prüfsumme in der Nachricht {1:#04X} ist ungleich der berechneten "
+"Prüfsumme {2:#04X}. Verwerfe die Nachricht."
+
+#: src/drivers/NmeaGPS/NMEA0813Protocol.cpp:177
+msgid ""
+"{0}: Checksum section contains non-numeric characters \"{1}\". Discard "
+"sentence."
+msgstr ""
+"{0}: Die Prüfsumme „{1}“ enthält nicht-numerische Zeichen. Verwerfe die "
+"Nachricht."
+
+#: src/drivers/NmeaGPS/NMEA0813Protocol.cpp:201
+msgid ""
+"{0}: Number of fields in the sentence exceeds the maximum {1} fields. "
+"Discard sentence."
+msgstr ""
+"{0}: Anzahl der Felder überschreitet die maximale Anzahl {1}. Verwerfe die "
+"Nachricht."
+
+#: src/drivers/NmeaGPS/NmeaGPSLib.cpp:58
+msgid ""
+"NmeaGPS driver for satellite navigation devices emitting NMEA 0813 sentences "
+"on serial ports or Bluetooth"
+msgstr ""
+"NmeaGPS Treiber für Empfänger von Navigationssatteliten, die NMEA 0813 "
+"produzieren."
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:112
+msgid "NMEASet::strToD: String \"{0}\" is not a valid double value."
+msgstr "NMEASet::strToD: String „{0}“ ist kein gültiger double float-Wert."
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:157
+msgid "{0}: String \"{1}\" does not contain a decimal separator '.'."
+msgstr "{0}: String „{1}“ enthält keinen Dezimaltrenner '.'."
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:168
+msgid ""
+"{0}: String \"{1}\" does have less than 3 digits left of '.'. There is no "
+"space for degrees"
+msgstr ""
+"{0}: String „{1}“ enthält weniger als 3 Ziffern links vom Dezimaltrenner "
+"'.'. Damit ist kein Platz für den Grad-Wert."
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:198 src/drivers/NmeaGPS/NMEASet.cpp:210
+#: src/drivers/NmeaGPS/NMEASet.cpp:225 src/drivers/NmeaGPS/NMEASet.cpp:237
+#: src/drivers/NmeaGPS/NMEASet.cpp:251 src/drivers/NmeaGPS/NMEASet.cpp:263
+msgid "{0}: String \"{1}\" is not a valid NMEA timestamp string."
+msgstr "{0}: String „{1}“ ist kein gültiger NMEA Zeitstempel."
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:396 src/drivers/NmeaGPS/NMEASet.cpp:785
+msgid "{0}: Sentence \"{1}\" failed. Reason: {2}"
+msgstr "{0}: Nachricht „{1}“ ist fehlerhaft: {2}"
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:557
+msgid ""
+"{0}: Could not find a common sequence shared by at least 3 cycles. Go by "
+"individual cycle analysis."
+msgstr ""
+"{0}: Konnte keine identische Sequenz von Nachrichten innerhalb von 3 Zyklen "
+"finden.  Wechsle zu individualler Analyse pro Zyklus."
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:690
+msgid ""
+"{0}: Un-supported sentence type {1} from talker/type {2}/{3} is discarded."
+msgstr ""
+"{0}: Nachricht von nicht unterstütztem Nachrichtentyp {1} von Sender/Typ {2}/"
+"{3} wird verworfen."
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:796
+msgid "{0} called for a processed GNSS record again! Sentence type = {1}"
+msgstr ""
+"{0} wurde für einen bereits bearbeitete Nachricht aufgerufen! Nachrichtentyp "
+"ist {1}."
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:1008
+msgid "{0}: Invalid East-West indicator \"{1}\" in sentence \"{2}\""
+msgstr "{0}: Ungültiger Ost-West Anzeiger „{1}“ in Nachricht „{2}“."
+
+#: src/drivers/NmeaGPS/NMEASet.cpp:1026
+msgid "{0}: Invalid North-South indicator \"{1}\" in sentence \"{2}\""
+msgstr "{0}: Ungültiger Nord-Süd Anzeiger „{1}“ in Nachricht „{2}“."
+
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:166
+#: src/main/driverBase/BusDeviceSensorBase.cpp:44
+#: src/main/driverBase/DriverBase.cpp:79
+msgid ""
+"No valid I/O port for driver instance \"{0}\". The driver is not operable"
+msgstr ""
+"Kein gültiger I/O Port existiert für Treiberinstanz „{0}“. Der Treiber ist "
+"nicht betriebsbereit."
+
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:181
+msgid "CRC error of driver instance \"{0}\". Stop processing."
+msgstr ""
+"CRC-Fehler in Treiberinstanz „{0}“. Weitere Verarbeitung wird angehalten."
+
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:187
+#: src/main/driverBase/BusDeviceSensorBase.cpp:54
+#: src/main/driverBase/BusDeviceSensorBase.cpp:96
+#: src/main/driverBase/DriverBase.cpp:89
+msgid "Error in the main loop of driver instance \"{0}\": {1}"
+msgstr "Fehler in der Hauptschleife von Treiberinstanz „{0}“: {1}"
+
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:319
+msgid "{0}: Pressure = {1} mBar is outside the expected range!"
+msgstr "{0}: Druck = {1} mBar ist außerhalb der Betriebsgrenze."
+
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:459
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:515
+msgid ""
+"{0}: Driver instance {1} has a PROM CRC mismatch. CRC in the PROM is {2:"
+"#04X}; calculated CRC is {3:#04X}."
+msgstr ""
+"{0}: Treiberinstanz {1} hat einen PROM CRC Fehler. CRC im PROM ist {2:#04X}; "
+"berechneter CRC-Wert ist {3:#04X}."
+
+#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureLib.cpp:84
+msgid "Absolute atmospheric pressure sensors from TE Connectivity MEAS"
+msgstr "TE Connectivity MEAS Sensoren für absoluten Atmosphärendruck"
+
+#: src/main/driverBase/BusDeviceSensorBase.cpp:64
+#: src/main/driverBase/DriverBase.cpp:98
+msgid "Driver instance \"{0}\" terminates due to shutdown command."
+msgstr "Treiberinstanz \"{0}\" wird beendet, weil Shutdown empfangen wurde."
+
+#: src/main/driverBase/BusDeviceSensorBase.cpp:67
+#: src/main/driverBase/DriverBase.cpp:101
+msgid ""
+"Driver instance \"{0}\" terminates because maximum number of successive "
+"error was exceeded."
+msgstr ""
+"Treiberinstanz \"{0}\" wird beendet, weil die Anyahl maximaler "
+"aufeinanderfolgender Fehler überschritten wurde."
+
+#: src/main/driverBase/DriverBase.cpp:116
+msgid "Uncaught exception in driver/instance \"{0}\"/\"{1}\". Message = {2}"
+msgstr ""
+"Nicht gefangene Exception in Treiber/Instanz „{0}“/„{1}“. Fehlermeldung = {2}"
+
+#: src/main/driverBase/DriverBase.cpp:121
+msgid ""
+"Uncaught exception from unknown class/type in driver/instance \"{0}\"/\"{1}\""
+msgstr ""
+"Nicht gefangene Exception unbekannten Typs in Treiber/Instanz „{0}“/„{1}“"
+
+#: src/main/driverBase/DriverBase.cpp:200
+msgid ""
+"Cannot open calibration update file \"{0}\" for driver instance \"{1}\". "
+"Error: {2}"
+msgstr ""
+"Kann Datei mit aktualisierten Kalibierdaten „{0}“ für Treiberinstanz „{1}“ "
+"nicht öffnen. Fehler ist: {2}"
+
+#: src/main/driverBase/DriverBase.cpp:207
+msgid "Error in {0} for driver instance \"{1}\". Error = {2}"
+msgstr "Fehler in {0} für Treiberinstanz „{1}“. Fehler = {2}"
+
+#: src/main/driverBase/DriverBase.cpp:209
+#: src/main/driverBase/DriverBase.cpp:215
+msgid "Disable further calibration data updates."
+msgstr "Deaktiviere weitere Aktualisierungen der Kalibrierdaten."
+
+#: src/main/driverBase/DriverBase.cpp:214
+msgid "Error in {0} for driver instance {1}. Unknown exception."
+msgstr "Fehler in {0} für Treiberinstanz {1}. Unbekannter Exceptiontyp"
+
+#: src/main/driverBase/DriverBase.cpp:224
+msgid ""
+"Cannot apply calibration data from file \"{0}\" to device \"{1}\".Driver "
+"\"{2}\" does not implement reading of calibration data."
+msgstr ""
+"Kann Kalibrierdaten aus Datei „{0}“ nicht für Treiberinstanz „{1}“ anwenden. "
+"Treiber „{2}“ implementiert implement nicht das Lesen von Kalibrierdaten."
+
+#: src/main/driverBase/DriverBase.cpp:232
+msgid ""
+"Cannot read calibration data from device \"{0}\" for writing to update "
+"calibration data file \"{1}\". Driver \"{2}\" does not implement reading of "
+"calibration data."
+msgstr ""
+"Kann keine Kalibierdaten aus Treiberinstanz „{0}“ auslesen, um sie in "
+"Kalibierdatendatei „{1}“ zu schreiben. Treiber „{2}“ implementiert nicht das "
+"Lesen von Kalibrierdaten oder hat gar keine."
+
+#: src/main/driverBase/DriverBase.cpp:265
+msgid "Read from calibration data file \"{0}\""
+msgstr "Lese aus Kalibrierdatendatei „{0}“"
+
+#: src/main/driverBase/DriverBase.cpp:276
+msgid "Cannot read calibration data from file \"{0}\". Trying alternative {1}"
+msgstr ""
+"Kann keine Kalibrierdaten aus Datei „{0}“ lesen. Versuche Alternative Datei "
+"{1}."
+
+#: src/main/driverBase/DriverBase.cpp:281
+msgid "Read from alternative calibration data file \"{0}\""
+msgstr "Lese von alternativer Kalibrierdatendatei „{0}“"
+
+#: src/main/driverBase/DriverBase.cpp:290
+msgid ""
+"Device instance \"{0}\": Error reading calibration data from file \"{1}\": "
+"{2}"
+msgstr ""
+"Treiberinstanz „{0}“: Fehler bein Lesen der Kalibierdaten aus Datei „{1}“ "
+"ist: {2}"
+
+#: src/main/driverBase/DriverBase.cpp:293
+msgid "Device instance \"{0}\": Using builtin default calibration data"
+msgstr "Treiberinstanz „{0}“: Benutze eingebaute Standard-Kalibierdaten"
+
+#: src/main/driverBase/DriverBase.cpp:362
+msgid "Error reading configuration of device instance \"{0}\": {1}"
+msgstr "Fehler beim Lesen der Konfiguration von Treiberinstanz „{0}“ ist: {1}"
+
+#: src/main/driverBase/DriverBase.cpp:369
+msgid "Common parameters of driver instance \"{0}\":"
+msgstr "Allgemeine Parameter von Treiberinstanz „{0}“:"
+
+#: src/main/GliderVarioDriverList.cpp:65
+msgid "Adding new driver \"{0}\": {1}"
+msgstr "Füge neuen Treiber „{0}“ hinzu. Beschreibung: {1}"
+
+#: src/main/GliderVarioDriverList.cpp:79 src/main/GliderVarioDriverList.cpp:134
+msgid "Error searching mandatory configuration parameter \"{0}\": {1}"
+msgstr "Fehler beim Suchen nach obligatorischen Parameter „{0}“: {1}"
+
+#: src/main/GliderVarioDriverList.cpp:85 src/main/GliderVarioDriverList.cpp:140
+msgid "Configuration does not contain mandatory parameter \"{0}\""
+msgstr "Der obligatorische Parameter „{0}“ fehlt in der Konfiguration"
+
+#: src/main/GliderVarioDriverList.cpp:91
+msgid "List of dynamically loaded driver libraries : {0}"
+msgstr "Liste der dynamisch geladenen Treiberbiblotheken: {0}"
+
+#: src/main/GliderVarioDriverList.cpp:117
+#: src/main/GliderVarioDriverList.cpp:175
+msgid "Configuration variable \"{0}\" is neither a string nor a string list"
+msgstr ""
+"Konfigurationparameter „{0}“ ist weder ein String noch eine Stringliste."
+
+#: src/main/GliderVarioDriverList.cpp:162
+#: src/main/GliderVarioDriverList.cpp:167
+msgid "Failed to create device \"{0}\" because: {1}"
+msgstr "Gerät „{0}“ kann nicht erzeugt werden wegen: {1}"
+
+#: src/main/GliderVarioDriverList.cpp:163
+#: src/main/GliderVarioDriverList.cpp:382
+msgid "Program will be terminated."
+msgstr "Programm wird beendet."
+
+#: src/main/GliderVarioDriverList.cpp:164
+#: src/main/GliderVarioDriverList.cpp:383
+msgid "Bye bye!"
+msgstr "Tschüß!"
+
+#: src/main/GliderVarioDriverList.cpp:168
+#: src/main/GliderVarioDriverList.cpp:387
+msgid "Deleting device \"{0}\" from the device list"
+msgstr "Lösche Gerät „{0}“ von der Geräteliste."
+
+#: src/main/GliderVarioDriverList.cpp:190
+msgid "Loading driver library \"{0}\""
+msgstr "Lade Treiberbibliothek „{0}“"
+
+#: src/main/GliderVarioDriverList.cpp:202
+#: src/main/GliderVarioDriverList.cpp:220
+#: src/main/GliderVarioDriverList.cpp:242
+msgid "No error information available"
+msgstr "Keine Informationen für den Fehler verfügbar"
+
+#: src/main/GliderVarioDriverList.cpp:205
+msgid "Error loading shared library \"{0}\": {1}"
+msgstr "Fehler beim Laden der dynmischen Bibliothek „{0}“ ist: {1}"
+
+#: src/main/GliderVarioDriverList.cpp:222
+#: src/main/GliderVarioDriverList.cpp:244
+msgid "Error loading symbol \"{0}\" from shared library library \"{1}\": {2}"
+msgstr "Fehler beim Laden von Symbol „{0}“ aus Bibliothek „{1}“ ist: {2}"
+
+#: src/main/GliderVarioDriverList.cpp:261
+msgid "Library \"{0}\" returned NULL for the library object."
+msgstr "Bibliothek „{0}“ lieferte NULL für das Bibliotheksobjekt."
+
+#: src/main/GliderVarioDriverList.cpp:271
+msgid "Obtained library object \"{0}\": {1}"
+msgstr "Bekam Bibliotheksobjekt „{0}“: {1}"
+
+#: src/main/GliderVarioDriverList.cpp:287
+msgid "Loading driver instance \"{0}\""
+msgstr "Lade Treiberinstanz „{0}“"
+
+#: src/main/GliderVarioDriverList.cpp:292
+msgid "Could not find property for driver instance \"{0}\""
+msgstr "Kann Parametersatz für Treiberinstanz „{0}“ nicht finden."
+
+#: src/main/GliderVarioDriverList.cpp:298
+msgid "Property for driver instance \"{0}\" is not a structure"
+msgstr "Parameter für Treiberinstanz „{0}“ ist keine Struktur."
+
+#: src/main/GliderVarioDriverList.cpp:309
+msgid "Could not find property \"{0}\" within structure \"{1}\"."
+msgstr "Kann Parameter „{0}“ in der Struktur „{1}“ nicht finden"
+
+#: src/main/GliderVarioDriverList.cpp:314
+msgid "Driver of driver instance {0} is {1}"
+msgstr "Treiber für Instanz „{0}“ ist „{1}“."
+
+#: src/main/GliderVarioDriverList.cpp:318
+msgid "Driver \"{0}\" for instance {1} does not exist."
+msgstr "Treiber „{0}“ für Treiberinstanz „{1}“ existiert nicht."
+
+#: src/main/GliderVarioDriverList.cpp:331
+msgid "Instance {0} of driver \"{1}\" could not be created."
+msgstr "Kann Instanz „{0}“ für Treiber „{1}“ nicht erzeugen."
+
+#: src/main/GliderVarioDriverList.cpp:338
+msgid "Created driver instance \"{0}\" for driver \"{1}\" from library \"{2}\""
+msgstr "Erzeute Treiberinstanz „{0}“ für Treiber „{1}“ aus Bibliothek „{2}“."
+
+#: src/main/GliderVarioDriverList.cpp:360
+msgid ""
+"Driver instance \"{0}\" implements the idle loop. Another driver implements "
+"the idle loop too."
+msgstr ""
+"Treiberinstanz „{0}“ implementiert die Idle-Scheife. Ein andere "
+"Treiberinstanz implmentiert diese Schleife bereits."
+
+#: src/main/GliderVarioDriverList.cpp:381
+#: src/main/GliderVarioDriverList.cpp:386
+msgid "Failed to initialize device \"{0}\" because: {1}"
+msgstr "Gerät „{0}“ kann nicht initialisiert werden wegen: {1}"
 
 #: src/main/GliderVarioMainPriv.cpp:141
 msgid ""
@@ -196,241 +705,75 @@ msgstr ""
 "{0}: urrentStatus->getSystemNoiseCovariance_Q().coeffRef({1},{2}) ist nicht "
 "initialisiert."
 
-#: src/main/GliderVarioDriverList.cpp:65
-msgid "Adding new driver \"{0}\": {1}"
-msgstr "Füge neuen Treiber „{0}“ hinzu. Beschreibung: {1}"
-
-#: src/main/GliderVarioDriverList.cpp:79 src/main/GliderVarioDriverList.cpp:134
-msgid "Error searching mandatory configuration parameter \"{0}\": {1}"
-msgstr "Fehler beim Suchen nach obligatorischen Parameter „{0}“: {1}"
-
-#: src/main/GliderVarioDriverList.cpp:85 src/main/GliderVarioDriverList.cpp:140
-msgid "Configuration does not contain mandatory parameter \"{0}\""
-msgstr "Der obligatorische Parameter „{0}“ fehlt in der Konfiguration"
-
-#: src/main/GliderVarioDriverList.cpp:91
-msgid "List of dynamically loaded driver libraries : {0}"
-msgstr "Liste der dynamisch geladenen Treiberbiblotheken: {0}"
-
-#: src/main/GliderVarioDriverList.cpp:117
-#: src/main/GliderVarioDriverList.cpp:175
-msgid "Configuration variable \"{0}\" is neither a string nor a string list"
+#: src/util/io/DatagramPort.cpp:69 src/util/io/DatagramPort.cpp:133
+#: src/util/io/I2CPort.cpp:161 src/util/io/I2CPort.cpp:228
+#: src/util/io/I2CPort.cpp:365 src/util/io/I2CPort.cpp:437
+#: src/util/io/I2CPort.cpp:512 src/util/io/I2CPort.cpp:564
+#: src/util/io/I2CPort.cpp:640 src/util/io/StreamPort.cpp:70
+#: src/util/io/StreamPort.cpp:125 src/util/io/UDPPort.cpp:348
+msgid "{0} called for I/O port {1}. Status is not OPEN but {2}."
 msgstr ""
-"Konfigurationparameter „{0}“ ist weder ein String noch eine Stringliste."
+"Funktion {0} wurde für Port {1} aufgerufen. Der Portstatus ist aber nicht "
+"OPEN sondern {2}."
 
-#: src/main/GliderVarioDriverList.cpp:162
-#: src/main/GliderVarioDriverList.cpp:167
-msgid "Failed to create device \"{0}\" because: {1}"
-msgstr "Gerät „{0}“ kann nicht erzeugt werden wegen: {1}"
+#: src/util/io/DatagramPort.cpp:101 src/util/io/DatagramPort.cpp:164
+#: src/util/io/StreamPort.cpp:96 src/util/io/StreamPort.cpp:152
+#: src/util/io/StreamPort.cpp:163 src/util/io/UDPPort.cpp:388
+msgid "Port \"{0}\" of type \"{1}\": {4} error {2}: {3}"
+msgstr "Port „{0}“ von Typ „{1}“: {4} Fehler {2}: {3}"
 
-#: src/main/GliderVarioDriverList.cpp:163
-#: src/main/GliderVarioDriverList.cpp:382
-msgid "Program will be terminated."
-msgstr "Programm wird beendet."
-
-#: src/main/GliderVarioDriverList.cpp:164
-#: src/main/GliderVarioDriverList.cpp:383
-msgid "Bye bye!"
-msgstr "Tschüß!"
-
-#: src/main/GliderVarioDriverList.cpp:168
-#: src/main/GliderVarioDriverList.cpp:387
-msgid "Deleting device \"{0}\" from the device list"
-msgstr "Lösche Gerät „{0}“ von der Geräteliste."
-
-#: src/main/GliderVarioDriverList.cpp:190
-msgid "Loading driver library \"{0}\""
-msgstr "Lade Treiberbibliothek „{0}“"
-
-#: src/main/GliderVarioDriverList.cpp:202
-#: src/main/GliderVarioDriverList.cpp:220
-#: src/main/GliderVarioDriverList.cpp:242
-msgid "No error information available"
-msgstr "Keine Informationen für den Fehler verfügbar"
-
-#: src/main/GliderVarioDriverList.cpp:205
-msgid "Error loading shared library \"{0}\": {1}"
-msgstr "Fehler beim Laden der dynmischen Bibliothek „{0}“ ist: {1}"
-
-#: src/main/GliderVarioDriverList.cpp:222
-#: src/main/GliderVarioDriverList.cpp:244
-msgid "Error loading symbol \"{0}\" from shared library library \"{1}\": {2}"
-msgstr "Fehler beim Laden von Symbol „{0}“ aus Bibliothek „{1}“ ist: {2}"
-
-#: src/main/GliderVarioDriverList.cpp:261
-msgid "Library \"{0}\" returned NULL for the library object."
-msgstr "Bibliothek „{0}“ lieferte NULL für das Bibliotheksobjekt."
-
-#: src/main/GliderVarioDriverList.cpp:271
-msgid "Obtained library object \"{0}\": {1}"
-msgstr "Bekam Bibliotheksobjekt „{0}“: {1}"
-
-#: src/main/GliderVarioDriverList.cpp:287
-msgid "Loading driver instance \"{0}\""
-msgstr "Lade Treiberinstanz „{0}“"
-
-#: src/main/GliderVarioDriverList.cpp:292
-msgid "Could not find property for driver instance \"{0}\""
-msgstr "Kann Parametersatz für Treiberinstanz „{0}“ nicht finden."
-
-#: src/main/GliderVarioDriverList.cpp:298
-msgid "Property for driver instance \"{0}\" is not a structure"
-msgstr "Parameter für Treiberinstanz „{0}“ ist keine Struktur."
-
-#: src/main/GliderVarioDriverList.cpp:309
-msgid "Could not find property \"{0}\" within structure \"{1}\"."
-msgstr "Kann Parameter „{0}“ in der Struktur „{1}“ nicht finden"
-
-#: src/main/GliderVarioDriverList.cpp:314
-msgid "Driver of driver instance {0} is {1}"
-msgstr "Treiber für Instanz „{0}“ ist „{1}“."
-
-#: src/main/GliderVarioDriverList.cpp:318
-msgid "Driver \"{0}\" for instance {1} does not exist."
-msgstr "Treiber „{0}“ für Treiberinstanz „{1}“ existiert nicht."
-
-#: src/main/GliderVarioDriverList.cpp:331
-msgid "Instance {0} of driver \"{1}\" could not be created."
-msgstr "Kann Instanz „{0}“ für Treiber „{1}“ nicht erzeugen."
-
-#: src/main/GliderVarioDriverList.cpp:338
-msgid "Created driver instance \"{0}\" for driver \"{1}\" from library \"{2}\""
-msgstr "Erzeute Treiberinstanz „{0}“ für Treiber „{1}“ aus Bibliothek „{2}“."
-
-#: src/main/GliderVarioDriverList.cpp:360
+#: src/util/io/DatagramPort.cpp:113
 msgid ""
-"Driver instance \"{0}\" implements the idle loop. Another driver implements "
-"the idle loop too."
+"Port \"{0} of type \"{1}\": Buffer too small for the datagram. Buffer length "
+"= {2}, datagram length = {3}."
 msgstr ""
-"Treiberinstanz „{0}“ implementiert die Idle-Scheife. Ein andere "
-"Treiberinstanz implmentiert diese Schleife bereits."
+"Port „{0} von Typ „{1}“: Puffer ist zu klein für das Datagramm. Pufferlänge "
+"= {2}, Datagramm Länge = {3}."
 
-#: src/main/GliderVarioDriverList.cpp:381
-#: src/main/GliderVarioDriverList.cpp:386
-msgid "Failed to initialize device \"{0}\" because: {1}"
-msgstr "Gerät „{0}“ kann nicht initialisiert werden wegen: {1}"
-
-#: src/main/driverBase/DriverBase.cpp:79
-#: src/main/driverBase/BusDeviceSensorBase.cpp:44
-#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:166
+#: src/util/io/I2CPort.cpp:108
 msgid ""
-"No valid I/O port for driver instance \"{0}\". The driver is not operable"
+"Error opening port \"{0}\". Cannot retrieve I2C capabilites of device {1}. "
+"errno = {2} : {3}"
 msgstr ""
-"Kein gültiger I/O Port existiert für Treiberinstanz „{0}“. Der Treiber ist "
-"nicht betriebsbereit."
+"Error beim Öffnen von Port „{0}“. Kann I2C Fähigkeiten nicht auslesen. errno "
+"= {1} : {2}"
 
-#: src/main/driverBase/DriverBase.cpp:89
-#: src/main/driverBase/BusDeviceSensorBase.cpp:54
-#: src/main/driverBase/BusDeviceSensorBase.cpp:96
-#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:187
-msgid "Error in the main loop of driver instance \"{0}\": {1}"
-msgstr "Fehler in der Hauptschleife von Treiberinstanz „{0}“: {1}"
+#: src/util/io/I2CPort.cpp:187 src/util/io/I2CPort.cpp:202
+#: src/util/io/I2CPort.cpp:254 src/util/io/I2CPort.cpp:280
+#: src/util/io/I2CPort.cpp:307 src/util/io/I2CPort.cpp:335
+#: src/util/io/I2CPort.cpp:391 src/util/io/I2CPort.cpp:407
+#: src/util/io/I2CPort.cpp:467 src/util/io/I2CPort.cpp:483
+#: src/util/io/I2CPort.cpp:537 src/util/io/I2CPort.cpp:595
+#: src/util/io/I2CPort.cpp:612 src/util/io/I2CPort.cpp:671
+msgid "{0}: {1} error for device {3} of port \"{2}\". errno = {4}: {5}"
+msgstr "{0}: {1} Fehler für Gerät {3} von Port „{2}“. errno = {4}: {5}"
 
-#: src/main/driverBase/DriverBase.cpp:98
-#: src/main/driverBase/BusDeviceSensorBase.cpp:64
-msgid "Driver instance \"{0}\" terminates due to shutdown command."
-msgstr "Treiberinstanz \"{0}\" wird beendet, weil Shutdown empfangen wurde."
+#: src/util/io/I2CPort.cpp:213 src/util/io/I2CPort.cpp:291
+#: src/util/io/I2CPort.cpp:319 src/util/io/I2CPort.cpp:345
+#: src/util/io/I2CPort.cpp:420 src/util/io/I2CPort.cpp:496
+#: src/util/io/I2CPort.cpp:624
+msgid "{0}, port \"{1}\": Neither SMBus nor direct I2C is supported."
+msgstr "{0}, Port „{1}“: Weder SMBus noch direktes I2C werden unterstützt."
 
-#: src/main/driverBase/DriverBase.cpp:101
-#: src/main/driverBase/BusDeviceSensorBase.cpp:67
+#: src/util/io/I2CPort.cpp:269
 msgid ""
-"Driver instance \"{0}\" terminates because maximum number of successive "
-"error was exceeded."
-msgstr "Treiberinstanz \"{0}\" wird beendet, weil die Anyahl maximaler aufeinanderfolgender Fehler überschritten wurde."
-
-#: src/main/driverBase/DriverBase.cpp:116
-msgid "Uncaught exception in driver/instance \"{0}\"/\"{1}\". Message = {2}"
+"{0} for port \"{1}\": Why the hell do you want to send 0 (ZERO!) bytes to "
+"I2C device {2:#04X}"
 msgstr ""
-"Nicht gefangene Exception in Treiber/Instanz „{0}“/„{1}“. Fehlermeldung = {2}"
+"{0} für Port „{1}“: Warum zur Hölle willst Du 0 (Null!) Bytes an I2C device "
+"0x{2:#04X} schicken?"
 
-#: src/main/driverBase/DriverBase.cpp:121
+#: src/util/io/I2CPort.cpp:548 src/util/io/I2CPort.cpp:683
+msgid "{0}, port \"{1}\": Direct I2C is not supported."
+msgstr "{0}, Port „{1}“: Direktes I2C wird nicht unterstützt."
+
+#: src/util/io/I2CPort.cpp:699
 msgid ""
-"Uncaught exception from unknown class/type in driver/instance \"{0}\"/\"{1}\""
+"I2CPort::check10BitAddr: Error using 10-bit I2C address {0:#04X} is not "
+"supported for port \"{1}\""
 msgstr ""
-"Nicht gefangene Exception unbekannten Typs in Treiber/Instanz „{0}“/„{1}“"
-
-#: src/main/driverBase/DriverBase.cpp:200
-msgid ""
-"Cannot open calibration update file \"{0}\" for driver instance \"{1}\". "
-"Error: {2}"
-msgstr ""
-"Kann Datei mit aktualisierten Kalibierdaten „{0}“ für Treiberinstanz „{1}“ "
-"nicht öffnen. Fehler ist: {2}"
-
-#: src/main/driverBase/DriverBase.cpp:207
-msgid "Error in {0} for driver instance \"{1}\". Error = {2}"
-msgstr "Fehler in {0} für Treiberinstanz „{1}“. Fehler = {2}"
-
-#: src/main/driverBase/DriverBase.cpp:209
-#: src/main/driverBase/DriverBase.cpp:215
-msgid "Disable further calibration data updates."
-msgstr "Deaktiviere weitere Aktualisierungen der Kalibrierdaten."
-
-#: src/main/driverBase/DriverBase.cpp:214
-msgid "Error in {0} for driver instance {1}. Unknown exception."
-msgstr "Fehler in {0} für Treiberinstanz {1}. Unbekannter Exceptiontyp"
-
-#: src/main/driverBase/DriverBase.cpp:224
-msgid ""
-"Cannot apply calibration data from file \"{0}\" to device \"{1}\".Driver "
-"\"{2}\" does not implement reading of calibration data."
-msgstr ""
-"Kann Kalibrierdaten aus Datei „{0}“ nicht für Treiberinstanz „{1}“ anwenden. "
-"Treiber „{2}“ implementiert implement nicht das Lesen von Kalibrierdaten."
-
-#: src/main/driverBase/DriverBase.cpp:232
-msgid ""
-"Cannot read calibration data from device \"{0}\" for writing to update "
-"calibration data file \"{1}\". Driver \"{2}\" does not implement reading of "
-"calibration data."
-msgstr ""
-"Kann keine Kalibierdaten aus Treiberinstanz „{0}“ auslesen, um sie in "
-"Kalibierdatendatei „{1}“ zu schreiben. Treiber „{2}“ implementiert nicht das "
-"Lesen von Kalibrierdaten oder hat gar keine."
-
-#: src/main/driverBase/DriverBase.cpp:265
-msgid "Read from calibration data file \"{0}\""
-msgstr "Lese aus Kalibrierdatendatei „{0}“"
-
-#: src/main/driverBase/DriverBase.cpp:276
-msgid "Cannot read calibration data from file \"{0}\". Trying alternative {1}"
-msgstr ""
-"Kann keine Kalibrierdaten aus Datei „{0}“ lesen. Versuche Alternative Datei "
-"{1}."
-
-#: src/main/driverBase/DriverBase.cpp:281
-msgid "Read from alternative calibration data file \"{0}\""
-msgstr "Lese von alternativer Kalibrierdatendatei „{0}“"
-
-#: src/main/driverBase/DriverBase.cpp:290
-msgid ""
-"Device instance \"{0}\": Error reading calibration data from file \"{1}\": "
-"{2}"
-msgstr ""
-"Treiberinstanz „{0}“: Fehler bein Lesen der Kalibierdaten aus Datei „{1}“ "
-"ist: {2}"
-
-#: src/main/driverBase/DriverBase.cpp:293
-msgid "Device instance \"{0}\": Using builtin default calibration data"
-msgstr "Treiberinstanz „{0}“: Benutze eingebaute Standard-Kalibierdaten"
-
-#: src/main/driverBase/DriverBase.cpp:362
-msgid "Error reading configuration of device instance \"{0}\": {1}"
-msgstr "Fehler beim Lesen der Konfiguration von Treiberinstanz „{0}“ ist: {1}"
-
-#: src/main/driverBase/DriverBase.cpp:369
-msgid "Common parameters of driver instance \"{0}\":"
-msgstr "Allgemeine Parameter von Treiberinstanz „{0}“:"
-
-#: src/main/driverBase/DifferentialPressureSensorBase.cpp:137
-#: src/drivers/MPL3115/MPL3115Driver.cpp:150
-#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:146
-msgid ""
-"{0}: Could not obtain {1} valid measurements in a row for 20 seconds. Cannot "
-"initialize the Kalman filter state."
-msgstr ""
-"{0}: Ich konnte keine {0} gültigen Messwerte in einer Reihe innerhalb von 20 "
-"Sekunden empfangen.  Ich kann den Kalman Fiter status nicht initialisieren."
+"I2CPort::check10BitAddr: Fehler, 10-Bit I2CAdresse {0:#04X} wird für Port "
+"„{1}“ nicht unterstützt."
 
 #: src/util/io/PortBase.cpp:96
 msgid "Port type \"{0}\" is defined more than once"
@@ -530,76 +873,6 @@ msgid ""
 msgstr ""
 "I/O Port {0}: Fehlercode {1} wurde {2} mal hintereinander gesetzt. Der "
 "Status auf auf \"permanent gestört\" gesetzt."
-
-#: src/util/io/DatagramPort.cpp:69 src/util/io/DatagramPort.cpp:133
-#: src/util/io/I2CPort.cpp:161 src/util/io/I2CPort.cpp:228
-#: src/util/io/I2CPort.cpp:365 src/util/io/I2CPort.cpp:437
-#: src/util/io/I2CPort.cpp:512 src/util/io/I2CPort.cpp:564
-#: src/util/io/I2CPort.cpp:640 src/util/io/StreamPort.cpp:70
-#: src/util/io/StreamPort.cpp:125 src/util/io/UDPPort.cpp:348
-msgid "{0} called for I/O port {1}. Status is not OPEN but {2}."
-msgstr ""
-"Funktion {0} wurde für Port {1} aufgerufen. Der Portstatus ist aber nicht "
-"OPEN sondern {2}."
-
-#: src/util/io/DatagramPort.cpp:101 src/util/io/DatagramPort.cpp:164
-#: src/util/io/StreamPort.cpp:96 src/util/io/StreamPort.cpp:152
-#: src/util/io/StreamPort.cpp:163 src/util/io/UDPPort.cpp:388
-msgid "Port \"{0}\" of type \"{1}\": {4} error {2}: {3}"
-msgstr "Port „{0}“ von Typ „{1}“: {4} Fehler {2}: {3}"
-
-#: src/util/io/DatagramPort.cpp:113
-msgid ""
-"Port \"{0} of type \"{1}\": Buffer too small for the datagram. Buffer length "
-"= {2}, datagram length = {3}."
-msgstr ""
-"Port „{0} von Typ „{1}“: Puffer ist zu klein für das Datagramm. Pufferlänge "
-"= {2}, Datagramm Länge = {3}."
-
-#: src/util/io/I2CPort.cpp:108
-msgid ""
-"Error opening port \"{0}\". Cannot retrieve I2C capabilites of device {1}. "
-"errno = {2} : {3}"
-msgstr ""
-"Error beim Öffnen von Port „{0}“. Kann I2C Fähigkeiten nicht auslesen. errno "
-"= {1} : {2}"
-
-#: src/util/io/I2CPort.cpp:187 src/util/io/I2CPort.cpp:202
-#: src/util/io/I2CPort.cpp:254 src/util/io/I2CPort.cpp:280
-#: src/util/io/I2CPort.cpp:307 src/util/io/I2CPort.cpp:335
-#: src/util/io/I2CPort.cpp:391 src/util/io/I2CPort.cpp:407
-#: src/util/io/I2CPort.cpp:467 src/util/io/I2CPort.cpp:483
-#: src/util/io/I2CPort.cpp:537 src/util/io/I2CPort.cpp:595
-#: src/util/io/I2CPort.cpp:612 src/util/io/I2CPort.cpp:671
-msgid "{0}: {1} error for device {3} of port \"{2}\". errno = {4}: {5}"
-msgstr "{0}: {1} Fehler für Gerät {3} von Port „{2}“. errno = {4}: {5}"
-
-#: src/util/io/I2CPort.cpp:213 src/util/io/I2CPort.cpp:291
-#: src/util/io/I2CPort.cpp:319 src/util/io/I2CPort.cpp:345
-#: src/util/io/I2CPort.cpp:420 src/util/io/I2CPort.cpp:496
-#: src/util/io/I2CPort.cpp:624
-msgid "{0}, port \"{1}\": Neither SMBus nor direct I2C is supported."
-msgstr "{0}, Port „{1}“: Weder SMBus noch direktes I2C werden unterstützt."
-
-#: src/util/io/I2CPort.cpp:269
-msgid ""
-"{0} for port \"{1}\": Why the hell do you want to send 0 (ZERO!) bytes to "
-"I2C device {2:#04X}"
-msgstr ""
-"{0} für Port „{1}“: Warum zur Hölle willst Du 0 (Null!) Bytes an I2C device "
-"0x{2:#04X} schicken?"
-
-#: src/util/io/I2CPort.cpp:548 src/util/io/I2CPort.cpp:683
-msgid "{0}, port \"{1}\": Direct I2C is not supported."
-msgstr "{0}, Port „{1}“: Direktes I2C wird nicht unterstützt."
-
-#: src/util/io/I2CPort.cpp:699
-msgid ""
-"I2CPort::check10BitAddr: Error using 10-bit I2C address {0:#04X} is not "
-"supported for port \"{1}\""
-msgstr ""
-"I2CPort::check10BitAddr: Fehler, 10-Bit I2CAdresse {0:#04X} wird für Port "
-"„{1}“ nicht unterstützt."
 
 #: src/util/io/SerialPort.cpp:223
 msgid "Device {1} of port \"{0}\" is not a tty/serial line device"
@@ -728,13 +1001,17 @@ msgstr "Öffnen von I/O port „{0}“: setsockopt {1} Fehler: errno = {2} : {3}
 msgid ""
 "Configuration error for port {0}: Both peer host and peer port must be "
 "defined or none."
-msgstr "Konfigurationsfehler für Port {0}: Entweder müssen beide Partneradresse und Portnummer definiert werden oder keine von beiden."
+msgstr ""
+"Konfigurationsfehler für Port {0}: Entweder müssen beide Partneradresse und "
+"Portnummer definiert werden oder keine von beiden."
 
 #: src/util/io/UDPPort.cpp:160 src/util/io/UDPPort.cpp:328
 msgid ""
 "{0}: I/O port {1} error: neither a local nor a remote port and/or host "
 "address were defined."
-msgstr "{0}: Konfigurationsfehler von Port {1}: Weder ein lokaler noch ein Partner-Port und/oder -Adresse wurden definiert"
+msgstr ""
+"{0}: Konfigurationsfehler von Port {1}: Weder ein lokaler noch ein Partner-"
+"Port und/oder -Adresse wurden definiert"
 
 #: src/util/io/UDPPort.cpp:211
 msgid ""
@@ -771,275 +1048,3 @@ msgstr ""
 "{0}: Für I/O Port {1} wurden keine Zieladresse und/oder Zielportnummer "
 "definiert. Ich weiß nicht, wo ich die Daten hinschicken soll. Ich schließe "
 "den Port."
-
-#: src/drivers/AMS5915/AMS5915Driver.cpp:86
-#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardDriver.cpp:75
-#: src/drivers/MPL3115/MPL3115Driver.cpp:78
-#: src/drivers/MPU-9150/MPU-9150Driver.cpp:78
-#: src/drivers/MS4515/MS4515Driver.cpp:243
-#: src/drivers/NmeaGPS/NmeaGPSDriver.cpp:77
-#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:73
-msgid "{0}: for driver instance \"{1}\""
-msgstr "{0}:Lade Treiberinstanz „{1}“"
-
-#: src/drivers/AMS5915/AMS5915Driver.cpp:111
-#: src/drivers/MPU-9150/MPU-9150Driver.cpp:90
-#: src/drivers/NmeaGPS/NmeaGPSDriver.cpp:109
-msgid ""
-"Could not read property \"{0}\" for device instance \"{1}\" because: {2}"
-msgstr "Kann Parameter „{0}“ für Treiberinstanz „{1}“ nicht lesen. Grund: {2}."
-
-#: src/drivers/AMS5915/AMS5915Driver.cpp:122
-msgid "Driver instance \"{0}\" data: "
-msgstr "Treiberinstanz „{0}“ Daten: "
-
-#: src/drivers/AMS5915/AMS5915Driver.cpp:134
-#: src/drivers/MS4515/MS4515Driver.cpp:256
-msgid "\tCalibration data file name = {0}"
-msgstr "\tName der Kalibrierdatendatei = „{0}“"
-
-#: src/drivers/AMS5915/AMS5915Lib.cpp:58
-msgid "Differential and gage pressure Amsys sensors AMS5915"
-msgstr "Amsys AMS5915 Differenz- und Absolutdruck-Sensoren"
-
-#: src/drivers/AMS5915/AMS5915Main.cpp:63
-#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardMain.cpp:63
-#: src/drivers/driverTemplate/templateMain.cpp:63
-#: src/drivers/IGCReader/IGCReaderMain.cpp:59
-#: src/drivers/MPL3115/MPL3115Main.cpp:63
-#: src/drivers/MPU-9150/MPU-9150Main.cpp:63
-#: src/drivers/MS4515/MS4515Main.cpp:63 src/drivers/NmeaGPS/NmeaGPSMain.cpp:63
-#: src/drivers/simul/simulMain.cpp:53
-#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureMain.cpp:64
-msgid "Initialize the {0} driver library"
-msgstr "Initialisiere die {0} Treiberbibliothek."
-
-#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardDriver.cpp:167
-msgid "CRC error of received magnetometer trim data message"
-msgstr "CRC Fehler in der Magnetometer Kalibrierdaten Nachricht."
-
-#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardDriver.cpp:261
-msgid "CRC error of received acc/gyr/mag sensor data message"
-msgstr "CRC Fehler in der acc/gyr/mag Sensordaten Nachricht"
-
-#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardDriver.cpp:302
-msgid "CRC error of received acc/gyr sensor data message"
-msgstr "CRC Fehler in der acc/gyr Sensordaten Nachricht"
-
-#: src/drivers/BoschBMXSensorBoard/BMXSensorBoardLib.cpp:58
-msgid "Driver library for Bosch BMX IMUs on the horImuBoard sensor board"
-msgstr "Treiberbibliothek für Bosch BMX IMUs"
-
-#: src/drivers/driverTemplate/templateLib.cpp:58
-msgid "Template for a new driver library"
-msgstr "Muster für eine neue Treiberbibliothek"
-
-#: src/drivers/IGCReader/IGCReaderDriver.cpp:209
-msgid "Cannot open IGC file \"{0}\"."
-msgstr "Kann IGC Datei „{0}“ nicht öffnen."
-
-#: src/drivers/IGCReader/IGCReaderDriver.cpp:214
-msgid "Opened IGC file \"{0}\"."
-msgstr "IGC Datei „{0}“ ist offen."
-
-#: src/drivers/IGCReader/IGCReaderDriver.cpp:225
-msgid "Closed IGC file \"{0}\"."
-msgstr "IGC Datei „{0}“ ist geschlossen."
-
-#: src/drivers/IGCReader/IGCReaderLib.cpp:57
-msgid ""
-"Driver library for simulation and test drivers based on IGC file recordings"
-msgstr ""
-"Treiberbibliothek für Tests und Simulationen basierend auf Aufzeichnungen "
-"aus IGC-Dateien"
-
-#: src/drivers/MPL3115/MPL3115Driver.cpp:184
-#: src/drivers/MPU-9150/MPU-9150Driver.cpp:205
-#: src/drivers/MPU-9150/MPU-9150Driver.cpp:287
-msgid "{0}: WHO AM I contains expected {1:#04X}."
-msgstr "{0}: WHO AM I ist der erwartete Wert {1:#04X}."
-
-#: src/drivers/MPL3115/MPL3115Driver.cpp:188
-#: src/drivers/MPU-9150/MPU-9150Driver.cpp:209
-msgid ""
-"{0}: WHO AM I value is not {1:#04X}, but {2:#04X}. The device is obviously "
-"not a {3} sensor."
-msgstr ""
-"{0}: Der WHO AM I Wert ist nicht der erwartete {1:#04X}, sondern {2:#04X}. "
-"Das Gerät ist offenbar kein {3} Sensor."
-
-#: src/drivers/MPL3115/MPL3115Lib.cpp:58
-msgid "Absolute atmospheric pressure sensors MPL3115"
-msgstr "MPL3115 Sensoren für absoluten Atmosphärendruck"
-
-#: src/drivers/MPU-9150/MPU-9150Lib.cpp:58
-msgid "Driver library for TDK/Invensense MPU-9150 IMU"
-msgstr "Treiberbibliothek für TDK/Invensense MPU-9150 IMUs"
-
-#: src/drivers/MS4515/MS4515Driver.cpp:100
-msgid "Property is a struct or a list."
-msgstr "Parameter ist eine Struktur oder eine Liste."
-
-#: src/drivers/MS4515/MS4515Driver.cpp:115
-msgid "Value {0} is invalid. Valid values are 'A' or 'B'."
-msgstr "Wert {0} ist ungültig. Gültige Werte sind 'A' oder 'B'."
-
-#: src/drivers/MS4515/MS4515Driver.cpp:139
-#: src/drivers/MS4515/MS4515Driver.cpp:183
-msgid ""
-"Both properties \"{0}\" and \"{1}\" are defined. Only one of these two is "
-"allowed."
-msgstr ""
-"Beide Parameter „{0}“ und „{1}“ wurden definiert. Nur einer der beiden "
-"Parameter ist erlaubt."
-
-#: src/drivers/MS4515/MS4515Driver.cpp:149
-#: src/drivers/MS4515/MS4515Driver.cpp:193
-msgid "Neither configurations \"{0}\" and \"{1}\" are defined."
-msgstr "Keiner der beiden möglichen Parameter „{0}“ and „{1}“ wurden definiert"
-
-#: src/drivers/MS4515/MS4515Driver.cpp:209
-msgid ""
-"{0}: Read configuration property {1} for driver instance \"{2}\" failed: {3}"
-msgstr ""
-"{0}: Fehler beim Lesen Lesen von Parameter {1} für Treiberinstanz „{2}“ ist: "
-"{3}"
-
-#: src/drivers/MS4515/MS4515Lib.cpp:58
-msgid "Absolute atmospheric pressure sensors MS4515"
-msgstr "MS4515 Sensoren für absoluten Atmosphärendruck"
-
-#: src/drivers/NmeaGPS/NMEA0813Protocol.cpp:72
-msgid "{0}: Received unexpected sentence start. Discarding {1} bytes."
-msgstr ""
-"{0}: Empfing unerwarteten Start einer neuen Nachricht. Verwerfe {1} Bytes."
-
-#: src/drivers/NmeaGPS/NMEA0813Protocol.cpp:103
-msgid ""
-"{0}: Too short sentence received, or CR character is missing. Discarding {1} "
-"bytes."
-msgstr ""
-"{0}: Empfing unvollständige Nachricht oder das CR fehlt. Verwerfe {1} Bytes."
-
-#: src/drivers/NmeaGPS/NMEA0813Protocol.cpp:118
-msgid ""
-"{0}: Received illegal character {1:#04X}. Discarding current sentence with "
-"{2} bytes."
-msgstr ""
-"{0}: Empfing ungültiges Zeichen {1:#04X}. Verwerfe Nachricht mit {2} Bytes."
-
-#: src/drivers/NmeaGPS/NMEA0813Protocol.cpp:132
-msgid ""
-"{0}: Current sentence buffer overflow (> {2} characters). Discard {1} bytes."
-msgstr ""
-"{0}: Überlauf des Nachrichtenpuffers (> {2} Zeichen). Verwerfe {1} Bytes."
-
-#: src/drivers/NmeaGPS/NMEA0813Protocol.cpp:169
-msgid ""
-"{0}: Checksum in the sentence {1:#04X} is unequal to the calculated checksum "
-"{2:#04X}. Discard sentence."
-msgstr ""
-"{0}: Prüfsumme in der Nachricht {1:#04X} ist ungleich der berechneten "
-"Prüfsumme {2:#04X}. Verwerfe die Nachricht."
-
-#: src/drivers/NmeaGPS/NMEA0813Protocol.cpp:177
-msgid ""
-"{0}: Checksum section contains non-numeric characters \"{1}\". Discard "
-"sentence."
-msgstr ""
-"{0}: Die Prüfsumme „{1}“ enthält nicht-numerische Zeichen. Verwerfe die "
-"Nachricht."
-
-#: src/drivers/NmeaGPS/NMEA0813Protocol.cpp:201
-msgid ""
-"{0}: Number of fields in the sentence exceeds the maximum {1} fields. "
-"Discard sentence."
-msgstr ""
-"{0}: Anzahl der Felder überschreitet die maximale Anzahl {1}. Verwerfe die "
-"Nachricht."
-
-#: src/drivers/NmeaGPS/NmeaGPSLib.cpp:58
-msgid ""
-"NmeaGPS driver for satellite navigation devices emitting NMEA 0813 sentences "
-"on serial ports or Bluetooth"
-msgstr ""
-"NmeaGPS Treiber für Empfänger von Navigationssatteliten, die NMEA 0813 "
-"produzieren."
-
-#: src/drivers/NmeaGPS/NMEASet.cpp:112
-msgid "NMEASet::strToD: String \"{0}\" is not a valid double value."
-msgstr "NMEASet::strToD: String „{0}“ ist kein gültiger double float-Wert."
-
-#: src/drivers/NmeaGPS/NMEASet.cpp:157
-msgid "{0}: String \"{1}\" does not contain a decimal separator '.'."
-msgstr "{0}: String „{1}“ enthält keinen Dezimaltrenner '.'."
-
-#: src/drivers/NmeaGPS/NMEASet.cpp:168
-msgid ""
-"{0}: String \"{1}\" does have less than 3 digits left of '.'. There is no "
-"space for degrees"
-msgstr ""
-"{0}: String „{1}“ enthält weniger als 3 Ziffern links vom Dezimaltrenner "
-"'.'. Damit ist kein Platz für den Grad-Wert."
-
-#: src/drivers/NmeaGPS/NMEASet.cpp:198 src/drivers/NmeaGPS/NMEASet.cpp:210
-#: src/drivers/NmeaGPS/NMEASet.cpp:225 src/drivers/NmeaGPS/NMEASet.cpp:237
-#: src/drivers/NmeaGPS/NMEASet.cpp:251 src/drivers/NmeaGPS/NMEASet.cpp:263
-msgid "{0}: String \"{1}\" is not a valid NMEA timestamp string."
-msgstr "{0}: String „{1}“ ist kein gültiger NMEA Zeitstempel."
-
-#: src/drivers/NmeaGPS/NMEASet.cpp:396 src/drivers/NmeaGPS/NMEASet.cpp:785
-msgid "{0}: Sentence \"{1}\" failed. Reason: {2}"
-msgstr "{0}: Nachricht „{1}“ ist fehlerhaft: {2}"
-
-#: src/drivers/NmeaGPS/NMEASet.cpp:557
-msgid ""
-"{0}: Could not find a common sequence shared by at least 3 cycles. Go by "
-"individual cycle analysis."
-msgstr ""
-"{0}: Konnte keine identische Sequenz von Nachrichten innerhalb von 3 Zyklen "
-"finden.  Wechsle zu individualler Analyse pro Zyklus."
-
-#: src/drivers/NmeaGPS/NMEASet.cpp:690
-msgid ""
-"{0}: Un-supported sentence type {1} from talker/type {2}/{3} is discarded."
-msgstr ""
-"{0}: Nachricht von nicht unterstütztem Nachrichtentyp {1} von Sender/Typ {2}/"
-"{3} wird verworfen."
-
-#: src/drivers/NmeaGPS/NMEASet.cpp:796
-msgid "{0} called for a processed GNSS record again! Sentence type = {1}"
-msgstr ""
-"{0} wurde für einen bereits bearbeitete Nachricht aufgerufen! Nachrichtentyp "
-"ist {1}."
-
-#: src/drivers/NmeaGPS/NMEASet.cpp:1008
-msgid "{0}: Invalid East-West indicator \"{1}\" in sentence \"{2}\""
-msgstr "{0}: Ungültiger Ost-West Anzeiger „{1}“ in Nachricht „{2}“."
-
-#: src/drivers/NmeaGPS/NMEASet.cpp:1026
-msgid "{0}: Invalid North-South indicator \"{1}\" in sentence \"{2}\""
-msgstr "{0}: Ungültiger Nord-Süd Anzeiger „{1}“ in Nachricht „{2}“."
-
-#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:181
-msgid "CRC error of driver instance \"{0}\". Stop processing."
-msgstr ""
-"CRC-Fehler in Treiberinstanz „{0}“. Weitere Verarbeitung wird angehalten."
-
-#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:319
-msgid "{0}: Pressure = {1} mBar is outside the expected range!"
-msgstr "{0}: Druck = {1} mBar ist außerhalb der Betriebsgrenze."
-
-#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:459
-#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureDriver.cpp:515
-msgid ""
-"{0}: Driver instance {1} has a PROM CRC mismatch. CRC in the PROM is {2:"
-"#04X}; calculated CRC is {3:#04X}."
-msgstr ""
-"{0}: Treiberinstanz {1} hat einen PROM CRC Fehler. CRC im PROM ist {2:#04X}; "
-"berechneter CRC-Wert ist {3:#04X}."
-
-#: src/drivers/TE-MEAS-AbsPressure/TE-MEAS-AbsPressureLib.cpp:84
-msgid "Absolute atmospheric pressure sensors from TE Connectivity MEAS"
-msgstr "TE Connectivity MEAS Sensoren für absoluten Atmosphärendruck"
-
