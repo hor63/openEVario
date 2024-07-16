@@ -26,17 +26,20 @@
 #  include "config.h"
 #endif
 
+#if HAVE_I2C_DEV_H
+
+
 #include <errno.h>
 #include <unistd.h>
 
 #include <sys/ioctl.h>
 
-#if HAVE_I2C_DEV_H
-#	include <linux/i2c-dev.h>
-#endif
-
 #if HAVE_I2C_H
 #	include <linux/i2c.h>
+#endif
+
+#if HAVE_I2C_DEV_H
+#	include <linux/i2c-dev.h>
 #endif
 
 #if HAVE_SMBUS_H
@@ -118,7 +121,7 @@ void I2CPort::openInternal() {
 		throw GliderVarioPortOpenException (__FILE__, __LINE__,  str.c_str(),errN);
 	}
 
-#if HAVE_I2C_H
+#if HAVE_I2C_DEV_H
 	if (funcs & I2C_FUNC_I2C) {
 		useRawI2C = true;
 	}
@@ -136,11 +139,11 @@ void I2CPort::openInternal() {
 	if ((funcs & I2C_FUNC_SMBUS_BYTE_DATA) == I2C_FUNC_SMBUS_BYTE_DATA) {
 		useSimpleByteAddressSmBusFunctions = true;
 	}
+#endif // if HAVE_SMBUS_H
 
 	if (funcs & I2C_FUNC_10BIT_ADDR) {
 		allow10BitAddress = true;
 	}
-#endif // if HAVE_SMBUS_H
 
 	LOG4CXX_DEBUG(logger,__FUNCTION__ << "Device " << getDeviceName() << " functions = 0x" << std::hex << funcs << std::dec << ": "
 			<< " useRawI2C = " << useRawI2C
@@ -194,7 +197,9 @@ void I2CPort::writeByte(uint16_t devAddr, uint8_t data) {
 		LOG4CXX_TRACE(logger, __FUNCTION__ << ": Wrote 0x" << std::hex << uint32_t(data) << std::dec
 				<< " with ioctl to " << getDeviceName());
 
-	} else if (useSimpleByteSmBusFunctions && !is10BitAddr) {
+	} else
+#if HAVE_SMBUS_H
+		if (useSimpleByteSmBusFunctions && !is10BitAddr) {
 		rc = i2c_smbus_write_byte(devLock.deviceHandle, data);
 		if (rc < 0) {
 			auto errN = -rc;
@@ -209,7 +214,9 @@ void I2CPort::writeByte(uint16_t devAddr, uint8_t data) {
 		LOG4CXX_TRACE(logger, __FUNCTION__ << ": Wrote 0x" << std::hex << uint32_t(data) << std::dec
 				<< " with i2c_smbus_write_byte to " << getDeviceName());
 
-	} else {
+	} else
+#endif // #if HAVE_SMBUS_H
+	{
 		auto str = fmt::format(_("{0}, port \"{1}\": Neither SMBus nor direct I2C is supported."),
 				__PRETTY_FUNCTION__,getPortName());
 
@@ -271,6 +278,7 @@ void I2CPort::writeBlock(uint16_t devAddr, uint8_t *data, uint16_t dataLen) {
 			break;
 		case 1:
 
+#if HAVE_SMBUS_H
 			if (useSimpleByteSmBusFunctions) {
 
 				rc = i2c_smbus_write_byte(devLock.deviceHandle, *data);
@@ -287,7 +295,10 @@ void I2CPort::writeBlock(uint16_t devAddr, uint8_t *data, uint16_t dataLen) {
 				LOG4CXX_TRACE(logger, __FUNCTION__ << ": Wrote 0x" << std::hex << uint32_t(*data) << std::dec
 						<< " with i2c_smbus_write_byte to " << getDeviceName());
 
-			} else {
+			} else
+#endif // #if HAVE_SMBUS_H
+
+			{
 				auto str = fmt::format(_("{0}, port \"{1}\": Neither SMBus nor direct I2C is supported."),
 						__PRETTY_FUNCTION__,getPortName());
 
@@ -298,6 +309,7 @@ void I2CPort::writeBlock(uint16_t devAddr, uint8_t *data, uint16_t dataLen) {
 			break;
 		case 2:
 
+#if HAVE_SMBUS_H
 			if (useSimpleByteAddressSmBusFunctions) {
 
 				rc = i2c_smbus_write_byte_data(devLock.deviceHandle,data[0],data[1]);
@@ -315,7 +327,10 @@ void I2CPort::writeBlock(uint16_t devAddr, uint8_t *data, uint16_t dataLen) {
 						<< " to register 0x" << uint32_t(data[0]) << std::dec
 						<< " with i2c_smbus_write_byte_data to " << getDeviceName());
 
-			} else {
+			} else
+#endif // #if HAVE_SMBUS_H
+
+			{
 				auto str = fmt::format(_("{0}, port \"{1}\": Neither SMBus nor direct I2C is supported."),
 						__PRETTY_FUNCTION__,getPortName());
 
@@ -326,6 +341,7 @@ void I2CPort::writeBlock(uint16_t devAddr, uint8_t *data, uint16_t dataLen) {
 			break;
 		default:
 
+#if HAVE_SMBUS_H
 			if (useSmBusI2CBlockFunctions) {
 
 				rc = i2c_smbus_write_i2c_block_data(devLock.deviceHandle,data[0],dataLen-1,data+1);
@@ -341,7 +357,10 @@ void I2CPort::writeBlock(uint16_t devAddr, uint8_t *data, uint16_t dataLen) {
 				LOG4CXX_TRACE(logger, __FUNCTION__ << ": Wrote " << dataLen
 						<< " bytes with i2c_smbus_write_i2c_block_data to " << getDeviceName());
 
-			} else {
+			} else
+#endif // #if HAVE_SMBUS_H
+
+			{
 				auto str = fmt::format(_("{0}, port \"{1}\": Neither SMBus nor direct I2C is supported."),
 						__PRETTY_FUNCTION__,getPortName());
 
@@ -398,7 +417,10 @@ uint8_t I2CPort::readByte(uint16_t devAddr) {
 		LOG4CXX_TRACE(logger, __FUNCTION__ << ": Read 0x" << std::hex << uint32_t(data) << std::dec
 				<< " with ioctl from " << getDeviceName());
 
-	} else if (useSimpleByteSmBusFunctions && !is10BitAddr) {
+	}
+
+#if HAVE_SMBUS_H
+	else if (useSimpleByteSmBusFunctions && !is10BitAddr) {
 
 		rc = i2c_smbus_read_byte(devLock.deviceHandle);
 		if (rc < 0) {
@@ -416,7 +438,9 @@ uint8_t I2CPort::readByte(uint16_t devAddr) {
 		LOG4CXX_TRACE(logger, __FUNCTION__ << ": Read 0x" << std::hex << uint32_t(data) << std::dec
 				<< " with i2c_smbus_read_byte from " << getDeviceName());
 
-	} else {
+	}
+#endif // #if HAVE_SMBUS_H
+	else {
 		auto str = fmt::format(_("{0}, port \"{1}\": Neither SMBus nor direct I2C is supported."),
 				__PRETTY_FUNCTION__,getPortName());
 
@@ -474,7 +498,10 @@ uint8_t I2CPort::readByteAtRegAddrByte(uint16_t devAddr, uint8_t regAddr) {
 		LOG4CXX_TRACE(logger, __FUNCTION__ << ": Read 0x" << std::hex << uint32_t(data)
 				<< " with ioctl from register 0x" << uint32_t(regAddr) << std::dec << " from " << getDeviceName());
 
-	} else if (useSimpleByteAddressSmBusFunctions && !is10BitAddr) {
+	}
+#if HAVE_SMBUS_H
+
+	else if (useSimpleByteAddressSmBusFunctions && !is10BitAddr) {
 
 		rc = i2c_smbus_read_byte_data(devLock.deviceHandle,regAddr);
 		if (rc < 0) {
@@ -492,7 +519,10 @@ uint8_t I2CPort::readByteAtRegAddrByte(uint16_t devAddr, uint8_t regAddr) {
 		LOG4CXX_TRACE(logger, __FUNCTION__ << ": Read 0x" << std::hex << uint32_t(data)
 				<< " with i2c_smbus_read_byte_data from register 0x" << uint32_t(regAddr) << std::dec << " from " << getDeviceName());
 
-	} else {
+	}
+#endif // #if HAVE_SMBUS_H
+
+	else {
 		auto str = fmt::format(_("{0}, port \"{1}\": Neither SMBus nor direct I2C is supported."),
 				__PRETTY_FUNCTION__,getPortName());
 
@@ -603,7 +633,10 @@ void I2CPort::readBlockAtRegAddrByte(
 				<< " bytes with ioctl from register 0x"
 				<< std::hex << uint32_t(regAddr) << std::dec << " from " << getDeviceName());
 
-	} else if (useSmBusI2CBlockFunctions && !is10BitAddr) {
+	}
+#if HAVE_SMBUS_H
+
+	else if (useSmBusI2CBlockFunctions && !is10BitAddr) {
 
 		rc = i2c_smbus_read_i2c_block_data(devLock.deviceHandle,regAddr,dataLen,data);
 		if (rc < 0) {
@@ -620,7 +653,10 @@ void I2CPort::readBlockAtRegAddrByte(
 				<< " bytes with i2c_smbus_read_i2c_block_data from register 0x"
 				<< std::hex << uint32_t(regAddr) << std::dec << " from " << getDeviceName());
 
-	} else {
+	}
+#endif // #if HAVE_SMBUS_H
+
+	else {
 		auto str = fmt::format(_("{0}, port \"{1}\": Neither SMBus nor direct I2C is supported."),
 				__PRETTY_FUNCTION__,getPortName());
 
@@ -711,3 +747,5 @@ bool I2CPort::check10BitAddr(uint16_t devAddr) {
 
 } /* namespace io */
 } /* namespace openEV */
+
+#endif // #if HAVE_I2C_DEV_H

@@ -546,8 +546,10 @@ void GliderVarioMainPriv::registerPortDrivers() {
 	io::SerialPort::registerSerialPortType();
 #endif
 
-#if HAVE_I2C_H
+#if HAVE_I2C_DEV_H
 	io::I2CPort::registerI2CPortType();
+#else
+#	error Sorry folks. Use of the I2C Linux kernel device interface is hard-coded in the driver. Without most sensors do no work.
 #endif
 
 }

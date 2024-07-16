@@ -28,6 +28,10 @@
 #ifndef UTIL_IO_I2CPORT_H_
 #define UTIL_IO_I2CPORT_H_
 
+#if HAVE_I2C_DEV_H
+
+#define HAVE_I2C_PORT 1
+
 #include <cstdint>
 
 #include <mutex>
@@ -217,5 +221,8 @@ protected:
 
 } /* namespace io */
 } /* namespace openEV */
+
+#endif // #if HAVE_I2C_DEV_H
+
 
 #endif /* UTIL_IO_I2CPORT_H_ */
